@@ -10,11 +10,16 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home,
+      redirect: '/product/overview',
       children: [
         {
           path: '/product/overview',
           name: 'overview',
           component: () => import(/* webpackChunkName: "about" */ './views/Product/Overview.vue')
+        }, {
+          path: '/product/contrast',
+          name: 'contrast',
+          component: () => import(/* webpackChunkName: "about" */ './views/Product/Contrast.vue')
         }
       ]
     },

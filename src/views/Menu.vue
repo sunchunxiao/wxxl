@@ -1,5 +1,5 @@
 <template>
-    <el-menu default-active="/product/overview" router :collapse="isCollapse">
+    <el-menu :default-active="activePath" router :collapse="isCollapse">
         <template v-for="item in menuData">
             <el-submenu :index="item.path" :key="item.path">
                 <template slot="title">
@@ -114,7 +114,11 @@ export default {
     data () {
         return {
             menuData: MENUDATA,
+            activePath: '/product/overview'
         }
+    },
+    mounted() {
+        this.activePath = this.$route.fullPath;
     }
 }
 </script>

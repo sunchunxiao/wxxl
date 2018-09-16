@@ -1,6 +1,16 @@
 <template>
     <div class="pie-container">
-        <div id="pie"></div>
+        <div class="pie" :id="`pie-${id}`"></div>
+        <div class="detail">
+            <span class="text">目标: </span>
+            <span class="value">{{data.goal}}</span>
+            &nbsp;<span>{{unit}}</span>
+        </div>
+        <div class="detail">
+            <span class="text">实际: </span>
+            <span class="value" v-bind:style="{color: color}">{{data.value}}</span>
+            &nbsp;<span>{{unit}}</span>
+        </div>
     </div>
 </template>
 
@@ -12,29 +22,44 @@ const colorLeft = '#E0E3E9';
 
 export default {
     props: {
-        data: object
+        id: String,
+        data: Object,
     },
     data() {
-        return {}
+        return {
+            unit: 'w',
+            color: '#000'
+        }
     },
     mounted() {
-        this.chart = echarts.init(document.getElementById('pie'));
+        this.chart = echarts.init(document.getElementById(`pie-${this.id}`));
         this.renderChart(this.data);
     },
     methods: {
         renderChart(data) {
             const {value, goal, text} = data;
-            const color = value >= 80 ? colorMap.over : colorMap.below;
             const valuePercent = Math.floor(value / goal * 100);
+            const color = valuePercent >= 100 ? colorMap.over : colorMap.below;
+            this.color = color;
             const valueLeft = valuePercent >= 100 ? 0 : 100 - valuePercent;
+            const radius = ['100', '120'];
+            const fontSize1 =  56;
+            const fontSize2 =  30;
             const options = {
                 backgroundColor: '#fff',
                 tooltip: {
                     trigger: 'item',
                 },
+                grid: {
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    top: 0,
+                    containLabel: true
+                },
                 series: [{
                     type: 'pie',
-                    radius: ['56', '60'],
+                    radius: radius,
                     hoverAnimation: false,
                     label: {
                         normal: {
@@ -53,8 +78,8 @@ export default {
                                 normal: {
                                     formatter: Math.floor(value / goal * 100) + '%',
                                     textStyle: {
-                                        fontSize: 28,
-                                        color: '#5e5e5e'
+                                        fontSize: fontSize1,
+                                        color: color,
                                     }
                                 },
                             }
@@ -73,9 +98,9 @@ export default {
                             label: {
                                 normal: {
                                     textStyle: {
-                                        fontSize: 15,
+                                        fontSize: fontSize2,
                                         fontWeight: 600,
-                                        color: color,
+                                        color: '#5e5e5e'
                                     }
                                 }
                             }
@@ -93,7 +118,7 @@ export default {
                             label: {
                                 normal: {
                                     textStyle: {
-                                        fontSize: 15,
+                                        fontSize: fontSize2,
                                         fontWeight: 600,
                                         color: color,
                                     }
@@ -111,12 +136,19 @@ export default {
 
 <style lang="scss" scoped>
 .pie-container {
-    width: 150px;
-    height: 200px;
-    padding: 0 5px;
-    #pie {
-        width: 140px;
-        height: 140px;
+    .pie {
+        width: 280px;
+        height: 280px;
+        margin: 0 auto;
+    }
+    .detail {
+        text-align: center;
+        span.text {
+            font-size: 150%;
+        }
+        span.value {
+            font-size: 180%;
+        }
     }
 }
 

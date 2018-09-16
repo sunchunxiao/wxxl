@@ -1,5 +1,5 @@
 <template>
-    <div class="overview">
+    <div class="contrast">
         <el-row>
             <el-form ref="form" :model="form" label-width="100px" size="mini">
                 <el-col :span="5">
@@ -40,14 +40,15 @@
             </el-form>
         </el-row>
         <el-row class="content_row" :gutter="20">
-            <el-col :span="5" class="tree_container">
+            <el-col :span="4" class="tree_container">
                 <div class="title">毛利目标达成率</div>
                 <div class="company">
                     <span class="left">{{tree.data.name}}</span>
                     <span class="right">{{calculatePercent(tree.data.real_total, tree.data.target_total).percent + '%'}}</span>
                 </div>
                 <!-- 有多个tree -->
-                <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick">
+                <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" show-checkbox
+  @check-change="handleCheckChange">
                     <span class="custom-tree-node" slot-scope="{ node, data }">
                         <span class="label">{{ data.name }}</span>
                         <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
@@ -55,95 +56,20 @@
                     </span>
                 </el-tree>
             </el-col>
-            <el-col :span="19" class="overflow">
+            <el-col :span="20" class="overflow">
                 <el-row>
                     <Card>
-                        <el-row class="card-title">目标达成情况总览</el-row>
+                        <el-row class="card-title">组织对比分析和平均值分析</el-row>
                         <el-row>
-                            <el-col :span="16">
-                                <template v-for="(item, index) in pieData">
-                                    <el-col :key="index" :span="6">
-                                        <ProTargetAchievement :id="`${index}`" :data="item"></ProTargetAchievement>
+                            <el-col :span="6">
+                                <template v-for="(item, index) in titleArr">
+                                    <el-col :key="index" :span="12">
+                                        <ConOrgComparisonAverage :title="item" :id="`${index}`"></ConOrgComparisonAverage>
                                     </el-col>
                                 </template>
                             </el-col>
-                            <el-col :span="8" class="border-left">
-                                <ProTargetAchievementBig :id="'select'" :data="pieData[0]"></ProTargetAchievementBig>
-                            </el-col>
-                        </el-row>
-                    </Card>
-                </el-row>
-                <el-row class="margin-top-10">
-                    <Card>
-                        <el-row class="card-title">目标-实际-差异趋势分析</el-row>
-                        <el-row>
-                            <el-col :span="16">
-                                <template v-for="(item, index) in pieData">
-                                    <el-col :key="index" :span="6">
-                                        <ProTargetActualDiffTrend :id="`${index}`" :data="trendData[index]" :title="pieData[index].text"></ProTargetActualDiffTrend>
-                                    </el-col>
-                                </template>
-                            </el-col>
-                            <el-col :span="8" class="border-left">
-                                <ProTargetActualDiffTrendBig id="ProTargetActualDiffTrendBig" :data="trendData[0]" title="毛利润额"></ProTargetActualDiffTrendBig>
-                            </el-col>
-                        </el-row>
-                    </Card>
-                </el-row>
-                <el-row class="margin-top-10">
-                    <Card>
-                        <el-row class="card-title">同比环比趋势分析</el-row>
-                        <el-row>
-                            <el-col :span="16">
-                                <template v-for="(item, index) in averageData">
-                                    <el-col :key="index" :span="6">
-                                        <ProYearOnYearTrend :id="`${index}`" :data="trendData[index]" :title="pieData[index].text"></ProYearOnYearTrend>
-                                    </el-col>
-                                </template>
-                            </el-col>
-                            <el-col :span="8" class="border-left">
-                                <ProYearOnYearTrendBig id="ProYearOnYearTrendBig" :data="trendData[0]" title="毛利润额"></ProYearOnYearTrendBig>
-                            </el-col>
-                        </el-row>
-                    </Card>
-                </el-row>
-                <el-row class="margin-top-10">
-                    <Card>
-                        <el-row class="card-title">比例结构与平均值对比分析</el-row>
-                        <el-row>
-                            <el-col :span="16">
-                                <template v-for="(item, index) in averageData">
-                                    <el-col :key="index" :span="6">
-                                        <ProportionalStructureAverageComparison :id="`${index}`" :data="item"></ProportionalStructureAverageComparison>
-                                    </el-col>
-                                </template>
-                            </el-col>
-                            <el-col :span="8" class="border-left">
-                                <ProportionalStructureAverageComparisonBig id="ProportionalStructureAverageComparisonBig" :data="averageData[0]"></ProportionalStructureAverageComparisonBig>
-                            </el-col>
-                        </el-row>
-                    </Card>
-                </el-row>
-                <el-row class="margin-top-10">
-                    <Card>
-                        <el-row class="card-title">智能评选和智能策略</el-row>
-                        <el-row>
-                            <el-col :span="14">
-                                <IntelligentSelection id="heatmap" :data="heatmapData"></IntelligentSelection>
-                            </el-col>
-                            <el-col :span="10">
-                                <div class="stragety">
-                                    <div class="stragety-title">智能策略</div>
-                                    <div class="stragety-box">
-                                        <div class="stragety-selected-title">米歌-日销-中</div>
-                                        <el-checkbox-group v-model="stragetyCheckList">
-                                            <el-checkbox label="增加销售渠道"></el-checkbox>
-                                            <el-checkbox label="增加活动投入"></el-checkbox>
-                                            <el-checkbox label="增加资金投入"></el-checkbox>
-                                        </el-checkbox-group>
-                                        <el-button type="primary" class="center">确 认</el-button>
-                                    </div>
-                                </div>
+                            <el-col :span="18">
+                                <ConOrgComparisonAverageBig title="净利润额" id="ConOrgComparisonAverage"></ConOrgComparisonAverageBig>
                             </el-col>
                         </el-row>
                     </Card>
@@ -155,72 +81,22 @@
 
 <script>
 import Card from '../../components/Card';
-// 目标达成情况总览
-import ProTargetAchievement from '../../components/ProTargetAchievement';
-import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
-// 目标-实际-差异趋势分析
-import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
-import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
-// 同比环比趋势分析
-import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
-import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
-// 比例结构与平均值对比分析
-import ProportionalStructureAverageComparison from '../../components/ProportionalStructureAverageComparison';
-import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
-// 智能评选和智能策略
-import IntelligentSelection from '../../components/IntelligentSelection';
-
+// 组织对比分析和平均值分析
+import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
+import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 import tree from './productTreeData.js';
-import trendData from './trendData.js';
-import averageData from './averageData.js';
-import heatmapData from './heatmapData.js';
 
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-const pieData = [{
-    value: 30,
-    goal: 50,
-    text: '毛利润额',
-},{
-    value: 50,
-    goal: 50,
-    text: '销售额',
-},{
-    value: 100,
-    goal: 50,
-    text: '产品成本额',
-},{
-    value: 120,
-    goal: 180,
-    text: '产品投入产出比',
-},{
-    value: 210,
-    goal: 180,
-    text: '库存周转率',
-},{
-    value: 80,
-    goal: 90,
-    text: '日销',
-},{
-    value: 10,
-    goal: 8,
-    text: '库存额',
-}];
+const titleArr = ['净利润额', '销售额', '人力成本额', '组织投入产出比', '日销', '人员冗余值'];
 
 export default {
     components: {
         Card,
-        ProYearOnYearTrend,
-        ProYearOnYearTrendBig,
-        ProportionalStructureAverageComparison,
-        ProportionalStructureAverageComparisonBig,
-        IntelligentSelection,
-        ProTargetAchievement,
-        ProTargetAchievementBig,
-        ProTargetActualDiffTrend,
-        ProTargetActualDiffTrendBig
+        ConOrgComparisonAverage,
+        ConOrgComparisonAverageBig
     },
     data() {
         return {
@@ -232,11 +108,7 @@ export default {
             tree: tree,
             treeData: tree.data.children,
             defaultProps: TREE_PROPS,
-            pieData: pieData,
-            trendData: trendData,
-            averageData: averageData,
-            heatmapData: heatmapData,
-            stragetyCheckList: ['增加销售渠道']
+            titleArr: titleArr
         }
     },
     watch: {
@@ -248,6 +120,9 @@ export default {
     },
     methods: {
       handleNodeClick(data) {
+      },
+      handleCheckChange(data, checked, indeterminate) {
+          console.log(data, checked, indeterminate)
       },
       calculatePercent(a, b) {
         if (b > 0) {
@@ -265,7 +140,7 @@ export default {
 </script>
 
 <style lang="scss">
-.overview {
+.contrast {
     min-width: 1024px;
     height: 100%;
     .el-date-editor.el-range-editor {
