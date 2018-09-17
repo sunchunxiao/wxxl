@@ -1,4 +1,6 @@
-export default [
+import _ from 'lodash';
+
+const data = [
     {
         "timeLabel": "2018-01-01",
         "categoryNames": [
@@ -5425,3 +5427,27 @@ export default [
         ]
     }
 ];
+
+function mockHeatmapData() {
+    let arr = _.cloneDeep(data);
+    for(let i = 0; i < arr.length; i++) {
+        arr[i].data = mockArr28();
+    }
+    return arr;
+}
+
+function mockArr28() {
+    let arr = [];
+    for(let i = 0; i < 28; i++) {
+        arr.push(mockArr3(Math.floor(i / 7) ,i % 7));
+    }
+    return arr;
+}
+
+function mockArr3(o ,v) {
+    let arr = [];
+    arr.push(o, v, Math.floor(Math.random() * 5));
+    return arr;
+}
+
+export default mockHeatmapData;

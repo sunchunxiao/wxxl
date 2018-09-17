@@ -18,6 +18,14 @@ export default {
         this.chart = echarts.init(document.getElementById(`ConOrgComparisonAverage-${this.id}`));
         this.renderChart(this.data);
     },
+    watch: {
+        data: {
+            handler: function (val, oldVal) {
+                this.renderChart(val);
+            },
+            deep: true
+        },
+    },
     methods: {
         getRandomNumArr(length) {
             const rand = function(){return Math.floor(Math.random() * 200) - 100};

@@ -35,6 +35,14 @@ export default {
         this.chart = echarts.init(document.getElementById(`pie-${this.id}`));
         this.renderChart(this.data);
     },
+    watch: {
+        data: {
+            handler: function (val, oldVal) {
+                this.renderChart(val);
+            },
+            deep: true
+        },
+    },
     methods: {
         renderChart(data) {
             const {value, goal, text} = data;

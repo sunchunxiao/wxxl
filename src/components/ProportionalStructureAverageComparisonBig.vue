@@ -17,6 +17,14 @@ export default {
         this.chart = echarts.init(document.getElementById(`averagebar-${this.id}`));
         this.renderChart(this.data);
     },
+    watch: {
+        data: {
+            handler: function (val, oldVal) {
+                this.renderChart(val);
+            },
+            deep: true
+        },
+    },
     methods: {
         renderChart(data) {
             const {transSubjects, data: pData} = data;
@@ -80,6 +88,9 @@ export default {
                             position: [5, 6],
                             color: "#000",
                             formatter: function(params) {
+                                if (data.type === 'quota') {
+                                    return `${pData[params.dataIndex].name} : ${params.data}`;
+                                }
                                 return `${pData[params.dataIndex].name} : ${params.data}%`;
                             },
                         }
@@ -88,7 +99,7 @@ export default {
                     markLine : {
                         symbol: 'none',
                         label:{
-                            formatter:`平均值${average}%`
+                            formatter: data.type === 'quota' ? `平均值${average}`: `平均值${average}%`
                         },
                         data : [
                             {

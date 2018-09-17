@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-let data = {
+const data = {
     "real": [],
     "target": [],
     "ring": [],
@@ -38,14 +38,6 @@ let data = {
         "2018-01-30"
     ]
 }
-let arr = [];
-for(let i = 0; i < 7; i++) {
-    arr.push(_.cloneDeep(data));
-    arr[i].real = getRandomNumArr(30, 1000);
-    arr[i].target  = getRandomNumArr(30, 1000);
-    arr[i].ring = getRandomNumArr(30, 20, -10);
-    arr[i].yoy = getRandomNumArr(30, 20, -10);
-}
 
 function getRandomNumArr(length, limit, option) {
     let arr = [];
@@ -54,6 +46,7 @@ function getRandomNumArr(length, limit, option) {
     }
     return arr;
 }
+
 function rand(limit, option) {
     if (typeof option === 'number') {
         return Math.floor(Math.random() * limit) + option;
@@ -61,4 +54,16 @@ function rand(limit, option) {
     return Math.floor(Math.random() * limit);
 }
 
-export default arr;
+function mockTrendData() {
+    let arr = [];
+    for(let i = 0; i < 7; i++) {
+        arr.push(_.cloneDeep(data));
+        arr[i].real = getRandomNumArr(30, 1000);
+        arr[i].target  = getRandomNumArr(30, 1000);
+        arr[i].ring = getRandomNumArr(30, 20, -10);
+        arr[i].yoy = getRandomNumArr(30, 20, -10);
+    }
+    return arr;
+}
+
+export default mockTrendData;

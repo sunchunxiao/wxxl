@@ -47,7 +47,7 @@
                     <span class="right">{{calculatePercent(tree.data.real_total, tree.data.target_total).percent + '%'}}</span>
                 </div>
                 <!-- 有多个tree -->
-                <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick">
+                <el-tree :data="treeData" :props="defaultProps" :highlight-current="true" @node-click="handleNodeClick">
                     <span class="custom-tree-node" slot-scope="{ node, data }">
                         <span class="label">{{ data.name }}</span>
                         <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
@@ -56,75 +56,75 @@
                 </el-tree>
             </el-col>
             <el-col :span="19" class="overflow">
-                <el-row>
+                <el-row v-loading="loading">
                     <Card>
                         <el-row class="card-title">目标达成情况总览</el-row>
                         <el-row>
                             <el-col :span="16">
                                 <template v-for="(item, index) in pieData">
-                                    <el-col :key="index" :span="6">
+                                    <el-col :key="index" :span="6" @click.native="clickIndex(0 ,index)">
                                         <ProTargetAchievement :id="`${index}`" :data="item"></ProTargetAchievement>
                                     </el-col>
                                 </template>
                             </el-col>
                             <el-col :span="8" class="border-left">
-                                <ProTargetAchievementBig :id="'select'" :data="pieData[0]"></ProTargetAchievementBig>
+                                <ProTargetAchievementBig :id="'select'" :data="pieData[index0]"></ProTargetAchievementBig>
                             </el-col>
                         </el-row>
                     </Card>
                 </el-row>
-                <el-row class="margin-top-10">
+                <el-row v-loading="loading" class="margin-top-10">
                     <Card>
                         <el-row class="card-title">目标-实际-差异趋势分析</el-row>
                         <el-row>
                             <el-col :span="16">
                                 <template v-for="(item, index) in pieData">
-                                    <el-col :key="index" :span="6">
+                                    <el-col :key="index" :span="6" @click.native="clickIndex(1 ,index)">
                                         <ProTargetActualDiffTrend :id="`${index}`" :data="trendData[index]" :title="pieData[index].text"></ProTargetActualDiffTrend>
                                     </el-col>
                                 </template>
                             </el-col>
                             <el-col :span="8" class="border-left">
-                                <ProTargetActualDiffTrendBig id="ProTargetActualDiffTrendBig" :data="trendData[0]" title="毛利润额"></ProTargetActualDiffTrendBig>
+                                <ProTargetActualDiffTrendBig id="ProTargetActualDiffTrendBig" :data="trendData[index1]" title="毛利润额"></ProTargetActualDiffTrendBig>
                             </el-col>
                         </el-row>
                     </Card>
                 </el-row>
-                <el-row class="margin-top-10">
+                <el-row v-loading="loading" class="margin-top-10">
                     <Card>
                         <el-row class="card-title">同比环比趋势分析</el-row>
                         <el-row>
                             <el-col :span="16">
                                 <template v-for="(item, index) in averageData">
-                                    <el-col :key="index" :span="6">
+                                    <el-col :key="index" :span="6" @click.native="clickIndex(2 ,index)">
                                         <ProYearOnYearTrend :id="`${index}`" :data="trendData[index]" :title="pieData[index].text"></ProYearOnYearTrend>
                                     </el-col>
                                 </template>
                             </el-col>
                             <el-col :span="8" class="border-left">
-                                <ProYearOnYearTrendBig id="ProYearOnYearTrendBig" :data="trendData[0]" title="毛利润额"></ProYearOnYearTrendBig>
+                                <ProYearOnYearTrendBig id="ProYearOnYearTrendBig" :data="trendData[index2]" title="毛利润额"></ProYearOnYearTrendBig>
                             </el-col>
                         </el-row>
                     </Card>
                 </el-row>
-                <el-row class="margin-top-10">
+                <el-row v-loading="loading" class="margin-top-10">
                     <Card>
                         <el-row class="card-title">比例结构与平均值对比分析</el-row>
                         <el-row>
                             <el-col :span="16">
                                 <template v-for="(item, index) in averageData">
-                                    <el-col :key="index" :span="6">
+                                    <el-col :key="index" :span="6" @click.native="clickIndex(3 ,index)">
                                         <ProportionalStructureAverageComparison :id="`${index}`" :data="item"></ProportionalStructureAverageComparison>
                                     </el-col>
                                 </template>
                             </el-col>
                             <el-col :span="8" class="border-left">
-                                <ProportionalStructureAverageComparisonBig id="ProportionalStructureAverageComparisonBig" :data="averageData[0]"></ProportionalStructureAverageComparisonBig>
+                                <ProportionalStructureAverageComparisonBig id="ProportionalStructureAverageComparisonBig" :data="averageData[index3]"></ProportionalStructureAverageComparisonBig>
                             </el-col>
                         </el-row>
                     </Card>
                 </el-row>
-                <el-row class="margin-top-10">
+                <el-row v-loading="loading" class="margin-top-10">
                     <Card>
                         <el-row class="card-title">智能评选和智能策略</el-row>
                         <el-row>
@@ -170,44 +170,18 @@ import ProportionalStructureAverageComparisonBig from '../../components/Proporti
 // 智能评选和智能策略
 import IntelligentSelection from '../../components/IntelligentSelection';
 
+// tree
 import tree from './productTreeData.js';
-import trendData from './trendData.js';
-import averageData from './averageData.js';
-import heatmapData from './heatmapData.js';
+// mock
+import mockPieData from './pieData.js';
+import mockTrendData from './trendData.js';
+import mockAverageData from './averageData.js';
+import mockHeatmapData from './heatmapData.js';
 
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-const pieData = [{
-    value: 30,
-    goal: 50,
-    text: '毛利润额',
-},{
-    value: 50,
-    goal: 50,
-    text: '销售额',
-},{
-    value: 100,
-    goal: 50,
-    text: '产品成本额',
-},{
-    value: 120,
-    goal: 180,
-    text: '产品投入产出比',
-},{
-    value: 210,
-    goal: 180,
-    text: '库存周转率',
-},{
-    value: 80,
-    goal: 90,
-    text: '日销',
-},{
-    value: 10,
-    goal: 8,
-    text: '库存额',
-}];
 
 export default {
     components: {
@@ -229,13 +203,22 @@ export default {
                 time: [],
                 search: ''
             },
+            loading: false,
+            // tree
             tree: tree,
             treeData: tree.data.children,
             defaultProps: TREE_PROPS,
-            pieData: pieData,
-            trendData: trendData,
-            averageData: averageData,
-            heatmapData: heatmapData,
+            // index
+            index0: 0,
+            index1: 0,
+            index2: 0,
+            index3: 0,
+            // mockData
+            pieData: mockPieData(),
+            trendData: mockTrendData(),
+            averageData: mockAverageData(),
+            heatmapData: mockHeatmapData(),
+            // stragety
             stragetyCheckList: ['增加销售渠道']
         }
     },
@@ -248,6 +231,16 @@ export default {
     },
     methods: {
       handleNodeClick(data) {
+        this.loading = true;
+        setTimeout(() => {
+            this.pieData = mockPieData();
+            this.trendData = mockTrendData();
+            this.averageData = mockAverageData();
+            this.heatmapData = mockHeatmapData();
+        }, 300);
+        setTimeout(() => {
+            this.loading = false;
+        }, 1000);
       },
       calculatePercent(a, b) {
         if (b > 0) {
@@ -260,6 +253,9 @@ export default {
         }
         return {};
       },
+      clickIndex(i ,idx) {
+          this[`index${i}`] = idx;
+      }
     }
 }
 </script>

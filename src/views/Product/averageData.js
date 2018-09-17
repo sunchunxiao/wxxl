@@ -1,6 +1,9 @@
-export default [
+import _ from 'lodash';
+
+const data = [
     {
         "title": "毛利润额",
+        "type": "quota",
         "data": [
             {
                 "total": "2192695629",
@@ -38,6 +41,7 @@ export default [
     },
     {
         "title": "销售额",
+        "type": "quota",
         "data": [
             {
                 "total": "2092695629",
@@ -74,6 +78,7 @@ export default [
         ],
     },{
         "title": "产品成本额",
+        "type": "quota",
         "data": [
             {
                 "total": "2692695629",
@@ -182,6 +187,7 @@ export default [
         ],
     },{
         "title": "日销",
+        "type": "quota",
         "data": [
             {
                 "total": "2592695629",
@@ -218,6 +224,7 @@ export default [
         ],
     },{
         "title": "库存额",
+        "type": "quota",
         "data": [
             {
                 "total": "2192695629",
@@ -253,4 +260,17 @@ export default [
             }
         ],
     }
-]
+];
+
+function mockAverageData() {
+    let arr = _.cloneDeep(data);
+    for(let i = 0; i < arr.length; i++) {
+        for(let v = 0; v < arr[i].data.length; v++) {
+            arr[i].data[v].total = Math.floor(Math.random() * 10000 * 10000) + '';
+            arr[i].data[v].target = Math.floor(Math.random() * 10000 * 10000) + '';
+        }
+    }
+    return arr;
+}
+
+export default mockAverageData;

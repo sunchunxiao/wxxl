@@ -29,7 +29,7 @@ const MENUDATA = [{
         title: '全景分析',
         path: '/overview'
     }, {
-        title: '组织对比',
+        title: '产品对比',
         path: '/contrast'
     }, {
         title: '策略优化',
@@ -63,7 +63,7 @@ const MENUDATA = [{
         title: '全景分析',
         path: '/overview'
     }, {
-        title: '组织对比',
+        title: '客户对比',
         path: '/contrast'
     }, {
         title: '策略优化',
@@ -80,7 +80,7 @@ const MENUDATA = [{
         title: '全景分析',
         path: '/overview'
     }, {
-        title: '组织对比',
+        title: '资金对比',
         path: '/contrast'
     }, {
         title: '策略优化',
@@ -97,7 +97,7 @@ const MENUDATA = [{
         title: '全景分析',
         path: '/overview'
     }, {
-        title: '组织对比',
+        title: '渠道对比',
         path: '/contrast'
     }, {
         title: '策略优化',

@@ -18,6 +18,14 @@ export default {
         this.chart = echarts.init(document.getElementById(`heatmap-${this.id}`));
         this.renderChart(this.data);
     },
+    watch: {
+        data: {
+            handler: function (val, oldVal) {
+                this.renderChart(val);
+            },
+            deep: true
+        },
+    },
     methods: {
         getRank(score) {
             if (1 == score) {
@@ -29,7 +37,10 @@ export default {
             if (3 == score) {
                 return '良';
             }
-            return '优';
+            if (4 === score) {
+                return '优'
+            }
+            return '差';
         },
         renderChart(data) {
             const _this = this;
@@ -40,7 +51,8 @@ export default {
                 let item = data[i];
 
                 let seriesData = item.data.map(function (v) {
-                    return [v[1], v[0], v[2] || '-'];
+                    return [v[1], v[0], v[2]];
+                    // return [v[1], v[0], v[2] || '-'];
                 });
 
                 let option = {
