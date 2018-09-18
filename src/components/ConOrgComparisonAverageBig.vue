@@ -11,8 +11,9 @@ import echarts from 'echarts';
 export default {
     props: {
         id: String,
-        data: Object,
-        title: String
+        data: Array,
+        title: String,
+        index: Number
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`ConOrgComparisonAverage-${this.id}`));
@@ -27,15 +28,8 @@ export default {
         },
     },
     methods: {
-        getRandomNumArr(length) {
-            const rand = () => Math.floor(Math.random() * 200) - 100;
-            let arr = [];
-            for(let i = 0; i < length; i++) {
-                arr.push(rand());
-            }
-            return arr;
-        },
         renderChart(data) {
+            let _this = this;
             const options = {
                 grid: {
                     left: 0,
@@ -69,7 +63,7 @@ export default {
                 yAxis: {
                     type: 'value',
                     axisLabel: {
-                        formatter: '{value} %'
+                        formatter: _.includes([0,1,2,5,6], _this.index) ? '{value}' : '{value} %'
                     }
                     // name: '报警次数',
                 },
@@ -77,25 +71,25 @@ export default {
                         name: '旅游运输',
                         type: 'line',
                         stack: '总量',
-                        data: this.getRandomNumArr(7)
+                        data: data[0]
                     },
                     {
                         name: '班线运输',
                         type: 'line',
                         stack: '总量',
-                        data: this.getRandomNumArr(7)
+                        data: data[1]
                     },
                     {
                         name: '危险品',
                         type: 'line',
                         stack: '总量',
-                        data: this.getRandomNumArr(7)
+                        data: data[2]
                     },
                     {
                         name: '普货',
                         type: 'line',
                         stack: '总量',
-                        data: this.getRandomNumArr(7)
+                        data: data[3]
                     },
                 ]
             };

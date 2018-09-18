@@ -17,7 +17,7 @@
       </div>
     </div>
     <div :class="['right', {'right_collapse': isCollapse} ]">
-      <Header />
+      <Header :isCollapse="isCollapse" />
       <div class="content">
         <router-view />
       </div>

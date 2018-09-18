@@ -7,6 +7,25 @@
 
 <script>
 import echarts from 'echarts';
+import _ from 'lodash';
+
+const stragetyArr = [
+    "持续优化成本成本结构",
+    "梳理现有供应商结构，对供应商报价进行综合评估和管理",
+    "持续优化采购渠道",
+    "持续优化成本成本结构",
+    "梳理现有供应商结构，对供应商报价进行综合评估和管理",
+    "持续优化采购渠道",
+    "梳理现有整体成本结构",
+    "加强各环节成本预算管控",
+    "查验包装成本中高成本环节，对其进行评估、调整或删除",
+    "按预算整体控制品牌包装成本",
+    "寻找新的高性价比供应商资源",
+    "建立供应商管理体系",
+    "对高成本采购渠道环节进行查验",
+    "寻找新的高性价比采购渠道",
+    "查验摄影环节中高成本环节，对其进行评估调整"
+];
 
 export default {
     props: {
@@ -17,6 +36,12 @@ export default {
     mounted() {
         this.chart = echarts.init(document.getElementById(`heatmap-${this.id}`));
         this.renderChart(this.data);
+        let _this = this;
+        this.chart.on('click', function (params) {
+            const brands = ['蒂爱','可优比','麦克适','米歌'];
+            const brand = brands[Math.floor(params.dataIndex / 7)];
+            _this.$emit('showStragety', {brand, name: params.name, rank: _this.getRank(params.data[2]), stragety: _this.getstragetyArr()});
+        });
     },
     watch: {
         data: {
@@ -27,6 +52,14 @@ export default {
         },
     },
     methods: {
+        getstragetyArr() {
+            let length = _.random(3, 5);
+            let arr = [];
+            for(let i = 0; i < length; i++) {
+                arr.push(stragetyArr[_.random(0, 14)]);
+            }
+            return _.uniq(arr);
+        },
         getRank(score) {
             if (1 == score) {
                 return '差';

@@ -12,6 +12,7 @@ const pieData = [{
     value: 100,
     goal: 50,
     text: '产品成本额',
+    target: 'reverse'
 },{
     value: 120,
     goal: 180,
@@ -28,13 +29,17 @@ const pieData = [{
     value: 10,
     goal: 8,
     text: '库存额',
+    target: 'reverse'
 }];
 
 function mockPieData() {
     let arr = _.cloneDeep(pieData);
     for(let i = 0; i < 7; i++) {
-        arr[i].value = Math.floor(Math.random() * 250) + 1;
+        // arr[i].value = Math.floor(Math.random() * 250) + 1;
         arr[i].goal = Math.floor(Math.random() * 250) + 1;
+        // [0.5 - 2] => [5 - 20] / 10
+        let multiple = Math.floor((Math.random() * 16 + 5)) / 10;
+        arr[i].value = Math.floor(arr[i].goal * multiple);
     }
     return arr;
 }

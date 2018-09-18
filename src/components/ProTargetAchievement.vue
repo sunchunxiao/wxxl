@@ -45,9 +45,13 @@ export default {
     },
     methods: {
         renderChart(data) {
-            const {value, goal, text} = data;
+            const {value, goal, text, target} = data;
             const valuePercent = Math.floor(value / goal * 100);
-            const color = valuePercent >= 100 ? colorMap.over : colorMap.below;
+            const reverse = target === 'reverse';
+            let color = valuePercent >= 100 ? colorMap.below : colorMap.over;
+            if (reverse) {
+                color = valuePercent >= 100 ? colorMap.over : colorMap.below;
+            }
             this.color = color;
             const valueLeft = valuePercent >= 100 ? 0 : 100 - valuePercent;
             const radius = ['56', '60'];

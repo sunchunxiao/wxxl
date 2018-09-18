@@ -1,5 +1,5 @@
 <template>
-    <div class="contrast">
+    <div class="overview">
         <el-row>
             <el-form ref="form" :model="form" label-width="100px" size="mini">
                 <el-col :span="5">
@@ -40,15 +40,14 @@
             </el-form>
         </el-row>
         <el-row class="content_row" :gutter="20">
-            <el-col :span="4" class="tree_container">
+            <el-col :span="5" class="tree_container">
                 <div class="title">毛利目标达成率</div>
                 <div class="company">
                     <span class="left">{{tree.data.name}}</span>
                     <span class="right">{{calculatePercent(tree.data.real_total, tree.data.target_total).percent + '%'}}</span>
                 </div>
                 <!-- 有多个tree -->
-                <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" show-checkbox
-  @check-change="handleCheckChange">
+                <el-tree :data="treeData" :props="defaultProps" :highlight-current="true" @node-click="handleNodeClick">
                     <span class="custom-tree-node" slot-scope="{ node, data }">
                         <span class="label">{{ data.name }}</span>
                         <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
@@ -56,20 +55,93 @@
                     </span>
                 </el-tree>
             </el-col>
-            <el-col :span="20" class="overflow">
-                <el-row>
+            <el-col :span="19" class="overflow">
+                <el-row v-loading="loading">
                     <Card>
-                        <el-row class="card-title">组织对比分析和平均值分析</el-row>
+                        <el-row class="card-title">目标达成情况总览</el-row>
                         <el-row>
-                            <el-col :span="6">
+                            <el-col :span="16">
                                 <template v-for="(item, index) in pieData">
-                                    <el-col :key="index" :span="12" @click.native="clickIndex(0 ,index)">
-                                        <ConOrgComparisonAverage :title="item.text" :id="`${index}`" :data="comparisonAverageData[index]" ></ConOrgComparisonAverage>
+                                    <el-col :key="index" :span="6" @click.native="clickIndex(0 ,index)">
+                                        <ProTargetAchievement :id="`${index}`" :data="item"></ProTargetAchievement>
                                     </el-col>
                                 </template>
                             </el-col>
-                            <el-col :span="18">
-                                <ConOrgComparisonAverageBig :title="pieData[index0].text" :data="comparisonAverageData[index0]" id="ConOrgComparisonAverage" :index="index0"></ConOrgComparisonAverageBig>
+                            <el-col :span="8" class="border-left">
+                                <ProTargetAchievementBig :id="'select'" :data="pieData[index0]"></ProTargetAchievementBig>
+                            </el-col>
+                        </el-row>
+                    </Card>
+                </el-row>
+                <el-row v-loading="loading" class="margin-top-10">
+                    <Card>
+                        <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                        <el-row>
+                            <el-col :span="16">
+                                <template v-for="(item, index) in pieData">
+                                    <el-col :key="index" :span="6" @click.native="clickIndex(1 ,index)">
+                                        <ProTargetActualDiffTrend :id="`${index}`" :data="trendData[index]" :title="pieData[index].text"></ProTargetActualDiffTrend>
+                                    </el-col>
+                                </template>
+                            </el-col>
+                            <el-col :span="8" class="border-left">
+                                <ProTargetActualDiffTrendBig id="ProTargetActualDiffTrendBig" :data="trendData[index1]" title="毛利润额"></ProTargetActualDiffTrendBig>
+                            </el-col>
+                        </el-row>
+                    </Card>
+                </el-row>
+                <el-row v-loading="loading" class="margin-top-10">
+                    <Card>
+                        <el-row class="card-title">同比环比趋势分析</el-row>
+                        <el-row>
+                            <el-col :span="16">
+                                <template v-for="(item, index) in averageData">
+                                    <el-col :key="index" :span="6" @click.native="clickIndex(2 ,index)">
+                                        <ProYearOnYearTrend :id="`${index}`" :data="trendData[index]" :title="pieData[index].text"></ProYearOnYearTrend>
+                                    </el-col>
+                                </template>
+                            </el-col>
+                            <el-col :span="8" class="border-left">
+                                <ProYearOnYearTrendBig id="ProYearOnYearTrendBig" :data="trendData[index2]" title="毛利润额"></ProYearOnYearTrendBig>
+                            </el-col>
+                        </el-row>
+                    </Card>
+                </el-row>
+                <el-row v-loading="loading" class="margin-top-10">
+                    <Card>
+                        <el-row class="card-title">比例结构与平均值对比分析</el-row>
+                        <el-row>
+                            <el-col :span="16">
+                                <template v-for="(item, index) in averageData">
+                                    <el-col :key="index" :span="6" @click.native="clickIndex(3 ,index)">
+                                        <ProportionalStructureAverageComparison :id="`${index}`" :data="item"></ProportionalStructureAverageComparison>
+                                    </el-col>
+                                </template>
+                            </el-col>
+                            <el-col :span="8" class="border-left">
+                                <ProportionalStructureAverageComparisonBig id="ProportionalStructureAverageComparisonBig" :data="averageData[index3]"></ProportionalStructureAverageComparisonBig>
+                            </el-col>
+                        </el-row>
+                    </Card>
+                </el-row>
+                <el-row v-loading="loading" class="margin-top-10">
+                    <Card>
+                        <el-row class="card-title">智能评选和智能策略</el-row>
+                        <el-row>
+                            <el-col :span="14">
+                                <IntelligentSelection id="heatmap" v-on:showStragety="showStragety" :data="heatmapData"></IntelligentSelection>
+                            </el-col>
+                            <el-col :span="10">
+                                <div class="stragety">
+                                    <div class="stragety-title">智能策略</div>
+                                    <div class="stragety-box">
+                                        <div class="stragety-selected-title">{{stragetyTitle}}</div>
+                                        <el-checkbox-group v-model="stragetyCheckList">
+                                            <el-checkbox v-for="item in stragety" :key="item" :label="item"></el-checkbox>
+                                        </el-checkbox-group>
+                                        <el-button type="primary" class="center">确 认</el-button>
+                                    </div>
+                                </div>
                             </el-col>
                         </el-row>
                     </Card>
@@ -81,13 +153,28 @@
 
 <script>
 import Card from '../../components/Card';
-// 组织对比分析和平均值分析
-import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
-import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+// 目标达成情况总览
+import ProTargetAchievement from '../../components/ProTargetAchievement';
+import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
+// 目标-实际-差异趋势分析
+import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
+import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
+// 同比环比趋势分析
+import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
+import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
+// 比例结构与平均值对比分析
+import ProportionalStructureAverageComparison from '../../components/ProportionalStructureAverageComparison';
+import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
+// 智能评选和智能策略
+import IntelligentSelection from '../../components/IntelligentSelection';
 
+// tree
+import tree from './mock/channelData.js';
+// mock
 import mockPieData from './mock/pieData.js';
-import mockComparisonAverageData from './mock/comparisonAverageData.js';
-import tree from './mock/productTreeData.js';
+import mockTrendData from './mock/trendData.js';
+import mockAverageData from './mock/averageData.js';
+import mockHeatmapData from './mock/heatmapData.js';
 
 const TREE_PROPS = {
     children: 'children',
@@ -97,8 +184,15 @@ const TREE_PROPS = {
 export default {
     components: {
         Card,
-        ConOrgComparisonAverage,
-        ConOrgComparisonAverageBig
+        ProYearOnYearTrend,
+        ProYearOnYearTrendBig,
+        ProportionalStructureAverageComparison,
+        ProportionalStructureAverageComparisonBig,
+        IntelligentSelection,
+        ProTargetAchievement,
+        ProTargetAchievementBig,
+        ProTargetActualDiffTrend,
+        ProTargetActualDiffTrendBig
     },
     data() {
         return {
@@ -107,12 +201,25 @@ export default {
                 time: [],
                 search: ''
             },
+            loading: false,
+            // tree
             tree: tree,
             treeData: tree.data.children,
             defaultProps: TREE_PROPS,
+            // index
+            index0: 0,
+            index1: 0,
+            index2: 0,
+            index3: 0,
+            // mockData
             pieData: mockPieData(),
-            comparisonAverageData: mockComparisonAverageData(),
-            index0: 0
+            trendData: mockTrendData(),
+            averageData: mockAverageData(),
+            heatmapData: mockHeatmapData(),
+            // stragety
+            stragetyCheckList: [],
+            stragetyTitle: '',
+            stragety: []
         }
     },
     watch: {
@@ -124,12 +231,16 @@ export default {
     },
     methods: {
       handleNodeClick(data) {
-      },
-      handleCheckChange(data, checked, indeterminate) {
-          console.log(data, checked, indeterminate)
-      },
-      clickIndex(i ,idx) {
-          this[`index${i}`] = idx;
+        this.loading = true;
+        setTimeout(() => {
+            this.pieData = mockPieData();
+            this.trendData = mockTrendData();
+            this.averageData = mockAverageData();
+            this.heatmapData = mockHeatmapData();
+        }, 300);
+        setTimeout(() => {
+            this.loading = false;
+        }, 1000);
       },
       calculatePercent(a, b) {
         if (b > 0) {
@@ -142,12 +253,20 @@ export default {
         }
         return {};
       },
+      clickIndex(i ,idx) {
+          this[`index${i}`] = idx;
+      },
+      showStragety(data) {
+          const {brand, name, rank} = data;
+          this.stragetyTitle = `${brand} - ${name} - ${rank}`;
+          this.stragety = data.stragety;
+      }
     }
 }
 </script>
 
 <style lang="scss">
-.contrast {
+.overview {
     min-width: 1024px;
     height: 100%;
     .el-date-editor.el-range-editor {
