@@ -21,6 +21,10 @@ export default new Router({
           name: 'productcontrast',
           component: () => import(/* webpackChunkName: "about" */ './views/Product/Contrast.vue')
         }, {
+          path: '/product/optimization',
+          name: 'productoptimization',
+          component: () => import(/* webpackChunkName: "about" */ './views/Product/Optimization.vue')
+        }, {
           path: '/organization/overview',
           name: 'organizationoverview',
           component: () => import(/* webpackChunkName: "about" */ './views/Organization/Overview.vue')
