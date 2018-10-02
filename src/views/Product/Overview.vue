@@ -152,21 +152,22 @@
 </template>
 
 <script>
-import Card from '../../components/Card';
+import fetch from 'utils/fetch';
+import Card from 'components/Card';
 // 目标达成情况总览
-import ProTargetAchievement from '../../components/ProTargetAchievement';
-import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
+import ProTargetAchievement from 'components/ProTargetAchievement';
+import ProTargetAchievementBig from 'components/ProTargetAchievementBig';
 // 目标-实际-差异趋势分析
-import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
-import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
+import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
+import ProTargetActualDiffTrendBig from 'components/ProTargetActualDiffTrendBig';
 // 同比环比趋势分析
-import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
-import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
+import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
+import ProYearOnYearTrendBig from 'components/ProYearOnYearTrendBig';
 // 比例结构与平均值对比分析
-import ProportionalStructureAverageComparison from '../../components/ProportionalStructureAverageComparison';
-import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
+import ProportionalStructureAverageComparison from 'components/ProportionalStructureAverageComparison';
+import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
 // 智能评选和智能策略
-import IntelligentSelection from '../../components/IntelligentSelection';
+import IntelligentSelection from 'components/IntelligentSelection';
 
 // tree
 import tree from './mock/productTreeData.js';
@@ -193,6 +194,14 @@ export default {
         ProTargetAchievementBig,
         ProTargetActualDiffTrend,
         ProTargetActualDiffTrendBig
+    },
+    mounted() {
+        // fetch({url: 'api/ranking/gender', method: 'get'}).then(data => {
+        //     console.log(data);
+        // })
+        fetch({url: 'api/channel/tree', method: 'get'}).then(data => {
+            console.log(data);
+        })
     },
     data() {
         return {
