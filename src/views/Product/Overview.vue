@@ -152,7 +152,7 @@
 </template>
 
 <script>
-import fetch from 'utils/fetch';
+import API from './api';
 import Card from 'components/Card';
 // 目标达成情况总览
 import ProTargetAchievement from 'components/ProTargetAchievement';
@@ -177,6 +177,7 @@ import mockTrendData from './mock/trendData.js';
 import mockAverageData from './mock/averageData.js';
 import mockHeatmapData from './mock/heatmapData.js';
 
+import {mapGetters, mapActions} from 'vuex';
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
@@ -196,12 +197,16 @@ export default {
         ProTargetActualDiffTrendBig
     },
     mounted() {
-        // fetch({url: 'api/ranking/gender', method: 'get'}).then(data => {
-        //     console.log(data);
-        // })
-        fetch({url: 'api/channel/tree', method: 'get'}).then(data => {
-            console.log(data);
-        })
+        API.GetProductTree().then(res => {
+            console.log(res)
+        });
+        this.SaveCustomerInfo('123');
+    },
+    computed: {
+        // ...mapGetters(['customerInfoArr'])
+        arr() {
+            return this.$store.getters.customerInfoArr;
+        }
     },
     data() {
         return {
@@ -239,6 +244,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['SaveCustomerInfo']),
       handleNodeClick(data) {
         this.loading = true;
         setTimeout(() => {

@@ -51,4 +51,30 @@ service.interceptors.response.use(response => {
   }
 );
 
-export default service;
+const FetchGet = (url, params) => {
+  const options = {
+    url,
+    method: 'get'
+  };
+  if(params) {
+    options.params = params;
+  }
+  return service(options);
+}
+
+const FetchPost = (url, data, params) => {
+  const options = {
+    url,
+    method: 'post'
+  };
+  if(data) {
+    options.data = data;
+  }
+  if(params) {
+    options.params = params;
+  }
+  return service(options);
+}
+
+
+export {FetchGet, FetchPost};

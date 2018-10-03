@@ -15,27 +15,27 @@ export default new Router({
         {
           path: '/product/overview',
           name: 'productoverview',
-          component: () => import(/* webpackChunkName: "about" */ './views/Product/Overview.vue')
+          component: () => import('./views/Product/Overview.vue')
         }, {
           path: '/product/contrast',
           name: 'productcontrast',
-          component: () => import(/* webpackChunkName: "about" */ './views/Product/Contrast.vue')
+          component: () => import('./views/Product/Contrast.vue')
         }, {
           path: '/product/optimization',
           name: 'productoptimization',
-          component: () => import(/* webpackChunkName: "about" */ './views/Product/Optimization.vue')
+          component: () => import('./views/Product/Optimization.vue')
         }, {
           path: '/organization/overview',
           name: 'organizationoverview',
-          component: () => import(/* webpackChunkName: "about" */ './views/Organization/Overview.vue')
+          component: () => import('./views/Organization/Overview.vue')
         }, {
           path: '/fund/overview',
           name: 'fundoverview',
-          component: () => import(/* webpackChunkName: "about" */ './views/Fund/Overview.vue')
+          component: () => import('./views/Fund/Overview.vue')
         }, {
           path: '/channel/overview',
           name: 'channeloverview',
-          component: () => import(/* webpackChunkName: "about" */ './views/Channel/Overview.vue')
+          component: () => import('./views/Channel/Overview.vue')
         },
       ]
     },
@@ -45,7 +45,7 @@ export default new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/Index.vue')
+      component: () => import('./views/Index.vue')
     }
   ]
 })
