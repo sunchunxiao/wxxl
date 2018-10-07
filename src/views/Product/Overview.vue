@@ -41,13 +41,15 @@
         </el-row>
         <el-row class="content_row" :gutter="20">
             <el-col :span="5" class="tree_container">
-                <div class="title">毛利目标达成率</div>
-                <div class="company">
-                    <span class="left">{{tree.data.name}}</span>
-                    <span class="right">{{calculatePercent(tree.data.real_total, tree.data.target_total).percent + '%'}}</span>
+                <div v-if="hasTree">
+                    <div class="title">毛利目标达成率</div>
+                    <div class="company">
+                        <span class="left">{{productTree.name}}</span>
+                        <span class="right">{{calculatePercent(productTree.real_total, productTree.target_total).percent + '%'}}</span>
+                    </div>
                 </div>
                 <!-- 有多个tree -->
-                <el-tree :data="treeData" :props="defaultProps" :highlight-current="true" @node-click="handleNodeClick">
+                <el-tree :data="productTree.children" :props="defaultProps" :highlight-current="true" @node-click="handleNodeClick">
                     <span class="custom-tree-node" slot-scope="{ node, data }">
                         <span class="label">{{ data.name }}</span>
                         <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
@@ -169,8 +171,6 @@ import ProportionalStructureAverageComparisonBig from 'components/ProportionalSt
 // 智能评选和智能策略
 import IntelligentSelection from 'components/IntelligentSelection';
 
-// tree
-import tree from './mock/productTreeData.js';
 // mock
 import mockPieData from './mock/pieData.js';
 import mockTrendData from './mock/trendData.js';
@@ -197,15 +197,12 @@ export default {
         ProTargetActualDiffTrendBig
     },
     mounted() {
-        API.GetProductTree().then(res => {
-            console.log(res)
-        });
-        this.SaveCustomerInfo('123');
+        API.GetProductTree();
     },
     computed: {
-        // ...mapGetters(['customerInfoArr'])
-        arr() {
-            return this.$store.getters.customerInfoArr;
+        ...mapGetters(['productTree']),
+        hasTree() {
+            return !_.isEmpty(this.productTree)
         }
     },
     data() {
@@ -216,9 +213,6 @@ export default {
                 search: ''
             },
             loading: false,
-            // tree
-            tree: tree,
-            treeData: tree.data.children,
             defaultProps: TREE_PROPS,
             // index
             index0: 0,
@@ -244,7 +238,6 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['SaveCustomerInfo']),
       handleNodeClick(data) {
         this.loading = true;
         setTimeout(() => {

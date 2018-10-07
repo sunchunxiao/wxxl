@@ -1,5 +1,5 @@
 const product = {
-    customerInfoArr: state => state.product.customerInfoArr
+    productTree: state => state.product.tree
 };
 
 export default product;

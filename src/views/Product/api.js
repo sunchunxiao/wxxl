@@ -1,8 +1,10 @@
 import {FetchGet} from 'utils/fetch';
+import store from 'store';
 
-const API = {
+export default {
     GetProductTree(params) {
-        return FetchGet('api/channel/tree', params);
+        FetchGet('api/channel/tree', params).then(res => {
+            store.dispatch('SaveProductTree', res);
+        });
     }
 }
-export default API;

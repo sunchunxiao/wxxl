@@ -1,16 +1,16 @@
 
 const product = {
     state: {
-      customerInfoArr: []
+      tree: {}
     },
     mutations: {
-      SAVE_CUSTOMERINFO: (state, customerInfo) => {
-        state.customerInfoArr = customerInfo;
+      SAVE_PRODUCT_TREE: (state, tree) => {
+        state.tree = tree;
       }
     },
     actions: {
-      SaveCustomerInfo ({ commit }, customerInfo) {
-        commit('SAVE_CUSTOMERINFO', customerInfo);
+      SaveProductTree ({ commit }, tree) {
+        commit('SAVE_PRODUCT_TREE', tree);
       }
     }
   };
