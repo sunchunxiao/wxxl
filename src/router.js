@@ -14,27 +14,31 @@ export default new Router({
       children: [
         {
           path: '/product/overview',
-          name: 'productoverview',
+          name: 'productOverview',
           component: () => import('./views/Product/Overview.vue')
         }, {
           path: '/product/contrast',
-          name: 'productcontrast',
+          name: 'productContrast',
           component: () => import('./views/Product/Contrast.vue')
         }, {
           path: '/product/optimization',
-          name: 'productoptimization',
+          name: 'productOptimization',
           component: () => import('./views/Product/Optimization.vue')
         }, {
+          path: '/product/track',
+          name: 'productTrack',
+          component: () => import('./views/Product/Track.vue')
+        }, {
           path: '/organization/overview',
-          name: 'organizationoverview',
+          name: 'organizationOverview',
           component: () => import('./views/Organization/Overview.vue')
         }, {
           path: '/fund/overview',
-          name: 'fundoverview',
+          name: 'fundOverview',
           component: () => import('./views/Fund/Overview.vue')
         }, {
           path: '/channel/overview',
-          name: 'channeloverview',
+          name: 'channelOverview',
           component: () => import('./views/Channel/Overview.vue')
         },
       ]
