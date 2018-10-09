@@ -8,9 +8,8 @@ import { Message } from 'element-ui';
 // 创建axios实例
 // const SUCCESS_CODE = 0;
 // const TOKEN_EXPIRED_CODE = 402;
-
 const service = axios.create({
-  baseURL: process.env.BASE_API, // api的base_url
+  baseURL: process.env.VUE_APP_BASE_API, // api的base_url
   timeout: 5000 // 请求超时时间 单位ms
 });
 

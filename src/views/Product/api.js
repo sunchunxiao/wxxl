@@ -3,8 +3,8 @@ import store from 'store';
 
 export default {
     GetProductTree(params) {
-        FetchGet('api/channel/tree', params).then(res => {
-            store.dispatch('SaveProductTree', res);
+        FetchGet('/product/tree', params).then(res => {
+            store.dispatch('SaveProductTree', res.tree);
         });
     }
 }
