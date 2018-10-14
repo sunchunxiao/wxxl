@@ -1,7 +1,7 @@
 <template>
     <div class="trendline-container">
         <div class="trendline" :id="`trendline-${id}`"></div>
-        <div class="detail">{{title}}</div>
+        <div class="detail">{{data.subject_name}}</div>
     </div>
 </template>
 
@@ -12,7 +12,6 @@ export default {
     props: {
         id: String,
         data: Object,
-        title: String
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`trendline-${this.id}`));

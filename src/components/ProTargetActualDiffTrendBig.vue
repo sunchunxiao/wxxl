@@ -1,7 +1,7 @@
 <template>
     <div class="bar-container">
         <div class="bar" :id="`bar-${id}`"></div>
-        <div class="detail">{{title}}</div>
+        <div class="detail">{{data.subject_name}}</div>
     </div>
 </template>
 
@@ -12,7 +12,6 @@ export default {
     props: {
         id: String,
         data: Object,
-        title: String
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`bar-${this.id}`));
@@ -32,9 +31,13 @@ export default {
             const diff = [];
             const bottom = [];
             const underTarget = [];
-            for (let i = 0; i < real.length; i++) {
-                const realItem = real[i];
-                const targetItem = target[i];
+            const realClone = _.cloneDeep(real);
+            const targetClone = _.cloneDeep(target);
+            for (let i = 0; i < realClone.length; i++) {
+                realClone[i] = parseInt(realClone[i] / 10000 / 100);
+                targetClone[i] = parseInt(targetClone[i] / 10000 / 100);
+                const realItem = realClone[i];
+                const targetItem = targetClone[i];
                 bottom.push(realItem < targetItem ? realItem : targetItem);
                 diff.push(Math.abs(realItem - targetItem));
                 realItem < targetItem && underTarget.push(i);
@@ -60,7 +63,7 @@ export default {
                 },
                 series: [
                     {
-                        data: real,
+                        data: realClone,
                         type: 'line',
                         lineStyle: {
                             type: 'dotted',
@@ -68,7 +71,7 @@ export default {
                         }
                     },
                     {
-                        data: target,
+                        data: targetClone,
                         type: 'line',
                     },
                     {

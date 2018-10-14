@@ -3,12 +3,12 @@
         <div class="pie" :id="`pie-${id}`"></div>
         <div class="detail">
             <span class="text">目标: </span>
-            <span class="value">{{data.goal}}</span>
+            <span class="value">{{target}}</span>
             &nbsp;<span>{{unit}}</span>
         </div>
         <div class="detail">
             <span class="text">实际: </span>
-            <span class="value" v-bind:style="{color: color}">{{data.value}}</span>
+            <span class="value" v-bind:style="{color: color}">{{real}}</span>
             &nbsp;<span>{{unit}}</span>
         </div>
     </div>
@@ -17,8 +17,12 @@
 <script>
 import echarts from 'echarts';
 
-const colorMap = { over: '#b12725', below: '#308db9'};
+const REVERSE_TARGET = ['C', 'SA'] // 成本 库存额 是反向指标
+const COLORMAP = { over: '#b12725', below: '#308db9'};
 const colorLeft = '#E0E3E9';
+const FONTSIZE1 = 56;
+const FONTSIZE2 = 30;
+const FONTWEIGHT = 600;
 
 export default {
     props: {
@@ -27,8 +31,26 @@ export default {
     },
     data() {
         return {
-            unit: 'w',
             color: '#000'
+        }
+    },
+    computed: {
+        unit() {
+            const { subject } = this.data;
+            if (subject === 'ROI') { // 投入产出比 %
+                return '%';
+            } else if (subject === 'ITO') { // 库存周转率不需要单位
+                return '';
+            }
+            return 'w';
+        },
+        real() {
+            const { real } = this.data;
+            return this.calculateToShow(real);
+        },
+        target() {
+            const { target } = this.data;
+            return this.calculateToShow(target);
         }
     },
     mounted() {
@@ -44,15 +66,26 @@ export default {
         },
     },
     methods: {
+        calculateToShow(val) {
+            const { subject } = this.data;
+            if (subject === 'ROI') { // 投入产出比需要 * 100
+                return parseInt(val * 100);
+            } else if (subject === 'ITO') { // 库存周转率不需要单位
+                return val;
+            }
+            return parseInt(val / 10000 / 100); // 金额从分转换为万
+        },
         renderChart(data) {
-            const {value, goal, text} = data;
-            const valuePercent = Math.floor(value / goal * 100);
-            const color = valuePercent >= 100 ? colorMap.over : colorMap.below;
+            const { subject, subject_name, target, progress } = data;
+            const valuePercent = parseInt(progress * 100);
+            let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
+            // 反向指标 颜色需要相反
+            if (_.includes(REVERSE_TARGET, subject)) {
+                color = valuePercent >= 100 ? COLORMAP.over : COLORMAP.below;
+            }
             this.color = color;
             const valueLeft = valuePercent >= 100 ? 0 : 100 - valuePercent;
-            const radius = ['100', '120'];
-            const fontSize1 =  56;
-            const fontSize2 =  30;
+            
             const options = {
                 backgroundColor: '#fff',
                 tooltip: {
@@ -67,7 +100,7 @@ export default {
                 },
                 series: [{
                     type: 'pie',
-                    radius: radius,
+                    radius: ['100', '120'],
                     hoverAnimation: false,
                     label: {
                         normal: {
@@ -84,9 +117,9 @@ export default {
                             },
                             label: {
                                 normal: {
-                                    formatter: Math.floor(value / goal * 100) + '%',
+                                    formatter: valuePercent + '%',
                                     textStyle: {
-                                        fontSize: fontSize1,
+                                        fontSize: FONTSIZE1,
                                         color: color,
                                     }
                                 },
@@ -94,7 +127,7 @@ export default {
                         },
                         {
                             value: valueLeft,
-                            name: text,
+                            name: subject_name,
                             tooltip: {
                                 show: false
                             },
@@ -106,8 +139,8 @@ export default {
                             label: {
                                 normal: {
                                     textStyle: {
-                                        fontSize: fontSize2,
-                                        fontWeight: 600,
+                                        fontSize: FONTSIZE2,
+                                        fontWeight: FONTWEIGHT,
                                         color: '#5e5e5e'
                                     }
                                 }
@@ -126,8 +159,8 @@ export default {
                             label: {
                                 normal: {
                                     textStyle: {
-                                        fontSize: fontSize2,
-                                        fontWeight: 600,
+                                        fontSize: FONTSIZE2,
+                                        fontWeight: FONTWEIGHT,
                                         color: color,
                                     }
                                 }

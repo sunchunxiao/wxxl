@@ -8,6 +8,8 @@ import { Message } from 'element-ui';
 // 创建axios实例
 // const SUCCESS_CODE = 0;
 // const TOKEN_EXPIRED_CODE = 402;
+const MESSAGEDURATION = 5 * 1000;
+
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // api的base_url
   timeout: 5000 // 请求超时时间 单位ms
@@ -30,7 +32,18 @@ service.interceptors.request.use(config => {
 // respone拦截器
 service.interceptors.response.use(response => {
   const res = response.data;
-  return res;
+  if (res.api_info) {
+    if(res.api_info.error === 0 && res.api_info.message === 'success') {
+      // eslint-disable-next-line no-unused-vars
+      const { api_info, ...data } = res; 
+      return data;
+    } else {
+      Message({message: res.api_info.message, type: 'warning', duration: MESSAGEDURATION});
+      return Promise.reject(res);
+    }
+  }
+  Message({message: '接口异常', type: 'warning', duration: MESSAGEDURATION});
+  return Promise.reject(res);
   // if (res.retCode === SUCCESS_CODE) {
   //   return res.retData;
   // }
@@ -45,7 +58,11 @@ service.interceptors.response.use(response => {
   error => {
     // eslint-disable-next-line no-console
     console.log('AFTER_RESPONSE_RETURN_ERROR', error); // for debug
-    Message({message: error.message, type: 'error', duration: 5 * 1000});
+    if (error.code === "ECONNABORTED") {
+      Message({message: '请求超时', type: 'error', duration: MESSAGEDURATION});
+    } else {
+      Message({message: error.message, type: 'error', duration: MESSAGEDURATION});
+    }
     return Promise.reject(error);
   }
 );
