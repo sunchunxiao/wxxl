@@ -180,7 +180,7 @@ export default {
         }
         .tree_container {
             height: 100%;
-            min-width: 200px;
+            /*min-width: 200px;*/
             // margin-right: 20px;
             padding-bottom: 18px;
             overflow-y: auto;
@@ -279,6 +279,7 @@ export default {
     .overflow {
         height: 100%;
         overflow-y: auto;
+        overflow-x: hidden;
         overflow-x: hidden;
     }
     .stragety {
