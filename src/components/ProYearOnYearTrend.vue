@@ -37,7 +37,7 @@ export default {
                     left: 5,
                     right: 0,
                     bottom: 0,
-                    top: 5,
+                    top: 35,
                     containLabel: true
                 },
                 xAxis: {
@@ -46,6 +46,17 @@ export default {
                 },
                 yAxis: {
                     type: 'value'
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        dataZoom: {},
+                        dataView: {},
+                        restore: {},
+                        saveAsImage: {}
+                    },
+                    top: 0,
+                    right: 0
                 },
                 series: [
                     {
@@ -74,7 +85,7 @@ export default {
 .trendline-container {
     .trendline {
         // width: 280px;
-        height: 140px;
+        height: 160px;
         margin: 0 auto;
     }
     .detail {
