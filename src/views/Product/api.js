@@ -20,4 +20,5 @@ export default {
     GetProductCompare(params) {
         return FetchGet('/product/compare', params);
     },
+    
 }
