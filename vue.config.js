@@ -34,18 +34,18 @@ module.exports = {
     config.plugin('provide').use(require('webpack/lib/ProvidePlugin'), ProvidePluginOptions)
   },
   // 同时需要把 .env.development 文件中的环境变量 修改为 /api
-  // devServer: {
-  //   proxy: {
-  //     '/api': {
-  //       target: 'http://wxxldev.gyxr.cn/eff/v1/',
-  //       changeOrigin: true,
-  //       ws: true,
-  //       pathRewrite: {
-  //         '^/api': ''
-  //       }
-  //     }
-  //   }
-  // }
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://wxxldev.gyxr.cn/eff/v1/',
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
+  }
 }
 // eslint-disable-next-line no-console
 // console.info(process.env);

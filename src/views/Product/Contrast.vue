@@ -80,6 +80,7 @@
 </template>
 
 <script>
+import API from './api';
 import Card from '../../components/Card';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
@@ -124,9 +125,10 @@ export default {
     },
     methods: {
       handleNodeClick(data) {
+      	console.log(data)
       },
       handleCheckChange(data, checked, indeterminate) {
-          console.log(data, checked, indeterminate)
+//        console.log(data, checked, indeterminate)
       },
       clickIndex(i ,idx) {
           this[`index${i}`] = idx;
