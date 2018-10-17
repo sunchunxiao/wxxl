@@ -592,5 +592,5 @@
 </script>
 
 <style lang="scss">
-   @import './style/track.scss'
+	@import '../Product/style/track.scss'
 </style>

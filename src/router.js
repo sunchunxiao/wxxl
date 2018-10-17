@@ -43,6 +43,16 @@ export default new Router({
 					name: 'organizationContrast',
 					component: () =>
 						import('./views/Organization/Contrast.vue')
+				},{ 
+					path: '/organization/optimization',
+					name: 'organizationOptimization',
+					component: () =>
+						import('./views/Organization/Optimization.vue')
+				},{ 
+					path: '/organization/track',
+					name: 'organizationTrack',
+					component: () =>
+						import('./views/Organization/Track.vue')
 				},{
 					//资金效率
 					path: '/fund/overview',
