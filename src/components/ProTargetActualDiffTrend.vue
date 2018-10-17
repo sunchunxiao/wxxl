@@ -47,12 +47,23 @@ export default {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    top: 10,
+                    top: 40,
                     containLabel: true
                 },
                 tooltip: {
                     show: true,
                     trigger: 'axis'
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        dataZoom: {},
+                        dataView: {},
+                        restore: {},
+                        saveAsImage: {}
+                    },
+                    top: 0,
+                    right: 0
                 },
                 xAxis: {
                     type: 'category',
@@ -110,7 +121,7 @@ export default {
 .bar-container {
     .bar {
         // width: 280px;
-        height: 140px;
+        height: 160px;
         margin: 0 auto;
     }
     .detail {

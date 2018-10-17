@@ -1,12 +1,12 @@
 const path = require('path');
-const isProduction = process.env.NODE_ENV !== 'production';
+const isProduction = process.env.NODE_ENV === 'production';
 const ProvidePluginOptions = [{
   _ : 'lodash'
-}]
+}];
 
 module.exports = {
   css: {
-    extract: true,
+    extract: isProduction,
     sourceMap: true,
   },
   // 部署应用时的基本 URL
@@ -18,9 +18,9 @@ module.exports = {
   // assetsDir: '/',
   runtimeCompiler: true,
 
-  productionSourceMap: isProduction,
+  productionSourceMap: false,
   parallel: false,
-  lintOnSave: isProduction,
+  lintOnSave: true,
   configureWebpack: {
     resolve: {
       alias: {
