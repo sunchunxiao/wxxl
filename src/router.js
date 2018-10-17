@@ -11,14 +11,13 @@ export default new Router({
 			component: Home,
 			redirect: '/index',
 			children: [
-				//产品效率  
+				//全景分析
 				{
 					path: '/product/overview',
 					name: 'productOverview',
 					component: () =>
 						import('./views/Product/Overview.vue')
 				}, {
-					//全景分析
 					path: '/product/contrast',
 					name: 'productContrast',
 					component: () =>
@@ -39,7 +38,22 @@ export default new Router({
 					name: 'organizationOverview',
 					component: () =>
 						import('./views/Organization/Overview.vue')
-				}, {
+				}, { 
+					path: '/organization/contrast',
+					name: 'organizationContrast',
+					component: () =>
+						import('./views/Organization/Contrast.vue')
+				},{ 
+					path: '/organization/optimization',
+					name: 'organizationOptimization',
+					component: () =>
+						import('./views/Organization/Optimization.vue')
+				},{ 
+					path: '/organization/track',
+					name: 'organizationTrack',
+					component: () =>
+						import('./views/Organization/Track.vue')
+				},{
 					//资金效率
 					path: '/fund/overview',
 					name: 'fundOverview',
