@@ -1,7 +1,7 @@
 <template>
     <div class="averagebar-container">
         <div class="averagebar" :id="`averagebar-${id}`"></div>
-        <div class="detail">{{data.title}}</div>
+        <div class="detail">{{data.subject}}</div>
     </div>
 </template>
 
@@ -14,8 +14,10 @@ export default {
         data: Object,
     },
     mounted() {
+    	
         this.chart = echarts.init(document.getElementById(`averagebar-${this.id}`));
         this.renderChart(this.data);
+        console.log(this.data)
     },
     watch: {
         data: {
@@ -27,10 +29,12 @@ export default {
     },
     methods: {
         renderChart(data) {
+//      	console.log(data)
             const {transSubjects, data: pData} = data;
             const percentArr = [];
             let sumTarget = 0;
             let sumTotal = 0;
+//          console.log(pData)
             for(let i in pData) {
                 sumTotal += parseInt(pData[i].total);
                 sumTarget += parseInt(pData[i].target);

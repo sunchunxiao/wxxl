@@ -216,7 +216,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr']),
+        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr','structureArr']),
         hasTree() {
             return !_.isEmpty(this.productTree)
         }
@@ -225,6 +225,7 @@ export default {
     mounted() {
         this.initFormDataFromUrl();
         this.getTree();
+        console.log(this.structureArr)
     },
     watch: {
         // form: [
@@ -309,7 +310,8 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetProductStructure(params).then(res => {
-                console.log(res);
+                console.log(res.data);
+                this.$store.dispatch('SaveStructureArr', res.data);
             });
         },
         getRank() {
