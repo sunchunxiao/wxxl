@@ -63,3 +63,5 @@ refer to: https://cli.vuejs.org/zh/config/
 - README.md 说明文件
 - vue.config.js 脚手架配置
 - yarn.lock 包含 Yarn 需要锁定整个依赖关系树中所有包的版本的所有内容
+
+-- test git work flow
