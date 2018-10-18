@@ -3,7 +3,6 @@ import _ from 'lodash';
 const data = [
     {
         "title": "毛利润额",
-        "type": "quota",
         "data": [
             {
                 "total": "2192695629",
@@ -41,7 +40,6 @@ const data = [
     },
     {
         "title": "销售额",
-        "type": "quota",
         "data": [
             {
                 "total": "2092695629",
@@ -78,7 +76,6 @@ const data = [
         ],
     },{
         "title": "产品成本额",
-        "type": "quota",
         "data": [
             {
                 "total": "2692695629",
@@ -115,6 +112,7 @@ const data = [
         ],
     },{
         "title": "产品投入产出比",
+        "type": "quota",
         "data": [
             {
                 "total": "2192695629",
@@ -151,6 +149,7 @@ const data = [
         ],
     },{
         "title": "库存周转率",
+        "type": "quota",
         "data": [
             {
                 "total": "2592695629",
@@ -224,7 +223,6 @@ const data = [
         ],
     },{
         "title": "库存额",
-        "type": "quota",
         "data": [
             {
                 "total": "2192695629",

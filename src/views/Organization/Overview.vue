@@ -219,6 +219,7 @@
 		},
 		mounted() {
 //			this.getTree();
+            console.log(this.averageData)
 		},
 		watch: {
 			form: {
@@ -237,6 +238,7 @@
 				}
 			},
 			getTree() {
+			    
 				const params = {
 					pt: this.form.pt,
 					subject: this.form.subject,

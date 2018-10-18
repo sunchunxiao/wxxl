@@ -106,14 +106,14 @@
                         <el-row class="card-title">比例结构与平均值对比分析</el-row>
                         <el-row>
                             <el-col :span="16">
-                                <template v-for="(item, index) in averageData">
+                                <template v-for="(item, index) in structureArr">
                                     <el-col :key="index" :span="6" @click.native="clickIndex(3 ,index)">
                                         <ProportionalStructureAverageComparison :id="`${index}`" :data="item"></ProportionalStructureAverageComparison>
                                     </el-col>
                                 </template>
                             </el-col>
                             <el-col :span="8" class="border-left">
-                                <ProportionalStructureAverageComparisonBig id="ProportionalStructureAverageComparisonBig" :data="averageData[index3]"></ProportionalStructureAverageComparisonBig>
+                                <ProportionalStructureAverageComparisonBig v-if="structureArr.length>0" id="ProportionalStructureAverageComparisonBig" :data="structureArr[index3]"></ProportionalStructureAverageComparisonBig>
                             </el-col>
                         </el-row>
                     </Card>
@@ -225,7 +225,8 @@ export default {
     mounted() {
         this.initFormDataFromUrl();
         this.getTree();
-        console.log(this.structureArr)
+//      console.log(this.averageData)
+//      console.log(this.structureArr)
     },
     watch: {
         // form: [
@@ -321,7 +322,7 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetProductRank(params).then(res => {
-                console.log(res.data);
+//              console.log(res.data);
                 this.$store.dispatch('SaveRankArr', res.data);
             });
         },
@@ -393,9 +394,8 @@ export default {
             return {};
         },
         clickIndex(i ,idx) {
-//      	console.log(i ,idx)
             this[`index${i}`] = idx;
-            
+            console.log( this[`index${i}`] )
         },
         showStragety(data) {
             const {brand, name, rank} = data;
