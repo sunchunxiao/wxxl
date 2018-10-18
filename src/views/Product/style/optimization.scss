@@ -1,0 +1,178 @@
+.optimization {
+    min-width: 1024px;
+    height: 100%;
+    .el-date-editor.el-range-editor {
+        width: 300px;
+    }
+    .content_row {
+        height: calc(100% - 48px);
+        overflow-y: scroll;
+        overflow: hidden;
+        margin: 0!important;
+        .title {
+            margin: 18px 20px 18px 0;
+            text-align: right;
+            color: #747474
+        }
+        .company {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            .left {
+                margin-left: 15px;
+                font-weight: bold;
+                color: #338cb6;
+            }
+            .right {
+                margin-right: 20px;
+                font-weight: bold;
+                color: #c13633;
+            }
+        }
+        .tree_container {
+            height: 100%;
+            min-width: 200px;
+            // margin-right: 20px;
+            padding-bottom: 18px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            background: #fff;
+        }
+    }
+    
+    .el-tree {
+        .custom-tree-node {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            .percent {
+                margin-right: 20px;
+            }
+            .progress {
+                display: none;
+                position: absolute;
+                width: 50%;
+                height: 26px;
+                left: -5%;
+                top: 0;
+                border-radius: 15px;
+                background: #318cb8;
+                z-index: -1;
+            }
+            .border-radius0 {
+                border-radius: 0;
+            }
+            .red {
+                color: #c13633;
+            }
+            .blue {
+                color: #26a6d7;
+            }
+        }
+        .el-tree-node__content {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            &:hover {
+                background-color: #eee;
+                .label {
+                    color: #fff;
+                    line-height: 20px;
+                }
+                .percent {
+                    font-size: 20px;
+                }
+                .progress {
+                    display: block;
+                }
+            }
+        }
+        .el-tree-node__content>.el-tree-node__expand-icon {
+            margin: 0 5px 0 15px;
+            padding: 2px;
+            border: 1px solid #fff;
+            border-radius: 50%;
+            background: #338cb6;
+            color: #fff;
+        }
+        >.el-tree-node {
+            padding: 20px 0;
+            &:before {
+                content: '';
+                display: block;
+                width: 90%;
+                height: 1px;
+                margin: 0 auto;
+                position: relative;
+                bottom: 20px;
+                background-color: #c9c9c9;
+            }
+            >.el-tree-node__content {
+                >.custom-tree-node {
+                    font-weight: bold;
+                }
+            }
+        }
+        .el-tree-node__expand-icon.is-leaf {
+            visibility: hidden;
+        }
+    }
+    .card-title {
+        margin-bottom: 20px;
+    }
+    .border-left {
+        border-left: 2px solid #d8d8d8;
+    }
+    .margin-top-10 {
+        margin-top: 10px;
+    }
+    .overflow {
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .stragety {
+        width: 85%;
+        margin: 5px auto 0;
+        .stragety-title {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #454545;
+        }
+        .stragety-box {
+            border: 2px solid #f6f6f6;
+            height: 300px;
+            border-radius: 4px;
+            padding: 20px 35px;
+            position: relative;
+            .stragety-selected-title {
+                margin-bottom: 10px;
+            }
+            .el-checkbox {
+                display: block;
+            }
+            .el-checkbox+.el-checkbox {
+                margin-left: 0;
+                margin-top: 5px;
+            }
+            .center {
+                position: absolute;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+    }
+    .el-table {
+        .cell {
+            >img, >span {
+                display: inline-block;
+                vertical-align: middle;
+            }
+            >span {
+                margin-left: 0!important;
+            }
+        }
+    }
+}

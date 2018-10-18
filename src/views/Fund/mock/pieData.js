@@ -1,35 +1,41 @@
 import _ from 'lodash';
 
 const pieData = [{
-    value: 30,
-    goal: 50,
-    text: '毛利润额',
+    progress: 1.03,
+    real: 1510734926,
+    subject_name: '毛利润额',
+    target: 1480520227.48
 },{
-    value: 50,
-    goal: 50,
-    text: '销售额',
+    progress: 1.02,
+    real: 14357015204,
+    subject_name: '销售额',
+    target: 13926304747.88
 },{
-    value: 100,
-    goal: 50,
-    text: '产品成本额',
-    target: 'reverse'
+    progress: 1.27,
+    real: 12846280278,
+    subject_name: '产品成本额',
+//  target: 'reverse'
+    target: 13926304747.88
 },{
-    value: 120,
-    goal: 180,
-    text: '产品投入产出比',
+    progress: 0.98,
+    real: 0.1176,
+    subject_name: '产品投入产出比',
+    target: 76.17
 },{
-    value: 210,
-    goal: 180,
-    text: '库存周转率',
+    progress: 1.09,
+    real: 82.79,
+    subject_name: '库存周转率',
+    target: 76.17
 },{
-    value: 80,
-    goal: 90,
-    text: '日销',
+    progress: 1.03,
+    real: 94454047,
+    subject_name: '日销',
+    target: 68006913.84
 },{
-    value: 10,
-    goal: 8,
-    text: '库存额',
-    target: 'reverse'
+    progress: 0.84,
+    real: 3278360349,
+    subject_name: '库存额',
+    target: 3901248815.31
 }];
 
 function mockPieData() {

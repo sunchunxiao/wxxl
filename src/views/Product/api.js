@@ -17,4 +17,8 @@ export default {
     GetProductRank(params) {
         return FetchGet('/product/rank', params);
     },
+    GetProductCompare(params) {
+        return FetchGet('/product/compare', params);
+    },
+    
 }

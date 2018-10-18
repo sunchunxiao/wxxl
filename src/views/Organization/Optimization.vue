@@ -1,5 +1,5 @@
 <template>
-    <div class="contrast">
+    <div class="optimization">
         <el-row>
             <el-form ref="form" :model="form" label-width="100px" size="mini">
                 <el-col :span="5">
@@ -56,31 +56,37 @@
                     </span>
                 </el-tree>
             </el-col>
-            <el-col :span="20" class="overflow">
-                <el-row>
-                    <Card>
-                        <el-row class="card-title">组织对比分析和平均值分析</el-row>
-                        <el-row>
-                            <el-col :span="6">
-                                <template v-for="(item, index) in pieData">
-                                    <el-col :key="index" :span="12" @click.native="clickIndex(0 ,index)">
-                                        <ConOrgComparisonAverage :title="item.text" :id="`${index}`" :data="comparisonAverageData[index]" ></ConOrgComparisonAverage>
-                                    </el-col>
-                                </template>
+            <el-col :span="19" class="overflow">
+                <Card>
+                    <el-row :gutter="10">
+                        <template v-for="i in 4">
+                            <el-col :span="12" :key="i">
+                                <el-table :data="tableData2" size="mini" :span-method="arraySpanMethod2">
+                                    <el-table-column :label="time">
+                                        <el-table-column prop="a" label="影响因素"></el-table-column>
+                                        <el-table-column prop="b" label="应用策略"></el-table-column>
+                                        <el-table-column prop="c" label="评选结果"></el-table-column>
+                                        <el-table-column prop="d" label="环比增长率">
+                                            <template slot-scope="scope">
+                                                <img v-if="largerThanZero(scope.row.d)" src="../../assets/opt1.png" alt="">
+                                                <img v-if="lessThanZero(scope.row.d)" src="../../assets/opt2.png" alt="">
+                                                <span style="margin-left: 10px">{{ scope.row.d + '%' }}</span>
+                                            </template>
+                                        </el-table-column>
+                                    </el-table-column>
+                                </el-table>
                             </el-col>
-                            <el-col :span="18">
-                                <ConOrgComparisonAverageBig :title="pieData[index0].text" :data="comparisonAverageData[index0]" id="ConOrgComparisonAverage" :index="index0"></ConOrgComparisonAverageBig>
-                            </el-col>
-                        </el-row>
-                    </Card>
-                </el-row>
+                        </template>
+                    </el-row>
+                    
+                </Card>
             </el-col>
         </el-row>
     </div>
 </template>
 
 <script>
-//import API from './api';
+import _ from 'lodash';
 import Card from '../../components/Card';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
@@ -111,6 +117,53 @@ export default {
             tree: tree,
             treeData: tree.data.children,
             defaultProps: TREE_PROPS,
+            time: '7.30 - 8.05',
+            tableData2: [{
+                a: '采购',
+                b: '-',
+                c: '优',
+                d: '30'
+            },{
+                a: '供应商',
+                b: '-',
+                c: '-',
+                d: '-'
+            }, {
+                a: '包装',
+                b: '精简包装',
+                c: '-',
+                d: '-'
+            },{
+                a: '流量',
+                b: '-',
+                c: '中',
+                d: '-10'
+            },{
+                a: '转化率',
+                b: '-',
+                c: '-',
+                d: '-'
+            }, {
+                a: '客单价',
+                b: '促进多件购买',
+                c: '',
+                d: 'v'
+            },{
+                a: '-',
+                b: '-',
+                c: '-',
+                d: '-'
+            },{
+                a: '-',
+                b: '-',
+                c: '-',
+                d: '-'
+            }, {
+                a: '-',
+                b: '-',
+                c: '-',
+                d: '-'
+            }],
             pieData: mockPieData(),
             comparisonAverageData: mockComparisonAverageData(),
             index0: 0
@@ -124,11 +177,25 @@ export default {
         }
     },
     methods: {
+        largerThanZero(val) {
+            return val && _.isNumber(parseFloat(val)) && parseFloat(val) > 0;
+        },
+        lessThanZero(val) {
+            return val && _.isNumber(parseFloat(val)) && parseFloat(val) < 0;
+        },
+        arraySpanMethod2({ row, column, rowIndex, columnIndex }) {
+            if (columnIndex === 2 || columnIndex === 3) {
+                if (rowIndex % 3 === 0) {
+                    return [3, 1]
+                } else {
+                    return [0, 0]
+                }
+            }
+        },
       handleNodeClick(data) {
-      	console.log(data)
       },
       handleCheckChange(data, checked, indeterminate) {
-//        console.log(data, checked, indeterminate)
+          console.log(data, checked, indeterminate)
       },
       clickIndex(i ,idx) {
           this[`index${i}`] = idx;
@@ -149,6 +216,6 @@ export default {
 </script>
 
 <style lang="scss">
-	@import './style/contrast.scss';
+@import '../Product/style/optimization.scss'
 </style>
 
