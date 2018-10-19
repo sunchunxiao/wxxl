@@ -15,15 +15,7 @@
                 </el-col>
                 <el-col :span="9">
                     <el-form-item label="时间段选择">
-                        <el-date-picker
-                            v-model="form.date"
-                            type="datetimerange"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            format="yyyy-MM-dd"
-                            value-format="yyyy-MM-dd"
-                            align="right">
+                        <el-date-picker v-model="form.date" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="yyyy-MM-dd" value-format="yyyy-MM-dd" align="right">
                         </el-date-picker>
                     </el-form-item>
                 </el-col>
@@ -54,8 +46,8 @@
                 <el-tree :data="productTree.children" :props="defaultProps" :highlight-current="true" @node-click="handleNodeClick">
                     <span class="custom-tree-node" slot-scope="{ node, data }">
                         <span class="label">{{ data.name }}</span>
-                        <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
-                        <div :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"></div>
+                    <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+                    <div :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"></div>
                     </span>
                 </el-tree>
             </el-col>
@@ -146,208 +138,227 @@
 </template>
 
 <script>
-import API from './api';
-import Card from 'components/Card';
-import moment from 'moment';
-// 目标达成情况总览
-import ProTargetAchievement from 'components/ProTargetAchievement';
-import ProTargetAchievementBig from 'components/ProTargetAchievementBig';
-// 目标-实际-差异趋势分析
-import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-// 同比环比趋势分析
-import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
-// 比例结构与平均值对比分析
-import ProportionalStructureAverageComparison from 'components/ProportionalStructureAverageComparison';
-import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
-// 智能评选和智能策略
-import IntelligentSelection from 'components/IntelligentSelection';
+    import API from './api';
+    import Card from 'components/Card';
+    import moment from 'moment';
+    // 目标达成情况总览
+    import ProTargetAchievement from 'components/ProTargetAchievement';
+    import ProTargetAchievementBig from 'components/ProTargetAchievementBig';
+    // 目标-实际-差异趋势分析
+    import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
+    // 同比环比趋势分析
+    import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
+    // 比例结构与平均值对比分析
+    import ProportionalStructureAverageComparison from 'components/ProportionalStructureAverageComparison';
+    import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
+    // 智能评选和智能策略
+    import IntelligentSelection from 'components/IntelligentSelection';
 
-// mock
-import mockPieData from './mock/pieData.js';
-import mockAverageData from './mock/averageData.js';
+    // mock
+    import mockPieData from './mock/pieData.js';
+    import mockAverageData from './mock/averageData.js';
 
-import {mapGetters} from 'vuex';
-const TREE_PROPS = {
-    children: 'children',
-    label: 'name'
-};
-const TIMEPT = {
-    '周': 'week',
-    '月': 'month',
-    '季': 'quarter',
-    '年': 'year'
-};
+    import { mapGetters } from 'vuex';
+    const TREE_PROPS = {
+        children: 'children',
+        label: 'name'
+    };
+    const TIMEPT = {
+        '周': 'week',
+        '月': 'month',
+        '季': 'quarter',
+        '年': 'year'
+    };
 
-export default {
-    components: {
-        Card,
-        ProYearOnYearTrend,
-        ProportionalStructureAverageComparison,
-        ProportionalStructureAverageComparisonBig,
-        IntelligentSelection,
-        ProTargetAchievement,
-        ProTargetAchievementBig,
-        ProTargetActualDiffTrend,
-    },
-    data() {
-        return {
-            form: {
-                pt: '', // 周期类型
-                date: [], // date
-                search: '', // 暂时没有接口 先这样
-                subject: 'S', // S: 销售额 P: 利润额
-            },
-            cid: 1,
-            defaultProps: TREE_PROPS,
-            // 
-            loading: false,
-            // index
-            index0: 0,
-            index1: 0,
-            index2: 0,
-            index3: 0,
-            // mockData
-            pieData: mockPieData(),
-            averageData: mockAverageData(),
-            // stragety
-            stragetyCheckList: [],
-            stragetyTitle: '',
-            stragety: []
-        }
-    },
-    computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr','structureArr']),
-        hasTree() {
-            return !_.isEmpty(this.productTree)
-        }
-//      console.log(hasTree())
-    },
-    mounted() {
-        this.initFormDataFromUrl();
-        this.getTree();
-//      console.log(this.averageData)
-//      console.log(this.structureArr)
-    },
-    watch: {
-        // form: [
-        //     {
-        //         handler: function() {
-        //             this.getTree();
-        //         },
-        //         deep: true,
-        //     },
-        //     {
-        //         handler: function(val, oldVal) {
-        //             console.log(val, oldVal);
-        //             this.getProgress();
-        //         },
-        //         deep: true,
-        //     }
-        // ],
-        cid: function(val, oldVal) {
-            // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            // 暂时先在这里做
-            this.getProgress();
-            this.getStructure();
-            this.getRank();
-        }
-    },
-    methods: {
-    	select(){
-//  		console.log(this.form.pt)
-    	},
-        initFormDataFromUrl() {
-            const { pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',} = this.$route.query;
-            let formData = {
-                pt: pt,
-                subject: subject,
-            };
-            if (moment(sDate).isValid() && moment(eDate).isValid()) {
-                formData.date = [sDate, eDate];
-            }
-            this.cid = cid;
-            this.form = {...this.form, ...formData};
+    export default {
+        components: {
+            Card,
+            ProYearOnYearTrend,
+            ProportionalStructureAverageComparison,
+            ProportionalStructureAverageComparisonBig,
+            IntelligentSelection,
+            ProTargetAchievement,
+            ProTargetAchievementBig,
+            ProTargetActualDiffTrend,
         },
-        getTree() {
-        	
-            const params = {
-                pt: this.form.pt,
-                subject: this.form.subject,
-                ...this.getPeriodByPt(),
-            };
-            API.GetProductTree(params).then(res => {
-                this.$store.dispatch('SaveProductTree', res.tree);
-            });
-        },
-        getProgress() {
-            const params = {
-                cid: this.cid,
-                ...this.getPeriodByPt(),
-            };
-            API.GetProductProgress(params).then(res => {
-                this.$store.dispatch('SaveProgressData', res.data);
-                const promises = _.map(res.data, o => this.getTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveTrendArr', resultList);
-                });
-            });
-        },
-        getTrend(subject) {
-            const params = {
-                cid: this.cid,
-                pt: this.form.pt,
-                ...this.getPeriodByPt(),
-                subject
-            };
-            return API.GetProductTrend(params);
-        },
-        getStructure() {
-            const params = {
-                cid: this.cid,
-                ...this.getPeriodByPt(),
-            };
-            API.GetProductStructure(params).then(res => {
-                console.log(res.data);
-                this.$store.dispatch('SaveStructureArr', res.data);
-            });
-        },
-        getRank() {
-            const params = {
-                cid: this.cid,
-                pt: this.form.pt,
-                ...this.getPeriodByPt(),
-            };
-            API.GetProductRank(params).then(res => {
-//              console.log(res.data);
-                this.$store.dispatch('SaveRankArr', res.data);
-            });
-        },
-        getDateObj() {
-            const { date } = this.form;
+        data() {
             return {
-                sDate: date[0] || '',
-                eDate: date[1] || '',
+                form: {
+                    pt: '', // 周期类型
+                    date: [], // date
+                    search: '', // 暂时没有接口 先这样
+                    subject: 'S', // S: 销售额 P: 利润额
+                },
+                cid: 1,
+                defaultProps: TREE_PROPS,
+                // 
+                loading: false,
+                // index
+                index0: 0,
+                index1: 0,
+                index2: 0,
+                index3: 0,
+                // mockData
+                pieData: mockPieData(),
+                averageData: mockAverageData(),
+                // stragety
+                stragetyCheckList: [],
+                stragetyTitle: '',
+                stragety: []
             }
         },
-        getPeriodByPt() {
-            const { sDate, eDate } = this.getDateObj();
-            const { pt } = this.form;
-            if (sDate && eDate) { // 计算时间周期
-                if (pt === '日') {
-                    return {
-                        sDate,
-                        eDate
-                    };
+        computed: {
+            ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr']),
+            hasTree() {
+                return !_.isEmpty(this.productTree)
+            }
+            //      console.log(hasTree())
+        },
+        mounted() {
+            this.initFormDataFromUrl();
+            this.getTree();
+            //      console.log(this.structureArr)
+        },
+        watch: {
+            // form: [
+            //     {
+            //         handler: function() {
+            //             this.getTree();
+            //         },
+            //         deep: true,
+            //     },
+            //     {
+            //         handler: function(val, oldVal) {
+            //             console.log(val, oldVal);
+            //             this.getProgress();
+            //         },
+            //         deep: true,
+            //     }
+            // ],
+            cid: function(val, oldVal) {
+                // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+                // 暂时先在这里做
+                this.getProgress();
+                this.getStructure();
+                this.getRank();
+            }
+        },
+        methods: {
+            select() {
+                //  		console.log(this.form.pt)
+            },
+            initFormDataFromUrl() {
+                const {
+                    pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
+                } = this.$route.query;
+                let formData = {
+                    pt: pt,
+                    subject: subject,
+                };
+                if(moment(sDate).isValid() && moment(eDate).isValid()) {
+                    formData.date = [sDate, eDate];
                 }
-                let unit = TIMEPT[pt];
-                if (unit) {
-                    return {
-                        sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
-                        eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
+                this.cid = cid;
+                this.form = { ...this.form,
+                    ...formData
+                };
+            },
+            getTree() {
+                const params = {
+                    pt: this.form.pt,
+                    subject: this.form.subject,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetProductTree(params).then(res => {
+                    this.$store.dispatch('SaveProductTree', res.tree);
+                });
+            },
+            getProgress() {
+//              console.log(this.cid)
+                const params = {
+                    cid: this.cid,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetProductProgress(params).then(res => {
+                    this.$store.dispatch('SaveProgressData', res.data);
+                    const promises = _.map(res.data, o => this.getTrend(o.subject));
+                    Promise.all(promises).then(resultList => {
+                        _.forEach(resultList, (v, k) => {
+                            v.subject = res.data[k].subject;
+                            v.subject_name = res.data[k].subject_name;
+                        });
+                        this.$store.dispatch('SaveTrendArr', resultList);
+                    });
+                });
+            },
+            getTrend(subject) {
+                const params = {
+                    cid: this.cid,
+                    pt: this.form.pt,
+                    ...this.getPeriodByPt(),
+                    subject
+                };
+                return API.GetProductTrend(params);
+            },
+            getStructure() {
+                const params = {
+                    cid: this.cid,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetProductStructure(params).then(res => {
+                    //              console.log(res.data);
+                    this.$store.dispatch('SaveStructureArr', res.data);
+                });
+            },
+            getRank() {
+                const params = {
+                    cid: this.cid,
+                    pt: this.form.pt,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetProductRank(params).then(res => {
+                    //              console.log(res.data);
+                    this.$store.dispatch('SaveRankArr', res.data);
+                });
+            },
+            getDateObj() {
+                const {
+                    date
+                } = this.form;
+                return {
+                    sDate: date[0] || '',
+                    eDate: date[1] || '',
+                }
+            },
+            getPeriodByPt() {
+                const {
+                    sDate,
+                    eDate
+                } = this.getDateObj();
+                const {
+                    pt
+                } = this.form;
+                if(sDate && eDate) { // 计算时间周期
+                    if(pt === '日') {
+                        return {
+                            sDate,
+                            eDate
+                        };
+                    }
+                    let unit = TIMEPT[pt];
+                    if(unit) {
+                        return {
+                            sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
+                            eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
+                        }
+                    } else {
+                        return {
+                            sDate: '2018-01-01',
+                            eDate: '2018-06-01',
+                            // 先写死个时间
+                            // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+                            // eDate: moment().format('YYYY-MM-DD'),
+                        }
                     }
                 } else {
                     return {
@@ -358,220 +369,215 @@ export default {
                         // eDate: moment().format('YYYY-MM-DD'),
                     }
                 }
-            } else {
-                return {
-                    sDate: '2018-01-01',
-                    eDate: '2018-06-01',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
+            },
+            go() {
+
+            },
+            handleNodeClick(data) {
+//              console.log(data)
+//              this.cid = data.cid;
+//
+//              this.loading = true;
+//              setTimeout(() => {
+//                  this.getProgress();
+//                  this.getStructure();
+//                  this.getRank();
+//              }, 300);
+//              setTimeout(() => {
+//                  this.loading = false;
+//              }, 1000);
+            },
+            calculatePercent(a, b) {
+                if(b > 0) {
+                    const percent = parseInt(a / b * 100);
+                    const largerThanOne = (a / b) > 1;
+                    return {
+                        percent,
+                        largerThanOne
+                    };
                 }
+                return {};
+            },
+            clickIndex(i, idx) {
+                this[`index${i}`] = idx;
+            },
+            showStragety(data) {
+                const {
+                    brand,
+                    name,
+                    rank
+                } = data;
+                this.stragetyTitle = `${brand} - ${name} - ${rank}`;
+                this.stragety = data.stragety;
             }
-        },
-        go() {
-
-        },
-        handleNodeClick(data) {
-            // this.cid = xxx;
-
-            // this.loading = true;
-            // setTimeout(() => {
-            //     this.averageData = mockAverageData();
-            // }, 300);
-            // setTimeout(() => {
-            //     this.loading = false;
-            // }, 1000);
-        },
-        calculatePercent(a, b) {
-            if (b > 0) {
-                const percent = parseInt(a / b * 100);
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
-            return {};
-        },
-        clickIndex(i ,idx) {
-            this[`index${i}`] = idx;
-            console.log( this[`index${i}`] )
-        },
-        showStragety(data) {
-            const {brand, name, rank} = data;
-            this.stragetyTitle = `${brand} - ${name} - ${rank}`;
-            this.stragety = data.stragety;
         }
     }
-}
 </script>
 
 <style lang="scss">
-.overview {
-    min-width: 1024px;
-    height: 100%;
-    .el-date-editor.el-range-editor {
-        width: 300px;
-    }
-    .content_row {
-        height: calc(100% - 48px);
-        overflow-y: scroll;
-        overflow: hidden;
-        margin: 0!important;
-        .title {
-            margin: 18px 20px 18px 0;
-            text-align: right;
-            color: #747474
+    .overview {
+        min-width: 1024px;
+        height: 100%;
+        .el-date-editor.el-range-editor {
+            width: 300px;
         }
-        .company {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 24px;
-            .left {
-                margin-left: 15px;
-                font-weight: bold;
-                color: #338cb6;
-            }
-            .right {
-                margin-right: 20px;
-                font-weight: bold;
-                color: #c13633;
-            }
-        }
-        .tree_container {
-            height: 100%;
-            min-width: 200px;
-            padding-bottom: 18px;
-            overflow-y: auto;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            background: #fff;
-        }
-    }
-    
-    .el-tree {
-        .custom-tree-node {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            .percent {
-                margin-right: 20px;
-            }
-            .progress {
-                display: none;
-                position: absolute;
-                width: 50%;
-                height: 26px;
-                left: -5%;
-                top: 0;
-                border-radius: 15px;
-                background: #318cb8;
-                z-index: -1;
-            }
-            .border-radius0 {
-                border-radius: 0;
-            }
-            .red {
-                color: #c13633;
-            }
-            .blue {
-                color: #26a6d7;
-            }
-        }
-        .el-tree-node__content {
-            position: relative;
+        .content_row {
+            height: calc(100% - 48px);
+            overflow-y: scroll;
             overflow: hidden;
-            z-index: 1;
-            &:hover {
-                background-color: #eee;
-                .label {
-                    color: #fff;
-                    line-height: 20px;
+            margin: 0!important;
+            .title {
+                margin: 18px 20px 18px 0;
+                text-align: right;
+                color: #747474
+            }
+            .company {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 24px;
+                .left {
+                    margin-left: 15px;
+                    font-weight: bold;
+                    color: #338cb6;
                 }
+                .right {
+                    margin-right: 20px;
+                    font-weight: bold;
+                    color: #c13633;
+                }
+            }
+            .tree_container {
+                height: 100%;
+                min-width: 200px;
+                padding-bottom: 18px;
+                overflow-y: auto;
+                border: 1px solid #eee;
+                border-radius: 5px;
+                background: #fff;
+            }
+        }
+        .el-tree {
+            .custom-tree-node {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
                 .percent {
-                    font-size: 20px;
+                    margin-right: 20px;
                 }
                 .progress {
+                    display: none;
+                    position: absolute;
+                    width: 50%;
+                    height: 26px;
+                    left: -5%;
+                    top: 0;
+                    border-radius: 15px;
+                    background: #318cb8;
+                    z-index: -1;
+                }
+                .border-radius0 {
+                    border-radius: 0;
+                }
+                .red {
+                    color: #c13633;
+                }
+                .blue {
+                    color: #26a6d7;
+                }
+            }
+            .el-tree-node__content {
+                position: relative;
+                overflow: hidden;
+                z-index: 1;
+                &:hover {
+                    background-color: #eee;
+                    .label {
+                        color: #fff;
+                        line-height: 20px;
+                    }
+                    .percent {
+                        font-size: 20px;
+                    }
+                    .progress {
+                        display: block;
+                    }
+                }
+            }
+            .el-tree-node__content>.el-tree-node__expand-icon {
+                margin: 0 5px 0 15px;
+                padding: 2px;
+                border: 1px solid #fff;
+                border-radius: 50%;
+                background: #338cb6;
+                color: #fff;
+            }
+            >.el-tree-node {
+                padding: 20px 0;
+                &:before {
+                    content: '';
+                    display: block;
+                    width: 90%;
+                    height: 1px;
+                    margin: 0 auto;
+                    position: relative;
+                    bottom: 20px;
+                    background-color: #c9c9c9;
+                }
+                >.el-tree-node__content {
+                    >.custom-tree-node {
+                        font-weight: bold;
+                    }
+                }
+            }
+            .el-tree-node__expand-icon.is-leaf {
+                visibility: hidden;
+            }
+        }
+        .card-title {
+            margin-bottom: 20px;
+        }
+        .border-left {
+            border-left: 2px solid #d8d8d8;
+        }
+        .margin-top-10 {
+            margin-top: 10px;
+        }
+        .overflow {
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .stragety {
+            width: 85%;
+            margin: 5px auto 0;
+            .stragety-title {
+                text-align: center;
+                margin-bottom: 10px;
+                color: #454545;
+            }
+            .stragety-box {
+                border: 2px solid #f6f6f6;
+                height: 300px;
+                border-radius: 4px;
+                padding: 20px 35px;
+                position: relative;
+                .stragety-selected-title {
+                    margin-bottom: 10px;
+                }
+                .el-checkbox {
                     display: block;
                 }
-            }
-        }
-        .el-tree-node__content>.el-tree-node__expand-icon {
-            margin: 0 5px 0 15px;
-            padding: 2px;
-            border: 1px solid #fff;
-            border-radius: 50%;
-            background: #338cb6;
-            color: #fff;
-        }
-        >.el-tree-node {
-            padding: 20px 0;
-            &:before {
-                content: '';
-                display: block;
-                width: 90%;
-                height: 1px;
-                margin: 0 auto;
-                position: relative;
-                bottom: 20px;
-                background-color: #c9c9c9;
-            }
-            >.el-tree-node__content {
-                >.custom-tree-node {
-                    font-weight: bold;
+                .el-checkbox+.el-checkbox {
+                    margin-left: 0;
+                    margin-top: 5px;
+                }
+                .center {
+                    position: absolute;
+                    bottom: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
                 }
             }
         }
-        .el-tree-node__expand-icon.is-leaf {
-            visibility: hidden;
-        }
     }
-    .card-title {
-        margin-bottom: 20px;
-    }
-    .border-left {
-        border-left: 2px solid #d8d8d8;
-    }
-    .margin-top-10 {
-        margin-top: 10px;
-    }
-    .overflow {
-        height: 100%;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    .stragety {
-        width: 85%;
-        margin: 5px auto 0;
-        .stragety-title {
-            text-align: center;
-            margin-bottom: 10px;
-            color: #454545;
-        }
-        .stragety-box {
-            border: 2px solid #f6f6f6;
-            height: 300px;
-            border-radius: 4px;
-            padding: 20px 35px;
-            position: relative;
-            .stragety-selected-title {
-                margin-bottom: 10px;
-            }
-            .el-checkbox {
-                display: block;
-            }
-            .el-checkbox+.el-checkbox {
-                margin-left: 0;
-                margin-top: 5px;
-            }
-            .center {
-                position: absolute;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-            }
-        }
-    }
-}
 </style>
-

@@ -117,11 +117,12 @@
                                     //                              if (nodes.type === 'quota') {
                                     //                                  return `${pData[params.dataIndex].name} : ${params.data}`;
                                     //                              }
+//                                  console.log(params)
                                     if(nodes.subject == "投入产出比" || nodes.subject == "日销" || nodes.subject == "库存周转率") {
 
                                         return `${pData[params.dataIndex]} : ${params.data}`;
                                     }
-                                    return `${pData[params.dataIndex]} : ${params.data}`;
+                                    return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
                                 },
                             }
                         },
@@ -130,7 +131,10 @@
                             symbol: 'none',
                             label: {
                                 formatter: nodes.subject == "投入产出比" || nodes.subject == "日销" || nodes.subject == "库存周转率" ? `平均值${average}` : `平均值${average}%`
-                                //                          formatter: 1 ? `平均值${average}`: `平均值${average}%`
+//                              formatter: function(params){
+//                                  if()
+//                              }
+                               
                             },
                             data: [{
                                 xAxis: average,
