@@ -274,7 +274,7 @@
                 });
             },
             getProgress() {
-//              console.log(this.cid)
+                //              console.log(this.cid)
                 const params = {
                     cid: this.cid,
                     ...this.getPeriodByPt(),
@@ -374,18 +374,20 @@
 
             },
             handleNodeClick(data) {
-//              console.log(data)
-//              this.cid = data.cid;
-//
-//              this.loading = true;
-//              setTimeout(() => {
-//                  this.getProgress();
-//                  this.getStructure();
-//                  this.getRank();
-//              }, 300);
-//              setTimeout(() => {
-//                  this.loading = false;
-//              }, 1000);
+                //              console.log(data.children)
+                if(data.children != undefined) {
+                    this.cid = data.cid;
+                    this.loading = true;
+                    //                  setTimeout(() => {
+                    //                      this.getProgress();
+                    //                      this.getStructure();
+                    //                      this.getRank();
+                    //                  }, 300);
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 1000);
+                }
+
             },
             calculatePercent(a, b) {
                 if(b > 0) {
