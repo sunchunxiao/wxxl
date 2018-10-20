@@ -41,6 +41,7 @@ function mockPieData() {
         let multiple = Math.floor((Math.random() * 16 + 5)) / 10;
         arr[i].value = Math.floor(arr[i].goal * multiple);
     }
+//  console.log(arr)
     return arr;
 }
 
