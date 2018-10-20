@@ -83,8 +83,8 @@
 //import API from './api';
 import Card from '../../components/Card';
 // 组织对比分析和平均值分析
-import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
-import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+import ConOrgComparisonAverage from '../../components/Confalse';
+import ConOrgComparisonAverageBig from '../../components/ConfalseBig';
 
 import mockPieData from './mock/pieData.js';
 import mockComparisonAverageData from './mock/comparisonAverageData.js';
