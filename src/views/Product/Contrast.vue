@@ -53,14 +53,16 @@
                         <el-row class="card-title">产品对比分析和平均值分析</el-row>
                         <el-row>
                             <el-col :span="6">
-                                <template v-for="(item, index) in compareArr">
+                                <template v-for="(item, index) in pieData">
                                     <el-col :key="index" :span="12" @click.native="clickIndex(0 ,index)">
-                                        <ConOrgComparisonAverage  :id="`${index}`" :data="item"></ConOrgComparisonAverage>
+                                       <!-- <ConOrgComparisonAverage  :id="`${index}`" :data="item"></ConOrgComparisonAverage>-->
+                                        <ConOrgComparisonAverage  :id="`${index}`" :data="comparisonAverageData[index]"></ConOrgComparisonAverage>
                                     </el-col>
                                 </template>
                             </el-col>
                             <el-col :span="18" v-if="compareArr.length > 0">
-                                <ConOrgComparisonAverageBig :title="pieData[index0].text" :data="compareArr[index0]" id="ConOrgComparisonAverage" :index="index0"></ConOrgComparisonAverageBig>
+                                <!--<ConOrgComparisonAverageBig :title="pieData[index0].text" :data="compareArr[index0]" id="ConOrgComparisonAverage" :index="index0"></ConOrgComparisonAverageBig>-->
+                                <ConOrgComparisonAverageBig :title="pieData[index0].text" :data="comparisonAverageData[index0]" id="ConOrgComparisonAverage" :index="index0"></ConOrgComparisonAverageBig>
                             </el-col>
                         </el-row>
                     </Card>
@@ -74,8 +76,8 @@
     import API from './api';
     import Card from '../../components/Card';
     // 组织对比分析和平均值分析
-    import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
-    import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+    import ConOrgComparisonAverage from '../../components/Confalse';
+    import ConOrgComparisonAverageBig from '../../components/ConfalseBig';
 
     import mockPieData from './mock/pieData.js';
     import mockComparisonAverageData from './mock/comparisonAverageData.js';
@@ -133,19 +135,14 @@
             }
         },
         mounted() {
-            //          console.log(this.hasTree)
             if(!this.hasTree) {
                 this.getTree()
             }
             this.getProgress()
-//          console.log(this.comparisonAverageData)
-            console.log(this.compareArr)
-            this.series = this.compareArr.series
+//          console.log(this.compareArr)
+            
         },
         methods: {
-//          gettime(){
-//              console.log(this.form.date)
-//          },
             getTree() {
                 const params = {
                     pt: this.form.pt,
