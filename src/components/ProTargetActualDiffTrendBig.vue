@@ -63,7 +63,7 @@ export default {
                 },
                 series: [
                     {
-                        data: realClone,
+                        data: real,
                         type: 'line',
                         lineStyle: {
                             type: 'dotted',
@@ -71,7 +71,7 @@ export default {
                         }
                     },
                     {
-                        data: targetClone,
+                        data: target,
                         type: 'line',
                     },
                     {
