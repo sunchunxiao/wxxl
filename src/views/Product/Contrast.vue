@@ -39,7 +39,7 @@
                     <span class="right">{{calculatePercent(productTree.real_total, productTree.target_total).percent + '%'}}</span>
                 </div>
                 <!-- 有多个tree -->
-                <el-tree :data="productTree.children" ref="tree" node-key="id" :props="defaultProps" @node-click="handleNodeClick" show-checkbox @check-change="handleCheckChange" :default-checked-keys="[1]">
+                <el-tree :data="productTree.children" ref="tree" node-key="cid" :props="defaultProps" @node-click="handleNodeClick" show-checkbox @check-change="handleCheckChange"  :default-checked-keys="setCheckedKeys">
                     <span class="custom-tree-node" slot-scope="{ node, data }">
                         <span class="label">{{ data.name }}</span>
                     <span :class="{ red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
@@ -112,7 +112,7 @@
                 comparisonAverageData: mockComparisonAverageData(),
                 index0: 0,
                 series: [],
-                setCheckedKeys: [1]
+                setCheckedKeys: []
             }
         },
         computed: {
@@ -134,9 +134,7 @@
                 this.getTrend()
             }
         },
-        created(){
-            
-        },
+        
         mounted() {
             //          console.log(this.hasTree)
             if(!this.hasTree) {
@@ -157,12 +155,11 @@
                     let data = res.tree.children
                    
                     for(let i=0;i<data.length;i++) {
-//                      console.log(data[i])
+                        console.log(data[i])
                         arr.push(data[i].cid)
-                        
+                        console.log(arr)
                     }
-                    
-                    this.$refs.tree.setCheckedKeys([1])
+                    this.$refs.tree.setCheckedKeys([10,20])
                     this.$store.dispatch('SaveProductTree', res.tree);
                 });
             },
@@ -260,7 +257,7 @@
 
             },
             handleCheckChange(data, checked, indeterminate) {
-                          console.log(data, checked, indeterminate)
+//                        console.log(data, checked, indeterminate)
             },
             clickIndex(i, idx) {
                 this[`index${i}`] = idx;
