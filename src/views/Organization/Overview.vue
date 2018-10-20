@@ -219,7 +219,7 @@
 		},
 		mounted() {
 //			this.getTree();
-            console.log(this.averageData)
+//          console.log(this.averageData)
 		},
 		watch: {
 			form: {
