@@ -125,7 +125,7 @@ export default {
     },
     methods: {
       handleNodeClick(data) {
-      	console.log(data)
+        console.log(data)
       },
       handleCheckChange(data, checked, indeterminate) {
 //        console.log(data, checked, indeterminate)

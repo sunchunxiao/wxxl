@@ -2,272 +2,62 @@ import _ from 'lodash';
 
 const data = [
     {
-        "title": "毛利润额",
+        "subject": "毛利润额",
         "type": "quota",
-        "data": [
-            {
-                "total": "2192695629",
-                "target": "2928397255",
-                "category_id": 30,
-                "name": "麦克适",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "2249576128",
-                "target": "3863347917",
-                "category_id": 20,
-                "name": "可优比",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3316531718",
-                "target": "2767542654",
-                "category_id": 10,
-                "name": "蒂爱",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3424524938",
-                "target": "2652541987",
-                "category_id": 40,
-                "name": "米歌",
-                "parent_id": 1,
-                "level": 1
-            }
-        ],
+        "total": "14357015204",
+        "avg":"3589253801",
+        "values":[3201099582,3653972833,3748479819,3753462970],
+        "nodes": ["麦克适","可优比","蒂爱","米歌"],
     },
     {
-        "title": "销售额",
+        "subject": "销售额",
         "type": "quota",
-        "data": [
-            {
-                "total": "2092695629",
-                "target": "2928397255",
-                "category_id": 30,
-                "name": "麦克适",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "2349576128",
-                "target": "3663347917",
-                "category_id": 20,
-                "name": "可优比",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3716531718",
-                "target": "2367542654",
-                "category_id": 10,
-                "name": "蒂爱",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3424524938",
-                "target": "2852541987",
-                "category_id": 40,
-                "name": "米歌",
-                "parent_id": 1,
-                "level": 1
-            }
-        ],
+        "avg":"3589253801",
+        "total": "14357015204",
+        "values":[3201099582,3653972833,3748479819,3753462970],
+        "nodes": ["麦克适","可优比","蒂爱","米歌"],
     },{
-        "title": "产品成本额",
+        "subject": "产品成本额",
         "type": "quota",
-        "data": [
-            {
-                "total": "2692695629",
-                "target": "2128397255",
-                "category_id": 30,
-                "name": "麦克适",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "2749576128",
-                "target": "3863347917",
-                "category_id": 20,
-                "name": "可优比",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3216531718",
-                "target": "2367542654",
-                "category_id": 10,
-                "name": "蒂爱",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3324524938",
-                "target": "2052541987",
-                "category_id": 40,
-                "name": "米歌",
-                "parent_id": 1,
-                "level": 1
-            }
-        ],
+        "avg":"3211570069.5",
+        "values":[3201099582,3653972833,3748479819,3753462970],
+        "total": "14357015204",
+        "nodes": ["麦克适","可优比","蒂爱","米歌"],
     },{
-        "title": "产品投入产出比",
-        "data": [
-            {
-                "total": "2192695629",
-                "target": "2628397255",
-                "category_id": 30,
-                "name": "麦克适",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "2349576128",
-                "target": "3263347917",
-                "category_id": 20,
-                "name": "可优比",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3116531718",
-                "target": "2567542654",
-                "category_id": 10,
-                "name": "蒂爱",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3324524938",
-                "target": "2152541987",
-                "category_id": 40,
-                "name": "米歌",
-                "parent_id": 1,
-                "level": 1
-            }
-        ],
+        "subject": "产品投入产出比",
+        "avg":"0.12",
+        "total": "0.1176",
+        "values":[0.1174,0.1175,0.1176,0.118],
+        "nodes": ["麦克适","可优比","蒂爱","米歌"],
     },{
-        "title": "库存周转率",
-        "data": [
-            {
-                "total": "2592695629",
-                "target": "2228397255",
-                "category_id": 30,
-                "name": "麦克适",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "2149576128",
-                "target": "3163347917",
-                "category_id": 20,
-                "name": "可优比",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3216531718",
-                "target": "2967542654",
-                "category_id": 10,
-                "name": "蒂爱",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3124524938",
-                "target": "2252541987",
-                "category_id": 40,
-                "name": "米歌",
-                "parent_id": 1,
-                "level": 1
-            }
-        ],
+        "subject": "库存周转率",
+        "avg":"82.79",
+        "total": "82.79",
+        "values":[81.93,82.89,83.02,83.21],
+        "nodes": ["麦克适","可优比","蒂爱","米歌"],
     },{
-        "title": "日销",
+        "subject": "日销",
         "type": "quota",
-        "data": [
-            {
-                "total": "2592695629",
-                "target": "2828397255",
-                "category_id": 30,
-                "name": "麦克适",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "2149576128",
-                "target": "3063347917",
-                "category_id": 20,
-                "name": "可优比",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3516531718",
-                "target": "2667542654",
-                "category_id": 10,
-                "name": "蒂爱",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3124524938",
-                "target": "2352541987",
-                "category_id": 40,
-                "name": "米歌",
-                "parent_id": 1,
-                "level": 1
-            }
-        ],
+        "avg":"23613511.75",
+        "total": "94454047",
+        "values":[21059865,24039294,24661051,24693835],
+        "nodes": ["麦克适","可优比","蒂爱","米歌"],
     },{
-        "title": "库存额",
+        "subject": "库存额",
         "type": "quota",
-        "data": [
-            {
-                "total": "2192695629",
-                "target": "2228397255",
-                "category_id": 30,
-                "name": "麦克适",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "2949576128",
-                "target": "3063347917",
-                "category_id": 20,
-                "name": "可优比",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3016531718",
-                "target": "2467542654",
-                "category_id": 10,
-                "name": "蒂爱",
-                "parent_id": 1,
-                "level": 1
-            },
-            {
-                "total": "3024524938",
-                "target": "2252541987",
-                "category_id": 40,
-                "name": "米歌",
-                "parent_id": 1,
-                "level": 1
-            }
-        ],
+        "avg":"819590087.25",
+        "total": "3278360349",
+        "values":[737370831,830580214,844690065,865719239],
+        "nodes": ["麦克适","可优比","蒂爱","米歌"],
     }
 ];
 
 function mockAverageData() {
     let arr = _.cloneDeep(data);
     for(let i = 0; i < arr.length; i++) {
-        for(let v = 0; v < arr[i].data.length; v++) {
-            arr[i].data[v].total = Math.floor(Math.random() * 10000 * 10000) + '';
-            arr[i].data[v].target = Math.floor(Math.random() * 10000 * 10000) + '';
+        for(let v = 0; v < arr[i].nodes.length; v++) {
+            arr[i].total = Math.floor(Math.random() * 10000 * 10000) + '';
+//          arr[i].data[v].target = Math.floor(Math.random() * 10000 * 10000) + '';
         }
     }
     return arr;

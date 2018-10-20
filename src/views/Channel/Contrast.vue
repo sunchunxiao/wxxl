@@ -88,7 +88,7 @@ import ConOrgComparisonAverageBig from '../../components/ConfalseBig';
 
 import mockPieData from './mock/pieData.js';
 import mockComparisonAverageData from './mock/comparisonAverageData.js';
-import tree from './mock/productTreeData.js';
+import tree from './mock/channelData.js';
 
 const TREE_PROPS = {
     children: 'children',

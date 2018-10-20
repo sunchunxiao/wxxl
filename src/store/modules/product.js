@@ -6,7 +6,8 @@ const product = {
       trendArr: [],
       rankArr: [],
       rankArr: [],
-      structureArr:[]
+      structureArr:[],
+      compareArr:{}
     },
     mutations: {
       SAVE_PRODUCT_TREE: (state, tree) => {
@@ -23,6 +24,9 @@ const product = {
       },
       SAVE_STRUCTURE_ARR: (state, arr) => {
         state.structureArr = arr;
+      },
+      SAVE_COMPARE_ARR: (state, arr) => {
+        state.compareArr = arr;
       }
     },
     actions: {
@@ -40,6 +44,9 @@ const product = {
       },
       SaveStructureArr({ commit }, arr) {
         commit('SAVE_STRUCTURE_ARR', arr);
+      },
+      SaveCompareArr({ commit }, arr) {
+        commit('SAVE_COMPARE_ARR', arr);
       },
     }
   };

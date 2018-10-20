@@ -27,7 +27,9 @@ export default {
     },
     methods: {
         renderChart(data) {
+            
             const {timeLabels, ring, yoy} = data;
+            
             const options = {
                 tooltip: {
                     show: true,

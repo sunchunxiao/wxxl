@@ -4,12 +4,10 @@
             <el-form ref="form" :model="form" label-width="100px" size="mini">
                 <el-col :span="5">
                     <el-form-item label="时间单位选择">
-                        <el-select v-model="form.pt" @change="select">
-                            <el-option label="日" value="日"></el-option>
-                            <el-option label="周" value="周"></el-option>
-                            <el-option label="月" value="月"></el-option>
-                            <el-option label="季" value="季"></el-option>
-                            <el-option label="年" value="年"></el-option>
+                        <el-select v-model="form.pt">
+                            <el-option label="日" value="day"></el-option>
+                            <el-option label="周" value="week"></el-option>
+                            <el-option label="月" value="month"></el-option>
                         </el-select>
                     </el-form-item>
                 </el-col>
@@ -28,22 +26,20 @@
                 </el-col>
                 <el-col :span="4">
                     <el-form-item>
-                        <el-button @click="go" type="primary">go</el-button>
+                        <el-button type="primary">go</el-button>
                     </el-form-item>
                 </el-col>
             </el-form>
         </el-row>
         <el-row class="content_row" :gutter="20">
             <el-col :span="5" class="tree_container">
-                <div v-if="hasTree">
-                    <div class="title">毛利目标达成率</div>
-                    <div class="company">
-                        <span class="left">{{productTree.name}}</span>
-                        <span class="right">{{calculatePercent(productTree.real_total, productTree.target_total).percent + '%'}}</span>
-                    </div>
+                <div class="title">毛利目标达成率</div>
+                <div class="company">
+                    <span class="left">{{tree.data.name}}</span>
+                    <span class="right">{{calculatePercent(tree.data.real_total, tree.data.target_total).percent + '%'}}</span>
                 </div>
                 <!-- 有多个tree -->
-                <el-tree :data="productTree.children" :props="defaultProps" :highlight-current="true" @node-click="handleNodeClick">
+                <el-tree :data="treeData" :props="defaultProps" :highlight-current="true" @node-click="handleNodeClick">
                     <span class="custom-tree-node" slot-scope="{ node, data }">
                         <span class="label">{{ data.name }}</span>
                     <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
@@ -57,14 +53,14 @@
                         <el-row class="card-title">目标达成情况总览</el-row>
                         <el-row>
                             <el-col :span="16">
-                                <template v-for="(item, index) in progressArr">
+                                <template v-for="(item, index) in pieData">
                                     <el-col :key="index" :span="6" @click.native="clickIndex(0 ,index)">
                                         <ProTargetAchievement :id="`${index}`" :data="item"></ProTargetAchievement>
                                     </el-col>
                                 </template>
                             </el-col>
-                            <el-col v-if="progressArr.length > 0" :span="8" class="border-left">
-                                <ProTargetAchievementBig :id="'select'" :data="progressArr[index0]"></ProTargetAchievementBig>
+                            <el-col :span="8" class="border-left">
+                                <ProTargetAchievementBig :id="'select'" :data="pieData[index0]"></ProTargetAchievementBig>
                             </el-col>
                         </el-row>
                     </Card>
@@ -73,11 +69,16 @@
                     <Card>
                         <el-row class="card-title">目标-实际-差异趋势分析</el-row>
                         <el-row>
-                            <template v-for="(item, index) in trendArr">
-                                <el-col :key="index" :span="12" @click.native="clickIndex(1 ,index)">
-                                    <ProTargetActualDiffTrend :id="`${index}`" :data="item"></ProTargetActualDiffTrend>
-                                </el-col>
-                            </template>
+                            <el-col :span="16">
+                                <template v-for="(item, index) in pieData">
+                                    <el-col :key="index" :span="6" @click.native="clickIndex(1 ,index)">
+                                        <ProTargetActualDiffTrend :id="`${index}`" :data="trendData[index]" :title="pieData[index].text"></ProTargetActualDiffTrend>
+                                    </el-col>
+                                </template>
+                            </el-col>
+                            <el-col :span="8" class="border-left">
+                                <ProTargetActualDiffTrendBig id="ProTargetActualDiffTrendBig" :data="trendData[index1]" title="毛利润额"></ProTargetActualDiffTrendBig>
+                            </el-col>
                         </el-row>
                     </Card>
                 </el-row>
@@ -85,11 +86,16 @@
                     <Card>
                         <el-row class="card-title">同比环比趋势分析</el-row>
                         <el-row>
-                            <template v-for="(item, index) in trendArr">
-                                <el-col :key="index" :span="12" @click.native="clickIndex(2 ,index)">
-                                    <ProYearOnYearTrend :id="`${index}`" :data="item"></ProYearOnYearTrend>
-                                </el-col>
-                            </template>
+                            <el-col :span="16">
+                                <template v-for="(item, index) in averageData">
+                                    <el-col :key="index" :span="6" @click.native="clickIndex(2 ,index)">
+                                        <ProYearOnYearTrend :id="`${index}`" :data="trendData[index]" :title="pieData[index].text"></ProYearOnYearTrend>
+                                    </el-col>
+                                </template>
+                            </el-col>
+                            <el-col :span="8" class="border-left">
+                                <ProYearOnYearTrendBig id="ProYearOnYearTrendBig" :data="trendData[index2]" title="毛利润额"></ProYearOnYearTrendBig>
+                            </el-col>
                         </el-row>
                     </Card>
                 </el-row>
@@ -98,14 +104,14 @@
                         <el-row class="card-title">比例结构与平均值对比分析</el-row>
                         <el-row>
                             <el-col :span="16">
-                                <template v-for="(item, index) in structureArr">
+                                <template v-for="(item, index) in averageData">
                                     <el-col :key="index" :span="6" @click.native="clickIndex(3 ,index)">
                                         <ProportionalStructureAverageComparison :id="`${index}`" :data="item"></ProportionalStructureAverageComparison>
                                     </el-col>
                                 </template>
                             </el-col>
                             <el-col :span="8" class="border-left">
-                                <ProportionalStructureAverageComparisonBig v-if="structureArr.length>0" id="ProportionalStructureAverageComparisonBig" :data="structureArr[index3]"></ProportionalStructureAverageComparisonBig>
+                                <ProportionalStructureAverageComparisonBig id="ProportionalStructureAverageComparisonBig" :data="averageData[index3]"></ProportionalStructureAverageComparisonBig>
                             </el-col>
                         </el-row>
                     </Card>
@@ -115,7 +121,7 @@
                         <el-row class="card-title">智能评选和智能策略</el-row>
                         <el-row>
                             <el-col :span="14">
-                                <IntelligentSelection id="rank" v-on:showStragety="showStragety" :data="rankArr"></IntelligentSelection>
+                                <IntelligentSelection id="heatmap" v-on:showStragety="showStragety" :data="heatmapData"></IntelligentSelection>
                             </el-col>
                             <el-col :span="10">
                                 <div class="stragety">
@@ -139,59 +145,62 @@
 
 <script>
     import API from './api';
-    import Card from 'components/Card';
-    import moment from 'moment';
+    import Card from '../../components/Card';
     // 目标达成情况总览
-    import ProTargetAchievement from 'components/ProTargetAchievement';
-    import ProTargetAchievementBig from 'components/ProTargetAchievementBig';
+    import ProTargetAchievement from '../../components/ProTargetAchievement';
+    import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
     // 目标-实际-差异趋势分析
-    import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
+    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
+    import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
     // 同比环比趋势分析
-    import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
+    import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
+    import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
     // 比例结构与平均值对比分析
-    import ProportionalStructureAverageComparison from 'components/ProportionalStructureAverageComparison';
-    import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
+    import ProportionalStructureAverageComparison from '../../components/ProportionalStructureAverageComparison';
+    import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
     // 智能评选和智能策略
-    import IntelligentSelection from 'components/IntelligentSelection';
+    import IntelligentSelection from '../../components/IntelligentSelection';
 
+    // tree
+    import tree from './mock/productTreeData.js';
     // mock
     import mockPieData from './mock/pieData.js';
+    import mockTrendData from './mock/trendData.js';
     import mockAverageData from './mock/averageData.js';
+    import mockHeatmapData from './mock/heatmapData.js';
 
-    import { mapGetters } from 'vuex';
     const TREE_PROPS = {
         children: 'children',
         label: 'name'
-    };
-    const TIMEPT = {
-        '周': 'week',
-        '月': 'month',
-        '季': 'quarter',
-        '年': 'year'
     };
 
     export default {
         components: {
             Card,
             ProYearOnYearTrend,
+            ProYearOnYearTrendBig,
             ProportionalStructureAverageComparison,
             ProportionalStructureAverageComparisonBig,
             IntelligentSelection,
             ProTargetAchievement,
             ProTargetAchievementBig,
             ProTargetActualDiffTrend,
+            ProTargetActualDiffTrendBig
         },
         data() {
             return {
                 form: {
-                    pt: '', // 周期类型
-                    date: [], // date
-                    search: '', // 暂时没有接口 先这样
+                    pt: 'day',
+                    date: [],
+                    search: '',
                     subject: 'S', // S: 销售额 P: 利润额
+                    version:'0'
                 },
-                cid: 1,
-                defaultProps: TREE_PROPS,
                 loading: false,
+                // tree
+                tree: tree,
+                treeData: tree.data.children,
+                defaultProps: TREE_PROPS,
                 // index
                 index0: 0,
                 index1: 0,
@@ -199,126 +208,26 @@
                 index3: 0,
                 // mockData
                 pieData: mockPieData(),
+                trendData: mockTrendData(),
                 averageData: mockAverageData(),
+                heatmapData: mockHeatmapData(),
                 // stragety
                 stragetyCheckList: [],
                 stragetyTitle: '',
                 stragety: []
             }
         },
-        computed: {
-            ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr']),
-            hasTree() {
-                return !_.isEmpty(this.productTree)
-            }
-        },
         mounted() {
-            this.initFormDataFromUrl();
-            this.getTree();
-            //      console.log(this.structureArr)
+//          this.getTree();
+            console.log(this.averageData)
         },
         watch: {
-            // form: [
-            //     {
-            //         handler: function() {
-            //             this.getTree();
-            //         },
-            //         deep: true,
-            //     },
-            //     {
-            //         handler: function(val, oldVal) {
-            //             console.log(val, oldVal);
-            //             this.getProgress();
-            //         },
-            //         deep: true,
-            //     }
-            // ],
-            cid: function(val, oldVal) {
-                // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-                // 暂时先在这里做
-                this.getProgress();
-                this.getStructure();
-                this.getRank();
+            form: {
+                handler: function(val, oldVal) {},
+                deep: true
             }
         },
         methods: {
-            select() {
-                //  		console.log(this.form.pt)
-            },
-            initFormDataFromUrl() {
-                const {
-                    pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-                } = this.$route.query;
-                let formData = {
-                    pt: pt,
-                    subject: subject,
-                };
-                if(moment(sDate).isValid() && moment(eDate).isValid()) {
-                    formData.date = [sDate, eDate];
-                }
-                this.cid = cid;
-                this.form = { ...this.form,
-                    ...formData
-                };
-            },
-            getTree() {
-                const params = {
-                    pt: this.form.pt,
-                    subject: this.form.subject,
-                    ...this.getPeriodByPt(),
-                };
-                API.GetProductTree(params).then(res => {
-                    this.$store.dispatch('SaveProductTree', res.tree);
-                });
-            },
-            getProgress() {
-                //              console.log(this.cid)
-                const params = {
-                    cid: this.cid,
-                    ...this.getPeriodByPt(),
-                };
-                API.GetProductProgress(params).then(res => {
-                    this.$store.dispatch('SaveProgressData', res.data);
-                    const promises = _.map(res.data, o => this.getTrend(o.subject));
-                    Promise.all(promises).then(resultList => {
-                        _.forEach(resultList, (v, k) => {
-                            v.subject = res.data[k].subject;
-                            v.subject_name = res.data[k].subject_name;
-                        });
-                        this.$store.dispatch('SaveTrendArr', resultList);
-                    });
-                });
-            },
-            getTrend(subject) {
-                const params = {
-                    cid: this.cid,
-                    pt: this.form.pt,
-                    ...this.getPeriodByPt(),
-                    subject: subject
-                };
-                return API.GetProductTrend(params);
-            },
-            getStructure() {
-                const params = {
-                    cid: this.cid,
-                    ...this.getPeriodByPt(),
-                };
-                API.GetProductStructure(params).then(res => {
-                    //              console.log(res.data);
-                    this.$store.dispatch('SaveStructureArr', res.data);
-                });
-            },
-            getRank() {
-                const params = {
-                    cid: this.cid,
-                    pt: this.form.pt,
-                    ...this.getPeriodByPt(),
-                };
-                API.GetProductRank(params).then(res => {
-                    //              console.log(res.data);
-                    this.$store.dispatch('SaveRankArr', res.data);
-                });
-            },
             getDateObj() {
                 const {
                     date
@@ -327,6 +236,19 @@
                     sDate: date[0] || '',
                     eDate: date[1] || '',
                 }
+            },
+            getTree() {
+                
+                const params = {
+                    pt: this.form.pt,
+                    subject: this.form.subject,
+                    ...this.getPeriodByPt(),
+                    version:this.form.version
+                };
+                API.GetOrgTree(params).then(res => {
+                    console.log(res)
+                    this.$store.dispatch('SaveOrgTree', res.tree);
+                });
             },
             getPeriodByPt() {
                 const {
@@ -368,24 +290,17 @@
                     }
                 }
             },
-            go() {
-
-            },
             handleNodeClick(data) {
-                //              console.log(data.children)
-                if(data.children != undefined) {
-                    this.cid = data.cid;
-                    this.loading = true;
-                    //                  setTimeout(() => {
-                    //                      this.getProgress();
-                    //                      this.getStructure();
-                    //                      this.getRank();
-                    //                  }, 300);
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
-                }
-
+                this.loading = true;
+                setTimeout(() => {
+                    this.pieData = mockPieData();
+                    this.trendData = mockTrendData();
+                    this.averageData = mockAverageData();
+                    this.heatmapData = mockHeatmapData();
+                }, 300);
+                setTimeout(() => {
+                    this.loading = false;
+                }, 1000);
             },
             calculatePercent(a, b) {
                 if(b > 0) {
@@ -449,6 +364,7 @@
             .tree_container {
                 height: 100%;
                 min-width: 200px;
+                // margin-right: 20px;
                 padding-bottom: 18px;
                 overflow-y: auto;
                 border: 1px solid #eee;

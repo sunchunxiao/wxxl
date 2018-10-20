@@ -11,9 +11,8 @@ import echarts from 'echarts';
 export default {
     props: {
         id: String,
-        data: Object,
-        title: String,
-        index: Number
+        data: Array,
+        title: String
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`ConOrgComparisonAverage-${this.id}`));
@@ -30,6 +29,7 @@ export default {
     methods: {
         renderChart(data) {
             let _this = this;
+//          const {timeLabels} = data;
             const options = {
                 grid: {
                     left: 0,
@@ -58,12 +58,12 @@ export default {
                     type: 'category',
                     name: '日期',
                     boundaryGap: false,
-                    data: ['5.1', '5.2', '5.3', '5.4', '5.5', '5.6', '5.7']
+                    data: ['9.1', '9.2', '9.3', '9.4', '9.5', '9.6', '9.7']
                 },
                 yAxis: {
                     type: 'value',
                     axisLabel: {
-                        formatter: _.includes([0,1,2,5,6], _this.index) ? '{value}' : '{value} %'
+                        formatter: _.includes([0,1,2,6,7], parseInt(_this.id)) ? '{value}' : '{value} %'
                     }
                     // name: '报警次数',
                 },
@@ -71,25 +71,25 @@ export default {
                         name: '旅游运输',
                         type: 'line',
                         stack: '总量',
-                        data: data.series[0]
+                        data: data[0]
                     },
                     {
                         name: '班线运输',
                         type: 'line',
                         stack: '总量',
-                        data: data.series[1]
+                        data: data[1]
                     },
                     {
                         name: '危险品',
                         type: 'line',
                         stack: '总量',
-                        data: data.series[2]
+                        data: data[2]
                     },
                     {
                         name: '普货',
                         type: 'line',
                         stack: '总量',
-                        data: data.series[3]
+                        data: data[3]
                     },
                 ]
             };
@@ -102,8 +102,8 @@ export default {
 <style lang="scss" scoped>
 .ConOrgComparisonAverage-container {
     .ConOrgComparisonAverage {
-        width: 840px;
-        height: 560px;
+        width: 140px;
+        height: 140px;
         margin: 0 auto;
     }
     .detail {
