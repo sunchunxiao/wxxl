@@ -149,6 +149,6 @@ export default {
 </script>
 
 <style lang="scss">
-	@import './style/contrast.scss';
+    @import '../Product/style/contrast.scss';
 </style>
 
