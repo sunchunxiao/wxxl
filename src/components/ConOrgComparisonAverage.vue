@@ -1,7 +1,7 @@
 <template>
     <div class="ConOrgComparisonAverage-container">
         <div class="ConOrgComparisonAverage" :id="`ConOrgComparisonAverage-${id}`"></div>
-        <div class="detail">{{title}}</div>
+        <div class="detail">{{data.subject_name}}</div>
     </div>
 </template>
 
@@ -11,7 +11,7 @@ import echarts from 'echarts';
 export default {
     props: {
         id: String,
-        data: Array,
+        data: Object,
         title: String
     },
     mounted() {
@@ -29,6 +29,7 @@ export default {
     methods: {
         renderChart(data) {
             let _this = this;
+//          const {timeLabels} = data;
             const options = {
                 grid: {
                     left: 0,
@@ -70,25 +71,25 @@ export default {
                         name: '旅游运输',
                         type: 'line',
                         stack: '总量',
-                        data: data[0]
+                        data: data.series[0]
                     },
                     {
                         name: '班线运输',
                         type: 'line',
                         stack: '总量',
-                        data: data[1]
+                        data: data.series[1]
                     },
                     {
                         name: '危险品',
                         type: 'line',
                         stack: '总量',
-                        data: data[2]
+                        data: data.series[2]
                     },
                     {
                         name: '普货',
                         type: 'line',
                         stack: '总量',
-                        data: data[3]
+                        data: data.series[3]
                     },
                 ]
             };

@@ -4,6 +4,7 @@ const product = {
     trendArr: state => state.product.trendArr,
     rankArr: state => state.product.rankArr,
     structureArr: state => state.product.structureArr,
+    compareArr: state => state.product.compareArr,
 };
 
 export default product;

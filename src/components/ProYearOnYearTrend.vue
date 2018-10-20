@@ -29,6 +29,7 @@ export default {
         renderChart(data) {
             
             const {timeLabels, ring, yoy} = data;
+            
             const options = {
                 tooltip: {
                     show: true,

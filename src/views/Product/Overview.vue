@@ -191,7 +191,6 @@
                 },
                 cid: 1,
                 defaultProps: TREE_PROPS,
-                // 
                 loading: false,
                 // index
                 index0: 0,
@@ -212,7 +211,6 @@
             hasTree() {
                 return !_.isEmpty(this.productTree)
             }
-            //      console.log(hasTree())
         },
         mounted() {
             this.initFormDataFromUrl();
@@ -296,7 +294,7 @@
                     cid: this.cid,
                     pt: this.form.pt,
                     ...this.getPeriodByPt(),
-                    subject
+                    subject: subject
                 };
                 return API.GetProductTrend(params);
             },
