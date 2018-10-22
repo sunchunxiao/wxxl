@@ -23,6 +23,7 @@ module.exports = {
     configureWebpack: {
         resolve: {
             alias: {
+                views: path.resolve(__dirname, './src/views'),
                 components: path.resolve(__dirname, './src/components'),
                 utils: path.resolve(__dirname, './src/utils'),
                 store: path.resolve(__dirname, './src/store'),
@@ -33,7 +34,8 @@ module.exports = {
         config.plugin('provide').use(require('webpack/lib/ProvidePlugin'), ProvidePluginOptions)
     },
     // 同时需要把 .env.development 文件中的环境变量 修改为 /api
-    //devServer: {
+    devServer: {
+        historyApiFallback: true
     //  proxy: {
     //    '/api': {
     //      target: 'http://wxxldev.gyxr.cn/eff/v1/',
@@ -44,7 +46,7 @@ module.exports = {
     //      }
     //    }
     //  }
-    //}
+    }
 }
 // eslint-disable-next-line no-console
 // console.info(process.env);
