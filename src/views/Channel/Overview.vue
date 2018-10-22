@@ -191,7 +191,7 @@
         data() {
             return {
                 form: {
-                    pt: 'day',
+                    pt: '日',
                     date: [],
                     search: '',
                     subject: 'S', // S: 销售额 P: 利润额
