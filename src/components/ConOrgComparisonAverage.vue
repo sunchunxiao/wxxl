@@ -66,7 +66,7 @@
                     yAxis: {
                         type: 'value',
                         axisLabel: {
-                            formatter: _.includes([0, 1, 2, 6, 7], parseInt(_this.id)) ? '{value}' : '{value} %'
+                            formatter: _.includes([0, 1, 2, 6, 7], parseInt(_this.id)) ? '{value}' : '{value} '
                         }
                         // name: '报警次数',
                     },

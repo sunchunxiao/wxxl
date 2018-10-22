@@ -155,11 +155,9 @@
                     let data = res.tree.children
                    
                     for(let i=0;i<data.length;i++) {
-                        console.log(data[i])
                         arr.push(data[i].cid)
-                        console.log(arr)
                     }
-                    this.$refs.tree.setCheckedKeys([10,20])
+//                  this.$refs.tree.setCheckedKeys([10,20])
                     this.$store.dispatch('SaveProductTree', res.tree);
                 });
             },
