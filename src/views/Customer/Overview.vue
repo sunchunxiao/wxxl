@@ -35,11 +35,11 @@
             <el-col :span="5" class="tree_container">
                 <div class="title">毛利目标达成率</div>
                 <div class="company">
-                    <span class="left">{{tree.data.name}}</span>
-                    <span class="right">{{calculatePercent(tree.data.real_total, tree.data.target_total).percent + '%'}}</span>
+                    <span class="left">{{customerTree.name}}</span>
+                    <span class="right">{{calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%'}}</span>
                 </div>
                 <!-- 有多个tree -->
-                <el-tree :data="treeData" :props="defaultProps" :highlight-current="true" @node-click="handleNodeClick">
+                <el-tree :data="customerTree.children" :props="defaultProps" :highlight-current="true" @node-click="handleNodeClick">
                     <span class="custom-tree-node" slot-scope="{ node, data }">
                         <span class="label">{{ data.name }}</span>
                     <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
@@ -168,6 +168,7 @@
     import mockTrendData from './mock/trendData.js';
     import mockAverageData from './mock/averageData.js';
     import mockHeatmapData from './mock/heatmapData.js';
+    import { mapGetters } from 'vuex';
 
     const TREE_PROPS = {
         children: 'children',
@@ -190,11 +191,11 @@
         data() {
             return {
                 form: {
-                    pt: 'day',
+                    pt: '日',
                     date: [],
                     search: '',
                     subject: 'S', // S: 销售额 P: 利润额
-                    version:'0'
+                    version: '0'
                 },
                 loading: false,
                 // tree
@@ -217,9 +218,16 @@
                 stragety: []
             }
         },
+        computed: {
+            ...mapGetters(['customerTree']),
+            hasTree() {
+                return !_.isEmpty(this.customerTree)
+            }
+        },
         mounted() {
-//          this.getTree();
-            console.log(this.averageData)
+            if(!this.hasTree) {
+                this.getTree()
+            }
         },
         watch: {
             form: {
@@ -228,26 +236,16 @@
             }
         },
         methods: {
-            getDateObj() {
-                const {
-                    date
-                } = this.form;
-                return {
-                    sDate: date[0] || '',
-                    eDate: date[1] || '',
-                }
-            },
             getTree() {
-                
                 const params = {
                     pt: this.form.pt,
                     subject: this.form.subject,
                     ...this.getPeriodByPt(),
-                    version:this.form.version
+                    version: this.form.version
                 };
-                API.GetOrgTree(params).then(res => {
-                    console.log(res)
-                    this.$store.dispatch('SaveOrgTree', res.tree);
+                API.GetCusTree(params).then(res => {
+                    //                  console.log(res.tree)
+                    this.$store.dispatch('SaveCusTree', res.tree);
                 });
             },
             getPeriodByPt() {
@@ -290,17 +288,30 @@
                     }
                 }
             },
+            getDateObj() {
+                const {
+                    date
+                } = this.form;
+                return {
+                    sDate: date[0] || '',
+                    eDate: date[1] || '',
+                }
+            },
             handleNodeClick(data) {
-                this.loading = true;
-                setTimeout(() => {
-                    this.pieData = mockPieData();
-                    this.trendData = mockTrendData();
-                    this.averageData = mockAverageData();
-                    this.heatmapData = mockHeatmapData();
-                }, 300);
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
+                if(data.children != undefined) {
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.pieData = mockPieData();
+                        this.trendData = mockTrendData();
+                        this.averageData = mockAverageData();
+                        this.heatmapData = mockHeatmapData();
+                    }, 300);
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 1000);
+
+                }
+
             },
             calculatePercent(a, b) {
                 if(b > 0) {

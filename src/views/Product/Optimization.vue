@@ -35,11 +35,11 @@
             <el-col :span="4" class="tree_container">
                 <div class="title">毛利目标达成率</div>
                 <div class="company">
-                    <span class="left">{{tree.data.name}}</span>
-                    <span class="right">{{calculatePercent(tree.data.real_total, tree.data.target_total).percent + '%'}}</span>
+                    <span class="left">{{productTree.name}}</span>
+                    <span class="right">{{calculatePercent(productTree.real_total, productTree.target_total).percent + '%'}}</span>
                 </div>
                 <!-- 有多个tree -->
-                <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" show-checkbox @check-change="handleCheckChange">
+                <el-tree :data="productTree.children" :props="defaultProps" @node-click="handleNodeClick" @check-change="handleCheckChange">
                     <span class="custom-tree-node" slot-scope="{ node, data }">
                         <span class="label">{{ data.name }}</span>
                     <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
@@ -102,9 +102,11 @@
         data() {
             return {
                 form: {
-                    unit: 'day',
-                    time: [],
-                    search: ''
+                    pt: '日',
+                    date: [],
+                    search: '',
+                    subject: 'S', // S: 销售额 P: 利润额
+                    version: '0'
                 },
                 tree: tree,
                 treeData: tree.data.children,
@@ -162,7 +164,7 @@
             }
         },
         computed: {
-            ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr']),
+            ...mapGetters(['productTree',]),
             hasTree() {
                 return !_.isEmpty(this.productTree)
             }

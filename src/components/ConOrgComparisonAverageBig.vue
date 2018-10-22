@@ -71,7 +71,7 @@
                 };
                 for(let i = 0; i < data.series.length; i++) {
                     options.series.push({
-                        name: this.data.subject_name,
+                        name: this.data.nodes[i],
                         type: 'line',
                         stack: i,
                         data: data.series[i]

@@ -32,7 +32,7 @@
             </el-form>
         </el-row>
         <el-row class="content_row" :gutter="20">
-            <el-col :span="4" class="tree_container">
+            <el-col :span="5" class="tree_container">
                 <div class="title">毛利目标达成率</div>
                 <div class="company">
                     <span class="left">{{productTree.name}}</span>
@@ -48,7 +48,7 @@
                     
                 </el-tree>
             </el-col>
-            <el-col :span="20" class="overflow">
+            <el-col :span="19" class="overflow">
                 <el-row v-loading="loading">
                     <Card>
                         <el-row class="card-title">产品对比分析和平均值分析</el-row>
@@ -141,7 +141,6 @@
                 this.getTree()
             }
             this.getProgress()
-            
         },
         methods: {
             getTree() {

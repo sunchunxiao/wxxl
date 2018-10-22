@@ -5,8 +5,8 @@ import {FetchPost,FetchGet} from 'utils/fetch';
 
 export default {
 	//查询组织结构
-    GetOrgTree(params) {
-        return FetchGet('/org/tree', params);
+    GetChannelTree(params) {
+        return FetchGet('/channel/tree', params);
     },
    
 }
