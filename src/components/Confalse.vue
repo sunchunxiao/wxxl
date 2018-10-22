@@ -29,7 +29,6 @@ export default {
     methods: {
         renderChart(data) {
             let _this = this;
-//          const {timeLabels} = data;
             const options = {
                 grid: {
                     left: 0,

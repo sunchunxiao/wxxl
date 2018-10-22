@@ -13,7 +13,7 @@
                 </el-col>
                 <el-col :span="9">
                     <el-form-item label="时间段选择">
-                        <el-date-picker  v-model="form.date" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="yyyy-MM-dd" value-format="yyyy-MM-dd" align="right">
+                        <el-date-picker v-model="form.date" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="yyyy-MM-dd" value-format="yyyy-MM-dd" align="right">
                         </el-date-picker>
                     </el-form-item>
                 </el-col>
@@ -39,12 +39,13 @@
                     <span class="right">{{calculatePercent(productTree.real_total, productTree.target_total).percent + '%'}}</span>
                 </div>
                 <!-- 有多个tree -->
-                <el-tree :data="productTree.children" :props="defaultProps" @node-click="handleNodeClick" show-checkbox @check-change="handleCheckChange">
+                <el-tree :data="productTree.children" ref="tree" node-key="cid" :props="defaultProps" @node-click="handleNodeClick" show-checkbox @check-change="handleCheckChange"  :default-checked-keys="setCheckedKeys">
                     <span class="custom-tree-node" slot-scope="{ node, data }">
                         <span class="label">{{ data.name }}</span>
                     <span :class="{ red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
                     <div :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"></div>
                     </span>
+                    
                 </el-tree>
             </el-col>
             <el-col :span="20" class="overflow">
@@ -53,16 +54,14 @@
                         <el-row class="card-title">产品对比分析和平均值分析</el-row>
                         <el-row>
                             <el-col :span="6">
-                                <template v-for="(item, index) in pieData">
+                                <template v-for="(item, index) in compareArr">
                                     <el-col :key="index" :span="12" @click.native="clickIndex(0 ,index)">
-                                       <!-- <ConOrgComparisonAverage  :id="`${index}`" :data="item"></ConOrgComparisonAverage>-->
-                                        <ConOrgComparisonAverage  :id="`${index}`" :data="comparisonAverageData[index]"></ConOrgComparisonAverage>
+                                        <ConOrgComparisonAverage :id="`${index}`" :data="item"></ConOrgComparisonAverage>
                                     </el-col>
                                 </template>
                             </el-col>
                             <el-col :span="18" v-if="compareArr.length > 0">
-                                <!--<ConOrgComparisonAverageBig :title="pieData[index0].text" :data="compareArr[index0]" id="ConOrgComparisonAverage" :index="index0"></ConOrgComparisonAverageBig>-->
-                                <ConOrgComparisonAverageBig :title="pieData[index0].text" :data="comparisonAverageData[index0]" id="ConOrgComparisonAverage" :index="index0"></ConOrgComparisonAverageBig>
+                                <ConOrgComparisonAverageBig :title="pieData[index0].text" :data="compareArr[index0]" id="ConOrgComparisonAverage" :index="index0"></ConOrgComparisonAverageBig>
                             </el-col>
                         </el-row>
                     </Card>
@@ -76,8 +75,8 @@
     import API from './api';
     import Card from '../../components/Card';
     // 组织对比分析和平均值分析
-    import ConOrgComparisonAverage from '../../components/Confalse';
-    import ConOrgComparisonAverageBig from '../../components/ConfalseBig';
+    import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
+    import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 
     import mockPieData from './mock/pieData.js';
     import mockComparisonAverageData from './mock/comparisonAverageData.js';
@@ -104,7 +103,7 @@
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
-                cid:'10',
+                cid: '10',
                 loading: false,
                 tree: tree,
                 treeData: tree.data.children,
@@ -112,11 +111,12 @@
                 pieData: mockPieData(),
                 comparisonAverageData: mockComparisonAverageData(),
                 index0: 0,
-                series:[]
+                series: [],
+                setCheckedKeys: []
             }
         },
         computed: {
-            ...mapGetters(['productTree', 'progressArr','compareArr',]),
+            ...mapGetters(['productTree', 'progressArr', 'compareArr', ]),
             hasTree() {
                 return !_.isEmpty(this.productTree)
             }
@@ -129,17 +129,18 @@
             cid: function(val, oldVal) {
                 // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
                 // 暂时先在这里做
-//              this.getProgress();
-//              this.getStructure();
+                //              this.getProgress();
+                //              this.getStructure();
                 this.getTrend()
             }
         },
+        
         mounted() {
+            //          console.log(this.hasTree)
             if(!this.hasTree) {
                 this.getTree()
             }
             this.getProgress()
-//          console.log(this.compareArr)
             
         },
         methods: {
@@ -150,11 +151,18 @@
                     ...this.getPeriodByPt(),
                 };
                 API.GetProductTree(params).then(res => {
+                    let arr = []
+                    let data = res.tree.children
+                   
+                    for(let i=0;i<data.length;i++) {
+                        arr.push(data[i].cid)
+                    }
+//                  this.$refs.tree.setCheckedKeys([10,20])
                     this.$store.dispatch('SaveProductTree', res.tree);
                 });
             },
             getProgress() {
-                //              console.log(this.cid)
+//              console.log(this.cid)
                 const params = {
                     cid: this.cid,
                     ...this.getPeriodByPt(),
@@ -164,7 +172,7 @@
                     const promises = _.map(res.data, o => this.getTrend(o.subject));
                     Promise.all(promises).then(resultList => {
                         _.forEach(resultList, (v, k) => {
-//                          console.log(res.data[k].subject)
+                            //                          console.log(res.data[k].subject)
                             v.subject = res.data[k].subject;
                             v.subject_name = res.data[k].subject_name;
                         });
@@ -172,12 +180,12 @@
                     });
                 });
             },
-            getTrend(subject){
+            getTrend(subject) {
                 const params = {
-                    targets: this.cid,
+                    targets: 10+','+'20'+','+'30',
                     pt: this.form.pt,
                     ...this.getPeriodByPt(),
-                    subject:subject
+                    subject: subject
                 };
                 return API.GetProductCompare(params)
             },
@@ -231,7 +239,7 @@
                 }
             },
             handleNodeClick(data) {
-//               console.log(data.children)
+                //               console.log(data.children)
                 if(data.children != undefined) {
                     this.cid = data.cid;
                     this.loading = true;
@@ -247,7 +255,7 @@
 
             },
             handleCheckChange(data, checked, indeterminate) {
-                //        console.log(data, checked, indeterminate)
+//                        console.log(data, checked, indeterminate)
             },
             clickIndex(i, idx) {
                 this[`index${i}`] = idx;
