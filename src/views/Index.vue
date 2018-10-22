@@ -65,7 +65,7 @@
                       <a class="contact" href="http://www.gyxr.cn/ContactUs.html">联系我们</a>
                   </li>
                   <li>
-                      <a href="/#/product/overview">登录</a>
+                      <a href="/login">登录</a>
                   </li>
               </ul>
           </div>
