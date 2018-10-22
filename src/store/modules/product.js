@@ -27,7 +27,8 @@ const product = {
       },
       SAVE_COMPARE_ARR: (state, arr) => {
         state.compareArr = arr;
-      }
+      },
+      
     },
     actions: {
       SaveProductTree ({ commit }, tree) {
@@ -48,6 +49,7 @@ const product = {
       SaveCompareArr({ commit }, arr) {
         commit('SAVE_COMPARE_ARR', arr);
       },
+      
     }
   };
   
