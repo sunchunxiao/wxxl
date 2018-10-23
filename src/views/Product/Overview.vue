@@ -217,6 +217,7 @@
             if(!this.hasTree) {
                 this.getTree()
             }
+			
         },
         watch: {
             // form: [
