@@ -54,6 +54,7 @@
                             <el-col :span="12" :key="i">
                                 <el-table :data="tableData2" size="mini" :span-method="arraySpanMethod2">
                                     <el-table-column :label="time">
+										<el-table-column prop="m" label="指标"></el-table-column>
                                         <el-table-column prop="a" label="影响因素"></el-table-column>
                                         <el-table-column prop="b" label="应用策略"></el-table-column>
                                         <el-table-column prop="c" label="评选结果"></el-table-column>
@@ -113,22 +114,27 @@
                 treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
                 time: '7.30 - 8.05',
-                tableData2: [{
+                tableData2: [
+				{
+					m: '成本',
                     a: '采购',
                     b: '-',
                     c: '优',
                     d: '30'
                 }, {
+					m: '成本',
                     a: '供应商',
                     b: '-',
-                    c: '-',
+                    c: '优',
                     d: '-'
                 }, {
+					m: '成本',
                     a: '包装',
                     b: '精简包装',
                     c: '-',
                     d: '-'
                 }, {
+					m: '日销',
                     a: '流量',
                     b: '-',
                     c: '中',
@@ -256,7 +262,7 @@
                 rowIndex,
                 columnIndex
             }) {
-                if(columnIndex === 2 || columnIndex === 3) {
+                if(columnIndex === 0||columnIndex === 2 || columnIndex === 3) {
                     if(rowIndex % 3 === 0) {
                         return [3, 1]
                     } else {

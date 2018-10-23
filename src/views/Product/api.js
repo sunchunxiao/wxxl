@@ -20,5 +20,12 @@ export default {
     GetProductCompare(params) {
         return FetchGet('/product/compare', params);
     },
+    GetProductHistory(params) {
+        return FetchGet('/product/strategy/history', params);
+    },
+	GetProductStrategy(params) {
+		return FetchGet('/product/strategy', params);
+	},
+
     
 }

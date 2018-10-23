@@ -157,6 +157,8 @@
     // mock
     import mockPieData from './mock/pieData.js';
     import mockAverageData from './mock/averageData.js';
+    
+    import { getToken,} from '../../utils/auth';
 
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
@@ -217,6 +219,7 @@
             if(!this.hasTree) {
                 this.getTree()
             }
+            
         },
         watch: {
             // form: [
