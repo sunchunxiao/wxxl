@@ -11,7 +11,7 @@ function mockComparisonAverageData() {
     let arr = [];
     for(let i = 0; i < 7; i++) {
         let arr2 = [];
-        for(let v = 0; v < 4; v++) {
+        for(let v = 0; v < 3; v++) {
             arr2.push(getRandomNumArr(7));
         }
         arr.push(arr2);

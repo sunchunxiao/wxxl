@@ -65,13 +65,27 @@
                       <a class="contact" href="http://www.gyxr.cn/ContactUs.html">联系我们</a>
                   </li>
                   <li>
-                      <a href="/#/product/overview">登录</a>
+                      <a v-if="!token" href="/login">登录</a>
+                      <a v-else href="/product/overview">进入系统</a>
                   </li>
               </ul>
           </div>
       </div>
 </div>
 </template>
+
+<script>
+import { getToken } from 'utils/auth';
+
+export default {
+  computed: {
+    token() {
+      return getToken();
+    }
+  }
+}
+</script>
+
 
 <style lang="scss">
 .index_container {

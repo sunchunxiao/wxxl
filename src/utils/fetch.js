@@ -1,13 +1,16 @@
 // request
 
 import axios from 'axios';
-// import qs from 'qs';
 import { Message } from 'element-ui';
+// eslint-disable-next-line
+import { getToken, removeToken } from './auth';
+import router from '../router/index';
+// import qs from 'qs';
 // import store from 'store';
 
 // 创建axios实例
 // const SUCCESS_CODE = 0;
-// const TOKEN_EXPIRED_CODE = 402;
+const AUTH_FAILED = 401;
 const MESSAGEDURATION = 5 * 1000;
 
 const service = axios.create({
@@ -18,9 +21,9 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(config => {
   // Do something before request is sent
-//   if (getToken()) {
-//     config.headers['token'] = getToken(); // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
-//   }
+  if (getToken()) {
+    config.headers['Authorization'] = getToken(); // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
+  }
   return config;
 }, error => {
   // Do something with request error
@@ -37,6 +40,9 @@ service.interceptors.response.use(response => {
       // eslint-disable-next-line no-unused-vars
       const { api_info, ...data } = res; 
       return data;
+    } else if (res.api_info.error === AUTH_FAILED) { // token error
+      removeToken();
+      router.replace('/login');
     } else {
       Message({message: res.api_info.message, type: 'warning', duration: MESSAGEDURATION});
       return Promise.reject(res);
@@ -44,16 +50,6 @@ service.interceptors.response.use(response => {
   }
   Message({message: '接口异常', type: 'warning', duration: MESSAGEDURATION});
   return Promise.reject(res);
-  // if (res.retCode === SUCCESS_CODE) {
-  //   return res.retData;
-  // }
-  // if (res.retCode === TOKEN_EXPIRED_CODE) {
-  //   // store.dispatch('ExpiredToken').then(() => {
-  //   //   location.reload();
-  //   // });
-  // }
-  // Message({message: res.retMsg, type: 'warning', duration: 6 * 1000});
-  // return Promise.reject(res);
 },
   error => {
     // eslint-disable-next-line no-console
