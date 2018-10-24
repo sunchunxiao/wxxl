@@ -126,7 +126,7 @@
 									<div class="stragety-box">
 										<div class="stragety-selected-title">{{stragetyTitle}}</div>
 										<el-checkbox-group v-model="stragetyCheckList">
-											<el-checkbox v-for="(item,index) in stragety" :key="index" :label="item.strategy" @change="change(item.id,index,item.seen)"></el-checkbox>
+											<el-checkbox v-model="checked1" v-for="(item,index) in stragety" :key="index" :label="item.strategy" @change="change"></el-checkbox>
 										</el-checkbox-group>
 										<el-button @click="submit" type="primary" class="center">确 认</el-button>
 									</div>
@@ -209,6 +209,7 @@
 				stragetyCheckList: [],
 				stragetyTitle: '',
 				stragety: [],
+				checked1:true,
 				idArr: [],
 
 			}
@@ -250,7 +251,7 @@
 			}
 		},
 		methods: {
-			change(id, index, seen) {
+			change() {
 				this.idArr = [];
 				for (let i of this.stragetyCheckList) {
 
@@ -475,12 +476,12 @@
 					console.log(res.data)
 					this.stragety = res.data;
 					for (let i = 0; i < res.data.length; i++) {
-						res.data[i].seen = false
-						console.log(res.data[i].is_selected)
-						res.data[0].is_selected = 1
+						// res.data[i].seen = false
+						// console.log(res.data[i].is_selected)
+						// res.data[0].is_selected = 1
 						if (res.data[i].is_selected == 1) {
 							console.log(1)
-							// this.checked1 = true
+							this.checked1 = true
 						}
 
 					}
