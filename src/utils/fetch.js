@@ -74,6 +74,18 @@ const FetchGet = (url, params) => {
   return service(options);
 }
 
+
+const FetchPostNew = (url, params) => {
+  const options = {
+    url,
+    method: 'post'
+  };
+  if(params) {
+    options.params = params;
+  }
+  return service(options);
+}
+
 const FetchPost = (url, data, params) => {
   const options = {
     url,
@@ -89,4 +101,4 @@ const FetchPost = (url, data, params) => {
 }
 
 
-export {FetchGet, FetchPost};
+export {FetchGet, FetchPost,FetchPostNew};
