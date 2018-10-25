@@ -605,7 +605,7 @@
 				total:0,
 				currentPage: 1,
 				tableData: tableData
-			}
+			};
 		},
 		watch: {
 
@@ -613,11 +613,11 @@
 		computed: {
 			...mapGetters(['strategyArr']),
 			hasTree() {
-				return !_.isEmpty(this.strategyArr)
+				return !_.isEmpty(this.strategyArr);
 			}
 		},
 		mounted(){
-			this.getProductStrategy()
+			this.getProductStrategy();
 			// console.log(this.strategyArr)
 		},
 		methods: {
@@ -633,8 +633,8 @@
 				API.GetProductStrategy(params).then(res => {
 					// console.log(res.data)
 					
-					this.trackList = res.data
-					this.total = res.total
+					this.trackList = res.data;
+					this.total = res.total;
 					this.$store.dispatch('SaveProductStrategy', res.data);
 				});
 			},
@@ -645,7 +645,7 @@
 				return {
 					sDate: date[0] || '',
 					eDate: date[1] || '',
-				}
+				};
 			},
 			getPeriodByPt() {
 				const {
@@ -667,7 +667,7 @@
 						return {
 							sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
 							eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-						}
+						};
 					} else {
 						return {
 							sDate: '2018-01-01',
@@ -675,7 +675,7 @@
 							// 先写死个时间
 							// sDate: moment().startOf('week').format('YYYY-MM-DD'),
 							// eDate: moment().format('YYYY-MM-DD'),
-						}
+						};
 					}
 				} else {
 					return {
@@ -684,7 +684,7 @@
 						// 先写死个时间
 						// sDate: moment().startOf('week').format('YYYY-MM-DD'),
 						// eDate: moment().format('YYYY-MM-DD'),
-					}
+					};
 				}
 			},
 			filterA(value, row, column) {
@@ -728,12 +728,12 @@
 					...this.getPeriodByPt(),
 				};
 				API.GetProductStrategy(params).then(res => {
-					this.trackList = res.data
+					this.trackList = res.data;
 					// this.$store.dispatch('SaveProductStrategy', res.data);
 				});
 			}
 		}
-	}
+	};
 </script>
 
 <style lang="scss">

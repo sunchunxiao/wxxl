@@ -29,7 +29,7 @@ export default {
     },
     methods: {
         renderChart(data) {
-            const {real, target, timeLabels} = data;
+            const { real, target, timeLabels } = data;
             const diff = [];
             const bottom = [];
             const underTarget = [];
@@ -117,7 +117,7 @@ export default {
             this.chart.setOption(options);
         }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>

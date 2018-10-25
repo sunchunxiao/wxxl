@@ -19,7 +19,7 @@ module.exports = {
     runtimeCompiler: true,
     productionSourceMap: false,
     parallel: false,
-    lintOnSave: undefined,
+    lintOnSave: !isProduction,
     configureWebpack: {
         resolve: {
             alias: {
@@ -31,7 +31,7 @@ module.exports = {
         },
     },
     chainWebpack: config => {
-        config.plugin('provide').use(require('webpack/lib/ProvidePlugin'), ProvidePluginOptions)
+        config.plugin('provide').use(require('webpack/lib/ProvidePlugin'), ProvidePluginOptions);
     },
     // 同时需要把 .env.development 文件中的环境变量 修改为 /api
     devServer: {
@@ -47,6 +47,6 @@ module.exports = {
     //    }
     //  }
     }
-}
+};
 // eslint-disable-next-line no-console
 // console.info(process.env);

@@ -98,7 +98,7 @@ export default {
             this.chart.setOption(options);
         }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>

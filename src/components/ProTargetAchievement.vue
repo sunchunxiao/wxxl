@@ -21,8 +21,8 @@
 <script>
 import echarts from 'echarts';
 
-const REVERSE_TARGET = ['C', 'SA'] // 成本 库存额 是反向指标
-const COLORMAP = { over: '#b12725', below: '#308db9'};
+const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
+const COLORMAP = { over: '#b12725', below: '#308db9' };
 const colorLeft = '#E0E3E9';
 const FONTSIZE1 = 28;
 const FONTSIZE2 = 15;
@@ -36,7 +36,7 @@ export default {
     data() {
         return {
             color: '#000'
-        }
+        };
     },
     computed: {
         unit() {
@@ -175,7 +175,7 @@ export default {
             this.chart.setOption(options);
         }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>

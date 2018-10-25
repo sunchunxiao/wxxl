@@ -235,12 +235,12 @@
 				pieData: mockPieData(),
 				comparisonAverageData: mockComparisonAverageData(),
 				index0: 0
-			}
+			};
 		},
 		computed: {
 			...mapGetters(['productTree', 'historyArr']),
 			hasTree() {
-				return !_.isEmpty(this.productTree)
+				return !_.isEmpty(this.productTree);
 			}
 		},
 		watch: {
@@ -251,9 +251,9 @@
 		},
 		mounted() {
 			if (!this.hasTree) {
-				this.getTree()
+				this.getTree();
 			}
-			this.getHistory()
+			this.getHistory();
 			// console.log(this.historyArr)
 		},
 		methods: {
@@ -298,7 +298,7 @@
 						return {
 							sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
 							eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-						}
+						};
 					} else {
 						return {
 							sDate: '2018-01-01',
@@ -306,7 +306,7 @@
 							// 先写死个时间
 							// sDate: moment().startOf('week').format('YYYY-MM-DD'),
 							// eDate: moment().format('YYYY-MM-DD'),
-						}
+						};
 					}
 				} else {
 					return {
@@ -315,7 +315,7 @@
 						// 先写死个时间
 						// sDate: moment().startOf('week').format('YYYY-MM-DD'),
 						// eDate: moment().format('YYYY-MM-DD'),
-					}
+					};
 				}
 			},
 			getDateObj() {
@@ -325,7 +325,7 @@
 				return {
 					sDate: date[0] || '',
 					eDate: date[1] || '',
-				}
+				};
 			},
 			largerThanZero(val) {
 				return val && _.isNumber(parseFloat(val*100)) && parseFloat(val) > 0;
@@ -339,9 +339,9 @@
 			}) {
 				if (columnIndex === 0 ||columnIndex === 1 || columnIndex === 3 ||columnIndex === 4) {
 					if (rowIndex % 3 === 0) {
-						return [3, 1]
+						return [3, 1];
 					} else {
-						return [0, 0]
+						return [0, 0];
 					}
 				}
 			},
@@ -363,7 +363,7 @@
 				return {};
 			},
 		}
-	}
+	};
 </script>
 
 <style lang="scss">

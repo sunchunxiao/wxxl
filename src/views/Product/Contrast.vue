@@ -169,12 +169,12 @@
                 index0: 0,
                 series: [],
                 setCheckedKeys: []
-            }
+            };
         },
         computed: {
-            ...mapGetters(['productTree', 'progressArr', 'compareArr', ]),
+            ...mapGetters(['productTree', 'progressArr', 'compareArr' ]),
             hasTree() {
-                return !_.isEmpty(this.productTree)
+                return !_.isEmpty(this.productTree);
             }
         },
         watch: {
@@ -187,16 +187,16 @@
                 // 暂时先在这里做
                 //              this.getProgress();
                 //              this.getStructure();
-                this.getTrend()
+                this.getTrend();
             }
         },
         
         mounted() {
             //          console.log(this.hasTree)
             if(!this.hasTree) {
-                this.getTree()
+                this.getTree();
             }
-            this.getProgress()
+            this.getProgress();
         },
         methods: {
             getTree() {
@@ -206,11 +206,11 @@
                     ...this.getPeriodByPt(),
                 };
                 API.GetProductTree(params).then(res => {
-                    let arr = []
-                    let data = res.tree.children
+                    let arr = [];
+                    let data = res.tree.children;
                    
                     for(let i=0;i<data.length;i++) {
-                        arr.push(data[i].cid)
+                        arr.push(data[i].cid);
                     }
 //                  this.$refs.tree.setCheckedKeys([10,20])
                     this.$store.dispatch('SaveProductTree', res.tree);
@@ -242,7 +242,7 @@
                     ...this.getPeriodByPt(),
                     subject: subject
                 };
-                return API.GetProductCompare(params)
+                return API.GetProductCompare(params);
             },
             getPeriodByPt() {
                 const {
@@ -264,7 +264,7 @@
                         return {
                             sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
                             eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-                        }
+                        };
                     } else {
                         return {
                             sDate: '2018-06-01',
@@ -272,7 +272,7 @@
                             // 先写死个时间
                             // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                             // eDate: moment().format('YYYY-MM-DD'),
-                        }
+                        };
                     }
                 } else {
                     return {
@@ -281,7 +281,7 @@
                         // 先写死个时间
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),
-                    }
+                    };
                 }
             },
             getDateObj() {
@@ -291,7 +291,7 @@
                 return {
                     sDate: date[0] || '',
                     eDate: date[1] || '',
-                }
+                };
             },
             handleNodeClick(data) {
                 //               console.log(data.children)
@@ -326,7 +326,7 @@
                 return {};
             },
         }
-    }
+    };
 </script>
 
 <style lang="scss">

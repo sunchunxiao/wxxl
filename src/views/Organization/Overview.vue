@@ -313,18 +313,18 @@
                 stragetyCheckList: [],
                 stragetyTitle: '',
                 stragety: []
-            }
+            };
         },
         computed: {
             ...mapGetters(['organizationTree']),
             hasTree() {
-                return !_.isEmpty(this.organizationTree)
+                return !_.isEmpty(this.organizationTree);
             }
         },
         mounted() {
             
             if(!this.hasTree) {
-                this.getTree()
+                this.getTree();
             }
         },
         watch: {
@@ -366,7 +366,7 @@
                         return {
                             sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
                             eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-                        }
+                        };
                     } else {
                         return {
                             sDate: '2018-01-01',
@@ -374,7 +374,7 @@
                             // 先写死个时间
                             // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                             // eDate: moment().format('YYYY-MM-DD'),
-                        }
+                        };
                     }
                 } else {
                     return {
@@ -383,7 +383,7 @@
                         // 先写死个时间
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),
-                    }
+                    };
                 }
             },
             getDateObj() {
@@ -393,7 +393,7 @@
                 return {
                     sDate: date[0] || '',
                     eDate: date[1] || '',
-                }
+                };
             },
             handleNodeClick(data) {
                 if(data.children != undefined) {
@@ -434,7 +434,7 @@
                 this.stragety = data.stragety;
             }
         }
-    }
+    };
 </script>
 
 <style lang="scss">

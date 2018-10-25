@@ -44,7 +44,7 @@
                 //          const average = Math.floor(sumTotal / sumTarget / pData.length * 100);
 
                 //          const average = (nodes.avg / nodes.total*100).toFixed(1)
-                const average = nodes.avg
+                const average = nodes.avg;
                 for(let i in pData) {
                     //              percentArr.push(Math.floor(parseInt(pData[i].total) / sumTarget * 100));
                     //              var arr = (nodes.values[i] / nodes.total).toFixed(4)
@@ -89,7 +89,7 @@
                         itemStyle: {
                             normal: {
                                 color: function(params) {
-                                    return params.data < average ? '#b0afad' : '#318cb8'
+                                    return params.data < average ? '#b0afad' : '#318cb8';
                                 },
                                 barBorderRadius: [0, 20, 20, 0],
                             },
@@ -125,7 +125,7 @@
                                         color: '#b12725'
                                     }
                                 }
-                            }, ]
+                            }]
                         },
                     }]
                 };
@@ -133,7 +133,7 @@
                 this.chart.setOption(options);
             }
         }
-    }
+    };
 </script>
 
 <style lang="scss" scoped>

@@ -41,7 +41,7 @@
 				cid: 0,
 				name: '',
 				brand: ''
-			}
+			};
 		},
 		mounted() {
 			this.chart = echarts.init(document.getElementById(`heatmap-${this.id}`));
@@ -51,25 +51,25 @@
 			this.chart.on('click', function(params) {
 				let cid = params.seriesId.split(",");
 				//切割时间
-				const time = cid.pop()
+				const time = cid.pop();
 				// console.log(time,cid)
 				const brands = params.seriesName.split(",");
 				//切割subject
-				let subjectArr = brands.slice(-7)
-				let nameArr = brands.slice(0, brands.length - 7)
+				let subjectArr = brands.slice(-7);
+				let nameArr = brands.slice(0, brands.length - 7);
 				// console.log(nameArr)
 				// console.log(subjectArr)
 				//取subjects
 				for (let i = 0; i < subjectArr.length; i++) {
 					if (params.data[0] == i) {
-						this.name = subjectArr[i]
+						this.name = subjectArr[i];
 					}
 				}
 				//取id和名字
 				for (let i = 0; i < cid.length; i++) {
 					if (params.data[1] == i) {
-						this.cid = cid[i]
-						this.brand = nameArr[i]
+						this.cid = cid[i];
+						this.brand = nameArr[i];
 					}
 				}
 				// const brand = brands[Math.floor(params.dataIndex / 7)];
@@ -116,7 +116,7 @@
 					return '良';
 				}
 				if (4 === score) {
-					return '优'
+					return '优';
 				}
 				return '差';
 			},
@@ -246,7 +246,7 @@
 				this.chart.setOption(heatMapOption);
 			}
 		}
-	}
+	};
 </script>
 
 <style lang="scss" scoped>

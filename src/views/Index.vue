@@ -98,9 +98,8 @@ export default {
       return getToken();
     }
   }
-}
+};
 </script>
-
 
 <style lang="scss">
 .index_container {
