@@ -1,4 +1,4 @@
-import {FetchGet} from 'utils/fetch';
+import {FetchGet,FetchPostNew} from 'utils/fetch';
 // import store from 'store';
 
 export default {
@@ -26,6 +26,11 @@ export default {
 	GetProductStrategy(params) {
 		return FetchGet('/product/strategy', params);
 	},
+	GetProductMatch(params) {
+		return FetchGet('/product/strategy/match', params);
+	},
+	PostProductSave(params) {
+		return FetchPostNew('/product/strategy/save', params);
+	},
 
-    
 }
