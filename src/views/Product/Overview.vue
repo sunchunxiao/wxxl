@@ -126,7 +126,7 @@
 									<div class="stragety-box">
 										<div class="stragety-selected-title">{{stragetyTitle}}</div>
 										<el-checkbox-group v-model="stragetyCheckList">
-											<el-checkbox v-model="checked1" v-for="(item,index) in stragety" :key="index" :label="item.strategy" @change="change"></el-checkbox>
+											<el-checkbox  v-for="(item,index) in stragety" :key="index" :label="item.strategy" @change="change"></el-checkbox>
 										</el-checkbox-group>
 										<el-button @click="submit" type="primary" class="center">确 认</el-button>
 									</div>
@@ -209,7 +209,7 @@
 				stragetyCheckList: [],
 				stragetyTitle: '',
 				stragety: [],
-				checked1:true,
+				checked1: true,
 				idArr: [],
 
 			}
@@ -254,17 +254,14 @@
 			change() {
 				this.idArr = [];
 				for (let i of this.stragetyCheckList) {
-
 					let stragetyObj = this.stragety.find(el => {
 						return el.strategy == i;
 					});
 					this.idArr.push(stragetyObj.id);
 				}
-				console.log(this.stragetyCheckList, this.idArr);
-
+				// console.log(this.stragetyCheckList, this.idArr);
 			},
 			submit() {
-				// console.log(JSON.parse(localStorage.data))
 				let data1 = JSON.parse(localStorage.data)
 
 				this.$confirm('确认?', {
@@ -285,7 +282,7 @@
 							showClose: true,
 							message: '保存成功'
 						});
-						console.log(res)
+						// console.log(res)
 					});
 				}).catch(() => {
 					this.$message({
@@ -453,7 +450,6 @@
 				this[`index${i}`] = idx;
 			},
 			showStragety(data) {
-				// console.log(data)
 				localStorage.setItem("data", JSON.stringify(data))
 				const {
 					cid,
@@ -473,17 +469,13 @@
 				};
 
 				API.GetProductMatch(params).then(res => {
-					console.log(res.data)
+					this.stragetyCheckList = []
 					this.stragety = res.data;
 					for (let i = 0; i < res.data.length; i++) {
-						// res.data[i].seen = false
-						// console.log(res.data[i].is_selected)
-						// res.data[0].is_selected = 1
 						if (res.data[i].is_selected == 1) {
-							console.log(1)
-							this.checked1 = true
+							this.stragetyCheckList.push(res.data[i].strategy)
+							// console.log(this.stragetyCheckList)
 						}
-
 					}
 					// this.$store.dispatch('SaveRankArr', res.data);
 				});
