@@ -161,278 +161,278 @@
 	import mockPieData from './mock/pieData.js';
 	import mockAverageData from './mock/averageData.js';
 
-	import {
-		mapGetters
-	} from 'vuex';
-	const TREE_PROPS = {
-		children: 'children',
-		label: 'name'
-	};
-	const TIMEPT = {
-		'周': 'week',
-		'月': 'month',
-		'季': 'quarter',
-		'年': 'year'
-	};
+    import { mapGetters } from 'vuex';
+    const TREE_PROPS = {
+        children: 'children',
+        label: 'name'
+    };
+    const TIMEPT = {
+        '周': 'week',
+        '月': 'month',
+        '季': 'quarter',
+        '年': 'year'
+    };
 
-	export default {
-		components: {
-			Card,
-			ProYearOnYearTrend,
-			ProportionalStructureAverageComparison,
-			ProportionalStructureAverageComparisonBig,
-			IntelligentSelection,
-			ProTargetAchievement,
-			ProTargetAchievementBig,
-			ProTargetActualDiffTrend,
-		},
-		data() {
-			return {
-				form: {
-					pt: '', // 周期类型
-					date: [], // date
-					search: '', // 暂时没有接口 先这样
-					subject: 'S', // S: 销售额 P: 利润额
-				},
-				cid: 1,
-				defaultProps: TREE_PROPS,
-				loading: false,
-				// index
-				index0: 0,
-				index1: 0,
-				index2: 0,
-				index3: 0,
-				// mockData
-				pieData: mockPieData(),
-				averageData: mockAverageData(),
-				// stragety
-				stragetyCheckList: [],
-				stragetyTitle: '',
-				stragety: [],
-				checked1: true,
-				idArr: [],
+    export default {
+        components: {
+            Card,
+            ProYearOnYearTrend,
+            ProportionalStructureAverageComparison,
+            ProportionalStructureAverageComparisonBig,
+            IntelligentSelection,
+            ProTargetAchievement,
+            ProTargetAchievementBig,
+            ProTargetActualDiffTrend,
+        },
+        data() {
+            return {
+                form: {
+                    pt: '', // 周期类型
+                    date: [], // date
+                    search: '', // 暂时没有接口 先这样
+                    subject: 'S', // S: 销售额 P: 利润额
+                },
+                cid: 1,
+                defaultProps: TREE_PROPS,
+                loading: false,
+                // index
+                index0: 0,
+                index1: 0,
+                index2: 0,
+                index3: 0,
+                // mockData
+                pieData: mockPieData(),
+                averageData: mockAverageData(),
+                // stragety
+                stragetyCheckList: [],
+                stragetyTitle: '',
+                stragety: [],
+                checked1: true,
+                idArr: [],
+            }
+        },
+        computed: {
+            ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr']),
+            hasTree() {
+                return !_.isEmpty(this.productTree)
+            }
+        },
+        mounted() {
+            this.initFormDataFromUrl();
+            if(!this.hasTree) {
+                this.getTree()
+            }
 
-			}
-		},
-		computed: {
-			...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr']),
-			hasTree() {
-				return !_.isEmpty(this.productTree)
-			}
-		},
-		mounted() {
-			this.initFormDataFromUrl();
-			if (!this.hasTree) {
-				this.getTree()
-			}
-		},
-		watch: {
-			// form: [
-			//     {
-			//         handler: function() {
-			//             this.getTree();
-			//         },
-			//         deep: true,
-			//     },
-			//     {
-			//         handler: function(val, oldVal) {
-			//             console.log(val, oldVal);
-			//             this.getProgress();
-			//         },
-			//         deep: true,
-			//     }
-			// ],
-			cid: function(val, oldVal) {
-				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-				// 暂时先在这里做
-				this.getProgress();
-				this.getStructure();
-				this.getRank();
-			}
-		},
-		methods: {
-			change() {
-				this.idArr = [];
-				for (let i of this.stragetyCheckList) {
-					let stragetyObj = this.stragety.find(el => {
-						return el.strategy == i;
-					});
-					this.idArr.push(stragetyObj.id);
-				}
-				// console.log(this.stragetyCheckList, this.idArr);
-			},
-			submit() {
-				let data1 = JSON.parse(localStorage.data)
+        },
+        watch: {
+            // form: [
+            //     {
+            //         handler: function() {
+            //             this.getTree();
+            //         },
+            //         deep: true,
+            //     },
+            //     {
+            //         handler: function(val, oldVal) {
+            //             console.log(val, oldVal);
+            //             this.getProgress();
+            //         },
+            //         deep: true,
+            //     }
+            // ],
+            cid: function(val, oldVal) {
+                // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+                // 暂时先在这里做
+                this.getProgress();
+                this.getStructure();
+                this.getRank();
+            }
+        },
+        methods: {
+            change() {
+                this.idArr = [];
+                for (let i of this.stragetyCheckList) {
+                    let stragetyObj = this.stragety.find(el => {
+                        return el.strategy == i;
+                    });
+                    this.idArr.push(stragetyObj.id);
+                }
+                // console.log(this.stragetyCheckList, this.idArr);
+            },
+            submit() {
+                let data1 = JSON.parse(localStorage.data)
 
-				this.$confirm('确认?', {
-					confirmButtonText: '保存',
-					cancelButtonText: '取消',
-					type: 'warning',
-					center: true
-				}).then(() => {
-					const data = {
-						cid: data1.cid,
-						rank: data1.rank,
-						subject: data1.subject,
-						time_label: data1.time_label,
-						strategies: this.idArr.join(',')
-					};
-					API.PostProductSave(data).then(res => {
-						this.$message({
-							showClose: true,
-							message: '保存成功'
-						});
-						// console.log(res)
-					});
-				}).catch(() => {
-					this.$message({
-						type: 'info',
-						message: '已取消',
-						duration: 1500
-					});
-				});
+                this.$confirm('确认?', {
+                    confirmButtonText: '保存',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    const data = {
+                        cid: data1.cid,
+                        rank: data1.rank,
+                        subject: data1.subject,
+                        time_label: data1.time_label,
+                        strategies: this.idArr.join(',')
+                    };
+                    API.PostProductSave(data).then(res => {
+                        this.$message({
+                            showClose: true,
+                            message: '保存成功'
+                        });
+                        // console.log(res)
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消',
+                        duration: 1500
+                    });
+                });
 
-			},
-			select() {
-				//  		console.log(this.form.pt)
-			},
-			initFormDataFromUrl() {
-				const {
-					pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-				} = this.$route.query;
-				let formData = {
-					pt: pt,
-					subject: subject,
-				};
-				if (moment(sDate).isValid() && moment(eDate).isValid()) {
-					formData.date = [sDate, eDate];
-				}
-				this.cid = cid;
-				this.form = { ...this.form,
-					...formData
-				};
-			},
-			getTree() {
-				const params = {
-					pt: this.form.pt,
-					subject: this.form.subject,
-					...this.getPeriodByPt(),
-				};
-				API.GetProductTree(params).then(res => {
-					this.$store.dispatch('SaveProductTree', res.tree);
-				});
-			},
-			getProgress() {
+            },
+            select() {
+                //  		console.log(this.form.pt)
+            },
+            initFormDataFromUrl() {
+                const {
+                    pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
+                } = this.$route.query;
+                let formData = {
+                    pt: pt,
+                    subject: subject,
+                };
+                if(moment(sDate).isValid() && moment(eDate).isValid()) {
+                    formData.date = [sDate, eDate];
+                }
+                this.cid = cid;
+                this.form = { ...this.form,
+                    ...formData
+                };
+            },
+            getTree() {
+                const params = {
+                    pt: this.form.pt,
+                    subject: this.form.subject,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetProductTree(params).then(res => {
+                    this.$store.dispatch('SaveProductTree', res.tree);
+                });
+            },
+            getProgress() {
+                //              console.log(this.cid)
+                const params = {
+                    cid: this.cid,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetProductProgress(params).then(res => {
+                    this.$store.dispatch('SaveProgressData', res.data);
+                    const promises = _.map(res.data, o => this.getTrend(o.subject));
+                    Promise.all(promises).then(resultList => {
+                        _.forEach(resultList, (v, k) => {
+                            v.subject = res.data[k].subject;
+                            v.subject_name = res.data[k].subject_name;
+                        });
+                        this.$store.dispatch('SaveTrendArr', resultList);
+                    });
+                });
+            },
+            getTrend(subject) {
+                const params = {
+                    cid: this.cid,
+                    pt: this.form.pt,
+                    ...this.getPeriodByPt(),
+                    subject: subject
+                };
+                return API.GetProductTrend(params);
+            },
+            getStructure() {
+                const params = {
+                    cid: this.cid,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetProductStructure(params).then(res => {
+                    //              console.log(res.data);
+                    this.$store.dispatch('SaveStructureArr', res.data);
+                });
+            },
+            getRank() {
+                const params = {
+                    cid: this.cid,
+                    pt: this.form.pt,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetProductRank(params).then(res => {
+                    //              console.log(res.data);
+                    this.$store.dispatch('SaveRankArr', res.data);
+                });
+            },
+            getDateObj() {
+                const {
+                    date
+                } = this.form;
+                return {
+                    sDate: date[0] || '',
+                    eDate: date[1] || '',
+                }
+            },
+            getPeriodByPt() {
+                const {
+                    sDate,
+                    eDate
+                } = this.getDateObj();
+                const {
+                    pt
+                } = this.form;
+                if(sDate && eDate) { // 计算时间周期
+                    if(pt === '日') {
+                        return {
+                            sDate,
+                            eDate
+                        };
+                    }
+                    let unit = TIMEPT[pt];
+                    if(unit) {
+                        return {
+                            sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
+                            eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
+                        }
+                    } else {
+                        return {
+                            sDate: '2018-01-01',
+                            eDate: '2018-06-01',
+                            // 先写死个时间
+                            // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+                            // eDate: moment().format('YYYY-MM-DD'),
+                        }
+                    }
+                } else {
+                    return {
+                        sDate: '2018-01-01',
+                        eDate: '2018-06-01',
+                        // 先写死个时间
+                        // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+                        // eDate: moment().format('YYYY-MM-DD'),
+                    }
+                }
+            },
+            go() {
 
-				const params = {
-					cid: this.cid,
-					...this.getPeriodByPt(),
-				};
-				API.GetProductProgress(params).then(res => {
-					this.$store.dispatch('SaveProgressData', res.data);
-					const promises = _.map(res.data, o => this.getTrend(o.subject));
-					Promise.all(promises).then(resultList => {
-						_.forEach(resultList, (v, k) => {
-							v.subject = res.data[k].subject;
-							v.subject_name = res.data[k].subject_name;
-						});
-						this.$store.dispatch('SaveTrendArr', resultList);
-					});
-				});
-			},
-			getTrend(subject) {
-				const params = {
-					cid: this.cid,
-					pt: this.form.pt,
-					...this.getPeriodByPt(),
-					subject: subject
-				};
-				return API.GetProductTrend(params);
-			},
-			getStructure() {
-				const params = {
-					cid: this.cid,
-					...this.getPeriodByPt(),
-				};
-				API.GetProductStructure(params).then(res => {
-					this.$store.dispatch('SaveStructureArr', res.data);
-				});
-			},
-			getRank() {
-				const params = {
-					cid: this.cid,
-					pt: this.form.pt,
-					...this.getPeriodByPt(),
-				};
-				API.GetProductRank(params).then(res => {
-					this.$store.dispatch('SaveRankArr', res.data);
-				});
-			},
-			getDateObj() {
-				const {
-					date
-				} = this.form;
-				return {
-					sDate: date[0] || '',
-					eDate: date[1] || '',
-				}
-			},
-			getPeriodByPt() {
-				const {
-					sDate,
-					eDate
-				} = this.getDateObj();
-				const {
-					pt
-				} = this.form;
-				if (sDate && eDate) { // 计算时间周期
-					if (pt === '日') {
-						return {
-							sDate,
-							eDate
-						};
-					}
-					let unit = TIMEPT[pt];
-					if (unit) {
-						return {
-							sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
-							eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-						}
-					} else {
-						return {
-							sDate: '2018-01-01',
-							eDate: '2018-06-01',
-							// 先写死个时间
-							// sDate: moment().startOf('week').format('YYYY-MM-DD'),
-							// eDate: moment().format('YYYY-MM-DD'),
-						}
-					}
-				} else {
-					return {
-						sDate: '2018-01-01',
-						eDate: '2018-06-01',
-						// 先写死个时间
-						// sDate: moment().startOf('week').format('YYYY-MM-DD'),
-						// eDate: moment().format('YYYY-MM-DD'),
-					}
-				}
-			},
-			go() {
-
-			},
-			handleNodeClick(data) {
-				if (data.children != undefined) {
-					this.cid = data.cid;
-					this.loading = true;
-					//                  setTimeout(() => {
-					//                      this.getProgress();
-					//                      this.getStructure();
-					//                      this.getRank();
-					//                  }, 300);
-					setTimeout(() => {
-						this.loading = false;
-					}, 1000);
-				}
+            },
+            handleNodeClick(data) {
+                if(data.children != undefined) {
+                    this.cid = data.cid;
+                    this.loading = true;
+                    //                  setTimeout(() => {
+                    //                      this.getProgress();
+                    //                      this.getStructure();
+                    //                      this.getRank();
+                    //                  }, 300);
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 1000);
+                }
 
 			},
 			calculatePercent(a, b) {
