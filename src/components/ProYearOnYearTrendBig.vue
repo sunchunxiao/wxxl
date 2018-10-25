@@ -29,7 +29,7 @@ export default {
     },
     methods: {
         renderChart(data) {
-            const {timeLabels, ring, yoy} = data;
+            const { timeLabels, ring, yoy } = data;
             const options = {
                 tooltip: {
                     show: true,
@@ -69,7 +69,7 @@ export default {
             this.chart.setOption(options);
         }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>

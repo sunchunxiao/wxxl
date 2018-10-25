@@ -56,7 +56,7 @@ export default {
   data() {
     return {
       isCollapse: false
-    }
+    };
   },
   methods: {
     handleClick() {
@@ -64,7 +64,7 @@ export default {
     }
   }
 
-}
+};
 </script>
 
 <style lang="scss" scoped>

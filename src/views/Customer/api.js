@@ -1,6 +1,6 @@
 // Created by sunchunxiao on 2018/10/16.
 
-import {FetchGet} from 'utils/fetch';
+import { FetchGet } from 'utils/fetch';
 // import store from 'store';
 
 export default {
@@ -9,4 +9,4 @@ export default {
         return FetchGet('/cus/tree', params);
     },
    
-}
+};

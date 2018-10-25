@@ -230,12 +230,12 @@
                 pieData: mockPieData(),
                 comparisonAverageData: mockComparisonAverageData(),
                 index0: 0
-            }
+            };
         },
         computed: {
             ...mapGetters(['organizationTree']),
             hasTree() {
-                return !_.isEmpty(this.organizationTree)
+                return !_.isEmpty(this.organizationTree);
             }
         },
         watch: {
@@ -246,7 +246,7 @@
         },
         mounted() {
             if(!this.hasTree) {
-                this.getTree()
+                this.getTree();
             }
 //          console.log(this.organizationTree)
         },
@@ -283,7 +283,7 @@
                         return {
                             sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
                             eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-                        }
+                        };
                     } else {
                         return {
                             sDate: '2018-01-01',
@@ -291,7 +291,7 @@
                             // 先写死个时间
                             // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                             // eDate: moment().format('YYYY-MM-DD'),
-                        }
+                        };
                     }
                 } else {
                     return {
@@ -300,7 +300,7 @@
                         // 先写死个时间
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),
-                    }
+                    };
                 }
             },
             getDateObj() {
@@ -310,7 +310,7 @@
                 return {
                     sDate: date[0] || '',
                     eDate: date[1] || '',
-                }
+                };
             },
             largerThanZero(val) {
                 return val && _.isNumber(parseFloat(val)) && parseFloat(val) > 0;
@@ -324,9 +324,9 @@
             }) {
                 if(columnIndex === 0||columnIndex === 2 || columnIndex === 3) {
                     if(rowIndex % 3 === 0) {
-                        return [3, 1]
+                        return [3, 1];
                     } else {
-                        return [0, 0]
+                        return [0, 0];
                     }
                 }
             },
@@ -348,7 +348,7 @@
                 return {};
             },
         }
-    }
+    };
 </script>
 
 <style lang="scss">

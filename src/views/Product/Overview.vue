@@ -297,18 +297,18 @@
                 stragety: [],
                 checked1: true,
                 idArr: [],
-            }
+            };
         },
         computed: {
             ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr']),
             hasTree() {
-                return !_.isEmpty(this.productTree)
+                return !_.isEmpty(this.productTree);
             }
         },
         mounted() {
             this.initFormDataFromUrl();
             if(!this.hasTree) {
-                this.getTree()
+                this.getTree();
             }
 
         },
@@ -348,7 +348,7 @@
                 // console.log(this.stragetyCheckList, this.idArr);
             },
             submit() {
-                let data1 = JSON.parse(localStorage.data)
+                let data1 = JSON.parse(localStorage.data);
 
                 this.$confirm('确认?', {
                     confirmButtonText: '保存',
@@ -462,7 +462,7 @@
                 return {
                     sDate: date[0] || '',
                     eDate: date[1] || '',
-                }
+                };
             },
             getPeriodByPt() {
                 const {
@@ -484,7 +484,7 @@
                         return {
                             sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
                             eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-                        }
+                        };
                     } else {
                         return {
                             sDate: '2018-01-01',
@@ -492,7 +492,7 @@
                             // 先写死个时间
                             // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                             // eDate: moment().format('YYYY-MM-DD'),
-                        }
+                        };
                     }
                 } else {
                     return {
@@ -501,7 +501,7 @@
                         // 先写死个时间
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),
-                    }
+                    };
                 }
             },
             go() {
@@ -537,7 +537,7 @@
 				this[`index${i}`] = idx;
 			},
 			showStragety(data) {
-				localStorage.setItem("data", JSON.stringify(data))
+				localStorage.setItem("data", JSON.stringify(data));
 				const {
 					cid,
 					brand,
@@ -556,21 +556,20 @@
 				};
 
 				API.GetProductMatch(params).then(res => {
-					this.stragetyCheckList = []
+					this.stragetyCheckList = [];
 					this.stragety = res.data;
 					for (let i = 0; i < res.data.length; i++) {
 						if (res.data[i].is_selected == 1) {
-							this.stragetyCheckList.push(res.data[i].strategy)
+							this.stragetyCheckList.push(res.data[i].strategy);
 							// console.log(this.stragetyCheckList)
 						}
 					}
 					// this.$store.dispatch('SaveRankArr', res.data);
 				});
 
-
 			}
 		}
-	}
+	};
 </script>
 
 <style lang="scss">

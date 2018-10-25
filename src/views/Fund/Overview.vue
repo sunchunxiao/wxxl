@@ -313,12 +313,12 @@
                 stragetyCheckList: [],
                 stragetyTitle: '',
                 stragety: []
-            }
+            };
         },
         computed: {
             ...mapGetters(['fundTree']),
             hasTree() {
-                return !_.isEmpty(this.fundTree)
+                return !_.isEmpty(this.fundTree);
             }
         },
         watch: {
@@ -329,7 +329,7 @@
         },
         mounted() {
             if(!this.hasTree) {
-                this.getTree()
+                this.getTree();
             }
 //          console.log(this.fundTree)
         },
@@ -366,7 +366,7 @@
                         return {
                             sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
                             eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-                        }
+                        };
                     } else {
                         return {
                             sDate: '2018-01-01',
@@ -374,7 +374,7 @@
                             // 先写死个时间
                             // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                             // eDate: moment().format('YYYY-MM-DD'),
-                        }
+                        };
                     }
                 } else {
                     return {
@@ -383,7 +383,7 @@
                         // 先写死个时间
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),
-                    }
+                    };
                 }
             },
             getDateObj() {
@@ -393,7 +393,7 @@
                 return {
                     sDate: date[0] || '',
                     eDate: date[1] || '',
-                }
+                };
             },
             handleNodeClick() {
                 this.loading = true;
@@ -431,7 +431,7 @@
                 this.stragety = data.stragety;
             }
         }
-    }
+    };
 </script>
 
 <style lang="scss">

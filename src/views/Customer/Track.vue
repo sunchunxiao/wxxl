@@ -587,7 +587,7 @@
             return {
                 currentPage: 1,
                 tableData: tableData
-            }
+            };
         },
         watch: {
 
@@ -625,7 +625,7 @@
                 this.currentPage = val;
             }
         }
-    }
+    };
 </script>
 
 <style lang="scss">

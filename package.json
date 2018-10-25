@@ -27,26 +27,6 @@
     "vue-cli-plugin-element": "^1.0.0",
     "vue-template-compiler": "^2.5.17"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/strongly-recommended",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "globals": {
-      "_": true,
-      "moment": true
-    },
-    "rules": {
-      "vue/require-default-prop": "off"
-    }
-  },
   "postcss": {
     "plugins": {
       "autoprefixer": {}

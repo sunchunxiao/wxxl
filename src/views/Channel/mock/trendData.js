@@ -37,7 +37,7 @@ const data = {
         "2018-01-29",
         "2018-01-30"
     ]
-}
+};
 
 function getRandomNumArr(length, limit, option) {
     let arr = [];

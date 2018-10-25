@@ -12,7 +12,7 @@ export default {
     props: {
         isCollapse: Boolean
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>

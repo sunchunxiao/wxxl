@@ -125,12 +125,12 @@ export default {
         return {
             menuData: MENUDATA,
             activePath: '/product/overview'
-        }
+        };
     },
     mounted() {
         this.activePath = this.$route.fullPath;
     }
-}
+};
 </script>
 
 <style lang="scss">

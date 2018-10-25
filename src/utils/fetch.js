@@ -44,20 +44,20 @@ service.interceptors.response.use(response => {
       removeToken();
       router.replace('/login');
     } else {
-      Message({message: res.api_info.message, type: 'warning', duration: MESSAGEDURATION});
+      Message({ message: res.api_info.message, type: 'warning', duration: MESSAGEDURATION });
       return Promise.reject(res);
     }
   }
-  Message({message: '接口异常', type: 'warning', duration: MESSAGEDURATION});
+  Message({ message: '接口异常', type: 'warning', duration: MESSAGEDURATION });
   return Promise.reject(res);
 },
   error => {
     // eslint-disable-next-line no-console
     console.log('AFTER_RESPONSE_RETURN_ERROR', error); // for debug
     if (error.code === "ECONNABORTED") {
-      Message({message: '请求超时', type: 'error', duration: MESSAGEDURATION});
+      Message({ message: '请求超时', type: 'error', duration: MESSAGEDURATION });
     } else {
-      Message({message: error.message, type: 'error', duration: MESSAGEDURATION});
+      Message({ message: error.message, type: 'error', duration: MESSAGEDURATION });
     }
     return Promise.reject(error);
   }
@@ -72,8 +72,7 @@ const FetchGet = (url, params) => {
     options.params = params;
   }
   return service(options);
-}
-
+};
 
 const FetchPostNew = (url, params) => {
   const options = {
@@ -84,7 +83,7 @@ const FetchPostNew = (url, params) => {
     options.params = params;
   }
   return service(options);
-}
+};
 
 const FetchPost = (url, data, params) => {
   const options = {
@@ -98,7 +97,6 @@ const FetchPost = (url, data, params) => {
     options.params = params;
   }
   return service(options);
-}
+};
 
-
-export {FetchGet, FetchPost,FetchPostNew};
+export { FetchGet, FetchPost,FetchPostNew };

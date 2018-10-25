@@ -67,7 +67,7 @@ export default {
                 password: '',
             },
             submitLoading: false,
-        }
+        };
     },
     mounted() {
         this.$refs['username'].focus();
@@ -93,7 +93,7 @@ export default {
             });
         }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>

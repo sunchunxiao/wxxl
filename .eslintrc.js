@@ -1,0 +1,25 @@
+module.exports = {
+    "root": true,
+    "env": {
+        "node": true
+    },
+    "extends": [
+        "plugin:vue/strongly-recommended",
+        "eslint:recommended"
+    ],
+    "parserOptions": {
+        "parser": "babel-eslint"
+    },
+    "globals": {
+        "_": true,
+        "moment": true
+    },
+    "rules": {
+        "vue/require-default-prop": "off",
+        "eol-last": ["error", "always"],
+        "comma-dangle": ["error", "only-multiline"],
+        "object-curly-spacing": ["error", "always"],
+        "semi": ["error", "always"],
+        "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1, "maxBOF": 1 }]
+    }
+};
