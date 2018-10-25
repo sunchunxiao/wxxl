@@ -19,7 +19,7 @@ module.exports = {
     runtimeCompiler: true,
     productionSourceMap: false,
     parallel: false,
-    lintOnSave: true,
+    lintOnSave: undefined,
     configureWebpack: {
         resolve: {
             alias: {

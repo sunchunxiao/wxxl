@@ -1,8 +1,10 @@
 <template>
-    <div class="trendline-container">
-        <div class="trendline" :id="`trendline-${id}`"></div>
-        <div class="detail">{{data.subject_name}}</div>
-    </div>
+  <div class="trendline-container">
+    <div 
+      class="trendline" 
+      :id="`trendline-${id}`"/>
+    <div class="detail">{{ data.subject_name }}</div>
+  </div>
 </template>
 
 <script>
@@ -19,7 +21,7 @@ export default {
     },
     watch: {
         data: {
-            handler: function (val, oldVal) {
+            handler: function (val) {
                 this.renderChart(val);
             },
             deep: true
