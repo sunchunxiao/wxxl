@@ -1,8 +1,10 @@
 <template>
-	<div class="heatmap-container">
-		<div class="heatmap" :id="`heatmap-${id}`"></div>
-		<!-- <div class="detail">{{title}}</div> -->
-	</div>
+  <div class="heatmap-container">
+    <div 
+      class="heatmap" 
+      :id="`heatmap-${id}`"/>
+      <!-- <div class="detail">{{title}}</div> -->
+  </div>
 </template>
 
 <script>
@@ -70,7 +72,7 @@
 						this.brand = nameArr[i]
 					}
 				}
-				const brand = brands[Math.floor(params.dataIndex / 7)];
+				// const brand = brands[Math.floor(params.dataIndex / 7)];
 				
 				if (params.componentType=="series") {
 					_this.$emit('showStragety', {
@@ -88,7 +90,7 @@
 		},
 		watch: {
 			data: {
-				handler: function(val, oldVal) {
+				handler: function(val) {
 					this.renderChart(val);
 				},
 				deep: true

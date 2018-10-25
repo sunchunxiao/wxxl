@@ -33,14 +33,18 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
+      "plugin:vue/strongly-recommended",
       "eslint:recommended"
     ],
     "parserOptions": {
       "parser": "babel-eslint"
     },
     "globals": {
-      "_": true
+      "_": true,
+      "moment": true
+    },
+    "rules": {
+      "vue/require-default-prop": "off"
     }
   },
   "postcss": {

@@ -5,7 +5,6 @@ const product = {
       progressArr: [],
       trendArr: [],
       rankArr: [],
-      rankArr: [],
       structureArr:[],
       compareArr:{},
       historyArr:{},

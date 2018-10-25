@@ -1,8 +1,10 @@
 <template>
-    <div class="averagebar-container">
-        <div class="averagebar" :id="`averagebar-${id}`"></div>
-        <div class="detail">{{data.subject}}</div>
-    </div>
+  <div class="averagebar-container">
+    <div 
+      class="averagebar" 
+      :id="`averagebar-${id}`"/>
+    <div class="detail">{{ data.subject }}</div>
+  </div>
 </template>
 
 <script>
@@ -19,7 +21,7 @@
         },
         watch: {
             data: {
-                handler: function(val, oldVal) {
+                handler: function(val) {
                     this.renderChart(val);
                 },
                 deep: true
@@ -32,8 +34,8 @@
                     nodes: pData
                 } = nodes;
                 const percentArr = [];
-                let sumTarget = 0;
-                let sumTotal = 0;
+                // let sumTarget = 0;
+                // let sumTotal = 0;
                 //          console.log(nodes)
                 //          for(let i in pData) {
                 //              sumTotal += parseInt(pData[i].total);

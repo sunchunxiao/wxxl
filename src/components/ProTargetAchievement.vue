@@ -1,17 +1,21 @@
 <template>
-    <div class="pie-container">
-        <div class="pie" :id="`pie-${id}`"></div>
-        <div class="detail">
-            <span class="text">目标: </span>
-            <span class="value">{{target}}</span>
-            &nbsp;<span>{{unit}}</span>
-        </div>
-        <div class="detail">
-            <span class="text">实际: </span>
-            <span class="value" v-bind:style="{color: color}">{{real}}</span>
-            &nbsp;<span>{{unit}}</span>
-        </div>
+  <div class="pie-container">
+    <div 
+      class="pie" 
+      :id="`pie-${id}`"/>
+    <div class="detail">
+      <span class="text">目标: </span>
+      <span class="value">{{ target }}</span>
+      &nbsp;<span>{{ unit }}</span>
     </div>
+    <div class="detail">
+      <span class="text">实际: </span>
+      <span 
+        class="value" 
+        :style="{color: color}">{{ real }}</span>
+      &nbsp;<span>{{ unit }}</span>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -59,7 +63,7 @@ export default {
     },
     watch: {
         data: {
-            handler: function (val, oldVal) {
+            handler: function (val) {
                 this.renderChart(val);
             },
             deep: true

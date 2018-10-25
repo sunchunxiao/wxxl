@@ -1,8 +1,10 @@
 <template>
-    <div class="ConOrgComparisonAverage-container">
-        <div class="ConOrgComparisonAverage" :id="`ConOrgComparisonAverage-${id}`"></div>
-        <div class="detail">{{title}}</div>
-    </div>
+  <div class="ConOrgComparisonAverage-container">
+    <div 
+      class="ConOrgComparisonAverage" 
+      :id="`ConOrgComparisonAverage-${id}`"/>
+    <div class="detail">{{ title }}</div>
+  </div>
 </template>
 
 <script>
@@ -20,7 +22,7 @@ export default {
     },
     watch: {
         data: {
-            handler: function (val, oldVal) {
+            handler: function (val) {
                 this.renderChart(val);
             },
             deep: true
