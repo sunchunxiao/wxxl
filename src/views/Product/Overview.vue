@@ -4,7 +4,7 @@
 			<el-form ref="form" :model="form" label-width="100px" size="mini">
 				<el-col :span="5">
 					<el-form-item label="时间单位选择">
-						<el-select v-model="form.pt" @change="select">
+						<el-select v-model="form.pt">
 							<el-option label="日" value="日"></el-option>
 							<el-option label="周" value="周"></el-option>
 							<el-option label="月" value="月"></el-option>
@@ -222,7 +222,7 @@
             if(!this.hasTree) {
                 this.getTree()
             }
-
+			
         },
         watch: {
             // form: [
@@ -241,6 +241,7 @@
             //     }
             // ],
             cid: function(val, oldVal) {
+				
                 // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
                 // 暂时先在这里做
                 this.getProgress();
@@ -291,9 +292,7 @@
                 });
 
             },
-            select() {
-                //  		console.log(this.form.pt)
-            },
+            
             initFormDataFromUrl() {
                 const {
                     pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
@@ -450,6 +449,7 @@
 				this[`index${i}`] = idx;
 			},
 			showStragety(data) {
+				console.log(data)
 				localStorage.setItem("data", JSON.stringify(data))
 				const {
 					cid,

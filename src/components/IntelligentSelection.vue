@@ -45,32 +45,35 @@
 			this.chart = echarts.init(document.getElementById(`heatmap-${this.id}`));
 			this.renderChart(this.data);
 			let _this = this;
-
+			
 			this.chart.on('click', function(params) {
+				console.log(params)
+				console.log(_this.data)
+				let length = _this.data[0].subjects.length
 				let cid = params.seriesId.split(",");
-				//切割时间
+				//切割当前时间
 				const time = cid.pop()
-				// console.log(time,cid)
-				const brands = params.seriesName.split(",");
-				//切割subject
-				let subjectArr = brands.slice(-7)
-				let nameArr = brands.slice(0, brands.length - 7)
-				// console.log(nameArr)
-				// console.log(subjectArr)
-				//取subjects
-				for (let i = 0; i < subjectArr.length; i++) {
-					if (params.data[0] == i) {
-						this.name = subjectArr[i]
+				
+				for(let i=0;i<_this.data.length;i++){
+					if(_this.data[i].timeLabel==time){
+						for(let j=0;j<_this.data[i].subjects.length;j++){
+							if(params.data[0]==j){
+								this.name = _this.data[i].subjects[j]
+								// console.log(this.name)
+								this.brand = _this.data[i].transSubjects[j]
+								// console.log(this.brand)
+							}
+						}
 					}
 				}
-				//取id和名字
+				
+				//取id
 				for (let i = 0; i < cid.length; i++) {
 					if (params.data[1] == i) {
 						this.cid = cid[i]
-						this.brand = nameArr[i]
 					}
 				}
-				const brand = brands[Math.floor(params.dataIndex / 7)];
+				// const brand = brands[Math.floor(params.dataIndex / 7)];
 				
 				if (params.componentType=="series") {
 					_this.$emit('showStragety', {
@@ -80,7 +83,6 @@
 						subject: this.name,
 						time_label: time,
 						rank: _this.getRank(params.data[2]),
-						stragety: _this.getstragetyArr()
 					});
 				}
 			});
@@ -191,7 +193,7 @@
 							text: ['优', '差']
 						},
 						series: [{
-							name: [item.categoryNames, item.subjects],
+							name: '',
 							type: 'heatmap',
 							data: seriesData,
 							id: [item.categoryIds, item.timeLabel],

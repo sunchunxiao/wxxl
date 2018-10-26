@@ -27,7 +27,6 @@
             },
         },
         methods: {
-
             renderChart(nodes) {
                 const {
                     transSubjects,
@@ -67,7 +66,7 @@
                 const options = {
                     grid: {
                         left: 10,
-                        right: 20,
+                        right: 30,
                         bottom: 5,
                         top: 20,
                         containLabel: true
@@ -113,13 +112,7 @@
                                 position: [5, 6],
                                 color: "#000",
                                 formatter: function(params) {
-
-                                    //                              if (nodes.type === 'quota') {
-                                    //                                  return `${pData[params.dataIndex].name} : ${params.data}`;
-                                    //                              }
-//                                  console.log(params)
-                                    if(nodes.subject == "投入产出比" || nodes.subject == "日销" || nodes.subject == "库存周转率") {
-
+                                    if(nodes.display_rate == 0) {
                                         return `${pData[params.dataIndex]} : ${params.data}`;
                                     }
                                     return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
@@ -130,10 +123,7 @@
                         markLine: {
                             symbol: 'none',
                             label: {
-                                formatter: nodes.subject == "投入产出比" || nodes.subject == "日销" || nodes.subject == "库存周转率" ? `平均值${average}` : `平均值${average}%`
-//                              formatter: function(params){
-//                                  if()
-//                              }
+                                formatter:nodes.display_rate == 0 ? `平均值${average}` : `平均值${(average/nodes.total*100).toFixed(2)}%`
                                
                             },
                             data: [{
@@ -143,7 +133,7 @@
                                         color: '#b12725'
                                     }
                                 }
-                            }, ]
+                            },]
                         },
                     }]
                 };

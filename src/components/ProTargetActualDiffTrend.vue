@@ -16,6 +16,7 @@ export default {
     mounted() {
         this.chart = echarts.init(document.getElementById(`bar-${this.id}`));
         this.renderChart(this.data);
+		
     },
     watch: {
         data: {
@@ -33,10 +34,9 @@ export default {
             const underTarget = [];
             const realClone = _.cloneDeep(real);
             const targetClone = _.cloneDeep(target);
-//          console.log(realClone,real)
             for (let i = 0; i < realClone.length; i++) {
-                realClone[i] = parseInt(realClone[i] / 10000 / 100);
-                targetClone[i] = parseInt(targetClone[i] / 10000 / 100);
+//                 realClone[i] = parseInt(realClone[i] / 10000 / 100);
+//                 targetClone[i] = parseInt(targetClone[i] / 10000 / 100);
                 const realItem = realClone[i];
                 const targetItem = targetClone[i];
                 bottom.push(realItem < targetItem ? realItem : targetItem);
