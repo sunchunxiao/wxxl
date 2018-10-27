@@ -19,7 +19,7 @@
           :filters="[{text: '销售额', value: '销售额'}, {text: '净利润额', value: '净利润额'},{text: '人力成本额', value: '人力成本额'},{text: '日销', value: '日销'},{text: '投入产出比', value: '投入产出比'},{text: '人员冗余值', value: '人员冗余值'}]" 
           :filter-method="filterB"/>
         <el-table-column 
-          prop="rank" 
+          prop="rank_name" 
           label="评选等级" 
           :filters="[{text: '优', value: '优'},{text: '良', value: '良'},{text: '中', value: '中'},{text: '差', value: '差'}]" 
           :filter-method="filterC"/>
@@ -113,26 +113,8 @@
 					// console.log(res.data)
 					this.trackList = res.data;
 					this.total = res.total;
-					for(let i=0;i<res.data.length;i++){
-						res.data[i].rank = this.rank(res.data[i].rank);
-					}
 					// this.$store.dispatch('SaveProductStrategy', res.data);
 				});
-			},
-			rank(score) {
-				if (1 == score) {
-					return '差';
-				}
-				if (2 == score) {
-					return '中';
-				}
-				if (3 == score) {
-					return '良';
-				}
-				if (4 === score) {
-					return '优';
-				}
-				return '差';
 			},
 			getDateObj() {
 				const {
