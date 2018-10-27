@@ -35,8 +35,8 @@
                     nodes: pData
                 } = nodes;
                 const percentArr = [];
-                let sumTarget = 0;
-                let sumTotal = 0;
+                // let sumTarget = 0;
+                // let sumTotal = 0;
                 //          console.log(nodes)
                 //          for(let i in pData) {
                 //              sumTotal += parseInt(pData[i].total);

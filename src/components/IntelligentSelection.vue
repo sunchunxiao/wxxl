@@ -49,7 +49,7 @@
 			let _this = this;
 
 			this.chart.on('click', function(params) {
-				let length = _this.data[0].subjects.length
+				// let length = _this.data[0].subjects.length;
 				let cid = params.seriesId.split(",");
 				//切割当前时间
 				const time = cid.pop();
@@ -58,9 +58,9 @@
 					if(_this.data[i].timeLabel == time){
 						for(let j=0;j<_this.data[i].subjects.length;j++){
 							if(params.data[0] == j){
-								this.name = _this.data[i].subjects[j]
+								this.name = _this.data[i].subjects[j];
 								// console.log(this.name)
-								this.brand = _this.data[i].transSubjects[j]
+								this.brand = _this.data[i].transSubjects[j];
 								// console.log(this.brand)
 							}
 						}
