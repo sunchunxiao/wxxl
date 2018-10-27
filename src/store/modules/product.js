@@ -35,7 +35,7 @@ const product = {
 			SAVE_STRATEGYARR_ARR: (state, arr) => {
 				state.strategyArr = arr;
 			},
-      
+
     },
     actions: {
       SaveProductTree ({ commit }, tree) {
@@ -62,9 +62,9 @@ const product = {
 			SaveProductStrategy({ commit }, arr) {
 				commit('SAVE_STRATEGYARR_ARR', arr);
 			},
-      
+
     }
   };
-  
+
   export default product;
-  
+
