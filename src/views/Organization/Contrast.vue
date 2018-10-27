@@ -361,8 +361,7 @@
 					}, 1000);
 				}
 			},
-			handleCheckChange(data, checked, indeterminate) {
-			// console.log(data, checked, indeterminate);
+			handleCheckChange() {
 			},
 			clickIndex(i, idx) {
 				this[`index${i}`] = idx;
