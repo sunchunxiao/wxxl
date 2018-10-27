@@ -231,7 +231,6 @@
                             v.subject = res.data[k].subject;
                             v.subject_name = res.data[k].subject_name;
                         });
-												console.log(resultList)
                         this.$store.dispatch('SaveCompareArr', resultList);
                     });
                 });

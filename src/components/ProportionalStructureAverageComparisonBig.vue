@@ -101,7 +101,7 @@
                                 color: "#000",
                                 formatter: function(params) {
                                     if(nodes.display_rate == 0) {
-                                    		return `${pData[params.dataIndex]} : ${params.data}`;
+                                        return `${pData[params.dataIndex]} : ${params.data}`;
                                     }
                                    return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
 
