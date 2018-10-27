@@ -294,7 +294,7 @@
 					columnIndex
 				}) => {
 					const rowSpan = group[row.subject].length;
-					if (columnIndex === 0) {
+					if ([0, 3].includes(columnIndex)) {
 						if(!newStrategies[rowIndex].hidden) {
 							return [rowSpan, 1];
 						} else {
