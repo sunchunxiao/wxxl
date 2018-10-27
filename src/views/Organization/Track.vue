@@ -9,12 +9,12 @@
           type="index" 
           label="序号"/>
         <el-table-column 
-          prop="level" 
+          prop="level_name" 
           label="组织层级" 
           :filters="[{text: '品类', value: '品类'}]" 
           :filter-method="filterA"/>
         <el-table-column 
-          prop="subject" 
+          prop="subject_name" 
           label="指标" 
           :filters="[{text: '产品成本', value: '产品成本'}, {text: '日销', value: '日销'}]" 
           :filter-method="filterB"/>
