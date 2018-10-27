@@ -1,8 +1,9 @@
 <template>
-	<div class="overview">
-		<el-row>
-			<el-form ref="form" :model="form" label-width="100px" size="mini">
-				<el-col :span="5">
+  <div class="overview">
+    <el-row>
+	  <el-form
+          ref="form" :model="form" label-width="100px" size="mini">
+			<el-col :span="5">
 					<el-form-item label="时间单位选择">
 						<el-select v-model="form.pt">
 							<el-option label="日" value="日"></el-option>
@@ -209,20 +210,20 @@
                 stragety: [],
                 checked1: true,
                 idArr: [],
-            }
+            };
         },
         computed: {
             ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr']),
             hasTree() {
-                return !_.isEmpty(this.productTree)
+                return !_.isEmpty(this.productTree);
             }
         },
         mounted() {
             this.initFormDataFromUrl();
             if(!this.hasTree) {
-                this.getTree()
+                this.getTree();
             }
-			
+
         },
         watch: {
             // form: [
@@ -240,8 +241,7 @@
             //         deep: true,
             //     }
             // ],
-            cid: function(val, oldVal) {
-				
+            cid: function() {
                 // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
                 // 暂时先在这里做
                 this.getProgress();
@@ -261,7 +261,7 @@
                 // console.log(this.stragetyCheckList, this.idArr);
             },
             submit() {
-                let data1 = JSON.parse(localStorage.data)
+                let data1 = JSON.parse(localStorage.data);
 
                 this.$confirm('确认?', {
                     confirmButtonText: '保存',
@@ -276,12 +276,11 @@
                         time_label: data1.time_label,
                         strategies: this.idArr.join(',')
                     };
-                    API.PostProductSave(data).then(res => {
+                    API.PostProductSave(data).then(() => {
                         this.$message({
                             showClose: true,
                             message: '保存成功'
                         });
-                        // console.log(res)
                     });
                 }).catch(() => {
                     this.$message({
@@ -292,7 +291,7 @@
                 });
 
             },
-            
+
             initFormDataFromUrl() {
                 const {
                     pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
@@ -449,8 +448,7 @@
 				this[`index${i}`] = idx;
 			},
 			showStragety(data) {
-				console.log(data)
-				localStorage.setItem("data", JSON.stringify(data))
+				localStorage.setItem("data", JSON.stringify(data));
 				const {
 					cid,
 					brand,
@@ -469,21 +467,20 @@
 				};
 
 				API.GetProductMatch(params).then(res => {
-					this.stragetyCheckList = []
+					this.stragetyCheckList = [];
 					this.stragety = res.data;
 					for (let i = 0; i < res.data.length; i++) {
 						if (res.data[i].is_selected == 1) {
-							this.stragetyCheckList.push(res.data[i].strategy)
+							this.stragetyCheckList.push(res.data[i].strategy);
 							// console.log(this.stragetyCheckList)
 						}
 					}
 					// this.$store.dispatch('SaveRankArr', res.data);
 				});
 
-
 			}
 		}
-	}
+	};
 </script>
 
 <style lang="scss">

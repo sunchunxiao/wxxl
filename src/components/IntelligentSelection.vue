@@ -1,8 +1,10 @@
 <template>
-	<div class="heatmap-container">
-		<div class="heatmap" :id="`heatmap-${id}`"></div>
-		<!-- <div class="detail">{{title}}</div> -->
-	</div>
+  <div class="heatmap-container">
+    <div
+      class="heatmap"
+      :id="`heatmap-${id}`"/>
+      <!-- <div class="detail">{{title}}</div> -->
+  </div>
 </template>
 
 <script>
@@ -39,25 +41,23 @@
 				cid: 0,
 				name: '',
 				brand: ''
-			}
+			};
 		},
 		mounted() {
 			this.chart = echarts.init(document.getElementById(`heatmap-${this.id}`));
 			this.renderChart(this.data);
 			let _this = this;
-			
+
 			this.chart.on('click', function(params) {
-				console.log(params)
-				console.log(_this.data)
 				let length = _this.data[0].subjects.length
 				let cid = params.seriesId.split(",");
 				//切割当前时间
-				const time = cid.pop()
-				
+				const time = cid.pop();
+
 				for(let i=0;i<_this.data.length;i++){
-					if(_this.data[i].timeLabel==time){
+					if(_this.data[i].timeLabel == time){
 						for(let j=0;j<_this.data[i].subjects.length;j++){
-							if(params.data[0]==j){
+							if(params.data[0] == j){
 								this.name = _this.data[i].subjects[j]
 								// console.log(this.name)
 								this.brand = _this.data[i].transSubjects[j]
@@ -66,16 +66,16 @@
 						}
 					}
 				}
-				
+
 				//取id
 				for (let i = 0; i < cid.length; i++) {
 					if (params.data[1] == i) {
-						this.cid = cid[i]
+						this.cid = cid[i];
 					}
 				}
 				// const brand = brands[Math.floor(params.dataIndex / 7)];
 				
-				if (params.componentType=="series") {
+				if (params.componentType == "series") {
 					_this.$emit('showStragety', {
 						brand: this.brand,
 						cid: this.cid,
@@ -90,7 +90,7 @@
 		},
 		watch: {
 			data: {
-				handler: function(val, oldVal) {
+				handler: function(val) {
 					this.renderChart(val);
 				},
 				deep: true
@@ -116,7 +116,7 @@
 					return '良';
 				}
 				if (4 === score) {
-					return '优'
+					return '优';
 				}
 				return '差';
 			},
@@ -246,7 +246,7 @@
 				this.chart.setOption(heatMapOption);
 			}
 		}
-	}
+	};
 </script>
 
 <style lang="scss" scoped>

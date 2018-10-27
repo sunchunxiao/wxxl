@@ -1,6 +1,6 @@
 <template>
-	<div class="overview">
-		<el-row>
+  <div class="overview">
+      <el-row>
 			<el-form ref="form" :model="form" label-width="100px" size="mini">
 				<el-col :span="5">
 					<el-form-item label="时间单位选择">
@@ -180,13 +180,17 @@
 	import mockAverageData from './mock/averageData.js';
 	import mockHeatmapData from './mock/heatmapData.js';
 
-	import {
-		mapGetters
-	} from 'vuex';
-	const TREE_PROPS = {
-		children: 'children',
-		label: 'name'
-	};
+    import { mapGetters } from 'vuex';
+    const TREE_PROPS = {
+        children: 'children',
+        label: 'name'
+    };
+    const TIMEPT = {
+        '周': 'week',
+        '月': 'month',
+        '季': 'quarter',
+        '年': 'year'
+    };
 
 	export default {
 		components: {
@@ -235,7 +239,7 @@
 				type: 3,
 				idArr: [],
 				idArr1: []
-			}
+			};
 		},
 		computed: {
 			...mapGetters(['organizationTree', 'orgprogressArr', 'orgtrendArr', 'orgstructureArr1', 'orgstructureArr2',
@@ -247,17 +251,17 @@
 		},
 		mounted() {
 			if (!this.hasTree) {
-				this.getTree()
+				this.getTree();
 			}
-			this.initFormDataFromUrl()
+			this.initFormDataFromUrl();
 			// console.log(this.orgrankArr)
 		},
 		watch: {
 			form: {
-				handler: function(val, oldVal) {},
+				handler: function() {},
 				deep: true
 			},
-			cid: function(val, oldVal) {
+			cid: function() {
 				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
 				// 暂时先在这里做
 				this.getProgress();
@@ -319,7 +323,6 @@
 				};
 				API.GetOrgTree(params).then(res => {
 					this.type = res.tree.type
-					console.log(this.type)
 					this.$store.dispatch('SaveOrgTree', res.tree);
 				});
 			},
@@ -504,7 +507,7 @@
 					return 3;
 				}
 				if (score =='优') {
-					return 4
+					return 4;
 				}
 				return 1;
 			},
@@ -519,7 +522,7 @@
 					time_label,
 					rank
 				} = data;
-				
+
 				// console.log(cid, brand, name, rank)
 				this.stragetyTitle = `${brand} - ${name} - ${rank}`;
 				const params = {
@@ -549,5 +552,5 @@
 </script>
 
 <style lang="scss">
-	@import '../Product/style/overview.scss'
+    @import '../Product/style/overview.scss'
 </style>

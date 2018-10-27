@@ -1,24 +1,28 @@
 <template>
-    <div class="pie-container">
-        <div class="pie" :id="`pie-${id}`"></div>
-        <div class="detail">
-            <span class="text">目标: </span>
-            <span class="value">{{target}}</span>
-            &nbsp;<span>{{unit}}</span>
-        </div>
-        <div class="detail">
-            <span class="text">实际: </span>
-            <span class="value" v-bind:style="{color: color}">{{real}}</span>
-            &nbsp;<span>{{unit}}</span>
-        </div>
+  <div class="pie-container">
+    <div 
+      class="pie" 
+      :id="`pie-${id}`"/>
+    <div class="detail">
+      <span class="text">目标: </span>
+      <span class="value">{{ target }}</span>
+      &nbsp;<span>{{ unit }}</span>
     </div>
+    <div class="detail">
+      <span class="text">实际: </span>
+      <span 
+        class="value" 
+        :style="{color: color}">{{ real }}</span>
+      &nbsp;<span>{{ unit }}</span>
+    </div>
+  </div>
 </template>
 
 <script>
 import echarts from 'echarts';
 
-const REVERSE_TARGET = ['C', 'SA'] // 成本 库存额 是反向指标
-const COLORMAP = { over: '#b12725', below: '#308db9'};
+const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
+const COLORMAP = { over: '#b12725', below: '#308db9' };
 const colorLeft = '#E0E3E9';
 const FONTSIZE1 = 28;
 const FONTSIZE2 = 15;
@@ -32,7 +36,7 @@ export default {
     data() {
         return {
             color: '#000'
-        }
+        };
     },
     computed: {
         unit() {
@@ -59,7 +63,7 @@ export default {
     },
     watch: {
         data: {
-            handler: function (val, oldVal) {
+            handler: function (val) {
                 this.renderChart(val);
             },
             deep: true
@@ -171,7 +175,7 @@ export default {
             this.chart.setOption(options);
         }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>

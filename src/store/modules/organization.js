@@ -1,3 +1,4 @@
+
 const organization = {
 	state: {
 		orgtree: {},
@@ -36,13 +37,13 @@ const organization = {
 		},
 	},
 	actions: {
-		SaveOrgTree({commit}, orgtree) {
+		SaveOrgTree({ commit }, orgtree) {
 			commit('SAVE_ORGANIZATION_TREE', orgtree);
 		},
-		SaveOrgProgressData({commit}, arr) {
+		SaveOrgProgressData({ commit }, arr) {
 			commit('SAVE_ORGPROGRESS_ARR', arr);
 		},
-		SaveOrgTrendArr({commit}, arr) {
+		SaveOrgTrendArr({ commit }, arr) {
 			commit('SAVE_ORGTREND_ARR', arr);
 		},
 		SaveOrgStructureArr1({ commit }, arr) {
@@ -51,16 +52,17 @@ const organization = {
 		SaveOrgStructureArr2({ commit }, arr) {
 			commit('SAVE_ORGSTRUCTURE_ARR2', arr);
 		},
-		SaveOrgRankArr({commit}, arr) {
+		SaveOrgRankArr({ commit }, arr) {
 			commit('SAVE_ORGRANK_ARR', arr);
 		},
-		SaveOrgCompareArr({commit}, arr) {
+		SaveOrgCompareArr({ commit }, arr) {
 			commit('SAVE_ORGCOMPARE_ARR', arr);
 		},
-		SaveOrgCompareArrback({commit}, arr) {
+		SaveOrgCompareArrback({ commit }, arr) {
 			commit('SAVE_ORGCOMPAREBACK_ARR', arr);
 		},
 	}
 };
 
 export default organization;
+

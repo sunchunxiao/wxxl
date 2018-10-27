@@ -1,6 +1,6 @@
 // Created by sunchunxiao on 2018/10/16.
 
-import {FetchPostNew,FetchGet} from 'utils/fetch';
+import { FetchPost,FetchGet } from 'utils/fetch';
 // import store from 'store';
 
 export default {
@@ -32,4 +32,4 @@ export default {
 		GetOrgSubject(params) {
 			return FetchGet('/org/subject', params);
 		},
-}
+};

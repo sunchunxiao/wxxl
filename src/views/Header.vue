@@ -1,10 +1,10 @@
 <template>
-    <div :class="{header: true, header_collapse: isCollapse}">
-        <div class="tip">
-            欢迎您, <span class="blue">Stephen</span> ! 请开始处理您的业务, 祝您工作愉快.
-            <img src="../assets/header.png" />
-        </div>
+  <div :class="{header: true, header_collapse: isCollapse}">
+    <div class="tip">
+      欢迎您, <span class="blue">Stephen</span> ! 请开始处理您的业务, 祝您工作愉快.
+      <img src="../assets/header.png" >
     </div>
+  </div>
 </template>
 
 <script>
@@ -12,7 +12,7 @@ export default {
     props: {
         isCollapse: Boolean
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>

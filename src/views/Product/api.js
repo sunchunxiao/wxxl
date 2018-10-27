@@ -1,4 +1,4 @@
-import {FetchGet,FetchPostNew} from 'utils/fetch';
+import { FetchGet,FetchPostNew } from 'utils/fetch';
 // import store from 'store';
 
 export default {
@@ -33,4 +33,4 @@ export default {
 		return FetchPostNew('/product/strategy/save', params);
 	},
 
-}
+};

@@ -1,16 +1,16 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router/index'
-import store from './store/index'
+import Vue from 'vue';
+import App from './App.vue';
+import router from './router/index';
+import store from './store/index';
 import { getToken } from 'utils/auth';
 
-import './plugins/element.js'
+import './plugins/element.js';
 
 import './style/index.css';
 
 import 'utils/finally';
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 const WHITELIST = ['/', '/login', '/index', '/404'];
 router.beforeEach((to, from, next) => {
@@ -33,4 +33,4 @@ new Vue({
   router,
   store,
   render: h => h(App)
-}).$mount('#app')
+}).$mount('#app');

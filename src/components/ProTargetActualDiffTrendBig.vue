@@ -1,8 +1,10 @@
 <template>
-    <div class="bar-container">
-        <div class="bar" :id="`bar-${id}`"></div>
-        <div class="detail">{{data.subject_name}}</div>
-    </div>
+  <div class="bar-container">
+    <div 
+      class="bar" 
+      :id="`bar-${id}`"/>
+    <div class="detail">{{ data.subject_name }}</div>
+  </div>
 </template>
 
 <script>
@@ -19,7 +21,7 @@ export default {
     },
     watch: {
         data: {
-            handler: function (val, oldVal) {
+            handler: function (val) {
                 this.renderChart(val);
             },
             deep: true
@@ -27,7 +29,7 @@ export default {
     },
     methods: {
         renderChart(data) {
-            const {real, target, timeLabels} = data;
+            const { real, target, timeLabels } = data;
             const diff = [];
             const bottom = [];
             const underTarget = [];
@@ -103,7 +105,7 @@ export default {
             this.chart.setOption(options);
         }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>

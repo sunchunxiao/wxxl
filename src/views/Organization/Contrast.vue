@@ -67,7 +67,7 @@
 								 :index="index0"></ConOrgComparisonAverageBig>
 							</el-col>
 						</el-row>
-						
+
 					</Card>
 					<Card v-if="type==2||type==3">
 						<el-row class="card-title">组织对比分析和平均值分析后端</el-row>
@@ -84,7 +84,7 @@
 								:index="index0"></ConOrgComparisonAverageBig>
 							</el-col>
 						</el-row>
-						
+
 					</Card>
 				</el-row>
 			</el-col>
@@ -103,13 +103,17 @@
 	import mockComparisonAverageData from './mock/comparisonAverageData.js';
 	import tree from './mock/productTreeData.js';
 
-	import {
-		mapGetters
-	} from 'vuex';
-	const TREE_PROPS = {
-		children: 'children',
-		label: 'name'
-	};
+    import { mapGetters } from 'vuex';
+    const TREE_PROPS = {
+        children: 'children',
+        label: 'name'
+    };
+    const TIMEPT = {
+        '周': 'week',
+        '月': 'month',
+        '季': 'quarter',
+        '年': 'year'
+    };
 
 	export default {
 		components: {
@@ -147,26 +151,26 @@
 		},
 		watch: {
 			form: {
-				handler: function(val, oldVal) {},
+				handler: function() {},
 				deep: true
 			},
-			cid: function(val, oldVal) {
+			cid: function() {
 					// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
 					// 暂时先在这里做
 					this.getProgressbefore()
-					this.getProgressback()
-					
+					this.getProgressback();
+
 			}
 		},
 		mounted() {
 			if (!this.hasTree) {
-				this.getTree()
+				this.getTree();
 			}
-			this.getProgressbefore()
-			this.getProgressback()
-			
+			this.getProgressbefore();
+			this.getProgressback();
+
 		},
-		
+
 		methods: {
 			getTree() {
 				const params = {
@@ -177,7 +181,7 @@
 				};
 				API.GetOrgTree(params).then(res => {
 					//                  console.log(res)
-					this.type = res.tree.type
+					this.type = res.tree.type;
 					this.$store.dispatch('SaveOrgTree', res.tree);
 				});
 			},
@@ -194,7 +198,7 @@
 							v.subject = res.data[k].subject;
 							v.subject_name = res.data[k].subject_name;
 						});
-						
+
 						this.$store.dispatch('SaveOrgCompareArr', resultList);
 					});
 				});
@@ -215,7 +219,7 @@
 					rType:2
 				};
 				API.GetOrgSubject(params).then(res => {
-					
+
 					const promises = _.map(res.data, o => this.getTrendback(o.subject));
 					Promise.all(promises).then(resultList => {
 						_.forEach(resultList, (v, k) => {
@@ -308,7 +312,7 @@
 			},
 			clickIndex(i, idx) {
 				this[`index${i}`] = idx;
-				
+
 			},
 			calculatePercent(a, b) {
 				if (b > 0) {
@@ -326,5 +330,5 @@
 </script>
 
 <style lang="scss">
-	@import '../Product/style/contrast.scss';
+    @import '../Product/style/contrast.scss';
 </style>
