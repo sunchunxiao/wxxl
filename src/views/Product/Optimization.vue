@@ -24,7 +24,7 @@
         <el-col :span="9">
           <el-form-item label="时间段选择">
             <el-date-picker 
-              v-model="form.time" 
+              v-model="form.date" 
               type="datetimerange" 
               range-separator="至" 
               start-placeholder="开始日期"
@@ -63,7 +63,6 @@
           <span class="left">{{ productTree.name }}</span>
           <span class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
         </div>
-        <!-- 有多个tree -->
         <el-tree 
           :data="productTree.children" 
           :props="defaultProps" 
@@ -90,13 +89,13 @@
                 :span="12" 
                 :key="index">
                 <el-table 
-                  :data="tableData2" 
+                  :data="item.strategies" 
                   size="mini" 
-                  :span-method="arraySpanMethod2">
-                  <el-table-column :label="time">
+                  :span-method="arraySpanMethod(item.strategies)">
+                  <el-table-column :label="`${item.start_date} - ${item.end_date}`">
                     <el-table-column 
                       prop="subject" 
-                      label="指标"/>.
+                      label="指标"/>
                     <el-table-column 
                       prop="package" 
                       label="影响因素"/>
@@ -111,14 +110,14 @@
                       label="环比增长率">
                       <template slot-scope="scope">
                         <img 
-                          v-if="largerThanZero(scope.row.d)" 
+                          v-if="largerThanZero(scope.row.ring_rate)" 
                           src="../../assets/opt1.png" 
                           alt="">
                         <img 
-                          v-if="lessThanZero(scope.row.d)" 
+                          v-if="lessThanZero(scope.row.ring_rate)" 
                           src="../../assets/opt2.png" 
                           alt="">
-                        <span style="margin-left: 10px">{{ scope.row.d + '%' }}</span>
+                        <span style="margin-left: 10px">{{ scope.row.ring_rate + '%' }}</span>
                       </template>
                     </el-table-column>
                   </el-table-column>
@@ -126,7 +125,6 @@
               </el-col>
             </template>
           </el-row>
-
         </Card>
       </el-col>
     </el-row>
@@ -176,62 +174,6 @@
 				tree: tree,
 				treeData: tree.data.children,
 				defaultProps: TREE_PROPS,
-				time: '7.30 - 8.05',
-				tableData2: [{
-					subject: '成本',
-					package: '供应商',
-					rank: '优',
-					strategy: '增加销售渠道',
-					d: '30'
-				}, {
-					subject: '成本',
-					package: '供应商',
-					rank: '优',
-					strategy: '增加销售渠道',
-					d: '30'
-				}, {
-					subject: '成本',
-					package: '供应商',
-					rank: '中',
-					strategy: '增加销售渠道',
-					d: '30'
-				}, {
-					subject: '库存额',
-					package: '供应商',
-					rank: '中',
-					strategy: '增加销售渠道',
-					d: '-10'
-				}, {
-					subject: '库存额',
-					package: '供应商',
-					rank: '中',
-					strategy: '增加销售渠道',
-					d: '-10'
-				},{
-					subject: '库存额',
-					package: '供应商',
-					rank: '优',
-					strategy: '增加销售渠道',
-					d: '-10'
-				}, {
-					subject: '日销',
-					package: '供应商',
-					rank: '优',
-					strategy: '降低成本',
-					d: '30'
-				}, {
-					subject: '日销',
-					package: '供应商',
-					rank: '优',
-					strategy: '降低成本',
-					d: '30'
-				}, {
-					subject: '日销',
-					package: '供应商',
-					rank: '优',
-					strategy: '降低成本',
-					d: '30'
-				} ],
 				pieData: mockPieData(),
 				comparisonAverageData: mockComparisonAverageData(),
 				index0: 0
@@ -331,17 +273,35 @@
 			lessThanZero(val) {
 				return val && _.isNumber(parseFloat(val*100)) && parseFloat(val) < 0;
 			},
-			arraySpanMethod2({
-				rowIndex,
-				columnIndex
-			}) {
-				if (columnIndex === 0 ||columnIndex === 1 || columnIndex === 3 ||columnIndex === 4) {
-					if (rowIndex % 3 === 0) {
-						return [3, 1];
-					} else {
-						return [0, 0];
+			arraySpanMethod(strategies) {
+				if (!strategies || strategies.length === 0) {
+					return;
+				}
+				const group = _.groupBy(strategies, o => {
+					return o.subject;
+				});
+				const newStrategies = _.cloneDeep(strategies);
+				for(let i = 1; i < newStrategies.length; i++) {
+					let prev = newStrategies[i-1];
+					let current = newStrategies[i];
+					if (current.subject === prev.subject) {
+						current.hidden = true;
 					}
 				}
+				return ({
+					row,
+					rowIndex,
+					columnIndex
+				}) => {
+					const rowSpan = group[row.subject].length;
+					if ([0, 3].includes(columnIndex)) {
+						if(!newStrategies[rowIndex].hidden) {
+							return [rowSpan, 1];
+						} else {
+							return [0, 0];
+						}
+					}
+				};
 			},
 			handleNodeClick() {},
 			handleCheckChange() {
