@@ -99,4 +99,4 @@ const FetchPost = (url, data, params) => {
   return service(options);
 };
 
-export { FetchGet, FetchPost,FetchPostNew };
+export { FetchGet, FetchPost, FetchPostNew };
