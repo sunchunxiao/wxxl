@@ -116,27 +116,16 @@
           <Card>
             <el-row class="card-title">目标-实际-差异趋势分析</el-row>
             <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in pieData">
-                  <el-col 
-                    :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(1 ,index)">
-                    <ProTargetActualDiffTrend 
-                      :id="`${index}`" 
-                      :data="trendData[index]" 
-                      :title="pieData[index].text"/>
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col 
-                :span="8" 
-                class="border-left">
-                <ProTargetActualDiffTrendBig 
-                  id="ProTargetActualDiffTrendBig" 
-                  :data="trendData[index1]" 
-                  title="毛利润额"/>
-              </el-col>
+              <template v-for="(item, index) in fundtrendArr">
+                <el-col 
+                  :key="index" 
+                  :span="12" 
+                  @click.native="clickIndex(1 ,index)">
+                  <ProTargetActualDiffTrend 
+                    :id="`${index}`" 
+                    :data="item"/>
+                </el-col>
+              </template>
             </el-row>
           </Card>
         </el-row>
@@ -146,38 +135,28 @@
           <Card>
             <el-row class="card-title">同比环比趋势分析</el-row>
             <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in averageData">
-                  <el-col 
-                    :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(2 ,index)">
-                    <ProYearOnYearTrend 
-                      :id="`${index}`" 
-                      :data="trendData[index]" 
-                      :title="pieData[index].text"/>
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col 
-                :span="8" 
-                class="border-left">
-                <ProYearOnYearTrendBig 
-                  id="ProYearOnYearTrendBig" 
-                  :data="trendData[index2]" 
-                  title="毛利润额"/>
-              </el-col>
+              <template v-for="(item, index) in fundtrendArr">
+                <el-col 
+                  :key="index" 
+                  :span="12" 
+                  @click.native="clickIndex(2 ,index)">
+                  <ProYearOnYearTrend 
+                    :id="`${index}`" 
+                    :data="item"/>
+                </el-col>
+              </template>
             </el-row>
           </Card>
         </el-row>
         <el-row 
+          v-if="type==1||type==3" 
           v-loading="loading" 
           class="margin-top-10">
           <Card>
-            <el-row class="card-title">比例结构与平均值对比分析</el-row>
+            <el-row class="card-title">比例结构与平均值对比分析前端</el-row>
             <el-row>
               <el-col :span="16">
-                <template v-for="(item, index) in averageData">
+                <template v-for="(item, index) in fundstructureArr1">
                   <el-col 
                     :key="index" 
                     :span="6" 
@@ -193,7 +172,38 @@
                 class="border-left">
                 <ProportionalStructureAverageComparisonBig 
                   id="ProportionalStructureAverageComparisonBig" 
-                  :data="averageData[index3]"/>
+                  v-if="fundstructureArr1.length>0"
+                  :data="fundstructureArr1[index3]"/>
+              </el-col>
+            </el-row>
+          </Card>
+        </el-row>
+        <el-row 
+          v-if="type==2||type==3" 
+          v-loading="loading" 
+          class="margin-top-10">
+          <Card>
+            <el-row class="card-title">比例结构与平均值对比分析后端</el-row>
+            <el-row>
+              <el-col :span="16">
+                <template v-for="(item1, index) in fundstructureArr2">
+                  <el-col 
+                    :key="index" 
+                    :span="6" 
+                    @click.native="clickIndex(4 ,index)">
+                    <ProportionalStructureAverageComparison 
+                      :id="`${index+fundstructureArr1.length}`" 
+                      :data="item1"/>
+                  </el-col>
+                </template>
+              </el-col>
+              <el-col 
+                :span="8" 
+                class="border-left">
+                <ProportionalStructureAverageComparisonBig 
+                  v-if="fundstructureArr2.length>0" 
+                  id="ProportionalStructureAverageComparisonBig1" 
+                  :data="fundstructureArr2[index4]"/>
               </el-col>
             </el-row>
           </Card>
@@ -247,7 +257,7 @@
     import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
     // 同比环比趋势分析
     import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
-    import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
+    // import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
     // 比例结构与平均值对比分析
     import ProportionalStructureAverageComparison from '../../components/ProportionalStructureAverageComparison';
     import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
@@ -278,7 +288,6 @@
         components: {
             Card,
             ProYearOnYearTrend,
-            ProYearOnYearTrendBig,
             ProportionalStructureAverageComparison,
             ProportionalStructureAverageComparisonBig,
             IntelligentSelection,
@@ -307,6 +316,7 @@
                 index1: 0,
                 index2: 0,
                 index3: 0,
+                index4: 0,
                 // mockData
                 pieData: mockPieData(),
                 trendData: mockTrendData(),
@@ -320,7 +330,7 @@
             };
         },
         computed: {
-            ...mapGetters(['fundTree','fundprogressArr']),
+            ...mapGetters(['fundTree','fundprogressArr','fundtrendArr','fundstructureArr1','fundstructureArr2']),
             hasTree() {
                 return !_.isEmpty(this.fundTree);
             }
@@ -334,8 +344,8 @@
 				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
 				// 暂时先在这里做
 				this.getProgress();
-				// this.getStructure1();
-				// this.getStructure2();
+				this.getStructure1();
+				this.getStructure2();
 				// this.getRank();
 			}
         },
@@ -373,9 +383,8 @@
 						_.forEach(resultList, (v, k) => {
 							v.subject = res.data[k].subject;
 							v.subject_name = res.data[k].subject_name;
-						});
-
-						this.$store.dispatch('SaveOrgTrendArr', resultList);
+                        });
+						this.$store.dispatch('SaveFundTrendArr', resultList);
 					});
 				});
             },
@@ -388,6 +397,34 @@
 					version: this.form.version
 				};
 				return API.GetFundTrend(params);
+            },
+            //前端
+			getStructure1() {
+				
+				const params = {
+					pt: this.form.pt,
+					cid: this.cid,
+					...this.getPeriodByPt(),
+					version: this.form.version,
+					rType: 1
+				};
+				API.GetFundStructure(params).then(res => {
+					this.$store.dispatch('SaveFundStructureArr1', res.data);
+				});
+			},
+			//后端
+			getStructure2() {
+				// console.log(this.type)
+				const params = {
+					pt: this.form.pt,
+					cid: this.cid,
+					...this.getPeriodByPt(),
+					version: this.form.version,
+					rType: 2
+				};
+				API.GetFundStructure(params).then(res => {
+					this.$store.dispatch('SaveFundStructureArr2', res.data);
+				});
 			},
             getPeriodByPt() {
                 const {
