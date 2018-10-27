@@ -12,12 +12,12 @@
         <el-table-column
           prop="level"
           label="产品层级"
-          :filters="[{text: '品牌', value: '品牌'},{text: '品牌1', value: '品牌1'}]"
+          :filters="[{text: '公司', value: '公司'},{text: '品类', value: '品类'},{text: '品牌', value: '品牌'},{text: '品种', value: '品种'},{text: '单品', value: '单品'}]"
           :filter-method="filterA"/>
         <el-table-column
           prop="subject"
           label="指标"
-          :filters="[{text: 'S', value: 'S'}, {text: '日销', value: '日销'}]"
+          :filters="[{text: '销售额', value: '销售额'}, {text: '产品成本', value: '产品成本'},{text: '毛利额', value: '毛利额'},{text: '产品投入产出比', value: '产品投入产出比'},{text: '库存周转率', value: '库存周转率'},{text: '日销', value: '日销'}]"
           :filter-method="filterB"/>
         <el-table-column
           prop="rank"
