@@ -254,7 +254,6 @@
 				this.getTree();
 			}
 			this.getHistory();
-			// console.log(this.historyArr)
 		},
 		methods: {
 			getHistory() {
@@ -264,7 +263,6 @@
 					...this.getPeriodByPt(),
 				};
 				API.GetProductHistory(params).then(res => {
-					//                  console.log(res.data)
 					this.$store.dispatch('SaveProductHistory', res.data);
 				});
 			},

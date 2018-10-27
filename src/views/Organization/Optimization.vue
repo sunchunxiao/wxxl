@@ -166,12 +166,13 @@
         data() {
             return {
                 form: {
-                    pt: 'day',
+                    pt: '月',
                     date: [],
                     search: '',
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
+                cid:1,
                 tree: tree,
                 treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
@@ -233,7 +234,7 @@
             };
         },
         computed: {
-            ...mapGetters(['organizationTree']),
+            ...mapGetters(['organizationTree','orghistoryArr']),
             hasTree() {
                 return !_.isEmpty(this.organizationTree);
             }
@@ -248,9 +249,21 @@
             if(!this.hasTree) {
                 this.getTree();
             }
-//          console.log(this.organizationTree)
+            this.getHistory();
         },
         methods: {
+            getHistory() {
+				const params = {
+                    cid:this.cid,
+					pt: this.form.pt,
+					version: this.form.version,
+					...this.getPeriodByPt(),
+				};
+				API.GetOrgStrategiesOpt(params).then(res => {
+                    // console.log(res.data);
+					this.$store.dispatch('SaveOrgtHistory', res.data);
+				});
+			},
             getTree() {
                 const params = {
                     pt: this.form.pt,

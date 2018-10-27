@@ -7,7 +7,7 @@ const organization = {
 	orgrankArr: state => state.organization.orgrankArr,
 	orgcompareArr: state => state.organization.orgcompareArr,
 	orgcompareArrback: state => state.organization.orgcompareArrback,
-	
+	orghistoryArr: state => state.organization.orghistoryArr,
 };
 
 export default organization;
