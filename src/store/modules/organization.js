@@ -9,6 +9,7 @@ const organization = {
 		orgrankArr: [],
 		orgcompareArr: [],
 		orgcompareArrback: [],
+		orghistoryArr:{},
 	},
 	mutations: {
 		SAVE_ORGANIZATION_TREE: (state, orgtree) => {
@@ -35,6 +36,9 @@ const organization = {
 		SAVE_ORGCOMPAREBACK_ARR: (state, arr) => {
 			state.orgcompareArrback = arr;
 		},
+		SAVE_ORGHISTORY_ARR: (state, arr) => {
+			state.orghistoryArr = arr;
+		},
 	},
 	actions: {
 		SaveOrgTree({ commit }, orgtree) {
@@ -60,6 +64,9 @@ const organization = {
 		},
 		SaveOrgCompareArrback({ commit }, arr) {
 			commit('SAVE_ORGCOMPAREBACK_ARR', arr);
+		},
+		SaveOrgtHistory({ commit }, arr) {
+			commit('SAVE_ORGHISTORY_ARR', arr);
 		},
 	}
 };

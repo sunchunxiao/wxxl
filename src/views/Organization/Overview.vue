@@ -428,7 +428,6 @@
 					version: this.form.version
 				};
 				API.GetOrgProgress(params).then(res => {
-					// console.log(res.data)
 					this.$store.dispatch('SaveOrgProgressData', res.data);
 					const promises = _.map(res.data, o => this.getTrend(o.subject));
 					Promise.all(promises).then(resultList => {

@@ -1,6 +1,7 @@
 // Created by sunchunxiao on 2018/10/16.
 
-import { FetchGet, FetchPostNew } from 'utils/fetch';
+import { FetchPostNew,FetchGet } from 'utils/fetch';
+
 // import store from 'store';
 
 export default {
@@ -31,5 +32,11 @@ export default {
 		},
 		GetOrgSubject(params) {
 			return FetchGet('/org/subject', params);
+		},
+		GetOrgStrategiesOpt(params) {
+			return FetchGet('/org/strategiesOpt', params);
+		},
+		GetOrgStrategiesTrack(params) {
+			return FetchGet('/org/strategiesTrack', params);
 		},
 };
