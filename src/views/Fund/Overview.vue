@@ -88,7 +88,7 @@
             <el-row class="card-title">目标达成情况总览</el-row>
             <el-row>
               <el-col :span="16">
-                <template v-for="(item, index) in pieData">
+                <template v-for="(item, index) in fundprogressArr">
                   <el-col 
                     :key="index" 
                     :span="6" 
@@ -101,10 +101,11 @@
               </el-col>
               <el-col 
                 :span="8" 
+                v-if="fundprogressArr.length > 0" 
                 class="border-left">
                 <ProTargetAchievementBig 
                   :id="'select'" 
-                  :data="pieData[index0]"/>
+                  :data="fundprogressArr[index0]"/>
               </el-col>
             </el-row>
           </Card>
@@ -236,6 +237,7 @@
 
 <script>
     import API from './api';
+    import moment from 'moment';
     import Card from '../../components/Card';
     // 目标达成情况总览
     import ProTargetAchievement from '../../components/ProTargetAchievement';
@@ -294,6 +296,7 @@
                     subject: 'S', // S: 销售额 P: 利润额
                     version:'0'
                 },
+                cid:1,
                 loading: false,
                 // tree
                 tree: tree,
@@ -312,11 +315,12 @@
                 // stragety
                 stragetyCheckList: [],
                 stragetyTitle: '',
-                stragety: []
+                stragety: [],
+                type:3
             };
         },
         computed: {
-            ...mapGetters(['fundTree']),
+            ...mapGetters(['fundTree','fundprogressArr']),
             hasTree() {
                 return !_.isEmpty(this.fundTree);
             }
@@ -325,12 +329,21 @@
             form: {
                 handler: function() {},
                 deep: true
-            }
+            },
+            cid: function() {
+				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+				// 暂时先在这里做
+				this.getProgress();
+				// this.getStructure1();
+				// this.getStructure2();
+				// this.getRank();
+			}
         },
         mounted() {
             if(!this.hasTree) {
                 this.getTree();
             }
+            this.initFormDataFromUrl();
 //          console.log(this.fundTree)
         },
         methods: {
@@ -346,6 +359,36 @@
                     this.$store.dispatch('SaveFundTree', res.tree);
                 });
             },
+            getProgress() {
+				const params = {
+					pt: this.form.pt,
+					cid: this.cid,
+					...this.getPeriodByPt(),
+					version: this.form.version
+				};
+				API.GetFundProgress(params).then(res => {
+					this.$store.dispatch('SaveFundProgressData', res.data);
+					const promises = _.map(res.data, o => this.getTrend(o.subject));
+					Promise.all(promises).then(resultList => {
+						_.forEach(resultList, (v, k) => {
+							v.subject = res.data[k].subject;
+							v.subject_name = res.data[k].subject_name;
+						});
+
+						this.$store.dispatch('SaveOrgTrendArr', resultList);
+					});
+				});
+            },
+            getTrend(subject) {
+				const params = {
+					cid: this.cid,
+					pt: this.form.pt,
+					...this.getPeriodByPt(),
+					subject: subject,
+					version: this.form.version
+				};
+				return API.GetFundTrend(params);
+			},
             getPeriodByPt() {
                 const {
                     sDate,
@@ -395,18 +438,35 @@
                     eDate: date[1] || '',
                 };
             },
-            handleNodeClick() {
-                this.loading = true;
-                setTimeout(() => {
-                    this.pieData = mockPieData();
-                    this.trendData = mockTrendData();
-                    this.averageData = mockAverageData();
-                    this.heatmapData = mockHeatmapData();
-                }, 300);
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
-            },
+            initFormDataFromUrl() {
+				const {
+					pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
+				} = this.$route.query;
+				let formData = {
+					pt: pt,
+					subject: subject,
+				};
+				if (moment(sDate).isValid() && moment(eDate).isValid()) {
+					formData.date = [sDate, eDate];
+				}
+				this.cid = cid;
+				this.form = { ...this.form,
+					...formData
+                };
+                
+			},
+            handleNodeClick(data) {
+				this.type = data.type;
+				if (data.children != undefined) {
+					this.cid = data.cid;
+					this.loading = true;
+					
+					setTimeout(() => {
+						this.loading = false;
+					}, 1000);
+				}
+
+			},
             calculatePercent(a, b) {
                 if(b > 0) {
                     const percent = parseInt(a / b * 100);
