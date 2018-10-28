@@ -1,64 +1,9 @@
 <template>
   <div class="overview">
     <el-row>
-      <el-form
-        ref="form" 
-        :model="form" 
-        label-width="100px" 
-        size="mini">
-        <el-col :span="5">
-          <el-form-item label="时间单位选择">
-            <el-select v-model="form.pt">
-              <el-option 
-                label="日" 
-                value="日"/>
-              <el-option 
-                label="周" 
-                value="周"/>
-              <el-option 
-                label="月" 
-                value="月"/>
-              <el-option 
-                label="季" 
-                value="季"/>
-              <el-option 
-                label="年" 
-                value="年"/>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="9">
-          <el-form-item label="时间段选择">
-            <el-date-picker 
-              v-model="form.date" 
-              type="datetimerange" 
-              range-separator="至" 
-              start-placeholder="开始日期"
-              end-placeholder="结束日期" 
-              format="yyyy-MM-dd" 
-              value-format="yyyy-MM-dd" 
-              align="right"/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="精确搜索">
-            <el-input 
-              v-model="form.search" 
-              placeholder="产品编号/产品名称">
-              <i 
-                slot="prefix" 
-                class="el-input__icon el-icon-search"/>
-            </el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="4">
-          <el-form-item>
-            <el-button 
-              @click="go" 
-              type="primary">go</el-button>
-          </el-form-item>
-        </el-col>
-      </el-form>
+      <search-bar 
+        @search="handleSearch" 
+        url="/product/search"/>
     </el-row>
     <el-row 
       class="content_row" 
@@ -228,7 +173,8 @@
 
 <script>
 	import API from './api';
-	import Card from 'components/Card';
+    import Card from 'components/Card';
+    import SearchBar from 'components/SearchBar';
 	import moment from 'moment';
 	// 目标达成情况总览
 	import ProTargetAchievement from 'components/ProTargetAchievement';
@@ -262,6 +208,7 @@
     export default {
         components: {
             Card,
+            SearchBar,
             ProYearOnYearTrend,
             ProportionalStructureAverageComparison,
             ProportionalStructureAverageComparisonBig,
@@ -499,6 +446,8 @@
                         // eDate: moment().format('YYYY-MM-DD'),
                     };
                 }
+            },
+            handleSearch() {
             },
             go() {
 
