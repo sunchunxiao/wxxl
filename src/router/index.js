@@ -34,9 +34,16 @@ export default new Router({
             name: 'login',
             component: () => import('views/Login.vue')
         }, {
+            path: '/searchbar',
+            name: 'searchbar',
+            component: () => import('components/SearchBar.vue')
+        }, {
             path: '/404',
             name: '404',
             component: () => import('views/404.vue')
+        }, {
+            path: '*',
+            redirect: '/404'
         }
 	]
 });
