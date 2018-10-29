@@ -179,7 +179,7 @@
           </Card>
         </el-row>
         <el-row 
-          v-if="type==2||type==3" 
+          v-if="type==2||type==3"
           v-loading="loading" 
           class="margin-top-10">
           <Card>
@@ -357,7 +357,6 @@
                 this.getTree();
             }
             this.initFormDataFromUrl();
-//          console.log(this.fundTree)
         },
         methods: {
             change() {
