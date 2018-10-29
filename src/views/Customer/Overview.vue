@@ -115,27 +115,16 @@
           <Card>
             <el-row class="card-title">目标-实际-差异趋势分析</el-row>
             <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in pieData">
-                  <el-col 
-                    :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(1 ,index)">
-                    <ProTargetActualDiffTrend 
-                      :id="`${index}`" 
-                      :data="trendData[index]" 
-                      :title="pieData[index].text"/>
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col 
-                :span="8" 
-                class="border-left">
-                <ProTargetActualDiffTrendBig 
-                  id="ProTargetActualDiffTrendBig" 
-                  :data="trendData[index1]" 
-                  title="毛利润额"/>
-              </el-col>
+              <template v-for="(item, index) in custrendArr">
+                <el-col 
+                  :key="index" 
+                  :span="12" 
+                  @click.native="clickIndex(1 ,index)">
+                  <ProTargetActualDiffTrend 
+                    :id="`${index}`" 
+                    :data="item"/>
+                </el-col>
+              </template>
             </el-row>
           </Card>
         </el-row>
@@ -145,27 +134,16 @@
           <Card>
             <el-row class="card-title">同比环比趋势分析</el-row>
             <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in averageData">
-                  <el-col 
-                    :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(2 ,index)">
-                    <ProYearOnYearTrend 
-                      :id="`${index}`" 
-                      :data="trendData[index]" 
-                      :title="pieData[index].text"/>
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col 
-                :span="8" 
-                class="border-left">
-                <ProYearOnYearTrendBig 
-                  id="ProYearOnYearTrendBig" 
-                  :data="trendData[index2]" 
-                  title="毛利润额"/>
-              </el-col>
+              <template v-for="(item, index) in custrendArr">
+                <el-col 
+                  :key="index" 
+                  :span="12" 
+                  @click.native="clickIndex(2 ,index)">
+                  <ProYearOnYearTrend 
+                    :id="`${index}`" 
+                    :data="item"/>
+                </el-col>
+              </template>
             </el-row>
           </Card>
         </el-row>
@@ -236,16 +214,17 @@
 
 <script>
     import API from './api';
+	import moment from 'moment';
     import Card from '../../components/Card';
     // 目标达成情况总览
     import ProTargetAchievement from '../../components/ProTargetAchievement';
     import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
     // 目标-实际-差异趋势分析
-    import ProTargetActualDiffTrend from '../../components/TrendDifffalse';
+    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
     import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
     // 同比环比趋势分析
     import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
-    import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
+    // import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
     // 比例结构与平均值对比分析
     import ProportionalStructureAverageComparison from '../../components/ProportionalStructureAverageComparison';
     import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
@@ -276,7 +255,7 @@
         components: {
             Card,
             ProYearOnYearTrend,
-            ProYearOnYearTrendBig,
+            // ProYearOnYearTrendBig,
             ProportionalStructureAverageComparison,
             ProportionalStructureAverageComparisonBig,
             IntelligentSelection,
@@ -288,12 +267,13 @@
         data() {
             return {
                 form: {
-                    pt: '日',
+                    pt: '月',
                     date: [],
                     search: '',
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
+                cid:1,
                 loading: false,
                 // tree
                 tree: tree,
@@ -316,7 +296,7 @@
             };
         },
         computed: {
-            ...mapGetters(['customerTree']),
+            ...mapGetters(['customerTree','cusprogressArr','custrendArr']),
             hasTree() {
                 return !_.isEmpty(this.customerTree);
             }
@@ -325,12 +305,20 @@
             if(!this.hasTree) {
                 this.getTree();
             }
+            this.initFormDataFromUrl();
         },
         watch: {
             form: {
                 handler: function() {},
                 deep: true
-            }
+            },
+            cid: function() {
+				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+				// 暂时先在这里做
+				this.getSubject();
+				this.getStructure();
+				// this.getRank();
+			}
         },
         methods: {
             getTree() {
@@ -345,6 +333,77 @@
                     this.$store.dispatch('SaveCusTree', res.tree);
                 });
             },
+            getProgress() {
+				const params = {
+					pt: this.form.pt,
+					cid: this.cid,
+					...this.getPeriodByPt(),
+					version: this.form.version
+				};
+				API.GetCusProgress(params).then(res => {
+					this.$store.dispatch('SaveCusProgressData', res.data);
+					const promises = _.map(res.data, o => this.getTrend(o.subject));
+					Promise.all(promises).then(resultList => {
+						_.forEach(resultList, (v, k) => {
+							v.subject = res.data[k].subject;
+							v.subject_name = res.data[k].subject_name;
+						});
+						this.$store.dispatch('SaveCusTrendArr', resultList);
+					});
+				});
+            },
+            getSubject() {
+				const params = {
+					rType:0
+				};
+				API.GetCusSubject(params).then(res => {
+					// this.$store.dispatch('SaveCusProgressData', res.data);
+					const promises = _.map(res.data, o => this.getTrend(o.subject));
+					Promise.all(promises).then(resultList => {
+						_.forEach(resultList, (v, k) => {
+							v.subject = res.data[k].subject;
+							v.subject_name = res.data[k].subject_name;
+						});
+						this.$store.dispatch('SaveCusTrendArr', resultList);
+					});
+				});
+			},
+			getTrend(subject) {
+				const params = {
+					cid: this.cid,
+					pt: this.form.pt,
+					...this.getPeriodByPt(),
+					subject: subject,
+					version: this.form.version
+				};
+				return API.GetCusTrend(params);
+			},
+            getStructure() {
+				// console.log(this.type)
+				const params = {
+					pt: this.form.pt,
+					cid: this.cid,
+					...this.getPeriodByPt(),
+					version: this.form.version,
+					rType: 1
+				};
+				API.GetCusStructure(params).then(res => {
+					// console.log(res.data);
+					this.$store.dispatch('SaveCusStructureArr', res.data);
+				});
+            },
+            getRank() {
+				const params = {
+					cid: this.cid,
+					pt: this.form.pt,
+					version: this.form.version,
+					...this.getPeriodByPt(),
+				};
+				API.GetCusRank(params).then(res => {
+					// console.log(res.data);
+					this.$store.dispatch('SaveOrgRankArr', res.data);
+				});
+			},
             getPeriodByPt() {
                 const {
                     sDate,
@@ -394,6 +453,22 @@
                     eDate: date[1] || '',
                 };
             },
+            initFormDataFromUrl() {
+				const {
+					pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
+				} = this.$route.query;
+				let formData = {
+					pt: pt,
+					subject: subject,
+				};
+				if (moment(sDate).isValid() && moment(eDate).isValid()) {
+					formData.date = [sDate, eDate];
+				}
+				this.cid = cid;
+				this.form = { ...this.form,
+					...formData
+				};
+			},
             handleNodeClick(data) {
                 if(data.children != undefined) {
                     this.loading = true;
