@@ -1,7 +1,8 @@
 const path = require('path');
 const isProduction = process.env.NODE_ENV === 'production';
 const ProvidePluginOptions = [{
-    _: 'lodash'
+    _: 'lodash',
+    moment: 'moment'
 }];
 
 module.exports = {
@@ -48,5 +49,3 @@ module.exports = {
     //  }
     }
 };
-// eslint-disable-next-line no-console
-// console.info(process.env);
