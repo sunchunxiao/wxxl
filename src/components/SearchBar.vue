@@ -163,6 +163,7 @@
 
 <script>
 import { FetchGet } from 'utils/fetch';
+
 // TODO: 季
 const UNITS = ['日', '周', '月', '年'];
 export default {

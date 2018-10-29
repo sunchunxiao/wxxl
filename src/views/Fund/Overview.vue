@@ -218,7 +218,7 @@
                 <IntelligentSelection 
                   id="heatmap" 
                   @showStragety="showStragety" 
-                  :data="heatmapData"/>
+                  :data="fundrankArr"/>
               </el-col>
               <el-col :span="10">
                 <div class="stragety">
@@ -227,11 +227,13 @@
                     <div class="stragety-selected-title">{{ stragetyTitle }}</div>
                     <el-checkbox-group v-model="stragetyCheckList">
                       <el-checkbox 
-                        v-for="item in stragety" 
-                        :key="item" 
-                        :label="item"/>
+                        v-for="(item,index) in stragety" 
+                        :key="index" 
+                        :label="item.strategy"  
+                        @change="change"/>
                     </el-checkbox-group>
                     <el-button 
+                      @click="submit"
                       type="primary" 
                       class="center">确 认</el-button>
                   </div>
@@ -326,11 +328,12 @@
                 stragetyCheckList: [],
                 stragetyTitle: '',
                 stragety: [],
-                type:3
+                type:3,
+                idArr:[]
             };
         },
         computed: {
-            ...mapGetters(['fundTree','fundprogressArr','fundtrendArr','fundstructureArr1','fundstructureArr2']),
+            ...mapGetters(['fundTree','fundprogressArr','fundtrendArr','fundstructureArr1','fundstructureArr2','fundrankArr']),
             hasTree() {
                 return !_.isEmpty(this.fundTree);
             }
@@ -346,7 +349,7 @@
 				this.getProgress();
 				this.getStructure1();
 				this.getStructure2();
-				// this.getRank();
+				this.getRank();
 			}
         },
         mounted() {
@@ -357,6 +360,49 @@
 //          console.log(this.fundTree)
         },
         methods: {
+            change() {
+				this.idArr = [];
+				for (let j of this.stragetyCheckList) {
+					let stragetyObj = this.stragety.find(el => {
+
+						return el.strategy == j;
+					});
+					this.idArr.push(stragetyObj.id);
+				}
+				// console.log(this.stragetyCheckList, this.idArr);
+			},
+			submit() {
+				let data1 = JSON.parse(localStorage.data);
+
+				this.$confirm('确认?', {
+					confirmButtonText: '保存',
+					cancelButtonText: '取消',
+					type: 'warning',
+					center: true
+				}).then(() => {
+					const data = {
+						cid: data1.cid,
+						rank:this.Rank(data1.rank),
+						subject: data1.subject,
+						time_label: data1.time_label,
+						strategies: this.idArr.join(',')
+					};
+					API.PostFundStrategyLog(data).then(() => {
+						this.$message({
+							showClose: true,
+							message: '保存成功'
+						});
+						// console.log(res.api_info)
+					});
+				}).catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消',
+						duration: 1500
+					});
+				});
+
+			},
             getTree() {
                 const params = {
                     pt: this.form.pt,
@@ -424,6 +470,17 @@
 				};
 				API.GetFundStructure(params).then(res => {
 					this.$store.dispatch('SaveFundStructureArr2', res.data);
+				});
+            },
+            getRank() {
+				const params = {
+					cid: this.cid,
+					pt: this.form.pt,
+					version: this.form.version,
+					...this.getPeriodByPt(),
+				};
+				API.GetFundRank(params).then(res => {
+					this.$store.dispatch('SaveFundRankArr', res.data);
 				});
 			},
             getPeriodByPt() {
@@ -518,15 +575,55 @@
             clickIndex(i, idx) {
                 this[`index${i}`] = idx;
             },
+            Rank(score) {
+				if (score =='差') {
+					return 4;
+				}
+				if (score == '中') {
+					return 3;
+				}
+				if (score =='良') {
+					return 2;
+				}
+				if (score =='优') {
+					return 1;
+				}
+				return 4;
+			},
             showStragety(data) {
-                const {
-                    brand,
-                    name,
-                    rank
-                } = data;
-                this.stragetyTitle = `${brand} - ${name} - ${rank}`;
-                this.stragety = data.stragety;
-            }
+				// console.log(data)
+				localStorage.setItem("data", JSON.stringify(data));
+				const {
+					cid,
+					brand,
+					name,
+					subject,
+					time_label,
+					rank
+				} = data;
+				// console.log(cid, brand, name, rank);
+				this.stragetyTitle = `${brand} - ${name} - ${rank}`;
+				const params = {
+					cid: cid,
+					subject: subject,
+					rank: this.Rank(rank),
+					time_label: time_label,
+				};
+
+				API.GetFundStrategy(params).then(res => {
+					// console.log(res.data)
+					this.stragetyCheckList = [];
+					this.stragety = res.data;
+					for (let i = 0; i < res.data.length; i++) {
+						if (res.data[i].status == 1) {
+							this.stragetyCheckList.push(res.data[i].strategy);
+							// console.log(this.stragetyCheckList)
+						}
+					}
+					// this.$store.dispatch('SaveRankArr', res.data);
+				});
+
+			}
         }
     };
 </script>

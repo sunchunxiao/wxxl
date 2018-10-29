@@ -147,6 +147,7 @@
 						},
 						animation: true,
 						grid: {
+							width:'auto',
 							height: '70%',
 							y: '8%',
 							x: '10%'
