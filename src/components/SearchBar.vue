@@ -301,7 +301,7 @@ export default {
           }
         },
         handleKwSelect(obj) {
-          this.cid = obj.id;
+          this.form.cid = obj.id;
         }
     }
 };
