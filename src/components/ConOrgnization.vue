@@ -35,7 +35,6 @@ export default {
     },
     methods: {
         renderChart(data) {
-			
             let _this = this;
             const options = {
                 grid: {

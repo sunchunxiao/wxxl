@@ -70,14 +70,22 @@ export default {
         },
     },
     methods: {
-        calculateToShow(val) {
+         calculateToShow(val) {
             const { subject } = this.data;
             if (subject === 'ROI') { // 投入产出比需要 * 100
                 return parseInt(val * 100);
             } else if (subject === 'ITO') { // 库存周转率不需要单位
                 return val;
+            }else if (subject === 'POR') { // 库存周转率不需要单位
+                return parseInt(val);
             }
-            return parseInt(val / 10000 / 100); // 金额从分转换为万
+            let Tenthousand = parseInt(val / 10000 / 100);
+            if(Tenthousand>=1){
+                return parseInt(val / 10000 / 100)+'w';
+            }else{
+                return parseInt(val/100);
+            }
+            // return parseInt(val / 10000 / 100); // 金额从分转换为万
         },
         renderChart(data) {
             const { subject, subject_name, progress } = data;

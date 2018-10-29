@@ -67,7 +67,8 @@
         <el-tree 
           :data="fundTree.children" 
           :props="defaultProps" 
-          @node-click="handleNodeClick" 
+          @node-click="handleNodeClick"
+          check-strictly
           show-checkbox 
           @check-change="handleCheckChange">
           <span 
@@ -84,29 +85,57 @@
       <el-col 
         :span="19" 
         class="overflow">
-        <el-row>
-          <Card>
-            <el-row class="card-title">组织对比分析和平均值分析</el-row>
+        <el-row v-loading="loading">
+          <Card v-if="type==1||type==3">
+            <el-row class="card-title">组织对比分析和平均值分析前端</el-row>
             <el-row>
               <el-col :span="6">
-                <template v-for="(item, index) in pieData">
+                <template v-for="(item, index) in fundcompareArr">
                   <el-col 
                     :key="index" 
                     :span="12" 
                     @click.native="clickIndex(0 ,index)">
                     <ConOrgComparisonAverage 
-                      :title="item.text" 
+                      :title="item.subject_name"  
                       :id="`${index}`" 
-                      :data="comparisonAverageData[index]"/>
+                      :data="item"/>
                   </el-col>
                 </template>
               </el-col>
               <el-col :span="18">
                 <ConOrgComparisonAverageBig 
-                  :title="pieData[index0].text" 
-                  :data="comparisonAverageData[index0]" 
+                  v-if="fundcompareArr.length > 0"
+                  :title="fundcompareArr[index0].subject_name" 
+                  :data="fundcompareArr[index0]" 
                   id="ConOrgComparisonAverage" 
                   :index="index0"/>
+              </el-col>
+            </el-row>
+          </Card>
+          <Card v-if="type==2||type==3">
+            <el-row class="card-title">组织对比分析和平均值分析后端</el-row>
+            <el-row>
+              <el-col :span="6">
+                <template v-for="(item1, index) in fundcompareArrback">
+                  <el-col 
+                    :key="index" 
+                    :span="12" 
+                    @click.native="clickIndex(1 ,index)">
+                    <ConOrgComparisonAverage 
+                      :title="item1.subject_name" 
+                      :id="`${index+fundcompareArr.length}`" 
+                      :data="item1"/>
+                  </el-col>
+                </template>
+              </el-col>
+              <el-col 
+                :span="18" 
+                v-if="fundcompareArrback.length > 0">
+                <ConOrgComparisonAverageBig 
+                  :title="fundcompareArrback[index1].subject_name" 
+                  :data="fundcompareArrback[index1]" 
+                  id="ConOrgComparisonAverage1" 
+                  :index="index1"/>
               </el-col>
             </el-row>
           </Card>
@@ -120,8 +149,8 @@
     import API from './api';
     import Card from '../../components/Card';
     // 组织对比分析和平均值分析
-    import ConOrgComparisonAverage from '../../components/Confalse';
-    import ConOrgComparisonAverageBig from '../../components/ConfalseBig';
+    import ConOrgComparisonAverage from '../../components/ConOrgnization';
+    import ConOrgComparisonAverageBig from '../../components/ConOrgnizationBig';
 
     import mockPieData from './mock/pieData.js';
     import mockComparisonAverageData from './mock/comparisonAverageData.js';
@@ -148,22 +177,26 @@
         data() {
             return {
                 form: {
-                    pt: 'day',
+                    pt: '月',
                     date: [],
                     search: '',
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
+                loading: false,
+                cid:1,
                 tree: tree,
                 treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
                 pieData: mockPieData(),
                 comparisonAverageData: mockComparisonAverageData(),
-                index0: 0
+                index0: 0,
+                index1: 0,
+                type:3
             };
         },
         computed: {
-            ...mapGetters(['fundTree']),
+            ...mapGetters(['fundTree','fundcompareArr','fundcompareArrback']),
             hasTree() {
                 return !_.isEmpty(this.fundTree);
             }
@@ -172,12 +205,20 @@
             form: {
                 handler: function() {},
                 deep: true
-            }
+            },
+            cid: function() {
+					// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+					// 暂时先在这里做
+					this.getProgressbefore();
+					this.getProgressback();
+			}
         },
         mounted() {
             if(!this.hasTree) {
                 this.getTree();
             }
+            this.getProgressbefore();
+            this.getProgressback();
         },
         methods: {
             getTree() {
@@ -191,6 +232,62 @@
                     this.$store.dispatch('SaveFundTree', res.tree);
                 });
             },
+            getProgressbefore() {
+                
+				const params = {
+					rType:1
+				};
+				API.GetFundSubject(params).then(res => {
+					// console.log(res.data)
+                    // this.$store.dispatch('SaveOrgProgressData', res.data);
+                    
+					const promises = _.map(res.data, o => this.getTrend(o.subject));
+					Promise.all(promises).then(resultList1 => {
+						_.forEach(resultList1, (v, k) => {
+							v.subject = res.data[k].subject;
+							v.subject_name = res.data[k].subject_name;
+                        });
+						this.$store.dispatch('SaveFundCompareArr', resultList1);
+					});
+				});
+            },
+            getTrend(subject) {
+				const params = {
+					cid: this.cid,
+					pt: this.form.pt,
+					...this.getPeriodByPt(),
+					subject: subject,
+					version: this.form.version,
+					rType: 1
+				};
+				return API.GetFundCompare(params);
+            },
+            getProgressback() {
+				const params = {
+					rType:2
+				};
+				API.GetFundSubject(params).then(res => {
+					const promises = _.map(res.data, o => this.getTrendback(o.subject));
+					Promise.all(promises).then(resultList => {
+						_.forEach(resultList, (v, k) => {
+							v.subject = res.data[k].subject;
+							v.subject_name = res.data[k].subject_name;
+						});
+						this.$store.dispatch('SaveFundCompareArrback', resultList);
+					});
+				});
+			},
+			getTrendback(subject) {
+				const params = {
+					cid: this.cid,
+					pt: this.form.pt,
+					...this.getPeriodByPt(),
+					subject: subject,
+					version: this.form.version,
+					rType: 2
+				};
+				return API.GetFundCompare(params);
+			},
             getPeriodByPt() {
                 const {
                     sDate,
@@ -240,8 +337,21 @@
                     eDate: date[1] || '',
                 };
             },
-            handleNodeClick() {
-            },
+            handleNodeClick(data) {
+                this.type = data.type;
+				if (data.children != undefined) {
+					this.cid = data.cid;
+					this.loading = true;
+					//                  setTimeout(() => {
+					//                      this.getProgress();
+					//                      this.getStructure();
+					//                      this.getRank();
+					//                  }, 300);
+					setTimeout(() => {
+						this.loading = false;
+					}, 1000);
+				}
+			},
             handleCheckChange() {
             },
             clickIndex(i, idx) {

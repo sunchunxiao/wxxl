@@ -2,7 +2,7 @@
   <div class="ConOrgComparisonAverage-container">
     <div 
       class="ConOrgComparisonAverage" 
-      :id="`ConOrgComparisonAverage-${id}`"/>
+      :id="`ConOrgComparisonAverage1-${id}`"/>
     <div class="detail">{{ title }}</div>
   </div>
 </template>
@@ -18,7 +18,7 @@ export default {
         index: Number
     },
     mounted() {
-        this.chart = echarts.init(document.getElementById(`ConOrgComparisonAverage-${this.id}`));
+        this.chart = echarts.init(document.getElementById(`ConOrgComparisonAverage1-${this.id}`));
         this.renderChart(this.data);
     },
     watch: {
@@ -71,6 +71,7 @@ export default {
                 },
                 series: []
             };
+            
 			for(let i = 0; i < data.data.sub.length; i++) {
 				options.series.push({
 					name:  data.data.sub[i].name,
@@ -78,7 +79,7 @@ export default {
 					stack: i,
 					data: data.data.sub[i].real
 				});
-			}
+            }
             this.chart.setOption(options);
         }
     }
