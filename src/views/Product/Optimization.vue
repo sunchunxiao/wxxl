@@ -66,6 +66,7 @@
         <el-tree 
           :data="productTree.children" 
           :props="defaultProps" 
+          check-strictly
           @node-click="handleNodeClick" 
           @check-change="handleCheckChange">
           <span 

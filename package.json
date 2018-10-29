@@ -10,8 +10,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "echarts": "^4.1.0",
-    "element-ui": "^2.4.5",
-    "jQuery": "^1.7.4",
+    "element-ui": "^2.4.8",
     "lodash": "^4.17.11",
     "moment": "^2.22.2",
     "vue": "^2.5.17",
@@ -24,7 +23,7 @@
     "@vue/cli-service": "^3.0.1",
     "husky": "^1.1.2",
     "lint-staged": "^7.3.0",
-    "node-sass": "^4.9.3",
+    "node-sass": "^4.9.4",
     "sass-loader": "^7.1.0",
     "vue-cli-plugin-element": "^1.0.0",
     "vue-template-compiler": "^2.5.17"
