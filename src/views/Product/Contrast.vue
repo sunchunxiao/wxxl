@@ -213,9 +213,7 @@
                     for(let i=0;i<3;i++) {
                         this.cidArr.push(data[i].cid);
                     }
-                    console.log(this.cidArr);
                     this.$refs.tree.setCheckedKeys(this.cidArr);
-                    
                     this.$store.dispatch('SaveProductTree', res.tree);
                 });
             },
