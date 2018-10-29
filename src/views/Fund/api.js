@@ -26,5 +26,17 @@ export default {
     PostFundStrategyLog(params) {
         return FetchPostNew('/fund/strategyLog', params);
     },
+    GetFundCompare(params) {
+        return FetchGet('/fund/compare', params);
+    },
+    GetFundSubject(params) {
+        return FetchGet('/fund/subject', params);
+    },
+    GetFundStrategiesOpt(params) {
+        return FetchGet('/fund/strategiesOpt', params);
+    },
+    GetFundStrategiesTrack(params) {
+        return FetchGet('/fund/strategiesTrack', params);
+    },
    
 };

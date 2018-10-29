@@ -168,7 +168,8 @@
                 comparisonAverageData: mockComparisonAverageData(),
                 index0: 0,
                 series: [],
-                setCheckedKeys: []
+                setCheckedKeys: [],
+                cidArr:[]
             };
         },
         computed: {
@@ -206,13 +207,15 @@
                     ...this.getPeriodByPt(),
                 };
                 API.GetProductTree(params).then(res => {
-                    let arr = [];
+                    this.cidArr = [];
                     let data = res.tree.children;
                    
-                    for(let i=0;i<data.length;i++) {
-                        arr.push(data[i].cid);
+                    for(let i=0;i<3;i++) {
+                        this.cidArr.push(data[i].cid);
                     }
-//                  this.$refs.tree.setCheckedKeys([10,20])
+                    console.log(this.cidArr);
+                    this.$refs.tree.setCheckedKeys(this.cidArr);
+                    
                     this.$store.dispatch('SaveProductTree', res.tree);
                 });
             },

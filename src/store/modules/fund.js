@@ -6,6 +6,9 @@ const fund = {
         fundstructureArr1:[],
         fundstructureArr2:[],
         fundrankArr: [],
+        fundcompareArr: [],
+        fundcompareArrback: [],
+        fundhistoryArr:[],
     },
     mutations: {
         SAVE_FUND_TREE: (state, tree) => {
@@ -25,6 +28,15 @@ const fund = {
         },
         SAVE_RANKRANK_ARR: (state, arr) => {
 			state.fundrankArr = arr;
+        },
+        SAVE_FUNDCOMPARE_ARR: (state, arr) => {
+			state.fundcompareArr = arr;
+        },
+        SAVE_FUNDCOMPAREBACK_ARR: (state, arr) => {
+			state.fundcompareArrback = arr;
+        },
+        SAVE_FUNDHISTORY_ARR: (state, arr) => {
+			state.fundhistoryArr = arr;
 		},
     },
     actions: {
@@ -45,6 +57,16 @@ const fund = {
         },
         SaveFundRankArr({ commit }, arr) {
 			commit('SAVE_RANKRANK_ARR', arr);
+        },
+        SaveFundCompareArr({ commit }, arr) {
+            
+			commit('SAVE_FUNDCOMPARE_ARR', arr);
+        },
+        SaveFundCompareArrback({ commit }, arr) {
+			commit('SAVE_FUNDCOMPAREBACK_ARR', arr);
+        },
+        SaveFundtHistory({ commit }, arr) {
+			commit('SAVE_FUNDHISTORY_ARR', arr);
 		},
     }
 };
