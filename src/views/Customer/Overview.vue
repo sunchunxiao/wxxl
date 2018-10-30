@@ -10,13 +10,13 @@
           <el-form-item label="时间单位选择">
             <el-select v-model="form.pt">
               <el-option 
-                label="日" 
+                label="月" 
                 value="day"/>
               <el-option 
-                label="周" 
+                label="季" 
                 value="week"/>
               <el-option 
-                label="月" 
+                label="年" 
                 value="month"/>
             </el-select>
           </el-form-item>
@@ -88,7 +88,7 @@
             <el-row class="card-title">目标达成情况总览</el-row>
             <el-row>
               <el-col :span="16">
-                <template v-for="(item, index) in pieData">
+                <template v-for="(item, index) in cusprogressArr">
                   <el-col 
                     :key="index" 
                     :span="6" 
@@ -101,10 +101,11 @@
               </el-col>
               <el-col 
                 :span="8" 
+                v-if="cusprogressArr.length > 0" 
                 class="border-left">
                 <ProTargetAchievementBig 
                   :id="'select'" 
-                  :data="pieData[index0]"/>
+                  :data="cusprogressArr[index0]"/>
               </el-col>
             </el-row>
           </Card>
@@ -154,7 +155,7 @@
             <el-row class="card-title">比例结构与平均值对比分析</el-row>
             <el-row>
               <el-col :span="16">
-                <template v-for="(item, index) in averageData">
+                <template v-for="(item, index) in cusstructureArr">
                   <el-col 
                     :key="index" 
                     :span="6" 
@@ -169,8 +170,9 @@
                 :span="8" 
                 class="border-left">
                 <ProportionalStructureAverageComparisonBig 
+                  v-if="cusstructureArr.length>0"
                   id="ProportionalStructureAverageComparisonBig" 
-                  :data="averageData[index3]"/>
+                  :data="cusstructureArr[index3]"/>
               </el-col>
             </el-row>
           </Card>
@@ -185,7 +187,7 @@
                 <IntelligentSelection 
                   id="heatmap" 
                   @showStragety="showStragety" 
-                  :data="heatmapData"/>
+                  :data="cusrankArr"/>
               </el-col>
               <el-col :span="10">
                 <div class="stragety">
@@ -194,12 +196,14 @@
                     <div class="stragety-selected-title">{{ stragetyTitle }}</div>
                     <el-checkbox-group v-model="stragetyCheckList">
                       <el-checkbox 
-                        v-for="item in stragety" 
-                        :key="item" 
-                        :label="item"/>
+                        v-for="(item,index) in stragety" 
+                        :key="index" 
+                        :label="item.strategy"
+                        @change="change"/>
                     </el-checkbox-group>
                     <el-button 
                       type="primary" 
+                      @click="submit" 
                       class="center">确 认</el-button>
                   </div>
                 </div>
@@ -296,7 +300,7 @@
             };
         },
         computed: {
-            ...mapGetters(['customerTree','cusprogressArr','custrendArr']),
+            ...mapGetters(['customerTree','cusprogressArr','custrendArr','cusstructureArr','cusrankArr']),
             hasTree() {
                 return !_.isEmpty(this.customerTree);
             }
@@ -315,12 +319,55 @@
             cid: function() {
 				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
 				// 暂时先在这里做
+                this.getProgress();
 				this.getSubject();
 				this.getStructure();
-				// this.getRank();
+				this.getRank();
 			}
         },
         methods: {
+            change() {
+				this.idArr = [];
+				for (let j of this.stragetyCheckList) {
+					let stragetyObj = this.stragety.find(el => {
+
+						return el.strategy == j;
+					});
+					this.idArr.push(stragetyObj.id);
+				}
+				// console.log(this.stragetyCheckList, this.idArr);
+			},
+			submit() {
+				let data1 = JSON.parse(localStorage.data);
+				this.$confirm('确认?', {
+					confirmButtonText: '保存',
+					cancelButtonText: '取消',
+					type: 'warning',
+					center: true
+				}).then(() => {
+					const data = {
+						cid: data1.cid,
+						rank:this.Rank(data1.rank),
+						subject: data1.subject,
+						time_label: data1.time_label,
+						strategies: this.idArr.join(',')
+					};
+					API.PostCusStrategyLog(data).then(() => {
+						this.$message({
+							showClose: true,
+							message: '保存成功'
+						});
+						// console.log(res.api_info)
+					});
+				}).catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消',
+						duration: 1500
+					});
+				});
+
+			},
             getTree() {
                 const params = {
                     pt: this.form.pt,
@@ -379,7 +426,6 @@
 				return API.GetCusTrend(params);
 			},
             getStructure() {
-				// console.log(this.type)
 				const params = {
 					pt: this.form.pt,
 					cid: this.cid,
@@ -388,7 +434,6 @@
 					rType: 1
 				};
 				API.GetCusStructure(params).then(res => {
-					// console.log(res.data);
 					this.$store.dispatch('SaveCusStructureArr', res.data);
 				});
             },
@@ -401,7 +446,7 @@
 				};
 				API.GetCusRank(params).then(res => {
 					// console.log(res.data);
-					this.$store.dispatch('SaveOrgRankArr', res.data);
+					this.$store.dispatch('SaveCusRankArr', res.data);
 				});
 			},
             getPeriodByPt() {
@@ -470,21 +515,16 @@
 				};
 			},
             handleNodeClick(data) {
-                if(data.children != undefined) {
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.pieData = mockPieData();
-                        this.trendData = mockTrendData();
-                        this.averageData = mockAverageData();
-                        this.heatmapData = mockHeatmapData();
-                    }, 300);
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
+				this.type = data.type;
+				if (data.children != undefined) {
+					this.cid = data.cid;
+					this.loading = true;
+					setTimeout(() => {
+						this.loading = false;
+					}, 1000);
+				}
 
-                }
-
-            },
+			},
             calculatePercent(a, b) {
                 if(b > 0) {
                     const percent = parseInt(a / b * 100);
@@ -499,15 +539,54 @@
             clickIndex(i, idx) {
                 this[`index${i}`] = idx;
             },
-            showStragety(data) {
-                const {
-                    brand,
-                    name,
-                    rank
-                } = data;
-                this.stragetyTitle = `${brand} - ${name} - ${rank}`;
-                this.stragety = data.stragety;
-            }
+            Rank(score) {
+				if (score =='差') {
+					return 4;
+				}
+				if (score == '中') {
+					return 3;
+				}
+				if (score =='良') {
+					return 2;
+				}
+				if (score =='优') {
+					return 1;
+				}
+				return 4;
+			},
+			showStragety(data) {
+				// console.log(data)
+				localStorage.setItem("data", JSON.stringify(data));
+				const {
+					cid,
+					brand,
+					name,
+					subject,
+					time_label,
+					rank
+				} = data;
+				// console.log(cid, brand, name, rank);
+				this.stragetyTitle = `${brand} - ${name} - ${rank}`;
+				const params = {
+					cid: cid,
+					subject: subject,
+					rank: this.Rank(rank),
+					time_label: time_label,
+				};
+
+				API.GetCusStrategy(params).then(res => {
+					// console.log(res.data)
+					this.stragetyCheckList = [];
+					this.stragety = res.data;
+					for (let i = 0; i < res.data.length; i++) {
+						if (res.data[i].status == 1) {
+							this.stragetyCheckList.push(res.data[i].strategy);
+							// console.log(this.stragetyCheckList)
+						}
+					}
+				});
+
+			}
         }
     };
 </script>

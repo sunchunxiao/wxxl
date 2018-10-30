@@ -33,7 +33,7 @@
           label="策略"/>
         <el-table-column 
           prop="use_num" 
-          label="采纳次数" 
+          label="采纳次数"
           :filters="arr" 
           :filter-method="filterF"/>
         <el-table-column 

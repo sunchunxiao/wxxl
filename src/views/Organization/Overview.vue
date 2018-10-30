@@ -10,13 +10,13 @@
           <el-form-item label="时间单位选择">
             <el-select v-model="form.pt">
               <el-option 
-                label="日" 
+                label="月" 
                 value="day"/>
               <el-option 
-                label="周" 
+                label="季" 
                 value="week"/>
               <el-option 
-                label="月" 
+                label="年" 
                 value="month"/>
             </el-select>
           </el-form-item>
@@ -590,18 +590,18 @@
 			},
 			Rank(score) {
 				if (score =='差') {
-					return 1;
-				}
-				if (score == '中') {
-					return 2;
-				}
-				if (score =='良') {
-					return 3;
-				}
-				if (score =='优') {
 					return 4;
 				}
-				return 1;
+				if (score == '中') {
+					return 3;
+				}
+				if (score =='良') {
+					return 2;
+				}
+				if (score =='优') {
+					return 1;
+				}
+				return 4;
 			},
 			showStragety(data) {
 				// console.log(data)

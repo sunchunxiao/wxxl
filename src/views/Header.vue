@@ -18,6 +18,7 @@ export default {
 <style lang="scss" scoped>
 .header {
     width: calc(100% - 200px);
+    min-width: 1000px;
     height: 60px;
     line-height: 60px;
     padding-right: 50px;

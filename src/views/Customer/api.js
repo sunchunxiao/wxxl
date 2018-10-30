@@ -29,5 +29,14 @@ export default {
     PostCusStrategyLog(params) {
         return FetchPostNew('/cus/strategyLog', params);
     },
+    GetCusCompare(params) {
+        return FetchGet('/cus/compare', params);
+    },
+    GetCusStrategiesOpt(params) {
+        return FetchGet('/cus/strategiesOpt', params);
+    },
+    GetCusStrategiesTrack(params) {
+        return FetchGet('/cus/strategiesTrack', params);
+    },
    
 };
