@@ -82,40 +82,44 @@
       </el-col>
       <el-col 
         :span="19" 
+        v-loading="loading" 
         class="overflow">
         <Card>
           <el-row :gutter="10">
-            <template v-for="i in 4">
+            <template v-for="(item,index) in cushistoryArr">
               <el-col 
                 :span="12" 
-                :key="i">
+                :key="index">
                 <el-table 
-                  :data="tableData2" 
+                  :data="item.strategies" 
                   size="mini" 
-                  :span-method="arraySpanMethod2">
-                  <el-table-column :label="time">
+                  :span-method="arraySpanMethod(item.strategies)">
+                  <el-table-column :label="`${item.start_date} - ${item.end_date}`">
                     <el-table-column 
-                      prop="a" 
+                      prop="subject_name" 
+                      label="指标"/>
+                    <el-table-column 
+                      prop="inf_name" 
                       label="影响因素"/>
                     <el-table-column 
-                      prop="b" 
+                      prop="strategy" 
                       label="应用策略"/>
                     <el-table-column 
-                      prop="c" 
+                      prop="rank_name" 
                       label="评选结果"/>
                     <el-table-column 
-                      prop="d" 
+                      prop="ring_rate" 
                       label="环比增长率">
                       <template slot-scope="scope">
                         <img 
-                          v-if="largerThanZero(scope.row.d)" 
+                          v-if="largerThanZero(scope.row.ring_rate)" 
                           src="../../assets/opt1.png" 
                           alt="">
                         <img 
-                          v-if="lessThanZero(scope.row.d)" 
+                          v-if="lessThanZero(scope.row.ring_rate)" 
                           src="../../assets/opt2.png" 
                           alt="">
-                        <span style="margin-left: 10px">{{ scope.row.d + '%' }}</span>
+                        <span style="margin-left: 10px">{{ scope.row.ring_rate }}</span>
                       </template>
                     </el-table-column>
                   </el-table-column>
@@ -163,69 +167,24 @@
         data() {
             return {
                 form: {
-                    pt: 'day',
+                    pt: '月',
                     date: [],
                     search: '',
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
+                cid:1,
+                loading:false,
                 tree: tree,
                 treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
-                time: '7.30 - 8.05',
-                tableData2: [{
-                    a: '采购',
-                    b: '-',
-                    c: '优',
-                    d: '30'
-                }, {
-                    a: '供应商',
-                    b: '-',
-                    c: '-',
-                    d: '-'
-                }, {
-                    a: '包装',
-                    b: '精简包装',
-                    c: '-',
-                    d: '-'
-                }, {
-                    a: '流量',
-                    b: '-',
-                    c: '中',
-                    d: '-10'
-                }, {
-                    a: '转化率',
-                    b: '-',
-                    c: '-',
-                    d: '-'
-                }, {
-                    a: '客单价',
-                    b: '促进多件购买',
-                    c: '',
-                    d: 'v'
-                }, {
-                    a: '-',
-                    b: '-',
-                    c: '-',
-                    d: '-'
-                }, {
-                    a: '-',
-                    b: '-',
-                    c: '-',
-                    d: '-'
-                }, {
-                    a: '-',
-                    b: '-',
-                    c: '-',
-                    d: '-'
-                }],
                 pieData: mockPieData(),
                 comparisonAverageData: mockComparisonAverageData(),
                 index0: 0
             };
         },
         computed: {
-            ...mapGetters(['customerTree']),
+            ...mapGetters(['customerTree','cushistoryArr']),
             hasTree() {
                 return !_.isEmpty(this.customerTree);
             }
@@ -234,14 +193,32 @@
             form: {
                 handler: function() {},
                 deep: true
-            }
+            },
+            cid: function() {
+				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+				// 暂时先在这里做
+                this.getHistory();
+				
+			}
         },
         mounted() {
             if(!this.hasTree) {
                 this.getTree();
             }
+            this.getHistory();
         },
         methods: {
+             getHistory() {
+				const params = {
+                    cid:this.cid,
+					pt: this.form.pt,
+					version: this.form.version,
+					...this.getPeriodByPt(),
+				};
+				API.GetCusStrategiesOpt(params).then(res => {
+					this.$store.dispatch('SaveCustHistory', res.data);
+				});
+			},
             getTree() {
                 const params = {
                     pt: this.form.pt,
@@ -304,24 +281,52 @@
                 };
             },
             largerThanZero(val) {
-                return val && _.isNumber(parseFloat(val)) && parseFloat(val) > 0;
+                return val && _.isNumber(parseFloat(val)) && parseFloat(val) >= 0;
             },
             lessThanZero(val) {
                 return val && _.isNumber(parseFloat(val)) && parseFloat(val) < 0;
             },
-            arraySpanMethod2({
-                rowIndex,
-                columnIndex
-            }) {
-                if(columnIndex === 2 || columnIndex === 3) {
-                    if(rowIndex % 3 === 0) {
-                        return [3, 1];
-                    } else {
-                        return [0, 0];
-                    }
-                }
-            },
-            handleNodeClick() {},
+            arraySpanMethod(strategies) {
+				if (!strategies || strategies.length === 0) {
+					return;
+				}
+				const group = _.groupBy(strategies, o => {
+					return o.subject;
+				});
+				const newStrategies = _.cloneDeep(strategies);
+				for(let i = 1; i < newStrategies.length; i++) {
+					let prev = newStrategies[i-1];
+					let current = newStrategies[i];
+					if (current.subject === prev.subject) {
+						current.hidden = true;
+					}
+				}
+				return ({
+					row,
+					rowIndex,
+					columnIndex
+				}) => {
+					const rowSpan = group[row.subject].length;
+					if ([0, 3].includes(columnIndex)) {
+						if(!newStrategies[rowIndex].hidden) {
+							return [rowSpan, 1];
+						} else {
+							return [0, 0];
+						}
+					}
+				};
+			},
+            handleNodeClick(data) {
+				this.type = data.type;
+				if (data.children != undefined) {
+					this.cid = data.cid;
+					this.loading = true;
+					setTimeout(() => {
+						this.loading = false;
+					}, 1000);
+				}
+
+			},
             handleCheckChange() {
             },
             clickIndex(i, idx) {

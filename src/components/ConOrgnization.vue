@@ -75,7 +75,6 @@ export default {
                 },
                 series: []
             };
-			
 			for(let i = 0; i < data.data.sub.length; i++) {
 				options.series.push({
 					name:  data.data.sub[i].name,
@@ -84,7 +83,7 @@ export default {
 					data: data.data.sub[i].real
 				});
 			}
-            this.chart.setOption(options);
+            this.chart.setOption(options,true);
         }
     }
 };
@@ -101,7 +100,7 @@ export default {
         text-align: center;
         color: #5e5e5e;
         font-size: 15px;
-        padding: 10px;
+        padding: 10px 0 10px 15px;
     }
 }
 </style>

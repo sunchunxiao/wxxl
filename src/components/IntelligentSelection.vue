@@ -118,7 +118,7 @@
 				if (4 === score) {
 					return '优';
 				}
-				return '差';
+				return '';
 			},
 			renderChart(data) {
 
@@ -189,7 +189,7 @@
 							left: 'right',
 							bottom: '35%',
 							inRange: {
-								color: ['#a7dcfc', '#70bcde', '#23a9cc', '#007eb0']
+								color: ['#eee','#a7dcfc', '#70bcde', '#23a9cc', '#007eb0']
 							},
 							text: ['优', '差']
 						},

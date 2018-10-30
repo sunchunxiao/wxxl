@@ -89,22 +89,23 @@
             <el-row class="card-title">组织对比分析和平均值分析</el-row>
             <el-row>
               <el-col :span="6">
-                <template v-for="(item, index) in pieData">
+                <template v-for="(item, index) in cuscompareArr">
                   <el-col 
                     :key="index" 
                     :span="12" 
                     @click.native="clickIndex(0 ,index)">
                     <ConOrgComparisonAverage 
-                      :title="item.text" 
+                      :title="item.subject_name" 
                       :id="`${index}`" 
-                      :data="comparisonAverageData[index]"/>
+                      :data="item"/>
                   </el-col>
                 </template>
               </el-col>
               <el-col :span="18">
                 <ConOrgComparisonAverageBig 
-                  :title="pieData[index0].text" 
-                  :data="comparisonAverageData[index0]" 
+                  v-if="cuscompareArr.length > 0"
+                  :title="cuscompareArr[index0].subject_name" 
+                  :data="cuscompareArr[index0]" 
                   id="ConOrgComparisonAverage" 
                   :index="index0"/>
               </el-col>
@@ -120,8 +121,8 @@
     import API from './api';
     import Card from '../../components/Card';
     // 组织对比分析和平均值分析
-    import ConOrgComparisonAverage from '../../components/Confalse';
-    import ConOrgComparisonAverageBig from '../../components/ConfalseBig';
+    import ConOrgComparisonAverage from '../../components/ConOrgnization';
+    import ConOrgComparisonAverageBig from '../../components/ConOrgnizationBig';
 
     import mockPieData from './mock/pieData.js';
     import mockComparisonAverageData from './mock/comparisonAverageData.js';
@@ -148,12 +149,13 @@
         data() {
             return {
                 form: {
-                    pt: 'day',
+                    pt: '月',
                     date: [],
                     search: '',
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
+                cid:1,
                 tree: tree,
                 treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
@@ -163,7 +165,7 @@
             };
         },
         computed: {
-            ...mapGetters(['customerTree']),
+            ...mapGetters(['customerTree','cuscompareArr']),
             hasTree() {
                 return !_.isEmpty(this.customerTree);
             }
@@ -172,12 +174,19 @@
             form: {
                 handler: function() {},
                 deep: true
-            }
+            },
+            cid: function() {
+					// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+					// 暂时先在这里做
+					this.getProgress();
+			}
         },
+        
         mounted() {
             if(!this.hasTree) {
                 this.getTree();
             }
+            this.getProgress();
         },
         methods: {
             getTree() {
@@ -192,6 +201,32 @@
                     this.$store.dispatch('SaveCusTree', res.tree);
                 });
             },
+            getProgress() {
+				const params = {
+					rType:0
+				};
+				API.GetCusSubject(params).then(res => {
+					const promises = _.map(res.data, o => this.getTrend(o.subject));
+					Promise.all(promises).then(resultList => {
+						_.forEach(resultList, (v, k) => {
+							v.subject = res.data[k].subject;
+							v.subject_name = res.data[k].subject_name;
+                        });
+						this.$store.dispatch('SaveCusCompareArr', resultList);
+					});
+				});
+			},
+			getTrend(subject) {
+				const params = {
+					cid: this.cid,
+					pt: this.form.pt,
+					...this.getPeriodByPt(),
+					subject: subject,
+					version: this.form.version,
+					rType: 1
+				};
+				return API.GetCusCompare(params);
+			},
             getPeriodByPt() {
                 const {
                     sDate,
@@ -241,8 +276,17 @@
                     eDate: date[1] || '',
                 };
             },
-            handleNodeClick() {
-            },
+            handleNodeClick(data) {
+				this.type = data.type;
+				if (data.children != undefined) {
+					this.cid = data.cid;
+					this.loading = true;
+					
+					setTimeout(() => {
+						this.loading = false;
+					}, 1000);
+				}
+			},
             handleCheckChange() {
             },
             clickIndex(i, idx) {

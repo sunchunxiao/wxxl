@@ -82,6 +82,7 @@
       </el-col>
       <el-col 
         :span="19" 
+        v-loading="loading" 
         class="overflow">
         <Card>
           <el-row :gutter="10">
@@ -95,7 +96,7 @@
                   :span-method="arraySpanMethod(item.strategies)">
                   <el-table-column :label="`${item.start_date} - ${item.end_date}`">
                     <el-table-column 
-                      prop="subject" 
+                      prop="subject_name" 
                       label="指标"/>
                     <el-table-column 
                       prop="inf_name" 
@@ -174,6 +175,7 @@
                     version: '0'
                 },
                 cid:1,
+                loading:false,
                 tree: tree,
                 treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
@@ -193,7 +195,12 @@
             form: {
                 handler: function() {},
                 deep: true
-            }
+            },
+            cid: function() {
+				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+				// 暂时先在这里做
+                this.getHistory();
+			}
         },
         mounted() {
             if(!this.hasTree) {
@@ -275,7 +282,7 @@
                 };
             },
             largerThanZero(val) {
-                return val && _.isNumber(parseFloat(val)) && parseFloat(val) > 0;
+                return val && _.isNumber(parseFloat(val)) && parseFloat(val) >= 0;
             },
             lessThanZero(val) {
                 return val && _.isNumber(parseFloat(val)) && parseFloat(val) < 0;
@@ -310,7 +317,17 @@
 					}
 				};
 			},
-            handleNodeClick() {},
+            handleNodeClick(data) {
+				this.type = data.type;
+				if (data.children != undefined) {
+					this.cid = data.cid;
+					this.loading = true;
+					setTimeout(() => {
+						this.loading = false;
+					}, 1000);
+				}
+
+			},
             handleCheckChange() {
             },
             clickIndex(i, idx) {

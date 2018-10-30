@@ -4,7 +4,9 @@ const customer = {
         cusprogressArr: [],
         custrendArr: [],
 		cusstructureArr:[],
-		cusrankArr: [],
+        cusrankArr: [],
+        cuscompareArr: [],
+		cushistoryArr:[],
     },
     mutations: {
         SAVE_CUESTOMER_TREE: (state, tree) => {
@@ -21,6 +23,12 @@ const customer = {
 		},
 		SAVE_CUSRANK_ARR: (state, arr) => {
 			state.cusrankArr = arr;
+        },
+        SAVE_CUSCOMPARE_ARR: (state, arr) => {
+			state.cuscompareArr = arr;
+		},
+		SAVE_CUSHISTORY_ARR: (state, arr) => {
+			state.cushistoryArr = arr;
 		},
     },
     actions: {
@@ -38,6 +46,12 @@ const customer = {
 		},
 		SaveCusRankArr({ commit }, arr) {
 			commit('SAVE_CUSRANK_ARR', arr);
+        },
+        SaveCusCompareArr({ commit }, arr) {
+			commit('SAVE_CUSCOMPARE_ARR', arr);
+		},
+		SaveCustHistory({ commit }, arr) {
+			commit('SAVE_CUSHISTORY_ARR', arr);
 		},
     }
 };
