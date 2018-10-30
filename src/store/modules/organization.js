@@ -9,7 +9,7 @@ const organization = {
 		orgrankArr: [],
 		orgcompareArr: [],
 		orgcompareArrback: [],
-		orghistoryArr:{},
+		orghistoryArr:[],
 	},
 	mutations: {
 		SAVE_ORGANIZATION_TREE: (state, orgtree) => {

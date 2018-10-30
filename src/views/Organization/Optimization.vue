@@ -10,13 +10,13 @@
           <el-form-item label="时间单位选择">
             <el-select v-model="form.unit">
               <el-option 
-                label="日" 
+                label="月" 
                 value="day"/>
               <el-option 
-                label="周" 
+                label="季" 
                 value="week"/>
               <el-option 
-                label="月" 
+                label="年" 
                 value="month"/>
             </el-select>
           </el-form-item>

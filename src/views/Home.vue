@@ -93,7 +93,7 @@ $width_collapse: 64px;
       }
     }
     .menu_container {
-      width: 215px;
+      width: 217px;
       height: calc(100vh - 245px);
       overflow-y: scroll;
       overflow-x: hidden;

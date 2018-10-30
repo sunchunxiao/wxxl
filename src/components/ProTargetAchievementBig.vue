@@ -46,7 +46,7 @@ export default {
             } else if (subject === 'ITO') { // 库存周转率不需要单位
                 return '';
             }
-            return 'w';
+            // return 'w';
         },
         real() {
             const { real } = this.data;
