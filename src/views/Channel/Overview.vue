@@ -88,7 +88,7 @@
             <el-row class="card-title">目标达成情况总览</el-row>
             <el-row>
               <el-col :span="16">
-                <template v-for="(item, index) in pieData">
+                <template v-for="(item, index) in channelProgressArr">
                   <el-col 
                     :key="index" 
                     :span="6" 
@@ -101,10 +101,11 @@
               </el-col>
               <el-col 
                 :span="8" 
+                v-if="channelProgressArr.length > 0"
                 class="border-left">
                 <ProTargetAchievementBig 
                   :id="'select'" 
-                  :data="pieData[index0]"/>
+                  :data="channelProgressArr[index0]"/>
               </el-col>
             </el-row>
           </Card>
@@ -115,27 +116,16 @@
           <Card>
             <el-row class="card-title">目标-实际-差异趋势分析</el-row>
             <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in pieData">
-                  <el-col 
-                    :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(1 ,index)">
-                    <ProTargetActualDiffTrend 
-                      :id="`${index}`" 
-                      :data="trendData[index]" 
-                      :title="pieData[index].text"/>
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col 
-                :span="8" 
-                class="border-left">
-                <ProTargetActualDiffTrendBig 
-                  id="ProTargetActualDiffTrendBig" 
-                  :data="trendData[index1]" 
-                  title="毛利润额"/>
-              </el-col>
+              <template v-for="(item, index) in channelTrendArr">
+                <el-col 
+                  :key="index" 
+                  :span="12" 
+                  @click.native="clickIndex(1 ,index)">
+                  <ProTargetActualDiffTrend 
+                    :id="`${index}`" 
+                    :data="item"/>
+                </el-col>
+              </template>
             </el-row>
           </Card>
         </el-row>
@@ -145,27 +135,16 @@
           <Card>
             <el-row class="card-title">同比环比趋势分析</el-row>
             <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in averageData">
-                  <el-col 
-                    :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(2 ,index)">
-                    <ProYearOnYearTrend 
-                      :id="`${index}`" 
-                      :data="trendData[index]" 
-                      :title="pieData[index].text"/>
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col 
-                :span="8" 
-                class="border-left">
-                <ProYearOnYearTrendBig 
-                  id="ProYearOnYearTrendBig" 
-                  :data="trendData[index2]" 
-                  title="毛利润额"/>
-              </el-col>
+              <template v-for="(item, index) in channelTrendArr">
+                <el-col 
+                  :key="index" 
+                  :span="12" 
+                  @click.native="clickIndex(2 ,index)">
+                  <ProYearOnYearTrend 
+                    :id="`${index}`" 
+                    :data="item"/>
+                </el-col>
+              </template>
             </el-row>
           </Card>
         </el-row>
@@ -207,7 +186,7 @@
                 <IntelligentSelection 
                   id="heatmap" 
                   @showStragety="showStragety" 
-                  :data="heatmapData"/>
+                  :data="SaveChannelRankArr"/>
               </el-col>
               <el-col :span="10">
                 <div class="stragety">
@@ -241,8 +220,8 @@
     import ProTargetAchievement from '../../components/ProTargetAchievement';
     import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
     // 目标-实际-差异趋势分析
-    import ProTargetActualDiffTrend from '../../components/TrendDifffalse';
-    import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
+    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
+
     // 同比环比趋势分析
     import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
     import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
@@ -283,7 +262,6 @@
             ProTargetAchievement,
             ProTargetAchievementBig,
             ProTargetActualDiffTrend,
-            ProTargetActualDiffTrendBig
         },
         data() {
             return {
@@ -294,6 +272,7 @@
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
+                cid:1,
                 loading: false,
                 // tree
                 tree: tree,
@@ -316,7 +295,7 @@
             };
         },
         computed: {
-            ...mapGetters(['channelTree']),
+            ...mapGetters(['channelTree','channelProgressArr','channelTrendArr','channelRankArr','channelStructureArr']),
             hasTree() {
                 return !_.isEmpty(this.channelTree);
             }
@@ -325,12 +304,20 @@
             form: {
                 handler: function() {},
                 deep: true
+            },
+            cid: function() {
+                // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+                // 暂时先在这里做
+                this.getProgress();
+                this.getStructure();
+                this.getRank();
             }
         },
         mounted() {
             if(!this.hasTree) {
                 this.getTree();
             }
+            this.initFormDataFromUrl();
         },
         methods: {
             getTree() {
@@ -343,6 +330,52 @@
                 API.GetChannelTree(params).then(res => {
                     //                  console.log(res.tree)
                     this.$store.dispatch('SaveChannelTree', res.tree);
+                });
+            },
+            getProgress() {
+                const params = {
+                    chId: this.cid,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetChannelProgress(params).then(res => {
+                    this.$store.dispatch('SaveChannelProgress', res.data);
+                    const promises = _.map(res.data, o => this.getTrend(o.subject));
+                    Promise.all(promises).then(resultList => {
+                        _.forEach(resultList, (v, k) => {
+                            v.subject = res.data[k].subject;
+                            v.subject_name = res.data[k].subject_name;
+                        });
+                        this.$store.dispatch('SaveChannelTrendArr', resultList);
+                    });
+                });
+            },
+            getTrend(subject) {
+                const params = {
+                    cid: this.cid,
+                    pt: this.form.pt,
+                    ...this.getPeriodByPt(),
+                    subject: subject
+                };
+                return API.GetChannelTrend(params);
+            },
+            getStructure() {
+                const params = {
+                    chId: this.cid,
+                    subject: this.form.subject,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetChannelStructure(params).then(res => {
+                    this.$store.dispatch('SaveChannelStructureArr', res.data);
+                });
+            },
+            getRank() {
+                const params = {
+                    chId: this.cid,
+                    pt: this.form.pt,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetChannelRank(params).then(res => {
+                    this.$store.dispatch('SaveChannelRankArr', res.data);
                 });
             },
             getPeriodByPt() {
@@ -392,6 +425,22 @@
                 return {
                     sDate: date[0] || '',
                     eDate: date[1] || '',
+                };
+            },
+            initFormDataFromUrl() {
+                const {
+                    pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
+                } = this.$route.query;
+                let formData = {
+                    pt: pt,
+                    subject: subject,
+                };
+                if(moment(sDate).isValid() && moment(eDate).isValid()) {
+                    formData.date = [sDate, eDate];
+                }
+                this.cid = cid;
+                this.form = { ...this.form,
+                    ...formData
                 };
             },
             handleNodeClick() {
