@@ -80,7 +80,7 @@ export default {
 					data: data.data.sub[i].real
 				});
             }
-            this.chart.setOption(options);
+            this.chart.setOption(options,true);
         }
     }
 };

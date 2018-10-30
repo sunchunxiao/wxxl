@@ -60,8 +60,7 @@
 </template>
 
 <script>
-    import API from './api';
-	import _ from 'lodash';
+  import API from './api';
 	import { mapGetters } from 'vuex';
 	const TIMEPT = {
         '周': 'week',
@@ -86,9 +85,6 @@
 				currentPage: 1,
 				
 			};
-		},
-		watch: {
-
 		},
 		computed: {
 			...mapGetters(['strategyArr']),
