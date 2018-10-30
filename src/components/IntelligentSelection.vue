@@ -244,7 +244,7 @@
 					},
 					options: options
 				};
-				this.chart.setOption(heatMapOption);
+				this.chart.setOption(heatMapOption,true);
 			}
 		}
 	};

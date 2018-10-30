@@ -186,7 +186,7 @@
                 <IntelligentSelection 
                   id="heatmap" 
                   @showStragety="showStragety" 
-                  :data="SaveChannelRankArr"/>
+                  :data="heatmapData"/>
               </el-col>
               <el-col :span="10">
                 <div class="stragety">

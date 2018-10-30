@@ -65,6 +65,7 @@
         </div>
         <!-- 有多个tree -->
         <el-tree 
+          check-strictly
           :data="productTree.children" 
           ref="tree" 
           node-key="cid" 
@@ -228,7 +229,6 @@
                     const promises = _.map(res.data, o => this.getTrend(o.subject));
                     Promise.all(promises).then(resultList => {
                         _.forEach(resultList, (v, k) => {
-                            //                          console.log(res.data[k].subject)
                             v.subject = res.data[k].subject;
                             v.subject_name = res.data[k].subject_name;
                         });
