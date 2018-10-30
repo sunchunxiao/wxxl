@@ -82,6 +82,7 @@
       </el-col>
       <el-col 
         :span="19" 
+        v-loading="loading"
         class="overflow">
         <Card>
           <el-row :gutter="10">
@@ -172,6 +173,8 @@
 					subject: 'S', // S: 销售额 P: 利润额
 					version: '0'
 				},
+				cid:1,
+				loading:false,
 				tree: tree,
 				treeData: tree.data.children,
 				defaultProps: TREE_PROPS,
@@ -190,6 +193,11 @@
 			form: {
 				handler: function() {},
 				deep: true
+			},
+			cid: function() {
+				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+				// 暂时先在这里做
+        this.getHistory();
 			}
 		},
 		mounted() {
@@ -201,6 +209,7 @@
 		methods: {
 			getHistory() {
 				const params = {
+					cid:this.cid,
 					pt: this.form.pt,
 					subject: this.form.subject,
 					...this.getPeriodByPt(),
@@ -304,7 +313,13 @@
 					}
 				};
 			},
-			handleNodeClick() {},
+			handleNodeClick(data) {
+					this.cid = data.cid;
+					this.loading = true;
+					setTimeout(() => {
+						this.loading = false;
+					}, 1000);
+			},
 			handleCheckChange() {
 			},
 			clickIndex(i, idx) {

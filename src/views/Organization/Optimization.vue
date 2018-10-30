@@ -318,14 +318,11 @@
 				};
 			},
             handleNodeClick(data) {
-				this.type = data.type;
-				if (data.children != undefined) {
 					this.cid = data.cid;
 					this.loading = true;
 					setTimeout(() => {
 						this.loading = false;
 					}, 1000);
-				}
 
 			},
             handleCheckChange() {
