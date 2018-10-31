@@ -31,11 +31,12 @@
         },
         methods: {
             renderChart(data) {
+                const { timeLabels } = data;
                 let _this = this;
                 const options = {
                     grid: {
                         left: 0,
-                        right: 10,
+                        right: 40,
                         bottom: 0,
                         top: 10,
                         containLabel: true
@@ -60,7 +61,7 @@
                         type: 'category',
                         name: '日期',
                         boundaryGap: false,
-                        data: ['5.1', '5.2', '5.3', '5.4', '5.5', '5.6', '5.7']
+                        data: timeLabels
                     },
                     yAxis: {
                         type: 'value',

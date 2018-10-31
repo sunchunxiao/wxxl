@@ -16,6 +16,12 @@
             data: Object,
             title: String
         },
+        data(){
+            return{
+                time:"",
+                timestr:""
+            };
+        },
         mounted() {
             this.chart = echarts.init(document.getElementById(`ConOrgComparisonAverage-${this.id}`));
             this.renderChart(this.data);
@@ -34,7 +40,17 @@
             renderChart(data) {
 				
                 let _this = this;
-                //          const {timeLabels} = data;
+                const { timeLabels } = data;
+                // let arr = timeLabels.join().split(",");
+                // for(let i of arr){
+                //     this.time = i.split("-");
+                //     console.log(this.time[0]);
+                //     if(this.time[0] == 2018){
+                //     this.arr = this.time[1]+'-'+this.time[2];
+                //     console.log(this.arr);
+                // }
+                // }
+                
                 const options = {
                     grid: {
                         left: 0,
@@ -63,7 +79,7 @@
                         type: 'category',
                         name: '日期',
                         boundaryGap: false,
-                        data: ['9.1', '9.2', '9.3', '9.4', '9.5', '9.6', '9.7']
+                        data: timeLabels
                     },
                     yAxis: {
                         type: 'value',
