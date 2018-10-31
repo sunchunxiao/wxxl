@@ -527,7 +527,7 @@
 					time_label,
 					rank
 				} = data;
-				console.log(cid, brand, name, rank);
+				// console.log(cid, brand, name, rank);
 				this.stragetyTitle = `${brand} - ${name} - ${rank}`;
 				const params = {
 					nid: cid,
