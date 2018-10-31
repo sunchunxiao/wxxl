@@ -155,7 +155,7 @@
             <el-row class="card-title">比例结构与平均值对比分析</el-row>
             <el-row>
               <el-col :span="16">
-                <template v-for="(item, index) in averageData">
+                <template v-for="(item, index) in channelStructureArr">
                   <el-col 
                     :key="index" 
                     :span="6" 
@@ -170,8 +170,9 @@
                 :span="8" 
                 class="border-left">
                 <ProportionalStructureAverageComparisonBig 
+                  v-if="channelStructureArr.length>0" 
                   id="ProportionalStructureAverageComparisonBig" 
-                  :data="averageData[index3]"/>
+                  :data="channelStructureArr[index3]"/>
               </el-col>
             </el-row>
           </Card>
@@ -186,7 +187,7 @@
                 <IntelligentSelection 
                   id="heatmap" 
                   @showStragety="showStragety" 
-                  :data="heatmapData"/>
+                  :data="channelRankArr"/>
               </el-col>
               <el-col :span="10">
                 <div class="stragety">
@@ -195,12 +196,14 @@
                     <div class="stragety-selected-title">{{ stragetyTitle }}</div>
                     <el-checkbox-group v-model="stragetyCheckList">
                       <el-checkbox 
-                        v-for="item in stragety" 
-                        :key="item" 
-                        :label="item"/>
+                        v-for="(item,index) in stragety" 
+                        :key="index" 
+                        @change="change"
+                        :label="item.strategy" />
                     </el-checkbox-group>
                     <el-button 
                       type="primary" 
+                      @click="submit"
                       class="center">确 认</el-button>
                   </div>
                 </div>
@@ -221,7 +224,6 @@
     import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
     // 目标-实际-差异趋势分析
     import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
-
     // 同比环比趋势分析
     import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
     import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
@@ -291,7 +293,8 @@
                 // stragety
                 stragetyCheckList: [],
                 stragetyTitle: '',
-                stragety: []
+                stragety: [],
+                idArr:[]
             };
         },
         computed: {
@@ -320,6 +323,53 @@
             this.initFormDataFromUrl();
         },
         methods: {
+            change() {
+                this.idArr = [];
+                for (let i of this.stragetyCheckList) {
+                    let stragetyObj = this.stragety.find(el => {
+                        return el.strategy == i;
+                    });
+                    this.idArr.push(stragetyObj.id);
+                }
+                // console.log(this.stragetyCheckList, this.idArr);
+            },
+            submit() {
+                let data1 = JSON.parse(localStorage.data);
+                this.$confirm('确认?', {
+                    confirmButtonText: '保存',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    const data = {
+                        nid: data1.cid,
+                        rank: data1.rank,
+                        subject:data1.subject,
+                        time_label: data1.time_label,
+                        strategies: this.idArr.join(',')
+                    };
+                    API.PostChannelSave(data).then(() => {
+                        this.$message({
+                            type: 'success',
+                            showClose: true,
+                            message: '保存成功'
+                        });
+                    }).catch(() => {
+                    this.$message({
+                        type: 'error',
+                        message: '保存失败',
+                        duration: 1500
+                    });
+                });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消',
+                        duration: 1500
+                    });
+                });
+
+            },
             getTree() {
                 const params = {
                     pt: this.form.pt,
@@ -351,7 +401,7 @@
             },
             getTrend(subject) {
                 const params = {
-                    cid: this.cid,
+                    chId: this.cid,
                     pt: this.form.pt,
                     ...this.getPeriodByPt(),
                     subject: subject
@@ -443,18 +493,16 @@
                     ...formData
                 };
             },
-            handleNodeClick() {
-                this.loading = true;
-                setTimeout(() => {
-                    this.pieData = mockPieData();
-                    this.trendData = mockTrendData();
-                    this.averageData = mockAverageData();
-                    this.heatmapData = mockHeatmapData();
-                }, 300);
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
-            },
+            handleNodeClick(data) {
+                if(data.children != undefined) {
+                    this.cid = data.nid;
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 1000);
+                }
+
+			},
             calculatePercent(a, b) {
                 if(b > 0) {
                     const percent = parseInt(a / b * 100);
@@ -470,14 +518,35 @@
                 this[`index${i}`] = idx;
             },
             showStragety(data) {
-                const {
-                    brand,
-                    name,
-                    rank
-                } = data;
-                this.stragetyTitle = `${brand} - ${name} - ${rank}`;
-                this.stragety = data.stragety;
-            }
+				localStorage.setItem("data", JSON.stringify(data));
+				const {
+					cid,
+					brand,
+					name,
+					subject,
+					time_label,
+					rank
+				} = data;
+				console.log(cid, brand, name, rank);
+				this.stragetyTitle = `${brand} - ${name} - ${rank}`;
+				const params = {
+					nid: cid,
+					subject: subject,
+					rank: rank,
+					time_label: time_label,
+				};
+				API.GetChannelMatch(params).then(res => {
+					this.stragetyCheckList = [];
+					this.stragety = res.data;
+					for (let i = 0; i < res.data.length; i++) {
+						if (res.data[i].is_selected == 1) {
+							this.stragetyCheckList.push(res.data[i].strategy);
+							// console.log(this.stragetyCheckList)
+						}
+					}
+				});
+
+			}
         }
     };
 </script>

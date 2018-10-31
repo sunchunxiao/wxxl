@@ -47,12 +47,10 @@
 			this.chart = echarts.init(document.getElementById(`heatmap-${this.id}`));
 			this.renderChart(this.data);
 			let _this = this;
-
 			this.chart.on('click', function(params) {
 				// let length = _this.data[0].subjects.length;
-				let cid = params.seriesId.split(",");
-				//切割当前时间
-				const time = cid.pop();
+				let time = params.seriesId;
+				// console.log(time);
 
 				for(let i=0;i<_this.data.length;i++){
 					if(_this.data[i].timeLabel == time){
@@ -60,19 +58,26 @@
 							if(params.data[0] == j){
 								this.name = _this.data[i].subjects[j];
 								// console.log(this.name)
-								this.brand = _this.data[i].transSubjects[j];
-								// console.log(this.brand)
+								
 							}
+							
+						}
+						for(let m=0;m<_this.data[i].categoryNames.length;m++){
+								if(params.data[1] == m){
+									this.brand = _this.data[i].categoryNames[m];
+									this.cid = _this.data[i].categoryIds[m];
+								// console.log(this.brand)
+								}
 						}
 					}
 				}
 
 				//取id
-				for (let i = 0; i < cid.length; i++) {
-					if (params.data[1] == i) {
-						this.cid = cid[i];
-					}
-				}
+				// for (let i = 0; i < cid.length; i++) {
+				// 	if (params.data[1] == i) {
+				// 		this.cid = cid[i];
+				// 	}
+				// }
 				// const brand = brands[Math.floor(params.dataIndex / 7)];
 				
 				if (params.componentType == "series") {
@@ -197,7 +202,7 @@
 							name: '',
 							type: 'heatmap',
 							data: seriesData,
-							id: [item.categoryIds, item.timeLabel],
+							id: item.timeLabel,
 							value: item.categoryNames,
 							label: {
 								normal: {

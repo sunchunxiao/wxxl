@@ -295,7 +295,8 @@
                 // stragety
                 stragetyCheckList: [],
                 stragetyTitle: '',
-                stragety: []
+                stragety: [],
+                idArr:[]
             };
         },
         computed: {
