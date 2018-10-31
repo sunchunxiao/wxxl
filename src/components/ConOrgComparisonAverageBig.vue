@@ -80,7 +80,7 @@
                         data: data.series[i]
                     });
                 }
-                this.chart.setOption(options);
+                this.chart.setOption(options,true);
             }
         }
     };

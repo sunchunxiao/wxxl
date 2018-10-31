@@ -108,18 +108,18 @@
                       prop="rank_name" 
                       label="评选结果"/>
                     <el-table-column 
-                      prop="ring_rate" 
+                      prop="ring_value" 
                       label="环比增长率">
                       <template slot-scope="scope">
                         <img 
-                          v-if="largerThanZero(scope.row.ring_rate)" 
+                          v-if="largerThanZero(scope.row.ring_value)" 
                           src="../../assets/opt1.png" 
                           alt="">
                         <img 
-                          v-if="lessThanZero(scope.row.d)" 
+                          v-if="lessThanZero(scope.row.ring_value)" 
                           src="../../assets/opt2.png" 
                           alt="">
-                        <span style="margin-left: 10px">{{ scope.row.ring_rate }}</span>
+                        <span style="margin-left: 10px">{{ scope.row.ring_value + '%' }}</span>
                       </template>
                     </el-table-column>
                   </el-table-column>
@@ -323,7 +323,6 @@
 					setTimeout(() => {
 						this.loading = false;
 					}, 1000);
-
 			},
             handleCheckChange() {
             },

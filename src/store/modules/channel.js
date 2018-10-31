@@ -5,6 +5,8 @@ const channel = {
         channelTrendArr: [],
         channelStructureArr:[],
         channelRankArr: [],
+        channelCompareArr:[],
+        channelHistoryArr:[],
     },
     mutations: {
         SAVE_CHANNEL_TREE: (state, tree) => {
@@ -22,6 +24,12 @@ const channel = {
         SAVE_CHANRANK_ARR: (state, arr) => {
             state.channelRankArr = arr;
         },
+        SAVE_CHANCOMPARE_ARR: (state, arr) => {
+            state.channelCompareArr = arr;
+          },
+        SAVE_CHANHISTORY_ARR: (state, arr) => {
+            state.channelHistoryArr = arr;
+        },
     },
     actions: {
         SaveChannelTree({ commit }, tree) {
@@ -38,6 +46,12 @@ const channel = {
           },
         SaveChannelRankArr({ commit }, arr) {
             commit('SAVE_CHANRANK_ARR', arr);
+        },
+        SaveChannelCompareArr({ commit }, arr) {
+            commit('SAVE_CHANCOMPARE_ARR', arr);
+          },
+        SaveChannelHistory({ commit }, arr) {
+            commit('SAVE_CHANHISTORY_ARR', arr);
         },
     }
 };

@@ -31,6 +31,9 @@ export default {
     },
     GetChannelStrategy(params) {
 		return FetchGet('/channel/strategy', params);
-	},
+    },
+    GetChannelCompare(params) {
+        return FetchGet('/channel/compare', params);
+    },
    
 };
