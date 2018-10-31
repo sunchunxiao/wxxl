@@ -82,29 +82,32 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="19" 
+        :span="19"
+        v-loading="loading" 
         class="overflow">
         <el-row>
           <Card>
             <el-row class="card-title">组织对比分析和平均值分析</el-row>
             <el-row>
               <el-col :span="6">
-                <template v-for="(item, index) in pieData">
+                <template v-for="(item, index) in channelCompareArr">
                   <el-col 
                     :key="index" 
                     :span="12" 
                     @click.native="clickIndex(0 ,index)">
                     <ConOrgComparisonAverage 
-                      :title="item.text" 
+                      :title="item.subject_name" 
                       :id="`${index}`" 
-                      :data="comparisonAverageData[index]"/>
+                      :data="channelCompareArr[index]"/>
                   </el-col>
                 </template>
               </el-col>
-              <el-col :span="18">
+              <el-col
+                v-if="channelCompareArr.length > 0"
+                :span="18">
                 <ConOrgComparisonAverageBig 
-                  :title="pieData[index0].text" 
-                  :data="comparisonAverageData[index0]" 
+                  :title="channelCompareArr[index0].subject_name" 
+                  :data="channelCompareArr[index0]" 
                   id="ConOrgComparisonAverage" 
                   :index="index0"/>
               </el-col>
@@ -120,8 +123,8 @@
     import API from './api';
     import Card from '../../components/Card';
     // 组织对比分析和平均值分析
-    import ConOrgComparisonAverage from '../../components/Confalse';
-    import ConOrgComparisonAverageBig from '../../components/ConfalseBig';
+    import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
+    import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 
     import mockPieData from './mock/pieData.js';
     import mockComparisonAverageData from './mock/comparisonAverageData.js';
@@ -154,6 +157,8 @@
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
+                cid:1,
+                loading:false,
                 tree: tree,
                 treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
@@ -163,7 +168,7 @@
             };
         },
         computed: {
-            ...mapGetters(['channelTree']),
+            ...mapGetters(['channelTree','channelCompareArr']),
             hasTree() {
                 return !_.isEmpty(this.channelTree);
             }
@@ -172,12 +177,20 @@
             form: {
                 handler: function() {},
                 deep: true
+            },
+            cid: function() {
+                // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+                // 暂时先在这里做
+                //              this.getProgress();
+                //              this.getStructure();
+                this.getProgress();
             }
         },
         mounted() {
             if(!this.hasTree) {
                 this.getTree();
             }
+            this.getProgress();
         },
         methods: {
             getTree() {
@@ -190,6 +203,33 @@
                 API.GetChannelTree(params).then(res => {
                     this.$store.dispatch('SaveChannelTree', res.tree);
                 });
+            },
+             getProgress() {
+//              console.log(this.cid)
+                const params = {
+                    chId: this.cid,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetChannelProgress(params).then(res => {
+                    // this.$store.dispatch('SaveChannelProgress', res.data);
+                    const promises = _.map(res.data, o => this.getTrend(o.subject));
+                    Promise.all(promises).then(resultList => {
+                        _.forEach(resultList, (v, k) => {
+                            v.subject = res.data[k].subject;
+                            v.subject_name = res.data[k].subject_name;
+                        });
+                        this.$store.dispatch('SaveChannelCompareArr', resultList);
+                    });
+                });
+            },
+            getTrend(subject) {
+                const params = {
+                    nid: this.cid,
+                    pt: this.form.pt,
+                    ...this.getPeriodByPt(),
+                    subject: subject
+                };
+                return API.GetChannelCompare(params);
             },
             getPeriodByPt() {
                 const {
@@ -215,7 +255,7 @@
                     } else {
                         return {
                             sDate: '2018-01-01',
-                            eDate: '2018-06-01',
+                            eDate: '2018-01-31',
                             // 先写死个时间
                             // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                             // eDate: moment().format('YYYY-MM-DD'),
@@ -224,7 +264,7 @@
                 } else {
                     return {
                         sDate: '2018-01-01',
-                        eDate: '2018-06-01',
+                        eDate: '2018-01-31',
                         // 先写死个时间
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),
@@ -240,7 +280,15 @@
                     eDate: date[1] || '',
                 };
             },
-            handleNodeClick() {
+           handleNodeClick(data) {
+                if(data.children != undefined) {
+                    this.cid = data.nid;
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 1000);
+                }
+
             },
             handleCheckChange() {
             },

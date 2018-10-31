@@ -65,7 +65,6 @@
         </div>
         <!-- 有多个tree -->
         <el-tree 
-          check-strictly
           :data="productTree.children" 
           ref="tree" 
           node-key="cid" 
@@ -160,7 +159,7 @@
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
-                cid: '10',
+                cid: 1,
                 loading: false,
                 tree: tree,
                 treeData: tree.data.children,
@@ -187,9 +186,7 @@
             cid: function() {
                 // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
                 // 暂时先在这里做
-                //              this.getProgress();
-                //              this.getStructure();
-                this.getTrend();
+                this.getProgress();
             }
         },
         
@@ -219,7 +216,6 @@
                 });
             },
             getProgress() {
-//              console.log(this.cid)
                 const params = {
                     cid: this.cid,
                     ...this.getPeriodByPt(),
@@ -238,7 +234,7 @@
             },
             getTrend(subject) {
                 const params = {
-                    targets: 10+','+'20'+','+'30',
+                    nid: this.cid,
                     pt: this.form.pt,
                     ...this.getPeriodByPt(),
                     subject: subject
@@ -299,11 +295,7 @@
                 if(data.children != undefined) {
                     this.cid = data.cid;
                     this.loading = true;
-                    //                  setTimeout(() => {
-                    //                      this.getProgress();
-                    //                      this.getStructure();
-                    //                      this.getRank();
-                    //                  }, 300);
+                   
                     setTimeout(() => {
                         this.loading = false;
                     }, 1000);

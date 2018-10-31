@@ -119,7 +119,7 @@
                           v-if="lessThanZero(scope.row.ring_rate)" 
                           src="../../assets/opt2.png" 
                           alt="">
-                        <span style="margin-left: 10px">{{ scope.row.ring_rate + '%' }}</span>
+                        <span style="margin-left: 10px">{{ `${parseInt(scope.row.ring_rate*100)}` + '%' }}</span>
                       </template>
                     </el-table-column>
                   </el-table-column>
