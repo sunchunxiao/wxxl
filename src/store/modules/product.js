@@ -6,9 +6,9 @@ const product = {
       trendArr: [],
       rankArr: [],
       structureArr:[],
-      compareArr:{},
-      historyArr:{},
-			strategyArr:{},
+      compareArr:[],
+      historyArr:[],
+			strategyArr:[],
     },
     mutations: {
       SAVE_PRODUCT_TREE: (state, tree) => {

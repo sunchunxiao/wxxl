@@ -332,7 +332,6 @@
 				stragety: [],
 				type: 3,
 				idArr: [],
-				idArr1: []
 			};
 		},
 		computed: {

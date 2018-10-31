@@ -88,7 +88,7 @@
             <el-row class="card-title">目标达成情况总览</el-row>
             <el-row>
               <el-col :span="16">
-                <template v-for="(item, index) in pieData">
+                <template v-for="(item, index) in channelProgressArr">
                   <el-col 
                     :key="index" 
                     :span="6" 
@@ -101,10 +101,11 @@
               </el-col>
               <el-col 
                 :span="8" 
+                v-if="channelProgressArr.length > 0"
                 class="border-left">
                 <ProTargetAchievementBig 
                   :id="'select'" 
-                  :data="pieData[index0]"/>
+                  :data="channelProgressArr[index0]"/>
               </el-col>
             </el-row>
           </Card>
@@ -115,27 +116,16 @@
           <Card>
             <el-row class="card-title">目标-实际-差异趋势分析</el-row>
             <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in pieData">
-                  <el-col 
-                    :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(1 ,index)">
-                    <ProTargetActualDiffTrend 
-                      :id="`${index}`" 
-                      :data="trendData[index]" 
-                      :title="pieData[index].text"/>
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col 
-                :span="8" 
-                class="border-left">
-                <ProTargetActualDiffTrendBig 
-                  id="ProTargetActualDiffTrendBig" 
-                  :data="trendData[index1]" 
-                  title="毛利润额"/>
-              </el-col>
+              <template v-for="(item, index) in channelTrendArr">
+                <el-col 
+                  :key="index" 
+                  :span="12" 
+                  @click.native="clickIndex(1 ,index)">
+                  <ProTargetActualDiffTrend 
+                    :id="`${index}`" 
+                    :data="item"/>
+                </el-col>
+              </template>
             </el-row>
           </Card>
         </el-row>
@@ -145,27 +135,16 @@
           <Card>
             <el-row class="card-title">同比环比趋势分析</el-row>
             <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in averageData">
-                  <el-col 
-                    :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(2 ,index)">
-                    <ProYearOnYearTrend 
-                      :id="`${index}`" 
-                      :data="trendData[index]" 
-                      :title="pieData[index].text"/>
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col 
-                :span="8" 
-                class="border-left">
-                <ProYearOnYearTrendBig 
-                  id="ProYearOnYearTrendBig" 
-                  :data="trendData[index2]" 
-                  title="毛利润额"/>
-              </el-col>
+              <template v-for="(item, index) in channelTrendArr">
+                <el-col 
+                  :key="index" 
+                  :span="12" 
+                  @click.native="clickIndex(2 ,index)">
+                  <ProYearOnYearTrend 
+                    :id="`${index}`" 
+                    :data="item"/>
+                </el-col>
+              </template>
             </el-row>
           </Card>
         </el-row>
@@ -176,7 +155,7 @@
             <el-row class="card-title">比例结构与平均值对比分析</el-row>
             <el-row>
               <el-col :span="16">
-                <template v-for="(item, index) in averageData">
+                <template v-for="(item, index) in channelStructureArr">
                   <el-col 
                     :key="index" 
                     :span="6" 
@@ -191,8 +170,9 @@
                 :span="8" 
                 class="border-left">
                 <ProportionalStructureAverageComparisonBig 
+                  v-if="channelStructureArr.length>0" 
                   id="ProportionalStructureAverageComparisonBig" 
-                  :data="averageData[index3]"/>
+                  :data="channelStructureArr[index3]"/>
               </el-col>
             </el-row>
           </Card>
@@ -207,7 +187,7 @@
                 <IntelligentSelection 
                   id="heatmap" 
                   @showStragety="showStragety" 
-                  :data="heatmapData"/>
+                  :data="channelRankArr"/>
               </el-col>
               <el-col :span="10">
                 <div class="stragety">
@@ -216,12 +196,14 @@
                     <div class="stragety-selected-title">{{ stragetyTitle }}</div>
                     <el-checkbox-group v-model="stragetyCheckList">
                       <el-checkbox 
-                        v-for="item in stragety" 
-                        :key="item" 
-                        :label="item"/>
+                        v-for="(item,index) in stragety" 
+                        :key="index" 
+                        @change="change"
+                        :label="item.strategy" />
                     </el-checkbox-group>
                     <el-button 
                       type="primary" 
+                      @click="submit"
                       class="center">确 认</el-button>
                   </div>
                 </div>
@@ -241,8 +223,7 @@
     import ProTargetAchievement from '../../components/ProTargetAchievement';
     import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
     // 目标-实际-差异趋势分析
-    import ProTargetActualDiffTrend from '../../components/TrendDifffalse';
-    import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
+    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
     // 同比环比趋势分析
     import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
     import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
@@ -283,7 +264,6 @@
             ProTargetAchievement,
             ProTargetAchievementBig,
             ProTargetActualDiffTrend,
-            ProTargetActualDiffTrendBig
         },
         data() {
             return {
@@ -294,6 +274,7 @@
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
+                cid:1,
                 loading: false,
                 // tree
                 tree: tree,
@@ -312,11 +293,12 @@
                 // stragety
                 stragetyCheckList: [],
                 stragetyTitle: '',
-                stragety: []
+                stragety: [],
+                idArr:[]
             };
         },
         computed: {
-            ...mapGetters(['channelTree']),
+            ...mapGetters(['channelTree','channelProgressArr','channelTrendArr','channelRankArr','channelStructureArr']),
             hasTree() {
                 return !_.isEmpty(this.channelTree);
             }
@@ -325,14 +307,69 @@
             form: {
                 handler: function() {},
                 deep: true
+            },
+            cid: function() {
+                // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+                // 暂时先在这里做
+                this.getProgress();
+                this.getStructure();
+                this.getRank();
             }
         },
         mounted() {
             if(!this.hasTree) {
                 this.getTree();
             }
+            this.initFormDataFromUrl();
         },
         methods: {
+            change() {
+                this.idArr = [];
+                for (let i of this.stragetyCheckList) {
+                    let stragetyObj = this.stragety.find(el => {
+                        return el.strategy == i;
+                    });
+                    this.idArr.push(stragetyObj.id);
+                }
+                // console.log(this.stragetyCheckList, this.idArr);
+            },
+            submit() {
+                let data1 = JSON.parse(localStorage.data);
+                this.$confirm('确认?', {
+                    confirmButtonText: '保存',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    const data = {
+                        nid: data1.cid,
+                        rank: data1.rank,
+                        subject:data1.subject,
+                        time_label: data1.time_label,
+                        strategies: this.idArr.join(',')
+                    };
+                    API.PostChannelSave(data).then(() => {
+                        this.$message({
+                            type: 'success',
+                            showClose: true,
+                            message: '保存成功'
+                        });
+                    }).catch(() => {
+                    this.$message({
+                        type: 'error',
+                        message: '保存失败',
+                        duration: 1500
+                    });
+                });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消',
+                        duration: 1500
+                    });
+                });
+
+            },
             getTree() {
                 const params = {
                     pt: this.form.pt,
@@ -343,6 +380,52 @@
                 API.GetChannelTree(params).then(res => {
                     //                  console.log(res.tree)
                     this.$store.dispatch('SaveChannelTree', res.tree);
+                });
+            },
+            getProgress() {
+                const params = {
+                    chId: this.cid,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetChannelProgress(params).then(res => {
+                    this.$store.dispatch('SaveChannelProgress', res.data);
+                    const promises = _.map(res.data, o => this.getTrend(o.subject));
+                    Promise.all(promises).then(resultList => {
+                        _.forEach(resultList, (v, k) => {
+                            v.subject = res.data[k].subject;
+                            v.subject_name = res.data[k].subject_name;
+                        });
+                        this.$store.dispatch('SaveChannelTrendArr', resultList);
+                    });
+                });
+            },
+            getTrend(subject) {
+                const params = {
+                    chId: this.cid,
+                    pt: this.form.pt,
+                    ...this.getPeriodByPt(),
+                    subject: subject
+                };
+                return API.GetChannelTrend(params);
+            },
+            getStructure() {
+                const params = {
+                    chId: this.cid,
+                    subject: this.form.subject,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetChannelStructure(params).then(res => {
+                    this.$store.dispatch('SaveChannelStructureArr', res.data);
+                });
+            },
+            getRank() {
+                const params = {
+                    chId: this.cid,
+                    pt: this.form.pt,
+                    ...this.getPeriodByPt(),
+                };
+                API.GetChannelRank(params).then(res => {
+                    this.$store.dispatch('SaveChannelRankArr', res.data);
                 });
             },
             getPeriodByPt() {
@@ -394,18 +477,32 @@
                     eDate: date[1] || '',
                 };
             },
-            handleNodeClick() {
-                this.loading = true;
-                setTimeout(() => {
-                    this.pieData = mockPieData();
-                    this.trendData = mockTrendData();
-                    this.averageData = mockAverageData();
-                    this.heatmapData = mockHeatmapData();
-                }, 300);
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
+            initFormDataFromUrl() {
+                const {
+                    pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
+                } = this.$route.query;
+                let formData = {
+                    pt: pt,
+                    subject: subject,
+                };
+                if(moment(sDate).isValid() && moment(eDate).isValid()) {
+                    formData.date = [sDate, eDate];
+                }
+                this.cid = cid;
+                this.form = { ...this.form,
+                    ...formData
+                };
             },
+            handleNodeClick(data) {
+                if(data.children != undefined) {
+                    this.cid = data.nid;
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 1000);
+                }
+
+			},
             calculatePercent(a, b) {
                 if(b > 0) {
                     const percent = parseInt(a / b * 100);
@@ -421,14 +518,35 @@
                 this[`index${i}`] = idx;
             },
             showStragety(data) {
-                const {
-                    brand,
-                    name,
-                    rank
-                } = data;
-                this.stragetyTitle = `${brand} - ${name} - ${rank}`;
-                this.stragety = data.stragety;
-            }
+				localStorage.setItem("data", JSON.stringify(data));
+				const {
+					cid,
+					brand,
+					name,
+					subject,
+					time_label,
+					rank
+				} = data;
+				// console.log(cid, brand, name, rank);
+				this.stragetyTitle = `${brand} - ${name} - ${rank}`;
+				const params = {
+					nid: cid,
+					subject: subject,
+					rank: rank,
+					time_label: time_label,
+				};
+				API.GetChannelMatch(params).then(res => {
+					this.stragetyCheckList = [];
+					this.stragety = res.data;
+					for (let i = 0; i < res.data.length; i++) {
+						if (res.data[i].is_selected == 1) {
+							this.stragetyCheckList.push(res.data[i].strategy);
+							// console.log(this.stragetyCheckList)
+						}
+					}
+				});
+
+			}
         }
     };
 </script>

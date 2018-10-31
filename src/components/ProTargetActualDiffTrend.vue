@@ -31,6 +31,7 @@ export default {
     methods: {
         renderChart(data) {
             const { real, target, timeLabels } = data;
+            // console.log(timeLabels);
             const diff = [];
             const bottom = [];
             const underTarget = [];

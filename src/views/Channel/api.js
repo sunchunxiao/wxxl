@@ -1,6 +1,6 @@
 // Created by sunchunxiao on 2018/10/16.
 
-import { FetchGet } from 'utils/fetch';
+import { FetchPostNew,FetchGet } from 'utils/fetch';
 // import store from 'store';
 
 export default {
@@ -8,5 +8,29 @@ export default {
     GetChannelTree(params) {
         return FetchGet('/channel/tree', params);
     },
+    GetChannelProgress(params) {
+        return FetchGet('/channel/progress', params);
+    },
+    GetChannelTrend(params) {
+        return FetchGet('/channel/trend', params);
+    },
+    GetChannelStructure(params) {
+        return FetchGet('/channel/structure', params);
+    },
+    GetChannelRank(params) {
+        return FetchGet('/channel/rank', params);
+    },
+    GetChannelMatch(params) {
+		return FetchGet('/channel/strategy/match', params);
+    },
+    PostChannelSave(params) {
+		return FetchPostNew('/channel/strategy/save', params);
+    },
+    GetChannelHistory(params) {
+        return FetchGet('/channel/strategy/history', params);
+    },
+    GetChannelStrategy(params) {
+		return FetchGet('/channel/strategy', params);
+	},
    
 };
