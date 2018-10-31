@@ -36,6 +36,7 @@ export default {
     methods: {
         renderChart(data) {
             let _this = this;
+            const { timeLabels } = data.data;
             const options = {
                 grid: {
                     left: 0,
@@ -64,7 +65,7 @@ export default {
                     type: 'category',
                     name: '日期',
                     boundaryGap: false,
-                    data: ['9.1', '9.2', '9.3', '9.4', '9.5', '9.6', '9.7']
+                    data: timeLabels
                 },
                 yAxis: {
                     type: 'value',
