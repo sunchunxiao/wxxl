@@ -82,6 +82,7 @@
       </el-col>
       <el-col 
         :span="19" 
+        v-loading="loading"
         class="overflow">
         <Card>
           <el-row :gutter="10">
@@ -173,6 +174,7 @@
                     version: '0'
                 },
                 cid:1,
+                loading:false,
                 tree: tree,
                 treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
@@ -312,7 +314,13 @@
 					}
 				};
 			},
-            handleNodeClick() {},
+            handleNodeClick(data) {
+					this.cid = data.cid;
+					this.loading = true;
+					setTimeout(() => {
+						this.loading = false;
+					}, 1000);
+			},
             handleCheckChange() {
             },
             clickIndex(i, idx) {
