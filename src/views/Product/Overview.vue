@@ -2,7 +2,8 @@
   <div class="overview">
     <el-row>
       <search-bar 
-        @search="handleSearch" 
+        @search="handleSearch"
+        ref="child"
         url="/product/search"/>
     </el-row>
     <el-row 
@@ -20,6 +21,7 @@
         </div>
         <!-- 有多个tree -->
         <el-tree 
+          ref="tree"
           :data="productTree.children" 
           :props="defaultProps" 
           :highlight-current="true" 
@@ -198,12 +200,12 @@
         children: 'children',
         label: 'name'
     };
-    const TIMEPT = {
-        '周': 'week',
-        '月': 'month',
-        '季': 'quarter',
-        '年': 'year'
-    };
+    // const TIMEPT = {
+    //     '周': 'week',
+    //     '月': 'month',
+    //     '季': 'quarter',
+    //     '年': 'year'
+    // };
 
     export default {
         components: {
@@ -242,6 +244,8 @@
                 stragety: [],
                 checked1: true,
                 idArr: [],
+                val:{},
+                post:1
             };
         },
         computed: {
@@ -342,7 +346,7 @@
             },
             getTree() {
                 const params = {
-                    pt: this.form.pt,
+                    // pt: this.form.pt,
                     subject: this.form.subject,
                     ...this.getPeriodByPt(),
                 };
@@ -351,7 +355,7 @@
                 });
             },
             getProgress() {
-                //              console.log(this.cid)
+                // console.log(this.val);
                 const params = {
                     cid: this.cid,
                     ...this.getPeriodByPt(),
@@ -371,7 +375,7 @@
             getTrend(subject) {
                 const params = {
                     cid: this.cid,
-                    pt: this.form.pt,
+                    // pt: this.form.pt,
                     ...this.getPeriodByPt(),
                     subject: subject
                 };
@@ -390,7 +394,7 @@
             getRank() {
                 const params = {
                     cid: this.cid,
-                    pt: this.form.pt,
+                    // pt: this.form.pt,
                     ...this.getPeriodByPt(),
                 };
                 API.GetProductRank(params).then(res => {
@@ -402,57 +406,80 @@
                 const {
                     date
                 } = this.form;
-                return {
+                // console.log(this.val.eDate);
+                if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+                    return {
+                    sDate: this.val.sDate,
+                    eDate: this.val.eDate,
+                };
+                }else{
+                    return {
                     sDate: date[0] || '',
                     eDate: date[1] || '',
                 };
+                }
             },
             getPeriodByPt() {
                 const {
                     sDate,
                     eDate
                 } = this.getDateObj();
-                const {
-                    pt
-                } = this.form;
+                // const {
+                //     pt
+                // } = this.form;
+                // console.log(sDate,eDate);
                 if(sDate && eDate) { // 计算时间周期
-                    if(pt === '日') {
+                    // if(pt === '日') {
+                    //     return {
+                    //         sDate,
+                    //         eDate
+                    //     };
+                    // }
+                    // let unit = TIMEPT[pt];
+                    // if(unit) {
+                    //     return {
+                    //         sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
+                    //         eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
+                    //     };
+                    // } else {
                         return {
-                            sDate,
-                            eDate
-                        };
-                    }
-                    let unit = TIMEPT[pt];
-                    if(unit) {
-                        return {
-                            sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
-                            eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-                        };
-                    } else {
-                        return {
-                            sDate: '2018-01-01',
-                            eDate: '2018-06-01',
+                            pt:this.val.pt,
+                            sDate: this.val.sDate,
+                            eDate: this.val.eDate,
                             // 先写死个时间
                             // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                             // eDate: moment().format('YYYY-MM-DD'),
                         };
-                    }
+                    // }
                 } else {
                     return {
+                        pt:'日',
                         sDate: '2018-01-01',
-                        eDate: '2018-06-01',
+                        eDate: '2018-01-31',
                         // 先写死个时间
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),
                     };
                 }
             },
-            handleSearch() {
-            },
-            go() {
-
+            handleSearch(val) {
+                this.loading = true;
+                this.val = val;
+                if(val.cid!=""){
+                    this.cid = val.cid;
+                }else{
+                    this.getProgress();
+                    this.getStructure();
+                    this.getRank();
+                }
+                setTimeout(() => {		       
+                    this.loading = false;
+                }, 1000);
+                
             },
             handleNodeClick(data) {
+                console.log(this.val);
+                this.$refs.child.parentMsg(this.post);
                 if(data.children != undefined) {
                     this.cid = data.cid;
                     this.loading = true;
@@ -518,5 +545,6 @@
 </script>
 
 <style lang="scss">
-	@import './style/overview.scss';
+    @import './style/overview.scss';
+    
 </style>

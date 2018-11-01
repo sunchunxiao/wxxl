@@ -142,7 +142,7 @@
           :fetch-suggestions="searchKw"
           @select="handleKwSelect"
           :debounce="500"
-          :trigger-on-focus="false"
+          :trigger-on-focus="true"
           value-key="name"
           placeholder="产品编号/产品名称">
           <i 
@@ -165,7 +165,7 @@
 import { FetchGet } from 'utils/fetch';
 
 // TODO: 季
-const UNITS = ['日', '周', '月', '年'];
+const UNITS = ['日', '周', '月','年'];
 export default {
     data() {
         return {
@@ -186,7 +186,7 @@ export default {
                 yearEnd: '',
 
                 kw: '',
-                cid: ''
+                cid: '',
             }
         };
     },
@@ -194,7 +194,7 @@ export default {
       url: {
         type: String,
         required: true
-      }
+      },
     },
     computed: {
         weekStartOptions() {
@@ -264,12 +264,22 @@ export default {
       // todo: 设置初始值
     },
     methods: {
+        parentMsg: function (msg) {
+            //在点击左侧节点的时候 搜素框值为空
+            if(msg){
+                if(this.form.kw!=""){
+                 this.form.kw='';
+              }
+            }
+            
+        },
         handleClick() {
           // todo: 暂时去掉表单验证 觉得交互不太好
             // this.$refs['form'].validate(valid => {
             //     if (valid) {
+                    
                     const { pt, dayRange, weekStart, weekEnd, monthStart, monthEnd, yearStart, yearEnd, cid } = this.form;
-                    let obj = { pt, sDate: '', eDate: '', cid };
+                    let obj = { pt, sDate: '', eDate: '', cid,name };
                     if (pt === '日') {
                         obj.sDate = dayRange[0];
                         obj.eDate = dayRange[1];
@@ -284,17 +294,36 @@ export default {
                         obj.eDate = moment(yearEnd).endOf('year').format('YYYY-MM-DD');
                     }
                     if (obj.sDate === 'Invalid date' || obj.eDate === 'Invalid date' || !obj.sDate || !obj.eDate) {
-                        return;
+                        // console.log(cid);
+                        this.$message({
+                            type:'error',
+                            message:'请选择日期'
+                        });
+                        // return;
+                    } 
+                    // else if(cid==''){
+                    //     this.$message({
+                    //         type:'error',
+                    //         message:'请选择产品'
+                    //     });
+                    // }
+                    else{
+                        this.$emit('search', obj);
                     }
-                    this.$emit('search', obj);
+
             //     } else {
             //         return false;
             //     }
             // });
         },
         searchKw(kw, cb) {
+            // console.log(kw,cb);
+            this.url = '/product/search';
           if (this.url) {
-            FetchGet(this.url).then(res => {
+              let params = {
+                kw:kw
+              };
+            FetchGet(this.url, params).then(res => {
               cb(res.suggestions || []);
             });
           } else {
