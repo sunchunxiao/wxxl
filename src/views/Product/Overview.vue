@@ -24,6 +24,8 @@
           ref="tree"
           :data="productTree.children" 
           :props="defaultProps" 
+          node-key="cid"
+          :default-expanded-keys="[10202]"
           :highlight-current="true" 
           @node-click="handleNodeClick">
           <span 

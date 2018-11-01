@@ -142,9 +142,9 @@
           :fetch-suggestions="searchKw"
           @select="handleKwSelect"
           :debounce="500"
-          :trigger-on-focus="false"
+          :trigger-on-focus="true"
           value-key="name"
-          :placeholder="t()">
+          :placeholder="placeholderName()">
           <i 
             slot="prefix" 
             class="el-input__icon el-icon-search"/>
@@ -266,11 +266,13 @@ export default {
     //   console.log(this.url);
     },
     methods: {
-        t(){
-            if(this.url=='/product/search'){
-                return "产品编号/产品名称";
-            }else if(this.url=='/org/search'){
+        placeholderName(){
+            if(this.url=='/org/search'){
                 return "组织编号/组织名称";
+            }else if(this.url=='/fund/search'){
+                return "资金编号/资金名称";
+            }else if(this.url=='/cus/search'){
+                return "客户编号/客户名称";
             }
             
         },
@@ -289,7 +291,7 @@ export default {
             //     if (valid) {
                     
                     const { pt, dayRange, weekStart, weekEnd, monthStart, monthEnd, yearStart, yearEnd, cid } = this.form;
-                    let obj = { pt, sDate: '', eDate: '', cid };
+                    let obj = { pt, sDate: '', eDate: '', cid,name };
                     if (pt === '日') {
                         obj.sDate = dayRange[0];
                         obj.eDate = dayRange[1];
@@ -329,10 +331,9 @@ export default {
         searchKw(kw, cb) {
             // console.log(kw,cb);
             // this.url = '/product/search';
-            // console.log(this.url);
           if (this.url) {
               let params = {
-                kw:kw
+                text:kw
               };
             FetchGet(this.url, params).then(res => {
               cb(res.suggestions || []);
@@ -357,4 +358,3 @@ export default {
     }
 }
 </style>
-

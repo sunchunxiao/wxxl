@@ -1,56 +1,10 @@
 <template>
   <div class="overview">
     <el-row>
-      <el-form 
-        ref="form" 
-        :model="form" 
-        label-width="100px" 
-        size="mini">
-        <el-col :span="5">
-          <el-form-item label="时间单位选择">
-            <el-select v-model="form.pt">
-              <el-option 
-                label="月" 
-                value="day"/>
-              <el-option 
-                label="季" 
-                value="week"/>
-              <el-option 
-                label="年" 
-                value="month"/>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="9">
-          <el-form-item label="时间段选择">
-            <el-date-picker 
-              v-model="form.date" 
-              type="datetimerange" 
-              range-separator="至" 
-              start-placeholder="开始日期"
-              end-placeholder="结束日期" 
-              format="yyyy-MM-dd" 
-              value-format="yyyy-MM-dd" 
-              align="right"/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="精确搜索">
-            <el-input 
-              v-model="form.search" 
-              placeholder="产品编号/产品名称">
-              <i 
-                slot="prefix" 
-                class="el-input__icon el-icon-search"/>
-            </el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="4">
-          <el-form-item>
-            <el-button type="primary">go</el-button>
-          </el-form-item>
-        </el-col>
-      </el-form>
+      <search-bar 
+        @search="handleSearch"
+        ref="child"
+        url="/org/search"/>
     </el-row>
     <el-row 
       class="content_row" 
@@ -250,6 +204,7 @@
 <script>
 	import API from './api';
 	import moment from 'moment';
+	import SearchBar from 'components/SearchBarOrg';
 	import Card from '../../components/Card';
 	// 目标达成情况总览
 	import ProTargetAchievement from '../../components/ProTargetAchievement';
@@ -289,6 +244,7 @@
 	export default {
 		components: {
 			Card,
+			SearchBar,
 			ProYearOnYearTrend,
 			// ProYearOnYearTrendBig,
 			ProportionalStructureAverageComparison,
@@ -332,6 +288,8 @@
 				stragety: [],
 				type: 3,
 				idArr: [],
+				val:{},
+        post:1
 			};
 		},
 		computed: {
@@ -556,6 +514,21 @@
 					...formData
 				};
 			},
+			handleSearch(val) {
+                this.loading = true;
+                this.val = val;
+                if(val.cid!=""){
+                    this.cid = val.cid;
+                }else{
+                    this.getProgress();
+                    this.getStructure();
+                    this.getRank();
+                }
+                setTimeout(() => {		       
+                    this.loading = false;
+                }, 1000);
+                
+            },
 			handleNodeClick(data) {
 				this.type = data.type;
 				if (data.children != undefined) {
