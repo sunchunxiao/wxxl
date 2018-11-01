@@ -478,7 +478,6 @@
                 
             },
             handleNodeClick(data) {
-                console.log(this.val);
                 this.$refs.child.parentMsg(this.post);
                 if(data.children != undefined) {
                     this.cid = data.cid;
