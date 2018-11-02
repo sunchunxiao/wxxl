@@ -269,8 +269,8 @@ export default {
         t(){
             if(this.url=='/product/search'){
                 return "产品编号/产品名称";
-            }else if(this.url=='/org/search'){
-                return "组织编号/组织名称";
+            }else if(this.url=='/cus/search'){
+                return "客户编号/客户名称";
             }
             
         },

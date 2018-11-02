@@ -25,7 +25,7 @@
           :data="productTree.children" 
           :props="defaultProps" 
           node-key="cid"
-          :default-expanded-keys="[10202]"
+          :default-expanded-keys="nodeArr"
           :highlight-current="true" 
           @node-click="handleNodeClick">
           <span 
@@ -153,12 +153,13 @@
                   <div class="stragety-title">智能策略</div>
                   <div class="stragety-box">
                     <div class="stragety-selected-title">{{ stragetyTitle }}</div>
-                    <el-checkbox-group v-model="stragetyCheckList">
+                    <el-checkbox-group 
+                      v-model="stragetyCheckList">
                       <el-checkbox 
                         v-for="(item,index) in stragety" 
                         :key="index" 
-                        :label="item.strategy" 
-                        @change="change"/>
+                        :label="item.id" 
+                        @change="change">{{ item.strategy }}</el-checkbox>
                     </el-checkbox-group>
                     <el-button 
                       @click="submit" 
@@ -247,7 +248,8 @@
                 checked1: true,
                 idArr: [],
                 val:{},
-                post:1
+                post:1,
+                nodeArr:[]
             };
         },
         computed: {
@@ -292,7 +294,7 @@
                 this.idArr = [];
                 for (let i of this.stragetyCheckList) {
                     let stragetyObj = this.stragety.find(el => {
-                        return el.strategy == i;
+                        return el.id == i;
                     });
                     this.idArr.push(stragetyObj.id);
                 }
@@ -465,11 +467,14 @@
                 }
             },
             handleSearch(val) {
+                this.nodeArr = [];
+                this.nodeArr.push(val.cid);
                 this.loading = true;
                 this.val = val;
                 if(val.cid!=""){
                     this.cid = val.cid;
                 }else{
+                    this.getTree();
                     this.getProgress();
                     this.getStructure();
                     this.getRank();
@@ -533,7 +538,7 @@
 					this.stragety = res.data;
 					for (let i = 0; i < res.data.length; i++) {
 						if (res.data[i].is_selected == 1) {
-							this.stragetyCheckList.push(res.data[i].strategy);
+							this.stragetyCheckList.push(res.data[i].id);
 							// console.log(this.stragetyCheckList)
 						}
 					}

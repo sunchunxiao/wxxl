@@ -116,6 +116,10 @@ export default {
                 ]
             };
             this.chart.setOption(options);
+            var _this = this;
+            window.addEventListener("resize", function () {
+               _this.chart.resize();
+            });
         }
     }
 };
@@ -124,7 +128,7 @@ export default {
 <style lang="scss" scoped>
 .bar-container {
     .bar {
-        // width: 280px;
+        width: 100%;
         height: 160px;
         margin: 0 auto;
     }

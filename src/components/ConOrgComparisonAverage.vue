@@ -41,15 +41,6 @@
 				
                 let _this = this;
                 const { timeLabels } = data;
-                // let arr = timeLabels.join().split(",");
-                // for(let i of arr){
-                //     this.time = i.split("-");
-                //     console.log(this.time[0]);
-                //     if(this.time[0] == 2018){
-                //     this.arr = this.time[1]+'-'+this.time[2];
-                //     console.log(this.arr);
-                // }
-                // }
                 
                 const options = {
                     grid: {

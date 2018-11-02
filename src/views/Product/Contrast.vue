@@ -23,6 +23,7 @@
           ref="tree" 
           check-strictly
           node-key="cid" 
+          :default-expanded-keys="nodeArr"
           :props="defaultProps" 
           @node-click="handleNodeClick" 
           show-checkbox 
@@ -129,7 +130,8 @@
                 cidArr:[],
                 id:[10,20,30],
                 val:{},
-                post:1
+                post:1,
+                nodeArr:[]
             };
         },
         computed: {
@@ -245,11 +247,14 @@
                 }
             },
             handleSearch(val) {
+                this.nodeArr = [];
+                this.nodeArr.push(val.cid);
                 this.loading = true;
                 this.val = val;
                 if(val.cid!=""){
                     this.cid = val.cid;
                 }else{
+                    this.getTree();
                     this.getProgress();
                 }
                 setTimeout(() => {		       

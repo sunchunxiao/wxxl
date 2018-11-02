@@ -15,6 +15,11 @@
             id: String,
             data: Object,
         },
+        data(){
+            return {
+                val:[]
+            };
+        },
         mounted() {
             this.chart = echarts.init(document.getElementById(`averagebar-${this.id}`));
             this.renderChart(this.data);
@@ -30,21 +35,12 @@
         },
         methods: {
             renderChart(nodes) {
+                var _this = this;
                 const {
                     transSubjects,
                     nodes: pData
                 } = nodes;
                 const percentArr = [];
-                // let sumTarget = 0;
-                // let sumTotal = 0;
-                //          console.log(nodes)
-                //          for(let i in pData) {
-                //              sumTotal += parseInt(pData[i].total);
-                //              sumTarget += parseInt(pData[i].target);
-                //          }
-                //          const average = Math.floor(sumTotal / sumTarget / pData.length * 100);
-
-                //              const average = (nodes.avg / nodes.total * 100).toFixed(1)
                 const average = nodes.avg;
 
                 for(let i in pData) {
@@ -99,10 +95,17 @@
                         }
                     },
                     series: [{
+                        name:nodes.nodes,
                         type: 'bar',
                         itemStyle: {
                             normal: {
                                 color: function(params) {
+                                    _this.val.push(params.data);
+                                    // console.log(_this.val);
+                                    // var sum = _this.val.reduce(function(prev,cur,index,array){
+                                    //        return prev + cur;
+                                    // });
+                                    // console.log(sum);
                                     return params.data < average ? '#b0afad' : '#318cb8';
                                 },
                                 barBorderRadius: [0, 20, 20, 0],
@@ -118,6 +121,7 @@
                                         return `${pData[params.dataIndex]} : ${params.data}`;
                                     }
                                     return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
+                                    // return `${pData[params.dataIndex]} : ${params.data}`;
                                 },
                             }
                         },

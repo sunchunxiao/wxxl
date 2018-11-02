@@ -250,6 +250,7 @@
 					options: options
 				};
 				this.chart.setOption(heatMapOption,true);
+				window.onresize = this.chart.resize;
 			}
 		}
 	};
@@ -258,7 +259,7 @@
 <style lang="scss" scoped>
 	.heatmap-container {
 		.heatmap {
-			width: 600px;
+			width: 100%;
 			height: 400px;
 			margin: 0 auto;
 		}
@@ -269,5 +270,8 @@
 		//     font-size: 15px;
 		//     padding: 20px;
 		// }
+		canvas{
+			width: 100%;
+		}
 	}
 </style>

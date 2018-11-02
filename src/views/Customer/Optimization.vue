@@ -1,56 +1,10 @@
 <template>
   <div class="optimization">
     <el-row>
-      <el-form 
-        ref="form" 
-        :model="form" 
-        label-width="100px" 
-        size="mini">
-        <el-col :span="5">
-          <el-form-item label="时间单位选择">
-            <el-select v-model="form.unit">
-              <el-option 
-                label="月" 
-                value="day"/>
-              <el-option 
-                label="季" 
-                value="week"/>
-              <el-option 
-                label="年" 
-                value="month"/>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="9">
-          <el-form-item label="时间段选择">
-            <el-date-picker 
-              v-model="form.time" 
-              type="datetimerange" 
-              range-separator="至" 
-              start-placeholder="开始日期" 
-              end-placeholder="结束日期" 
-              format="yyyy-MM-dd" 
-              value-format="yyyy-MM-dd" 
-              align="right"/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="精确搜索">
-            <el-input 
-              v-model="form.search" 
-              placeholder="产品编号/产品名称">
-              <i 
-                slot="prefix" 
-                class="el-input__icon el-icon-search"/>
-            </el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="4">
-          <el-form-item>
-            <el-button type="primary">go</el-button>
-          </el-form-item>
-        </el-col>
-      </el-form>
+      <search-bar 
+        @search="handleSearch" 
+        ref="child"
+        url="/cus/search"/>
     </el-row>
     <el-row 
       class="content_row" 
@@ -67,6 +21,7 @@
         <el-tree 
           :data="customerTree.children" 
           :props="defaultProps" 
+          :default-expanded-keys="nodeArr"
           @node-click="handleNodeClick" 
           @check-change="handleCheckChange">
           <span 
@@ -138,6 +93,7 @@
     import API from './api';
     import _ from 'lodash';
     import Card from '../../components/Card';
+    import SearchBar from 'components/SearchBar';
     // 组织对比分析和平均值分析
     import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
     import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
@@ -151,16 +107,17 @@
         children: 'children',
         label: 'name'
     };
-    const TIMEPT = {
-        '周': 'week',
-        '月': 'month',
-        '季': 'quarter',
-        '年': 'year'
-    };
+    // const TIMEPT = {
+    //     '周': 'week',
+    //     '月': 'month',
+    //     '季': 'quarter',
+    //     '年': 'year'
+    // };
 
     export default {
         components: {
             Card,
+            SearchBar,
             ConOrgComparisonAverage,
             ConOrgComparisonAverageBig
         },
@@ -180,7 +137,10 @@
                 defaultProps: TREE_PROPS,
                 pieData: mockPieData(),
                 comparisonAverageData: mockComparisonAverageData(),
-                index0: 0
+                index0: 0,
+                val:{},
+				post:1,
+				nodeArr:[]
             };
         },
         computed: {
@@ -236,35 +196,21 @@
                     sDate,
                     eDate
                 } = this.getDateObj();
-                const {
-                    pt
-                } = this.form;
+                // const {
+                //     pt
+                // } = this.form;
+                // console.log(sDate,eDate);
                 if(sDate && eDate) { // 计算时间周期
-                    if(pt === '日') {
                         return {
-                            sDate,
-                            eDate
+                            pt:this.val.pt,
+                            sDate: this.val.sDate,
+                            eDate: this.val.eDate,
                         };
-                    }
-                    let unit = TIMEPT[pt];
-                    if(unit) {
-                        return {
-                            sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
-                            eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-                        };
-                    } else {
-                        return {
-                            sDate: '2018-01-01',
-                            eDate: '2018-06-01',
-                            // 先写死个时间
-                            // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                            // eDate: moment().format('YYYY-MM-DD'),
-                        };
-                    }
                 } else {
                     return {
-                        sDate: '2018-01-01',
-                        eDate: '2018-06-01',
+                        pt:'日',
+                        sDate: '2018-10-28',
+                        eDate: '2018-11-02',
                         // 先写死个时间
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),
@@ -275,10 +221,17 @@
                 const {
                     date
                 } = this.form;
-                return {
+                if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+                    return {
+                    sDate: this.val.sDate,
+                    eDate: this.val.eDate,
+                };
+                }else{
+                    return {
                     sDate: date[0] || '',
                     eDate: date[1] || '',
                 };
+                }
             },
             largerThanZero(val) {
                 return val && _.isNumber(parseFloat(val)) && parseFloat(val) >= 0;
@@ -315,14 +268,30 @@
 						}
 					}
 				};
-			},
+            },
+            handleSearch(val) {
+                this.nodeArr = [];
+                this.nodeArr.push(val.cid);
+                this.loading = true;
+                this.val = val;
+                if(val.cid!=""){
+                    this.cid = val.cid;
+                }else{
+                    this.getTree();
+                    this.getHistory();
+                }
+                setTimeout(() => {		       
+                    this.loading = false;
+                }, 1000);
+                
+            },
             handleNodeClick(data) {
+				this.$refs.child.parentMsg(this.post);
 					this.cid = data.cid;
 					this.loading = true;
 					setTimeout(() => {
 						this.loading = false;
 					}, 1000);
-
 			},
             handleCheckChange() {
             },

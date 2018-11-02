@@ -19,57 +19,6 @@
       </el-form-item>
     </el-col>
     <el-col :span="9">
-      <el-form-item
-        v-if="form.pt === '日'"
-        label="时间段选择"
-        prop="dayRange"
-        :rules="{
-          required: true, message: '请选择时间段', trigger: 'blur'
-      }">
-        <el-date-picker 
-          v-model="form.dayRange" 
-          type="datetimerange" 
-          :picker-options="pickerBaseOptions"
-          range-separator="-" 
-          start-placeholder="开始日期"
-          end-placeholder="结束日期" 
-          format="yyyy-MM-dd" 
-          value-format="yyyy-MM-dd" 
-          align="right"/>
-      </el-form-item>
-      <template v-if="form.pt === '周'">
-        <el-col :span="12">
-          <el-form-item 
-            label="时间段选择" 
-            prop="weekStart" 
-            :rules="{
-              required: true, message: '请选择开始周', trigger: 'blur'
-          }">
-            <el-date-picker
-              v-model="form.weekStart"
-              type="week"
-              format="yyyy 第 WW 周"
-              :picker-options="weekStartOptions"
-              placeholder="请选择开始周"/>
-          </el-form-item>
-        </el-col>
-        <el-col 
-          :span="12" 
-          class="align_center">
-          <el-form-item
-            prop="weekEnd" 
-            :rules="{
-              required: true, message: '请选择结束周', trigger: 'blur'
-          }">
-            <el-date-picker
-              v-model="form.weekEnd"
-              type="week"
-              format="yyyy 第 WW 周"
-              :picker-options="weekEndOptions"
-              placeholder="请选择结束周"/>
-          </el-form-item>
-        </el-col>
-      </template>
       <template v-if="form.pt === '月'">
         <el-col :span="12">
           <el-form-item 
@@ -142,7 +91,7 @@
           :fetch-suggestions="searchKw"
           @select="handleKwSelect"
           :debounce="500"
-          :trigger-on-focus="true"
+          :trigger-on-focus="false"
           value-key="name"
           :placeholder="placeholderName()">
           <i 
@@ -166,19 +115,14 @@ import { FetchGet } from 'utils/fetch';
 import _ from 'lodash';
 
 // TODO: 季
-const UNITS = ['日', '周', '月','年'];
+const UNITS = ['月','年'];
 export default {
     data() {
         return {
             units: UNITS,
             pickerBaseOptions: { firstDayOfWeek: 1 },
             form: {
-                pt: '日',
-
-                dayRange: [],
-
-                weekStart: '',
-                weekEnd: '',
+                pt: '月',
 
                 monthStart: '',
                 monthEnd: '',
@@ -198,28 +142,6 @@ export default {
       },
     },
     computed: {
-        weekStartOptions() {
-            const { weekEnd } = this.form;
-            return {
-                disabledDate(time) {
-                    if (weekEnd) {
-                        return time.getTime() > _.toNumber(moment(weekEnd).add(5, 'd').format('x'));
-                    }
-                },
-                ...this.pickerBaseOptions
-            };
-        },
-        weekEndOptions() {
-            const { weekStart } = this.form;
-            return {
-                disabledDate(time) {
-                    if (weekStart) {
-                        return time.getTime() < _.toNumber(moment(weekStart).subtract(1, 'd').format('x'));
-                    }
-                },
-                ...this.pickerBaseOptions
-            };
-        },
         monthStartOptions() {
             const { monthEnd } = this.form;
             return {
@@ -290,15 +212,9 @@ export default {
             // this.$refs['form'].validate(valid => {
             //     if (valid) {
                     
-                    const { pt, dayRange, weekStart, weekEnd, monthStart, monthEnd, yearStart, yearEnd, cid } = this.form;
+                    const { pt,  monthStart, monthEnd, yearStart, yearEnd, cid } = this.form;
                     let obj = { pt, sDate: '', eDate: '', cid,name };
-                    if (pt === '日') {
-                        obj.sDate = dayRange[0];
-                        obj.eDate = dayRange[1];
-                    } else if (pt === '周') {
-                        obj.sDate = moment(weekStart).startOf('week').format('YYYY-MM-DD');
-                        obj.eDate = moment(weekEnd).endOf('week').format('YYYY-MM-DD');
-                    } else if (pt === '月') {
+                    if (pt === '月') {
                         obj.sDate = moment(monthStart).format('YYYY-MM-DD');
                         obj.eDate = moment(monthEnd).endOf('month').format('YYYY-MM-DD');
                     } else if (pt === '年') {
@@ -313,12 +229,7 @@ export default {
                         });
                         // return;
                     } 
-                    // else if(cid==''){
-                    //     this.$message({
-                    //         type:'error',
-                    //         message:'请选择产品'
-                    //     });
-                    // }
+                    
                     else{
                         this.$emit('search', obj);
                     }
@@ -336,7 +247,7 @@ export default {
                 text:kw
               };
             FetchGet(this.url, params).then(res => {
-              cb(res.suggestions || []);
+              cb(res.data || []);
             });
           } else {
             cb([]);
