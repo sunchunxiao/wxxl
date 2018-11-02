@@ -1,56 +1,10 @@
 <template>
   <div class="overview">
     <el-row>
-      <el-form 
-        ref="form" 
-        :model="form" 
-        label-width="100px" 
-        size="mini">
-        <el-col :span="5">
-          <el-form-item label="时间单位选择">
-            <el-select v-model="form.pt">
-              <el-option 
-                label="月" 
-                value="day"/>
-              <el-option 
-                label="季" 
-                value="week"/>
-              <el-option 
-                label="年" 
-                value="month"/>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="9">
-          <el-form-item label="时间段选择">
-            <el-date-picker 
-              v-model="form.date" 
-              type="datetimerange" 
-              range-separator="至" 
-              start-placeholder="开始日期" 
-              end-placeholder="结束日期" 
-              format="yyyy-MM-dd" 
-              value-format="yyyy-MM-dd" 
-              align="right"/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="精确搜索">
-            <el-input 
-              v-model="form.search" 
-              placeholder="产品编号/产品名称">
-              <i 
-                slot="prefix" 
-                class="el-input__icon el-icon-search"/>
-            </el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="4">
-          <el-form-item>
-            <el-button type="primary">go</el-button>
-          </el-form-item>
-        </el-col>
-      </el-form>
+      <search-bar 
+        @search="handleSearch"
+        ref="child"
+        url="/cus/search"/>
     </el-row>
     <el-row 
       class="content_row" 
@@ -67,6 +21,7 @@
         <el-tree 
           :data="customerTree.children" 
           :props="defaultProps" 
+          :default-expanded-keys="nodeArr"
           :highlight-current="true" 
           @node-click="handleNodeClick">
           <span 
@@ -198,8 +153,8 @@
                       <el-checkbox 
                         v-for="(item,index) in stragety" 
                         :key="index" 
-                        :label="item.strategy"
-                        @change="change"/>
+                        :label="item.id" 
+                        @change="change">{{ item.strategy }}</el-checkbox>
                     </el-checkbox-group>
                     <el-button 
                       type="primary" 
@@ -220,6 +175,7 @@
     import API from './api';
 	import moment from 'moment';
     import Card from '../../components/Card';
+    import SearchBar from 'components/SearchBar';
     // 目标达成情况总览
     import ProTargetAchievement from '../../components/ProTargetAchievement';
     import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
@@ -248,16 +204,17 @@
         children: 'children',
         label: 'name'
     };
-    const TIMEPT = {
-        '周': 'week',
-        '月': 'month',
-        '季': 'quarter',
-        '年': 'year'
-    };
+    // const TIMEPT = {
+    //     '周': 'week',
+    //     '月': 'month',
+    //     '季': 'quarter',
+    //     '年': 'year'
+    // };
 
     export default {
         components: {
             Card,
+            SearchBar,
             ProYearOnYearTrend,
             // ProYearOnYearTrendBig,
             ProportionalStructureAverageComparison,
@@ -296,7 +253,10 @@
                 stragetyCheckList: [],
                 stragetyTitle: '',
                 stragety: [],
-                idArr:[]
+                idArr:[],
+                val:{},
+				post:1,
+				nodeArr:[]
             };
         },
         computed: {
@@ -320,23 +280,21 @@
 				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
 				// 暂时先在这里做
                 this.getProgress();
-				this.getSubject();
 				this.getStructure();
 				this.getRank();
 			}
         },
         methods: {
             change() {
-				this.idArr = [];
-				for (let j of this.stragetyCheckList) {
-					let stragetyObj = this.stragety.find(el => {
-
-						return el.strategy == j;
-					});
-					this.idArr.push(stragetyObj.id);
-				}
-				// console.log(this.stragetyCheckList, this.idArr);
-			},
+                this.idArr = [];
+                for (let i of this.stragetyCheckList) {
+                        let stragetyObj = this.stragety.find(el => {
+                                return el.id == i;
+                        });
+                        this.idArr.push(stragetyObj.id);
+                }
+                // console.log(this.stragetyCheckList, this.idArr);
+            },
 			submit() {
 				let data1 = JSON.parse(localStorage.data);
 				this.$confirm('确认?', {
@@ -370,7 +328,6 @@
 			},
             getTree() {
                 const params = {
-                    pt: this.form.pt,
                     subject: this.form.subject,
                     ...this.getPeriodByPt(),
                     version: this.form.version
@@ -382,7 +339,6 @@
             },
             getProgress() {
 				const params = {
-					pt: this.form.pt,
 					cid: this.cid,
 					...this.getPeriodByPt(),
 					version: this.form.version
@@ -399,26 +355,9 @@
 					});
 				});
             },
-            getSubject() {
-				const params = {
-					rType:0
-				};
-				API.GetCusSubject(params).then(res => {
-					// this.$store.dispatch('SaveCusProgressData', res.data);
-					const promises = _.map(res.data, o => this.getTrend(o.subject));
-					Promise.all(promises).then(resultList => {
-						_.forEach(resultList, (v, k) => {
-							v.subject = res.data[k].subject;
-							v.subject_name = res.data[k].subject_name;
-						});
-						this.$store.dispatch('SaveCusTrendArr', resultList);
-					});
-				});
-			},
 			getTrend(subject) {
 				const params = {
 					cid: this.cid,
-					pt: this.form.pt,
 					...this.getPeriodByPt(),
 					subject: subject,
 					version: this.form.version
@@ -427,11 +366,9 @@
 			},
             getStructure() {
 				const params = {
-					pt: this.form.pt,
 					cid: this.cid,
 					...this.getPeriodByPt(),
 					version: this.form.version,
-					rType: 1
 				};
 				API.GetCusStructure(params).then(res => {
 					this.$store.dispatch('SaveCusStructureArr', res.data);
@@ -440,7 +377,6 @@
             getRank() {
 				const params = {
 					cid: this.cid,
-					pt: this.form.pt,
 					version: this.form.version,
 					...this.getPeriodByPt(),
 				};
@@ -454,35 +390,21 @@
                     sDate,
                     eDate
                 } = this.getDateObj();
-                const {
-                    pt
-                } = this.form;
+                // const {
+                //     pt
+                // } = this.form;
+                // console.log(sDate,eDate);
                 if(sDate && eDate) { // 计算时间周期
-                    if(pt === '日') {
                         return {
-                            sDate,
-                            eDate
+                            pt:this.val.pt,
+                            sDate: this.val.sDate,
+                            eDate: this.val.eDate,
                         };
-                    }
-                    let unit = TIMEPT[pt];
-                    if(unit) {
-                        return {
-                            sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
-                            eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-                        };
-                    } else {
-                        return {
-                            sDate: '2018-01-01',
-                            eDate: '2018-06-01',
-                            // 先写死个时间
-                            // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                            // eDate: moment().format('YYYY-MM-DD'),
-                        };
-                    }
                 } else {
                     return {
-                        sDate: '2018-01-01',
-                        eDate: '2018-06-01',
+                        pt:'日',
+                        sDate: '2018-06-01',
+                        eDate: '2018-06-31',
                         // 先写死个时间
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),
@@ -493,10 +415,17 @@
                 const {
                     date
                 } = this.form;
-                return {
+                if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+                    return {
+                    sDate: this.val.sDate,
+                    eDate: this.val.eDate,
+                };
+                }else{
+                    return {
                     sDate: date[0] || '',
                     eDate: date[1] || '',
                 };
+                }
             },
             initFormDataFromUrl() {
 				const {
@@ -513,16 +442,34 @@
 				this.form = { ...this.form,
 					...formData
 				};
-			},
+            },
+            handleSearch(val) {
+                this.nodeArr = [];
+                this.nodeArr.push(val.cid);
+                this.loading = true;
+                this.val = val;
+                if(val.cid!=""){
+                    this.cid = val.cid;
+                }else{
+                    this.getTree();
+                    this.getProgress();
+                    this.getStructure();
+                    this.getRank();
+                }
+                setTimeout(() => {		       
+                    this.loading = false;
+                }, 1000);
+                
+            },
             handleNodeClick(data) {
-				this.type = data.type;
-				if (data.children != undefined) {
-					this.cid = data.cid;
-					this.loading = true;
-					setTimeout(() => {
-						this.loading = false;
-					}, 1000);
-				}
+                this.$refs.child.parentMsg(this.post);
+                if(data.children != undefined) {
+                    this.cid = data.cid;
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 1000);
+                }
 
 			},
             calculatePercent(a, b) {
@@ -580,7 +527,7 @@
 					this.stragety = res.data;
 					for (let i = 0; i < res.data.length; i++) {
 						if (res.data[i].status == 1) {
-							this.stragetyCheckList.push(res.data[i].strategy);
+							this.stragetyCheckList.push(res.data[i].id);
 							// console.log(this.stragetyCheckList)
 						}
 					}
@@ -592,170 +539,5 @@
 </script>
 
 <style lang="scss">
-    .overview {
-        min-width: 1024px;
-        height: 100%;
-        .el-date-editor.el-range-editor {
-            width: 300px;
-        }
-        .content_row {
-            height: calc(100% - 48px);
-            overflow-y: scroll;
-            overflow: hidden;
-            margin: 0!important;
-            .title {
-                margin: 18px 20px 18px 0;
-                text-align: right;
-                color: #747474
-            }
-            .company {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 24px;
-                .left {
-                    margin-left: 15px;
-                    font-weight: bold;
-                    color: #338cb6;
-                }
-                .right {
-                    margin-right: 20px;
-                    font-weight: bold;
-                    color: #c13633;
-                }
-            }
-            .tree_container {
-                height: 100%;
-                min-width: 200px;
-                // margin-right: 20px;
-                padding-bottom: 18px;
-                overflow-y: auto;
-                border: 1px solid #eee;
-                border-radius: 5px;
-                background: #fff;
-            }
-        }
-        .el-tree {
-            .custom-tree-node {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-                .percent {
-                    margin-right: 20px;
-                }
-                .progress {
-                    display: none;
-                    position: absolute;
-                    width: 50%;
-                    height: 26px;
-                    left: -5%;
-                    top: 0;
-                    border-radius: 15px;
-                    background: #318cb8;
-                    z-index: -1;
-                }
-                .border-radius0 {
-                    border-radius: 0;
-                }
-                .red {
-                    color: #c13633;
-                }
-                .blue {
-                    color: #26a6d7;
-                }
-            }
-            .el-tree-node__content {
-                position: relative;
-                overflow: hidden;
-                z-index: 1;
-                &:hover {
-                    background-color: #eee;
-                    .label {
-                        color: #fff;
-                        line-height: 20px;
-                    }
-                    .percent {
-                        font-size: 20px;
-                    }
-                    .progress {
-                        display: block;
-                    }
-                }
-            }
-            .el-tree-node__content>.el-tree-node__expand-icon {
-                margin: 0 5px 0 15px;
-                padding: 2px;
-                border: 1px solid #fff;
-                border-radius: 50%;
-                background: #338cb6;
-                color: #fff;
-            }
-            >.el-tree-node {
-                padding: 20px 0;
-                &:before {
-                    content: '';
-                    display: block;
-                    width: 90%;
-                    height: 1px;
-                    margin: 0 auto;
-                    position: relative;
-                    bottom: 20px;
-                    background-color: #c9c9c9;
-                }
-                >.el-tree-node__content {
-                    >.custom-tree-node {
-                        font-weight: bold;
-                    }
-                }
-            }
-            .el-tree-node__expand-icon.is-leaf {
-                visibility: hidden;
-            }
-        }
-        .card-title {
-            margin-bottom: 20px;
-        }
-        .border-left {
-            border-left: 2px solid #d8d8d8;
-        }
-        .margin-top-10 {
-            margin-top: 10px;
-        }
-        .overflow {
-            height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-        .stragety {
-            width: 85%;
-            margin: 5px auto 0;
-            .stragety-title {
-                text-align: center;
-                margin-bottom: 10px;
-                color: #454545;
-            }
-            .stragety-box {
-                border: 2px solid #f6f6f6;
-                height: 300px;
-                border-radius: 4px;
-                padding: 20px 35px;
-                position: relative;
-                .stragety-selected-title {
-                    margin-bottom: 10px;
-                }
-                .el-checkbox {
-                    display: block;
-                }
-                .el-checkbox+.el-checkbox {
-                    margin-left: 0;
-                    margin-top: 5px;
-                }
-                .center {
-                    position: absolute;
-                    bottom: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                }
-            }
-        }
-    }
+   @import '../Product/style/overview.scss'
 </style>

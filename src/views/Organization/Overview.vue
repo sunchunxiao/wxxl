@@ -1,56 +1,10 @@
 <template>
   <div class="overview">
     <el-row>
-      <el-form 
-        ref="form" 
-        :model="form" 
-        label-width="100px" 
-        size="mini">
-        <el-col :span="5">
-          <el-form-item label="时间单位选择">
-            <el-select v-model="form.pt">
-              <el-option 
-                label="月" 
-                value="day"/>
-              <el-option 
-                label="季" 
-                value="week"/>
-              <el-option 
-                label="年" 
-                value="month"/>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="9">
-          <el-form-item label="时间段选择">
-            <el-date-picker 
-              v-model="form.date" 
-              type="datetimerange" 
-              range-separator="至" 
-              start-placeholder="开始日期"
-              end-placeholder="结束日期" 
-              format="yyyy-MM-dd" 
-              value-format="yyyy-MM-dd" 
-              align="right"/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="精确搜索">
-            <el-input 
-              v-model="form.search" 
-              placeholder="产品编号/产品名称">
-              <i 
-                slot="prefix" 
-                class="el-input__icon el-icon-search"/>
-            </el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="4">
-          <el-form-item>
-            <el-button type="primary">go</el-button>
-          </el-form-item>
-        </el-col>
-      </el-form>
+      <search-bar 
+        @search="handleSearch"
+        ref="child"
+        url="/org/search"/>
     </el-row>
     <el-row 
       class="content_row" 
@@ -67,6 +21,7 @@
         <el-tree 
           :data="organizationTree.children" 
           :props="defaultProps" 
+          :default-expanded-keys="nodeArr"
           :highlight-current="true" 
           @node-click="handleNodeClick">
           <span 
@@ -229,8 +184,8 @@
                       <el-checkbox 
                         v-for="(item,index) in stragety" 
                         :key="index" 
-                        :label="item.strategy" 
-                        @change="change"/>
+                        :label="item.id" 
+                        @change="change">{{ item.strategy }}</el-checkbox>
                     </el-checkbox-group>
                     <el-button 
                       @click="submit" 
@@ -250,6 +205,7 @@
 <script>
 	import API from './api';
 	import moment from 'moment';
+	import SearchBar from 'components/SearchBarOrg';
 	import Card from '../../components/Card';
 	// 目标达成情况总览
 	import ProTargetAchievement from '../../components/ProTargetAchievement';
@@ -259,7 +215,7 @@
 	// import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
 	// 同比环比趋势分析
 	import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
-	// import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
+	
 	// 比例结构与平均值对比分析
 	import ProportionalStructureAverageComparison from '../../components/ProportionalStructureAverageComparison';
 	import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
@@ -279,16 +235,17 @@
         children: 'children',
         label: 'name'
     };
-    const TIMEPT = {
-        '周': 'week',
-        '月': 'month',
-        '季': 'quarter',
-        '年': 'year'
-    };
+    // const TIMEPT = {
+    //     '周': 'week',
+    //     '月': 'month',
+    //     '季': 'quarter',
+    //     '年': 'year'
+    // };
 
 	export default {
 		components: {
 			Card,
+			SearchBar,
 			ProYearOnYearTrend,
 			// ProYearOnYearTrendBig,
 			ProportionalStructureAverageComparison,
@@ -332,6 +289,9 @@
 				stragety: [],
 				type: 3,
 				idArr: [],
+				val:{},
+				post:1,
+				nodeArr:[]
 			};
 		},
 		computed: {
@@ -365,16 +325,15 @@
 		},
 		methods: {
 			change() {
-				this.idArr = [];
-				for (let j of this.stragetyCheckList) {
-					let stragetyObj = this.stragety.find(el => {
-
-						return el.strategy == j;
-					});
-					this.idArr.push(stragetyObj.id);
-				}
-				// console.log(this.stragetyCheckList, this.idArr);
-			},
+						this.idArr = [];
+						for (let i of this.stragetyCheckList) {
+								let stragetyObj = this.stragety.find(el => {
+										return el.id == i;
+								});
+								this.idArr.push(stragetyObj.id);
+						}
+						// console.log(this.stragetyCheckList, this.idArr);
+      },
 			submit() {
 				let data1 = JSON.parse(localStorage.data);
 
@@ -409,7 +368,7 @@
 			},
 			getTree() {
 				const params = {
-					pt: this.form.pt,
+					// pt: this.form.pt,
 					subject: this.form.subject,
 					...this.getPeriodByPt(),
 					version: this.form.version
@@ -421,7 +380,7 @@
 			},
 			getProgress() {
 				const params = {
-					pt: this.form.pt,
+					// pt: this.form.pt,
 					cid: this.cid,
 					...this.getPeriodByPt(),
 					version: this.form.version
@@ -442,7 +401,7 @@
 			getTrend(subject) {
 				const params = {
 					cid: this.cid,
-					pt: this.form.pt,
+					// pt: this.form.pt,
 					...this.getPeriodByPt(),
 					subject: subject,
 					version: this.form.version
@@ -453,7 +412,7 @@
 			getStructure1() {
 				// console.log(this.type)
 				const params = {
-					pt: this.form.pt,
+					// pt: this.form.pt,
 					cid: this.cid,
 					...this.getPeriodByPt(),
 					version: this.form.version,
@@ -468,7 +427,7 @@
 			getStructure2() {
 				// console.log(this.type)
 				const params = {
-					pt: this.form.pt,
+					// pt: this.form.pt,
 					cid: this.cid,
 					...this.getPeriodByPt(),
 					version: this.form.version,
@@ -482,7 +441,7 @@
 			getRank() {
 				const params = {
 					cid: this.cid,
-					pt: this.form.pt,
+					// pt: this.form.pt,
 					version: this.form.version,
 					...this.getPeriodByPt(),
 				};
@@ -492,54 +451,48 @@
 				});
 			},
 			getPeriodByPt() {
-				const {
-					sDate,
-					eDate
-				} = this.getDateObj();
-				const {
-					pt
-				} = this.form;
-				if (sDate && eDate) { // 计算时间周期
-					if (pt === '日') {
-						return {
-							sDate,
-							eDate
-						};
-					}
-					let unit = TIMEPT[pt];
-					if (unit) {
-						return {
-							sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
-							eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-						};
-					} else {
-						return {
-							sDate: '2018-01-01',
-							eDate: '2018-06-01',
-							// 先写死个时间
-							// sDate: moment().startOf('week').format('YYYY-MM-DD'),
-							// eDate: moment().format('YYYY-MM-DD'),
-						};
-					}
-				} else {
-					return {
-						sDate: '2018-01-01',
-						eDate: '2018-06-01',
-						// 先写死个时间
-						// sDate: moment().startOf('week').format('YYYY-MM-DD'),
-						// eDate: moment().format('YYYY-MM-DD'),
-					};
-				}
-			},
+						const {
+								sDate,
+								eDate
+						} = this.getDateObj();
+						// const {
+						//     pt
+						// } = this.form;
+						// console.log(sDate,eDate);
+						if(sDate && eDate) { // 计算时间周期
+										return {
+												pt:this.val.pt,
+												sDate: this.val.sDate,
+												eDate: this.val.eDate,
+										};
+						} else {
+										return {
+												pt:'月',
+												sDate: '2018-01-01',
+												eDate: '2018-05-01',
+												// 先写死个时间
+												// sDate: moment().startOf('week').format('YYYY-MM-DD'),
+												// eDate: moment().format('YYYY-MM-DD'),
+										};
+						}
+      },
 			getDateObj() {
-				const {
-					date
-				} = this.form;
-				return {
-					sDate: date[0] || '',
-					eDate: date[1] || '',
-				};
-			},
+					const {
+							date
+					} = this.form;
+					// console.log(this.val.eDate);
+					if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+							return {
+							sDate: this.val.sDate,
+							eDate: this.val.eDate,
+					};
+					}else{
+							return {
+							sDate: date[0] || '',
+							eDate: date[1] || '',
+					};
+					}
+      },
 			initFormDataFromUrl() {
 				const {
 					pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
@@ -556,7 +509,27 @@
 					...formData
 				};
 			},
+			handleSearch(val) {
+				this.nodeArr = [];
+        this.nodeArr.push(val.cid);
+				this.loading = true;
+				this.val = val;
+				if(val.cid!=""){
+						this.cid = val.cid;
+				}else{
+					this.getTree();
+						this.getProgress();
+						this.getStructure1();
+						this.getStructure2();
+						this.getRank();
+				}
+				setTimeout(() => {		       
+						this.loading = false;
+				}, 1000);
+						
+				},
 			handleNodeClick(data) {
+				this.$refs.child.parentMsg(this.post);
 				this.type = data.type;
 				if (data.children != undefined) {
 					this.cid = data.cid;
@@ -629,7 +602,7 @@
 					this.stragety = res.data;
 					for (let i = 0; i < res.data.length; i++) {
 						if (res.data[i].status == 1) {
-							this.stragetyCheckList.push(res.data[i].strategy);
+							this.stragetyCheckList.push(res.data[i].id);
 							// console.log(this.stragetyCheckList)
 						}
 					}

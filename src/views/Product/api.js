@@ -31,6 +31,9 @@ export default {
 	},
 	PostProductSave(params) {
 		return FetchPostNew('/product/strategy/save', params);
+    },
+    GetProductSearch(params) {
+		return FetchGet('/product/search', params);
 	},
 
 };

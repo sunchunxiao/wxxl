@@ -15,6 +15,11 @@ export default {
         id: String,
         data: Object,
     },
+    data(){
+        return {
+            myChart:[]
+        };
+    },
     mounted() {
         this.chart = echarts.init(document.getElementById(`trendline-${this.id}`));
         this.renderChart(this.data);
@@ -80,6 +85,11 @@ export default {
                 ]
             };
             this.chart.setOption(options);
+            var _this = this;
+            window.addEventListener("resize", function () {
+               _this.chart.resize();
+            });
+            
         }
     }
 };

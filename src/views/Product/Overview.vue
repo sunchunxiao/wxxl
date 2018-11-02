@@ -2,7 +2,8 @@
   <div class="overview">
     <el-row>
       <search-bar 
-        @search="handleSearch" 
+        @search="handleSearch"
+        ref="child"
         url="/product/search"/>
     </el-row>
     <el-row 
@@ -20,8 +21,11 @@
         </div>
         <!-- 有多个tree -->
         <el-tree 
+          ref="tree"
           :data="productTree.children" 
           :props="defaultProps" 
+          node-key="cid"
+          :default-expanded-keys="nodeArr"
           :highlight-current="true" 
           @node-click="handleNodeClick">
           <span 
@@ -149,12 +153,13 @@
                   <div class="stragety-title">智能策略</div>
                   <div class="stragety-box">
                     <div class="stragety-selected-title">{{ stragetyTitle }}</div>
-                    <el-checkbox-group v-model="stragetyCheckList">
+                    <el-checkbox-group 
+                      v-model="stragetyCheckList">
                       <el-checkbox 
                         v-for="(item,index) in stragety" 
                         :key="index" 
-                        :label="item.strategy" 
-                        @change="change"/>
+                        :label="item.id" 
+                        @change="change">{{ item.strategy }}</el-checkbox>
                     </el-checkbox-group>
                     <el-button 
                       @click="submit" 
@@ -198,12 +203,12 @@
         children: 'children',
         label: 'name'
     };
-    const TIMEPT = {
-        '周': 'week',
-        '月': 'month',
-        '季': 'quarter',
-        '年': 'year'
-    };
+    // const TIMEPT = {
+    //     '周': 'week',
+    //     '月': 'month',
+    //     '季': 'quarter',
+    //     '年': 'year'
+    // };
 
     export default {
         components: {
@@ -242,6 +247,9 @@
                 stragety: [],
                 checked1: true,
                 idArr: [],
+                val:{},
+                post:1,
+                nodeArr:[]
             };
         },
         computed: {
@@ -286,7 +294,7 @@
                 this.idArr = [];
                 for (let i of this.stragetyCheckList) {
                     let stragetyObj = this.stragety.find(el => {
-                        return el.strategy == i;
+                        return el.id == i;
                     });
                     this.idArr.push(stragetyObj.id);
                 }
@@ -342,7 +350,7 @@
             },
             getTree() {
                 const params = {
-                    pt: this.form.pt,
+                    // pt: this.form.pt,
                     subject: this.form.subject,
                     ...this.getPeriodByPt(),
                 };
@@ -351,7 +359,7 @@
                 });
             },
             getProgress() {
-                //              console.log(this.cid)
+                // console.log(this.val);
                 const params = {
                     cid: this.cid,
                     ...this.getPeriodByPt(),
@@ -371,7 +379,7 @@
             getTrend(subject) {
                 const params = {
                     cid: this.cid,
-                    pt: this.form.pt,
+                    // pt: this.form.pt,
                     ...this.getPeriodByPt(),
                     subject: subject
                 };
@@ -390,7 +398,7 @@
             getRank() {
                 const params = {
                     cid: this.cid,
-                    pt: this.form.pt,
+                    // pt: this.form.pt,
                     ...this.getPeriodByPt(),
                 };
                 API.GetProductRank(params).then(res => {
@@ -402,57 +410,82 @@
                 const {
                     date
                 } = this.form;
-                return {
+                // console.log(this.val.eDate);
+                if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+                    return {
+                    sDate: this.val.sDate,
+                    eDate: this.val.eDate,
+                };
+                }else{
+                    return {
                     sDate: date[0] || '',
                     eDate: date[1] || '',
                 };
+                }
             },
             getPeriodByPt() {
                 const {
                     sDate,
                     eDate
                 } = this.getDateObj();
-                const {
-                    pt
-                } = this.form;
+                // const {
+                //     pt
+                // } = this.form;
+                // console.log(sDate,eDate);
                 if(sDate && eDate) { // 计算时间周期
-                    if(pt === '日') {
+                    // if(pt === '日') {
+                    //     return {
+                    //         sDate,
+                    //         eDate
+                    //     };
+                    // }
+                    // let unit = TIMEPT[pt];
+                    // if(unit) {
+                    //     return {
+                    //         sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
+                    //         eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
+                    //     };
+                    // } else {
                         return {
-                            sDate,
-                            eDate
-                        };
-                    }
-                    let unit = TIMEPT[pt];
-                    if(unit) {
-                        return {
-                            sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
-                            eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-                        };
-                    } else {
-                        return {
-                            sDate: '2018-01-01',
-                            eDate: '2018-06-01',
+                            pt:this.val.pt,
+                            sDate: this.val.sDate,
+                            eDate: this.val.eDate,
                             // 先写死个时间
                             // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                             // eDate: moment().format('YYYY-MM-DD'),
                         };
-                    }
+                    // }
                 } else {
                     return {
+                        pt:'日',
                         sDate: '2018-01-01',
-                        eDate: '2018-06-01',
+                        eDate: '2018-01-31',
                         // 先写死个时间
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),
                     };
                 }
             },
-            handleSearch() {
-            },
-            go() {
-
+            handleSearch(val) {
+                this.nodeArr = [];
+                this.nodeArr.push(val.cid);
+                this.loading = true;
+                this.val = val;
+                if(val.cid!=""){
+                    this.cid = val.cid;
+                }else{
+                    this.getTree();
+                    this.getProgress();
+                    this.getStructure();
+                    this.getRank();
+                }
+                setTimeout(() => {		       
+                    this.loading = false;
+                }, 1000);
+                
             },
             handleNodeClick(data) {
+                this.$refs.child.parentMsg(this.post);
                 if(data.children != undefined) {
                     this.cid = data.cid;
                     this.loading = true;
@@ -505,7 +538,7 @@
 					this.stragety = res.data;
 					for (let i = 0; i < res.data.length; i++) {
 						if (res.data[i].is_selected == 1) {
-							this.stragetyCheckList.push(res.data[i].strategy);
+							this.stragetyCheckList.push(res.data[i].id);
 							// console.log(this.stragetyCheckList)
 						}
 					}
@@ -518,5 +551,6 @@
 </script>
 
 <style lang="scss">
-	@import './style/overview.scss';
+    @import './style/overview.scss';
+    
 </style>
