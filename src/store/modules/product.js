@@ -29,6 +29,9 @@ const product = {
       SAVE_COMPARE_ARR: (state, arr) => {
         state.compareArr = arr;
       },
+      CLEAR_COMPARE_ARR: state => {
+        state.compareArr = [];
+      },
       SAVE_HISTORY_ARR: (state, arr) => {
         state.historyArr = arr;
       },
@@ -61,8 +64,10 @@ const product = {
       },
 			SaveProductStrategy({ commit }, arr) {
 				commit('SAVE_STRATEGYARR_ARR', arr);
-			},
-
+      },
+      ClearCompareArr({ commit }) {
+        commit('CLEAR_COMPARE_ARR');
+      }
     }
   };
 
