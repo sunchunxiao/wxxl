@@ -14,9 +14,18 @@
         class="tree_container">
         <div v-if="hasTree">
           <div class="title">毛利目标达成率</div>
-          <div class="company">
-            <span class="left">{{ productTree.name }}</span>
-            <span class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
+          <div 
+            @click="click" 
+            :class="{bac:isbac}"
+            class="company">
+            <span class="left label">{{ productTree.name }}</span>
+            <span
+              :class="{percent: true, red: !calculatePercent(productTree.real_total, productTree.target_total).largerThanOne, blue: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
+              class="right" >{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
+            <div 
+              :class="{comprogress: true, 'border-radius0': calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
+              :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '99%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}"/>
+              
           </div>
         </div>
         <!-- 有多个tree -->
@@ -26,7 +35,7 @@
           :props="defaultProps" 
           node-key="cid"
           :default-expanded-keys="nodeArr"
-          :highlight-current="true" 
+          :highlight-current="highlight" 
           @node-click="handleNodeClick">
           <span 
             class="custom-tree-node" 
@@ -192,12 +201,8 @@
 	import ProportionalStructureAverageComparison from 'components/ProportionalStructureAverageComparison';
 	import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
 	// 智能评选和智能策略
-	import IntelligentSelection from 'components/IntelligentSelection';
-
-	// mock
-	import mockPieData from './mock/pieData.js';
-	import mockAverageData from './mock/averageData.js';
-
+    import IntelligentSelection from 'components/IntelligentSelection';
+    
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
         children: 'children',
@@ -238,9 +243,6 @@
                 index1: 0,
                 index2: 0,
                 index3: 0,
-                // mockData
-                pieData: mockPieData(),
-                averageData: mockAverageData(),
                 // stragety
                 stragetyCheckList: [],
                 stragetyTitle: '',
@@ -249,7 +251,9 @@
                 idArr: [],
                 val:{},
                 post:1,
-                nodeArr:[]
+                nodeArr:[],
+                isbac:true,
+                highlight:true
             };
         },
         computed: {
@@ -259,10 +263,13 @@
             }
         },
         mounted() {
-            this.initFormDataFromUrl();
+            // this.initFormDataFromUrl();
             if(!this.hasTree) {
                 this.getTree();
             }
+            this.getProgress();
+            this.getStructure();
+            this.getRank();
 
         },
         watch: {
@@ -282,6 +289,7 @@
             //     }
             // ],
             cid: function() {
+                this.isbac = false;
                 // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
                 // 暂时先在这里做
                 this.getProgress();
@@ -290,6 +298,10 @@
             }
         },
         methods: {
+            click(){
+                this.isbac = true;
+                this.highlight = false;
+            },
             change() {
                 this.idArr = [];
                 for (let i of this.stragetyCheckList) {
@@ -485,8 +497,11 @@
                 
             },
             handleNodeClick(data) {
+                this.isbac = false;
                 this.$refs.child.parentMsg(this.post);
-                if(data.children != undefined) {
+                if(this.cid === data.cid){
+                    return ;
+                }else if(data.children != undefined) {
                     this.cid = data.cid;
                     this.loading = true;
                     //                  setTimeout(() => {

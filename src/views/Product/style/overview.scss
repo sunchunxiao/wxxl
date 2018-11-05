@@ -15,9 +15,40 @@
                 color: #747474
             }
             .company {
+                height: 15px;
                 display: flex;
+                padding: 7px 0;
                 justify-content: space-between;
                 margin-bottom: 24px;
+                position: relative;
+                z-index: 1;
+                cursor: pointer;
+                .comprogress {
+                    display: none;
+                    position: absolute;
+                    width: 40%;
+                    height: 30px;
+                    left: 0;
+                    top: 0;
+                    // border-radius: 15px;
+                    background: #227daa;
+                    z-index: -1;
+                }
+                &:hover {
+                    // background-color: rgb(238, 238, 238);
+                    .label {
+                        color: #fff;
+                        line-height: 20px;
+                    }
+                    .percent {
+                        font-size: 20px;
+                        
+                    }
+                    .comprogress {
+                        display: block;
+                        // z-index: 1;
+                    }
+                }
                 .left {
                     margin-left: 15px;
                     font-weight: bold;
@@ -28,6 +59,7 @@
                     font-weight: bold;
                     color: #c13633;
                 }
+                
             }
             .tree_container {
                 height: 100%;
@@ -38,6 +70,10 @@
                 border: 1px solid #eee;
                 border-radius: 5px;
                 background: #fff;
+                .bac {
+                    background-color: #f0f7ff;
+                }
+                
             }
         }
         .el-tree {

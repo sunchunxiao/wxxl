@@ -85,8 +85,6 @@
     import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
     import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 
-    import mockPieData from './mock/pieData.js';
-    import mockComparisonAverageData from './mock/comparisonAverageData.js';
     import tree from './mock/productTreeData.js';
     import { mapGetters } from 'vuex';
 
@@ -122,8 +120,6 @@
                 tree: tree,
                 treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
-                pieData: mockPieData(),
-                comparisonAverageData: mockComparisonAverageData(),
                 index0: 0,
                 series: [],
                 setCheckedKeys: [],

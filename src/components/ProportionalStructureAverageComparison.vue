@@ -17,7 +17,9 @@
         },
         data(){
             return {
-                val:[]
+                val:[],
+                sum28:0,
+                color:[]
             };
         },
         mounted() {
@@ -40,9 +42,35 @@
                     transSubjects,
                     nodes: pData
                 } = nodes;
+            
                 const percentArr = [];
                 const average = nodes.avg;
-
+                this.color = nodes["28nodes"];
+                // console.log(this.color);
+                
+                // for(let i=values.length-1;i>=0;i--){
+                    
+                //     _this.val.push(values[i]);
+                //     console.log(_this.val);
+                //     var sum = _this.val.reduce(function(prev,cur,index,array){
+                //         return prev + cur;
+                // });
+                // // console.log(sum/nodes.total);
+                // this.sum28 = sum/nodes.total;
+                // // console.log(this.sum28);
+                // if(this.sum28>0.8){
+                //     console.log(i);
+                //     this.color.push('true');
+                //     // for(let i=0;i<values.length;i++){
+                //     //     this.color.pus
+                //     // }
+                // }else{
+                //     console.log(i);
+                //     this.color.push('false');
+                //     console.log(this.color);
+                // }
+                // }
+                
                 for(let i in pData) {
                     //              percentArr.push(Math.floor(parseInt(pData[i].total) / sumTarget * 100));
                     //              var arr = (nodes.values[i] / nodes.total).toFixed(4)
@@ -70,6 +98,7 @@
                         containLabel: true
                     },
                     xAxis: {
+                        inverse: false,
                         type: 'value',
                         axisLabel: {
                             show: false
@@ -85,6 +114,7 @@
                         },
                     },
                     yAxis: {
+                        // inverse: true,
                         type: 'category',
                         axisTick: {
                             show: false
@@ -95,18 +125,14 @@
                         }
                     },
                     series: [{
-                        name:nodes.nodes,
+                        name:this.sum28,
                         type: 'bar',
                         itemStyle: {
                             normal: {
                                 color: function(params) {
-                                    _this.val.push(params.data);
-                                    // console.log(_this.val);
-                                    // var sum = _this.val.reduce(function(prev,cur,index,array){
-                                    //        return prev + cur;
-                                    // });
-                                    // console.log(sum);
-                                    return params.data < average ? '#b0afad' : '#318cb8';
+                                    // console.log(_this.color[`${params.dataIndex}`]);
+                                    
+                                    return _this.color[`${params.dataIndex}`] === params.dataIndex ? '#318cb8' : '#b0afad';
                                 },
                                 barBorderRadius: [0, 20, 20, 0],
                             },
@@ -117,6 +143,7 @@
                                 position: [5, 6],
                                 color: "#000",
                                 formatter: function(params) {
+                                   
                                     if(nodes.display_rate == 0) {
                                         return `${pData[params.dataIndex]} : ${params.data}`;
                                     }
@@ -125,6 +152,7 @@
                                 },
                             }
                         },
+                        
                         data: percentArr,
                         markLine: {
                             symbol: 'none',
