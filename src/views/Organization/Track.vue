@@ -11,12 +11,12 @@
         <el-table-column 
           prop="level_name" 
           label="组织层级" 
-          :filters="[{text: '公司', value: '公司'},{text: '事业部', value: '事业部'},{text: '部门', value: '部门'},{text: '一级小组', value: '一级小组'}]" 
+          :filters="[{text: '全公司', value: '全公司'},{text: '事业部', value: '事业部'},{text: '部门', value: '部门'},{text: '小组', value: '小组'}]" 
           :filter-method="filterA"/>
         <el-table-column 
           prop="subject_name" 
           label="指标" 
-          :filters="[{text: '销售额', value: '销售额'}, {text: '净利润额', value: '净利润额'},{text: '人力成本额', value: '人力成本额'},{text: '日销', value: '日销'},{text: '投入产出比', value: '投入产出比'},{text: '人员冗余值', value: '人员冗余值'}]" 
+          :filters="[{text: '销售额', value: '销售额'}, {text: '利润', value: '利润'},{text: '成本', value: '成本'},{text: '日销', value: '日销'},{text: '投入产出比', value: '投入产出比'},{text: '人员冗余值', value: '人员冗余值'}]" 
           :filter-method="filterB"/>
         <el-table-column 
           prop="rank_name" 

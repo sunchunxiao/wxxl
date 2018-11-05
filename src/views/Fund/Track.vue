@@ -11,12 +11,12 @@
         <el-table-column 
           prop="level_name" 
           label="资金层级" 
-          :filters="[{text: '公司', value: '公司'},{text: '事业部', value: '事业部'},{text: '前端部门', value: '前端部门'},{text: '前端小组', value: '前端小组'}]" 
+          :filters="[{text: '全公司', value: '全公司'},{text: '事业部', value: '事业部'},{text: '部门', value: '部门'},{text: '小组', value: '小组'}]" 
           :filter-method="filterA"/>
         <el-table-column 
           prop="subject_name" 
           label="指标" 
-          :filters="[{text: '销售额', value: '销售额'}, {text: '净利润额', value: '净利润额'},{text: '成本', value: '成本'},{text: '回款额', value: '回款额'},{text: '投资回报率', value: '投资回报率'},{text: '净利额', value: '净利额'},{text: '现金流', value: '现金流'},{text: '资金周转率', value: '资金周转率'},]" 
+          :filters="[{text: '销售额', value: '销售额'}, {text: '利润', value: '利润'},{text: '成本', value: '成本'},{text: '回款额', value: '回款额'},{text: '投资回报率', value: '投资回报率'},{text: '净利率', value: '净利率'},{text: '净现金流', value: '净现金流'},{text: '资金周转率', value: '资金周转率'},{text: '资金冗余值', value: '资金冗余值'}]" 
           :filter-method="filterB"/>
         <el-table-column 
           prop="rank_name" 

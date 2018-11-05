@@ -11,12 +11,12 @@
         <el-table-column 
           prop="level_name" 
           label="客户层级" 
-          :filters="[{text: '公司', value: '公司'},{text: '整体人群', value: '整体人群'},{text: '聚类人群', value: '聚类人群'},{text: '典型客户', value: '典型客户'}]" 
+          :filters="[{text: '平台', value: '平台'},{text: '店铺', value: '店铺'},{text: '城市', value: '城市'}]" 
           :filter-method="filterA"/>
         <el-table-column 
           prop="subject_name" 
           label="指标" 
-          :filters="[{text: '销售额', value: '销售额'}, {text: '利润额', value: '利润额'},{text: '成本', value: '成本'},{text: '日销', value: '日销'},{text: '投入产出比', value: '投入产出比'},{text: '冗余', value: '冗余'}]" 
+          :filters="[{text: '销售额', value: '销售额'}, {text: '利润', value: '利润'},{text: '成本', value: '成本'},{text: '日销', value: '日销'},{text: '投入产出比', value: '投入产出比'},{text: '人员冗余值', value: '人员冗余值'}]" 
           :filter-method="filterB"/>
         <el-table-column 
           prop="rank_name" 

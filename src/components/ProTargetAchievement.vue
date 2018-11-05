@@ -41,11 +41,12 @@ export default {
     computed: {
         unit() {
             const { subject } = this.data;
-            if (subject === 'ROI') { // 投入产出比 %
+            if (subject === 'ROI'||subject== 'NIR'||subject== 'CTR') { // 投入产出比 %
                 return '%';
             } else if (subject === 'ITO') { // 库存周转率不需要单位
                 return '';
             }
+            
             // return 'w';
         },
         real() {
