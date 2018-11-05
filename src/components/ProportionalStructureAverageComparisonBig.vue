@@ -15,6 +15,12 @@
             id: String,
             data: Object,
         },
+        data(){
+            return {
+                val:[],
+                color:[]
+            };
+        },
         mounted() {
             this.chart = echarts.init(document.getElementById(`averagebar-${this.id}`));
             this.renderChart(this.data);
@@ -29,21 +35,14 @@
         },
         methods: {
             renderChart(nodes) {
+                var _this = this;
                 const {
                     transSubjects,
                     nodes: pData
                 } = nodes;
                 const percentArr = [];
-                // let sumTarget = 0;
-                // let sumTotal = 0;
-                //          console.log(nodes)
-                //          for(let i in pData) {
-                //              sumTotal += parseInt(pData[i].total);
-                //              sumTarget += parseInt(pData[i].target);
-                //          }
-                //          const average = Math.floor(sumTotal / sumTarget / pData.length * 100);
+                this.color = nodes["28nodes"];
 
-                //          const average = (nodes.avg / nodes.total*100).toFixed(1)
                 const average = nodes.avg;
                 for(let i in pData) {
                     //              percentArr.push(Math.floor(parseInt(pData[i].total) / sumTarget * 100));
@@ -75,6 +74,7 @@
                         },
                     },
                     yAxis: {
+                        // inverse: true,
                         type: 'category',
                         axisTick: {
                             show: false
@@ -89,7 +89,8 @@
                         itemStyle: {
                             normal: {
                                 color: function(params) {
-                                    return params.data < average ? '#b0afad' : '#318cb8';
+                                    return _this.color[`${params.dataIndex}`] === params.dataIndex ? '#318cb8' : '#b0afad';
+                                    // return params.data < average ? '#b0afad' : '#318cb8';
                                 },
                                 barBorderRadius: [0, 20, 20, 0],
                             },

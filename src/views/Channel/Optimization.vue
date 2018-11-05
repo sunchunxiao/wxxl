@@ -14,12 +14,12 @@
         class="tree_container">
         <div class="title">毛利目标达成率</div>
         <div class="company">
-          <span class="left">{{ tree.data.name }}</span>
-          <span class="right">{{ calculatePercent(tree.data.real_total, tree.data.target_total).percent + '%' }}</span>
+          <span class="left">{{ channelTree.name }}</span>
+          <span class="right">{{ calculatePercent(channelTree.real_total, channelTree.target_total).percent + '%' }}</span>
         </div>
         <!-- 有多个tree -->
         <el-tree 
-          :data="treeData" 
+          :data="channelTree.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
           @node-click="handleNodeClick" 
@@ -285,11 +285,11 @@
             },
             handleNodeClick(data) {
 				this.$refs.child.parentMsg(this.post);
-					this.cid = data.cid;
-					this.loading = true;
-					setTimeout(() => {
-						this.loading = false;
-					}, 1000);
+                this.cid = data.nid;
+                this.loading = true;
+                setTimeout(() => {
+                    this.loading = false;
+                }, 1000);
 			},
             handleCheckChange() {
             },

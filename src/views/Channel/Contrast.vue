@@ -249,7 +249,7 @@
            handleNodeClick(data) {
                 this.$refs.child.parentMsg(this.post);
                 if(data.children != undefined) {
-                    this.cid = data.cid;
+                    this.cid = data.nid;
                     this.loading = true;
                    
                     setTimeout(() => {

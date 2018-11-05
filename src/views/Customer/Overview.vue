@@ -175,7 +175,7 @@
     import API from './api';
 	import moment from 'moment';
     import Card from '../../components/Card';
-    import SearchBar from 'components/SearchBar';
+    import SearchBar from 'components/SearchBarOrg';
     // 目标达成情况总览
     import ProTargetAchievement from '../../components/ProTargetAchievement';
     import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
@@ -402,9 +402,9 @@
                         };
                 } else {
                     return {
-                        pt:'日',
-                        sDate: '2018-06-01',
-                        eDate: '2018-06-31',
+                        pt:'月',
+                        sDate: '2018-01-01',
+                        eDate: '2018-06-01',
                         // 先写死个时间
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),

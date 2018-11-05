@@ -21,6 +21,7 @@
         <el-tree 
           :data="organizationTree.children" 
           :props="defaultProps" 
+          
           :default-expanded-keys="nodeArr"
           :highlight-current="true" 
           @node-click="handleNodeClick">
