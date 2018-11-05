@@ -173,7 +173,7 @@
                     });
                     const cidName = this.cidObjArr.map(o => o.name);
                     // 只有当返回的跟当前选中的一样才更新 store
-                    if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes)) {
+                    if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                         this.$store.dispatch('SaveCompareArr', resultList);
                     }
                 });
