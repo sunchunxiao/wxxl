@@ -24,7 +24,7 @@
               class="right" >{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
             <div 
               :class="{comprogress: true, 'border-radius0': calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '99%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}"/>
+              :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '105%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}"/>
               
           </div>
         </div>
@@ -34,6 +34,7 @@
           :data="productTree.children" 
           :props="defaultProps" 
           node-key="cid"
+          :expand-on-click-node="false"
           :default-expanded-keys="nodeArr"
           :highlight-current="highlight" 
           @node-click="handleNodeClick">
@@ -253,7 +254,7 @@
                 post:1,
                 nodeArr:[],
                 isbac:true,
-                highlight:true
+                highlight:true,
             };
         },
         computed: {
@@ -301,6 +302,7 @@
             click(){
                 this.isbac = true;
                 this.highlight = false;
+                this.cid=this.productTree.cid;
             },
             change() {
                 this.idArr = [];

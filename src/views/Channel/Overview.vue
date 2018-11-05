@@ -123,9 +123,10 @@
               </el-col>
               <el-col 
                 :span="8" 
+                v-if="channelStructureArr.length>0"
                 class="border-left">
                 <ProportionalStructureAverageComparisonBig 
-                  v-if="channelStructureArr.length>0" 
+                   
                   id="ProportionalStructureAverageComparisonBig" 
                   :data="channelStructureArr[index3]"/>
               </el-col>
@@ -464,7 +465,7 @@
             handleNodeClick(data) {
                 this.$refs.child.parentMsg(this.post);
                 if(data.children != undefined) {
-                    this.cid = data.cid;
+                    this.cid = data.nid;
                     this.loading = true;
                     setTimeout(() => {
                         this.loading = false;

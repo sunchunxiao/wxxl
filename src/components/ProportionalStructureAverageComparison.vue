@@ -130,6 +130,7 @@
                         itemStyle: {
                             normal: {
                                 color: function(params) {
+                                    // console.log(params);
                                     // console.log(_this.color[`${params.dataIndex}`]);
                                     
                                     return _this.color[`${params.dataIndex}`] === params.dataIndex ? '#318cb8' : '#b0afad';

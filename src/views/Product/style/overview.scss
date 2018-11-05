@@ -30,12 +30,15 @@
                     height: 30px;
                     left: 0;
                     top: 0;
-                    // border-radius: 15px;
+                    border-radius: 0px;
                     background: #227daa;
                     z-index: -1;
                 }
+                .border-radius0{
+                    border-radius: 0;
+                }
                 &:hover {
-                    // background-color: rgb(238, 238, 238);
+                    background-color: rgb(238, 238, 238);
                     .label {
                         color: #fff;
                         line-height: 20px;
@@ -46,8 +49,8 @@
                     }
                     .comprogress {
                         display: block;
-                        // z-index: 1;
                     }
+                    
                 }
                 .left {
                     margin-left: 15px;
@@ -61,6 +64,7 @@
                 }
                 
             }
+            
             .tree_container {
                 height: 100%;
 /*                min-width: 240px;*/
