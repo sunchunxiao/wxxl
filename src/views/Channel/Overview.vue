@@ -13,16 +13,27 @@
         :span="5" 
         class="tree_container">
         <div class="title">毛利目标达成率</div>
-        <div class="company">
-          <span class="left">{{ channelTree.name }}</span>
-          <span class="right">{{ calculatePercent(channelTree.real_total, channelTree.target_total).percent + '%' }}</span>
+        <div
+          @click="click" 
+          :class="{bac:isbac}"
+          class="company">
+          <span class="left label">{{ channelTree.name }}</span>
+          <span
+            :class="{percent: true, red: !calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne, blue: calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne}"
+            class="right" >{{ calculatePercent(channelTree.real_total, channelTree.target_total).percent + '%' }}</span>
+          <div 
+            :class="{comprogress: true, 'border-radius0': calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne}"
+            :style="{width: calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne ? '100%' : `${calculatePercent(channelTree.real_total, channelTree.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
           :data="channelTree.children" 
+          ref="tree"
           :props="defaultProps" 
+          node-key="cid"
+          :expand-on-click-node="false"
           :default-expanded-keys="nodeArr"
-          :highlight-current="true" 
+          :highlight-current="highlight" 
           @node-click="handleNodeClick">
           <span 
             class="custom-tree-node" 
@@ -36,7 +47,7 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="19" 
+        :span="18" 
         class="overflow">
         <el-row v-loading="loading">
           <Card>
@@ -254,7 +265,9 @@
                 idArr:[],
                 val:{},
                 post:1,
-                nodeArr:[]
+                nodeArr:[],
+                isbac:true,
+                highlight:true,
             };
         },
         computed: {
@@ -283,6 +296,22 @@
             this.initFormDataFromUrl();
         },
         methods: {
+            click(){
+                if(this.cid==this.channelTree.nid){
+						return;
+				}else{
+                    this.loading = true;
+                //点击发送请求清除搜索框
+                this.$refs.child.parentMsg(this.post);
+                this.isbac = true;
+                this.highlight = false;
+                this.cid=this.channelTree.nid;
+                setTimeout(() => {		       
+                        this.loading = false;
+                }, 1000);
+                }
+                
+            },
             change() {
                     this.idArr = [];
                     for (let i of this.stragetyCheckList) {
@@ -445,8 +474,13 @@
                 };
             },
             handleSearch(val) {
+                // 默认公司的背景色
+                this.isbac = false;
                 this.nodeArr = [];
                 this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                });
                 this.loading = true;
                 this.val = val;
                 if(val.cid!=""){
@@ -463,8 +497,12 @@
                 
             },
             handleNodeClick(data) {
+                this.isbac = false;
+                this.highlight = true;
                 this.$refs.child.parentMsg(this.post);
-                if(data.children != undefined) {
+                if(this.cid === data.nid){
+                    return ;
+                }else if(data.children != undefined) {
                     this.cid = data.nid;
                     this.loading = true;
                     setTimeout(() => {
