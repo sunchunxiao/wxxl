@@ -103,9 +103,14 @@
                                 formatter: function(params) {
                                     if(nodes.display_rate == 0) {
                                         return `${pData[params.dataIndex]} : ${params.data}`;
+                                    }else{
+                                        if(nodes.total==0){
+                                            return `${pData[params.dataIndex]} : ${params.data}`;
+                                        }else{
+                                            return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
+                                        }
                                     }
-                                   return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
-
+                            
                                 },
                             }
                         },
@@ -113,7 +118,19 @@
                         markLine: {
                             symbol: 'none',
                             label: {
-                               formatter:nodes.display_rate == 0 ? `平均值${average}` : `平均值${(average/nodes.total*100).toFixed(2)}%`                         
+                                formatter:function(){
+                                    if( nodes.display_rate == 0){
+                                       return `平均值${average}`; 
+                                    }else{
+                                        if(nodes.total==0){
+                                            return `平均值${average}`;
+                                        }else{
+                                            return `平均值${(average/nodes.total*100).toFixed(2)}%`;
+                                        }
+                                       
+                                    }
+                                }
+                               
                             },
                             data: [{
                                 xAxis: average,
