@@ -1,5 +1,5 @@
 .overview {
-        min-width: 1024px;
+        min-width: 1120px;
         height: 100%;
         .el-date-editor.el-range-editor {
             width: 300px;
@@ -16,8 +16,8 @@
             }
             .company {
                 height: 15px;
-                display: flex;
                 padding: 7px 0;
+                display: flex;
                 justify-content: space-between;
                 margin-bottom: 24px;
                 position: relative;
@@ -67,8 +67,8 @@
             
             .tree_container {
                 height: 100%;
-/*                min-width: 240px;*/
-                max-width: 280px;
+                min-width: 280px;
+                // max-width: 300px;
                 padding-bottom: 18px;
                 overflow-y: auto;
                 border: 1px solid #eee;
@@ -113,6 +113,10 @@
                 position: relative;
                 overflow: hidden;
                 z-index: 1;
+                // .label{
+                //     width: 128px;
+                //     overflow: hidden;
+                // }
                 &:hover {
                     background-color: rgb(238, 238, 238);
                     .label {
@@ -204,6 +208,6 @@
             }
         }
         // .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content{
-        //     background-color: #75c3eb;
+        //     background-color: #cedef1;
         // }
     }

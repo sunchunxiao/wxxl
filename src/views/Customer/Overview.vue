@@ -13,16 +13,22 @@
         :span="5" 
         class="tree_container">
         <div class="title">毛利目标达成率</div>
-        <div class="company">
+        <div
+          @click="click" 
+          :class="{bac:isbac}"
+          class="company">
           <span class="left">{{ customerTree.name }}</span>
           <span class="right">{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
         </div>
         <!-- 有多个tree -->
         <el-tree 
           :data="customerTree.children" 
+          ref="tree"
           :props="defaultProps" 
+          node-key="cid"
+          :expand-on-click-node="false"
           :default-expanded-keys="nodeArr"
-          :highlight-current="true" 
+          :highlight-current="highlight" 
           @node-click="handleNodeClick">
           <span 
             class="custom-tree-node" 
@@ -36,7 +42,7 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="19" 
+        :span="18" 
         class="overflow">
         <el-row v-loading="loading">
           <Card>
@@ -256,7 +262,9 @@
                 idArr:[],
                 val:{},
 				post:1,
-				nodeArr:[]
+                nodeArr:[],
+                isbac:true,
+                highlight:true,
             };
         },
         computed: {
@@ -285,6 +293,22 @@
 			}
         },
         methods: {
+            click(){
+              if(this.cid==this.customerTree.cid){
+					return;
+              }else{
+                  this.loading = true;
+                //点击发送请求清除搜索框
+                this.$refs.child.parentMsg(this.post);
+                this.isbac = true;
+                this.highlight = false;
+                this.cid=this.customerTree.cid;
+                setTimeout(() => {		       
+                        this.loading = false;
+                }, 1000);
+              }
+                
+            },
             change() {
                 this.idArr = [];
                 for (let i of this.stragetyCheckList) {
@@ -444,8 +468,13 @@
 				};
             },
             handleSearch(val) {
+                // 默认公司的背景色
+                this.isbac = false;
                 this.nodeArr = [];
                 this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref
+                });
                 this.loading = true;
                 this.val = val;
                 if(val.cid!=""){
@@ -462,8 +491,12 @@
                 
             },
             handleNodeClick(data) {
+                this.isbac = false;
+                this.highlight = true;
                 this.$refs.child.parentMsg(this.post);
-                if(data.children != undefined) {
+                if(this.cid === data.cid){
+                    return ;
+                }else if(data.children != undefined) {
                     this.cid = data.cid;
                     this.loading = true;
                     setTimeout(() => {

@@ -37,7 +37,7 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="19" 
+        :span="18" 
         class="overflow">
         <el-row v-loading="loading">
           <Card v-if="type==1||type==3">

@@ -24,19 +24,19 @@
               class="right" >{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
             <div 
               :class="{comprogress: true, 'border-radius0': calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '105%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}"/>
+              :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '100%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}"/>
               
           </div>
         </div>
         <!-- 有多个tree -->
         <el-tree 
           ref="tree"
-          :data="productTree.children" 
-          :props="defaultProps" 
           node-key="cid"
-          :expand-on-click-node="false"
-          :default-expanded-keys="nodeArr"
           :highlight-current="highlight" 
+          :expand-on-click-node="false" 
+          :props="defaultProps" 
+          :data="productTree.children"
+          :default-expanded-keys="nodeArr"
           @node-click="handleNodeClick">
           <span 
             class="custom-tree-node" 
@@ -50,7 +50,7 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="19" 
+        :span="18" 
         class="overflow">
         <el-row v-loading="loading">
           <Card>
@@ -290,7 +290,6 @@
             //     }
             // ],
             cid: function() {
-                this.isbac = false;
                 // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
                 // 暂时先在这里做
                 this.getProgress();
@@ -300,9 +299,20 @@
         },
         methods: {
             click(){
-                this.isbac = true;
-                this.highlight = false;
-                this.cid=this.productTree.cid;
+                if(this.cid==this.productTree.cid){
+                    return;
+                }else{
+                    this.loading = true;
+                    //点击发送请求清除搜索框
+                    this.$refs.child.parentMsg(this.post);
+                    this.isbac = true;
+                    this.highlight = false;
+                    this.cid=this.productTree.cid;
+                    setTimeout(() => {		       
+                            this.loading = false;
+                    }, 1000);
+                }
+                
             },
             change() {
                 this.idArr = [];
@@ -481,8 +491,13 @@
                 }
             },
             handleSearch(val) {
+                // 默认公司的背景色
+                this.isbac = false;
                 this.nodeArr = [];
                 this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                });
                 this.loading = true;
                 this.val = val;
                 if(val.cid!=""){
@@ -500,6 +515,7 @@
             },
             handleNodeClick(data) {
                 this.isbac = false;
+                this.highlight = true;
                 this.$refs.child.parentMsg(this.post);
                 if(this.cid === data.cid){
                     return ;

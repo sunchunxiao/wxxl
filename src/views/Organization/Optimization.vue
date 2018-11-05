@@ -13,12 +13,24 @@
         :span="5" 
         class="tree_container">
         <div class="title">毛利目标达成率</div>
-        <div class="company">
-          <span class="left">{{ organizationTree.name }}</span>
-          <span class="right">{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
+        <div 
+          @click="click" 
+          :class="{bac:isbac}"
+          class="company">
+          <span class="left label">{{ organizationTree.name }}</span>
+          <span
+            :class="{percent: true, red: !calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne, blue: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
+            class="right" >{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
+          <div 
+            :class="{comprogress: true, 'border-radius0': calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
+            :style="{width: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne ? '100%' : `${calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
+          ref="tree"
+          node-key="cid"
+          :highlight-current="highlight" 
+          :expand-on-click-node="false" 
           :data="organizationTree.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
@@ -36,7 +48,7 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="19" 
+        :span="18" 
         v-loading="loading" 
         class="overflow">
         <Card>
@@ -108,6 +120,7 @@
         children: 'children',
         label: 'name'
     };
+
     // const TIMEPT = {
     //     '周': 'week',
     //     '月': 'month',
@@ -142,7 +155,9 @@
                 index0: 0,
                 val:{},
 				post:1,
-				nodeArr:[]
+				nodeArr:[],
+                isbac:true,
+				highlight:true,
             };
         },
         computed: {
@@ -169,6 +184,21 @@
             this.getHistory();
         },
         methods: {
+            click(){
+                //点击发送请求清除搜索框
+				this.$refs.child.parentMsg(this.post);
+                if(this.cid==this.organizationTree.cid){
+								return;
+						}else{
+                            this.loading = true;
+                            this.isbac = true;
+                            this.highlight = false;
+                            this.cid=this.organizationTree.cid;
+                            setTimeout(() => {		       
+                                    this.loading = false;
+                            }, 1000);
+                        }
+            },
             getHistory() {
 				const params = {
                     cid:this.cid,
@@ -272,8 +302,14 @@
 				};
             },
             handleSearch(val) {
+                // 默认公司的背景色
+				this.isbac = false;
 				this.nodeArr = [];
-                this.nodeArr.push(val.cid);
+				this.nodeArr.push(val.cid);
+
+				this.$nextTick(() => {
+						this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
+				});
 				this.loading = true;
 				this.val = val;
 				if(val.cid!=""){
@@ -289,14 +325,20 @@
 						
 			},
             handleNodeClick(data) {
-				this.$refs.child.parentMsg(this.post);
-				this.type = data.type;
-                this.cid = data.cid;
-                this.loading = true;
+                this.isbac = false;
+                this.highlight = true;
+                this.$refs.child.parentMsg(this.post);
+                this.type = data.type;
+                if(this.cid === data.cid){
+                    return ;
+                }else{
+                    this.type = data.type;
+                    this.cid = data.cid;
+                    this.loading = true;
                 setTimeout(() => {
                     this.loading = false;
                 }, 1000);
-
+                }
 			},
             handleCheckChange() {
             },

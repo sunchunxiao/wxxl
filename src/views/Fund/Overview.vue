@@ -13,16 +13,27 @@
         :span="5" 
         class="tree_container">
         <div class="title">毛利目标达成率</div>
-        <div class="company">
-          <span class="left">{{ fundTree.name }}</span>
-          <span class="right">{{ calculatePercent(fundTree.real_total, fundTree.target_total).percent + '%' }}</span>
+        <div
+          @click="click" 
+          :class="{bac:isbac}"
+          class="company">
+          <span class="left label">{{ fundTree.name }}</span>
+          <span
+            :class="{percent: true, red: !calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne, blue: calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne}"
+            class="right" >{{ calculatePercent(fundTree.real_total, fundTree.target_total).percent + '%' }}</span>
+          <div 
+            :class="{comprogress: true, 'border-radius0': calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne}"
+            :style="{width: calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne ? '100%' : `${calculatePercent(fundTree.real_total, fundTree.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
-          :data="fundTree.children" 
+          ref="tree"
           :props="defaultProps" 
+          node-key="cid"
+          :highlight-current="highlight" 
+          :expand-on-click-node="false"
+          :data="fundTree.children" 
           :default-expanded-keys="nodeArr"
-          :highlight-current="true" 
           @node-click="handleNodeClick">
           <span 
             class="custom-tree-node" 
@@ -36,7 +47,7 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="19" 
+        :span="18" 
         class="overflow">
         <el-row v-loading="loading">
           <Card>
@@ -286,6 +297,8 @@
                 type:3,
                 idArr:[],
                 val:{},
+                isbac:true,
+                highlight:true,
 				post:1,
 				nodeArr:[]
             };
@@ -302,12 +315,12 @@
                 deep: true
             },
             cid: function() {
-				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-				// 暂时先在这里做
-				this.getProgress();
-				this.getStructure1();
-				this.getStructure2();
-				this.getRank();
+            // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+            // 暂时先在这里做
+            this.getProgress();
+            this.getStructure1();
+            this.getStructure2();
+            this.getRank();
 			}
         },
         mounted() {
@@ -317,6 +330,22 @@
             this.initFormDataFromUrl();
         },
         methods: {
+            click(){
+              if(this.cid==this.fundTree.cid){
+								return;
+              }else{
+                  this.loading = true;
+                  //点击发送请求清除搜索框
+                  this.$refs.child.parentMsg(this.post);
+                  this.isbac = true;
+                  this.highlight = false;
+                  this.cid=this.fundTree.cid;
+                  setTimeout(() => {		       
+                          this.loading = false;
+                  }, 1000);
+              }
+                
+            },
             change() {
                     this.idArr = [];
                     for (let i of this.stragetyCheckList) {
@@ -441,20 +470,20 @@
 						// } = this.form;
 						// console.log(sDate,eDate);
 						if(sDate && eDate) { // 计算时间周期
-                                return {
-                                        pt:this.val.pt,
-                                        sDate: this.val.sDate,
-                                        eDate: this.val.eDate,
-                                };
+                      return {
+                              pt:this.val.pt,
+                              sDate: this.val.sDate,
+                              eDate: this.val.eDate,
+                      };
 						} else {
-                                return {
-                                        pt:'月',
-                                        sDate: '2018-01-01',
-                                        eDate: '2018-05-01',
-                                        // 先写死个时间
-                                        // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                                        // eDate: moment().format('YYYY-MM-DD'),
-                                };
+                      return {
+                              pt:'月',
+                              sDate: '2018-01-01',
+                              eDate: '2018-05-01',
+                              // 先写死个时间
+                              // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+                              // eDate: moment().format('YYYY-MM-DD'),
+                      };
 						}
             },
             getDateObj() {
@@ -491,52 +520,60 @@
                 };
                 
             },
-            handleSearch(val) {
-                    this.nodeArr = [];
-                    this.nodeArr.push(val.cid);
-                    this.loading = true;
-                    this.val = val;
-                    if(val.cid!=""){
-                            this.cid = val.cid;
-                    }else{
-                            this.getTree();
-                            this.getProgress();
-                            this.getStructure1();
-                            this.getStructure2();
-                            this.getRank();
-                    }
-                    setTimeout(() => {		       
-                            this.loading = false;
-                    }, 1000);
+      handleSearch(val) {
+          // 默认公司的背景色
+          this.isbac = false;
+          this.nodeArr = [];
+          this.nodeArr.push(val.cid);
+          this.$nextTick(() => {
+              this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref   绑定的node-key
+          });
+          this.loading = true;
+          this.val = val;
+          if(val.cid!=""){
+                  this.cid = val.cid;
+          }else{
+                  this.getTree();
+                  this.getProgress();
+                  this.getStructure1();
+                  this.getStructure2();
+                  this.getRank();
+          }
+          setTimeout(() => {		       
+                  this.loading = false;
+          }, 1000);
 						
 			},
-            handleNodeClick(data) {
-				this.$refs.child.parentMsg(this.post);
-				this.type = data.type;
-				if (data.children != undefined) {
-					this.cid = data.cid;
-					this.loading = true;
-					setTimeout(() => {
-						this.loading = false;
-					}, 1000);
-				}
-
+      handleNodeClick(data) {
+          this.isbac = false;
+          this.highlight = true;
+          this.$refs.child.parentMsg(this.post);
+          this.type = data.type;
+          if(this.cid === data.cid){
+            return ;
+          }else if (data.children != undefined) {
+            this.cid = data.cid;
+            this.loading = true;
+            setTimeout(() => {
+              this.loading = false;
+            }, 1000);
+          }
 			},
-            calculatePercent(a, b) {
-                if(b > 0) {
-                    const percent = parseInt(a / b * 100);
-                    const largerThanOne = (a / b) > 1;
-                    return {
-                        percent,
-                        largerThanOne
-                    };
-                }
-                return {};
-            },
-            clickIndex(i, idx) {
-                this[`index${i}`] = idx;
-            },
-            Rank(score) {
+      calculatePercent(a, b) {
+          if(b > 0) {
+              const percent = parseInt(a / b * 100);
+              const largerThanOne = (a / b) > 1;
+              return {
+                  percent,
+                  largerThanOne
+              };
+          }
+          return {};
+      },
+      clickIndex(i, idx) {
+          this[`index${i}`] = idx;
+      },
+      Rank(score) {
 				if (score =='差') {
 					return 4;
 				}
@@ -551,7 +588,7 @@
 				}
 				return 4;
 			},
-            showStragety(data) {
+      showStragety(data) {
 				// console.log(data)
 				localStorage.setItem("data", JSON.stringify(data));
 				const {
@@ -569,9 +606,9 @@
 					subject: subject,
 					rank: this.Rank(rank),
 					time_label: time_label,
-				};
+			};
 
-				API.GetFundStrategy(params).then(res => {
+			API.GetFundStrategy(params).then(res => {
 					// console.log(res.data)
 					this.stragetyCheckList = [];
 					this.stragety = res.data;

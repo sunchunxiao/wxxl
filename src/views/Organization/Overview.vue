@@ -13,17 +13,27 @@
         :span="5" 
         class="tree_container">
         <div class="title">毛利目标达成率</div>
-        <div class="company">
-          <span class="left">{{ organizationTree.name }}</span>
-          <span class="right">{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
+        <div
+          @click="click" 
+          :class="{bac:isbac}"
+          class="company">
+          <span class="left label">{{ organizationTree.name }}</span>
+          <span
+            :class="{percent: true, red: !calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne, blue: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
+            class="right" >{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
+          <div 
+            :class="{comprogress: true, 'border-radius0': calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
+            :style="{width: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne ? '100%' : `${calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
+          ref="tree"
           :data="organizationTree.children" 
           :props="defaultProps" 
-          
+          node-key="cid"
+          :expand-on-click-node="false" 
           :default-expanded-keys="nodeArr"
-          :highlight-current="true" 
+          :highlight-current="highlight" 
           @node-click="handleNodeClick">
           <span 
             class="custom-tree-node" 
@@ -37,7 +47,7 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="19" 
+        :span="18" 
         class="overflow">
         <el-row v-loading="loading">
           <Card>
@@ -292,7 +302,9 @@
 				idArr: [],
 				val:{},
 				post:1,
-				nodeArr:[]
+				nodeArr:[],
+				isbac:true,
+				highlight:true,
 			};
 		},
 		computed: {
@@ -325,6 +337,21 @@
 			}
 		},
 		methods: {
+			click(){
+				this.$refs.child.parentMsg(this.post);
+				if(this.cid==this.organizationTree.cid){
+								return;
+						}else{
+								//点击发送请求清除搜索框
+								this.loading = true;
+                this.isbac = true;
+                this.highlight = false;
+								this.cid=this.organizationTree.cid;
+								setTimeout(() => {		       
+										this.loading = false;
+								}, 1000);
+						}
+      },
 			change() {
 						this.idArr = [];
 						for (let i of this.stragetyCheckList) {
@@ -511,8 +538,14 @@
 				};
 			},
 			handleSearch(val) {
+				// 默认公司的背景色
+				this.isbac = false;
 				this.nodeArr = [];
-        this.nodeArr.push(val.cid);
+				this.nodeArr.push(val.cid);
+				
+				this.$nextTick(() => {
+						this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
+				});
 				this.loading = true;
 				this.val = val;
 				if(val.cid!=""){
@@ -530,17 +563,15 @@
 						
 				},
 			handleNodeClick(data) {
+				this.isbac = false;
+        this.highlight = true;
 				this.$refs.child.parentMsg(this.post);
 				this.type = data.type;
-				if (data.children != undefined) {
+				if(this.cid === data.cid){
+            return ;
+        }else if (data.children != undefined) {
 					this.cid = data.cid;
 					this.loading = true;
-					//                     setTimeout(() => {
-					//                         this.pieData = mockPieData();
-					//                         this.trendData = mockTrendData();
-					//                         this.averageData = mockAverageData();
-					//                         this.heatmapData = mockHeatmapData();
-					//                     }, 300);
 					setTimeout(() => {
 						this.loading = false;
 					}, 1000);

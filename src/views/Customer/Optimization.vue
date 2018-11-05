@@ -168,6 +168,22 @@
             this.getHistory();
         },
         methods: {
+            click(){
+              if(this.cid==this.customerTree.cid){
+					return;
+              }else{
+                  this.loading = true;
+                //点击发送请求清除搜索框
+                this.$refs.child.parentMsg(this.post);
+                this.isbac = true;
+                this.highlight = false;
+                this.cid=this.customerTree.cid;
+                setTimeout(() => {		       
+                        this.loading = false;
+                }, 1000);
+              }
+                
+            },
              getHistory() {
 				const params = {
                     cid:this.cid,
@@ -270,8 +286,13 @@
 				};
             },
             handleSearch(val) {
+                // 默认公司的背景色
+                this.isbac = false;
                 this.nodeArr = [];
                 this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref
+                });
                 this.loading = true;
                 this.val = val;
                 if(val.cid!=""){
@@ -286,12 +307,19 @@
                 
             },
             handleNodeClick(data) {
-				this.$refs.child.parentMsg(this.post);
-					this.cid = data.cid;
+                this.isbac = false;
+                this.highlight = true;
+                this.$refs.child.parentMsg(this.post);
+                if(this.cid === data.cid){
+                    return ;
+                }else{
+                    this.cid = data.cid;
 					this.loading = true;
 					setTimeout(() => {
 						this.loading = false;
 					}, 1000);
+                }
+					
 			},
             handleCheckChange() {
             },

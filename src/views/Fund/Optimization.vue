@@ -13,14 +13,26 @@
         :span="5" 
         class="tree_container">
         <div class="title">毛利目标达成率</div>
-        <div class="company">
-          <span class="left">{{ fundTree.name }}</span>
-          <span class="right">{{ calculatePercent(fundTree.real_total, fundTree.target_total).percent + '%' }}</span>
+        <div 
+          @click="click" 
+          :class="{bac:isbac}"
+          class="company">
+          <span class="left label">{{ fundTree.name }}</span>
+          <span
+            :class="{percent: true, red: !calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne, blue: calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne}"
+            class="right" >{{ calculatePercent(fundTree.real_total, fundTree.target_total).percent + '%' }}</span>
+          <div 
+            :class="{comprogress: true, 'border-radius0': calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne}"
+            :style="{width: calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne ? '100%' : `${calculatePercent(fundTree.real_total, fundTree.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
-          :data="fundTree.children" 
+          ref="tree"
           :props="defaultProps" 
+          node-key="cid"
+          :highlight-current="highlight" 
+          :expand-on-click-node="false"
+          :data="fundTree.children" 
           :default-expanded-keys="nodeArr"
           @node-click="handleNodeClick" 
           @check-change="handleCheckChange">
@@ -36,7 +48,7 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="19" 
+        :span="18" 
         v-loading="loading"
         class="overflow">
         <Card>
@@ -141,7 +153,9 @@
                 index0: 0,
                 val:{},
 				post:1,
-				nodeArr:[]
+                nodeArr:[],
+                isbac:true,
+                highlight:true,
             };
         },
         computed: {
@@ -169,6 +183,22 @@
             this.getHistory();
         },
         methods: {
+            click(){
+              if(this.cid==this.fundTree.cid){
+					return;
+              }else{
+                    this.loading = true;
+                //点击发送请求清除搜索框
+                this.$refs.child.parentMsg(this.post);
+                this.isbac = true;
+                this.highlight = false;
+                this.cid=this.fundTree.cid;
+                setTimeout(() => {		       
+                        this.loading = false;
+                }, 1000);
+              }
+                
+            },
             getHistory() {
 				const params = {
                     cid:this.cid,
@@ -270,8 +300,13 @@
 				};
             },
             handleSearch(val) {
-				this.nodeArr = [];
+                // 默认公司的背景色
+                this.isbac = false;
+                this.nodeArr = [];
                 this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree 元素的ref  绑定的node-key
+                });
 				this.loading = true;
 				this.val = val;
 				if(val.cid!=""){
@@ -285,16 +320,21 @@
 						this.loading = false;
 				}, 1000);
 						
-			},
+            },
             handleNodeClick(data) {
-				this.$refs.child.parentMsg(this.post);
-				this.type = data.type;
-                this.cid = data.cid;
-                this.loading = true;
-                setTimeout(() => {
+                this.isbac = false;
+                this.highlight = true;
+                this.$refs.child.parentMsg(this.post);
+                this.type = data.type;
+                if(this.cid === data.cid){
+                    return ;
+                }else {
+                    this.cid = data.cid;
+                    this.loading = true;
+                    setTimeout(() => {
                     this.loading = false;
-                }, 1000);
-
+                    }, 1000);
+                }
 			},
             handleCheckChange() {
             },
