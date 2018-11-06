@@ -1,8 +1,10 @@
 <template>
-    <div class="ConOrgComparisonAverage-container">
-        <div class="ConOrgComparisonAverage" :id="`ConOrgComparisonAverage-${id}`"></div>
-        <div class="detail">{{data.subject_name}}</div>
-    </div>
+  <div class="ConOrgComparisonAverage-container">
+    <div 
+      class="ConOrgComparisonAverage" 
+      :id="`ConOrgComparisonAverage-${id}`"/>
+    <div class="detail">{{ data.subject_name }}</div>
+  </div>
 </template>
 
 <script>
@@ -14,6 +16,12 @@
             data: Object,
             title: String
         },
+        data(){
+            return{
+                time:"",
+                timestr:""
+            };
+        },
         mounted() {
             this.chart = echarts.init(document.getElementById(`ConOrgComparisonAverage-${this.id}`));
             this.renderChart(this.data);
@@ -22,7 +30,7 @@
         },
         watch: {
             data: {
-                handler: function(val, oldVal) {
+                handler: function(val) {
                     this.renderChart(val);
                 },
                 deep: true
@@ -30,8 +38,10 @@
         },
         methods: {
             renderChart(data) {
+				
                 let _this = this;
-                //          const {timeLabels} = data;
+                const { timeLabels } = data;
+                
                 const options = {
                     grid: {
                         left: 0,
@@ -60,7 +70,7 @@
                         type: 'category',
                         name: '日期',
                         boundaryGap: false,
-                        data: ['9.1', '9.2', '9.3', '9.4', '9.5', '9.6', '9.7']
+                        data: timeLabels
                     },
                     yAxis: {
                         type: 'value',
@@ -80,10 +90,10 @@
                     });
                 }
 
-                this.chart.setOption(options);
+                this.chart.setOption(options,true);
             }
         }
-    }
+    };
 </script>
 
 <style lang="scss" scoped>

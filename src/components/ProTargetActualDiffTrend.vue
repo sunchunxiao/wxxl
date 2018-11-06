@@ -1,8 +1,10 @@
 <template>
-    <div class="bar-container">
-        <div class="bar" :id="`bar-${id}`"></div>
-        <div class="detail">{{data.subject_name}}</div>
-    </div>
+  <div class="bar-container">
+    <div 
+      class="bar" 
+      :id="`bar-${id}`"/>
+    <div class="detail">{{ data.subject_name }}</div>
+  </div>
 </template>
 
 <script>
@@ -16,10 +18,11 @@ export default {
     mounted() {
         this.chart = echarts.init(document.getElementById(`bar-${this.id}`));
         this.renderChart(this.data);
+		
     },
     watch: {
         data: {
-            handler: function (val, oldVal) {
+            handler: function (val) {
                 this.renderChart(val);
             },
             deep: true
@@ -27,16 +30,16 @@ export default {
     },
     methods: {
         renderChart(data) {
-            const {real, target, timeLabels} = data;
+            const { real, target, timeLabels } = data;
+            // console.log(timeLabels);
             const diff = [];
             const bottom = [];
             const underTarget = [];
             const realClone = _.cloneDeep(real);
             const targetClone = _.cloneDeep(target);
-//          console.log(realClone,real)
             for (let i = 0; i < realClone.length; i++) {
-                realClone[i] = parseInt(realClone[i] / 10000 / 100);
-                targetClone[i] = parseInt(targetClone[i] / 10000 / 100);
+//                 realClone[i] = parseInt(realClone[i] / 10000 / 100);
+//                 targetClone[i] = parseInt(targetClone[i] / 10000 / 100);
                 const realItem = realClone[i];
                 const targetItem = targetClone[i];
                 bottom.push(realItem < targetItem ? realItem : targetItem);
@@ -113,15 +116,19 @@ export default {
                 ]
             };
             this.chart.setOption(options);
+            var _this = this;
+            window.addEventListener("resize", function () {
+               _this.chart.resize();
+            });
         }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>
 .bar-container {
     .bar {
-        // width: 280px;
+        width: 100%;
         height: 160px;
         margin: 0 auto;
     }

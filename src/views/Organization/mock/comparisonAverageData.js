@@ -1,5 +1,5 @@
 function getRandomNumArr(length) {
-    const rand = function(){return Math.floor(Math.random() * 200) - 100};
+    const rand = function(){return Math.floor(Math.random() * 200) - 100;};
     let arr = [];
     for(let i = 0; i < length; i++) {
         arr.push(rand());

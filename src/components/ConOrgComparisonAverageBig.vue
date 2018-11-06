@@ -1,8 +1,10 @@
 <template>
-    <div class="ConOrgComparisonAverage-container">
-        <div class="ConOrgComparisonAverage" :id="`ConOrgComparisonAverage-${id}`"></div>
-        <div class="detail">{{title}}</div>
-    </div>
+  <div class="ConOrgComparisonAverage-container">
+    <div 
+      class="ConOrgComparisonAverage" 
+      :id="`ConOrgComparisonAverage-${id}`"/>
+    <div class="detail">{{ title }}</div>
+  </div>
 </template>
 
 <script>
@@ -21,7 +23,7 @@
         },
         watch: {
             data: {
-                handler: function(val, oldVal) {
+                handler: function(val) {
                     this.renderChart(val);
                 },
                 deep: true
@@ -29,11 +31,12 @@
         },
         methods: {
             renderChart(data) {
+                const { timeLabels } = data;
                 let _this = this;
                 const options = {
                     grid: {
                         left: 0,
-                        right: 10,
+                        right: 40,
                         bottom: 0,
                         top: 10,
                         containLabel: true
@@ -58,7 +61,7 @@
                         type: 'category',
                         name: '日期',
                         boundaryGap: false,
-                        data: ['5.1', '5.2', '5.3', '5.4', '5.5', '5.6', '5.7']
+                        data: timeLabels
                     },
                     yAxis: {
                         type: 'value',
@@ -77,10 +80,10 @@
                         data: data.series[i]
                     });
                 }
-                this.chart.setOption(options);
+                this.chart.setOption(options,true);
             }
         }
-    }
+    };
 </script>
 
 <style lang="scss" scoped>

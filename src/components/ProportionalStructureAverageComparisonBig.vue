@@ -1,8 +1,10 @@
 <template>
-    <div class="averagebar-container">
-        <div class="averagebar" :id="`averagebar-${id}`"></div>
-        <div class="detail">{{data.subject}}</div>
-    </div>
+  <div class="averagebar-container">
+    <div 
+      class="averagebar" 
+      :id="`averagebar-${id}`"/>
+    <div class="detail">{{ data.subject }}</div>
+  </div>
 </template>
 
 <script>
@@ -13,13 +15,19 @@
             id: String,
             data: Object,
         },
+        data(){
+            return {
+                val:[],
+                color:[]
+            };
+        },
         mounted() {
             this.chart = echarts.init(document.getElementById(`averagebar-${this.id}`));
             this.renderChart(this.data);
         },
         watch: {
             data: {
-                handler: function(val, oldVal) {
+                handler: function(val) {
                     this.renderChart(val);
                 },
                 deep: true
@@ -27,22 +35,15 @@
         },
         methods: {
             renderChart(nodes) {
+                var _this = this;
                 const {
                     transSubjects,
                     nodes: pData
                 } = nodes;
                 const percentArr = [];
-                let sumTarget = 0;
-                let sumTotal = 0;
-                //          console.log(nodes)
-                //          for(let i in pData) {
-                //              sumTotal += parseInt(pData[i].total);
-                //              sumTarget += parseInt(pData[i].target);
-                //          }
-                //          const average = Math.floor(sumTotal / sumTarget / pData.length * 100);
+                this.color = nodes["28nodes"];
 
-                //          const average = (nodes.avg / nodes.total*100).toFixed(1)
-                const average = nodes.avg
+                const average = nodes.avg;
                 for(let i in pData) {
                     //              percentArr.push(Math.floor(parseInt(pData[i].total) / sumTarget * 100));
                     //              var arr = (nodes.values[i] / nodes.total).toFixed(4)
@@ -73,6 +74,7 @@
                         },
                     },
                     yAxis: {
+                        // inverse: true,
                         type: 'category',
                         axisTick: {
                             show: false
@@ -87,7 +89,8 @@
                         itemStyle: {
                             normal: {
                                 color: function(params) {
-                                    return params.data < average ? '#b0afad' : '#318cb8'
+                                    return _this.color[`${params.dataIndex}`] === params.dataIndex ? '#318cb8' : '#b0afad';
+                                    // return params.data < average ? '#b0afad' : '#318cb8';
                                 },
                                 barBorderRadius: [0, 20, 20, 0],
                             },
@@ -98,14 +101,16 @@
                                 position: [5, 6],
                                 color: "#000",
                                 formatter: function(params) {
-
-                                    //                              if (nodes.type === 'quota') {
-                                    //                                  return `${pData[params.dataIndex].name} : ${params.data}`;
-                                    //                              }
-                                    if(nodes.subject == "投入产出比" || nodes.subject == "日销" || nodes.subject == "库存周转率") {
+                                    if(nodes.display_rate == 0) {
                                         return `${pData[params.dataIndex]} : ${params.data}`;
+                                    }else{
+                                        if(nodes.total==0){
+                                            return `${pData[params.dataIndex]} : ${params.data}`;
+                                        }else{
+                                            return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
+                                        }
                                     }
-                                    return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
+                            
                                 },
                             }
                         },
@@ -113,8 +118,19 @@
                         markLine: {
                             symbol: 'none',
                             label: {
-                                formatter: nodes.subject == "投入产出比" || nodes.subject == "日销" || nodes.subject == "库存周转率" ? `平均值${average}` : `平均值${average}`
-                                //                          
+                                formatter:function(){
+                                    if( nodes.display_rate == 0){
+                                       return `平均值${average}`; 
+                                    }else{
+                                        if(nodes.total==0){
+                                            return `平均值${average}`;
+                                        }else{
+                                            return `平均值${(average/nodes.total*100).toFixed(2)}%`;
+                                        }
+                                       
+                                    }
+                                }
+                               
                             },
                             data: [{
                                 xAxis: average,
@@ -123,7 +139,7 @@
                                         color: '#b12725'
                                     }
                                 }
-                            }, ]
+                            }]
                         },
                     }]
                 };
@@ -131,7 +147,7 @@
                 this.chart.setOption(options);
             }
         }
-    }
+    };
 </script>
 
 <style lang="scss" scoped>

@@ -1,8 +1,10 @@
 <template>
-    <div class="trendline-container">
-        <div class="trendline" :id="`trendline-${id}`"></div>
-        <div class="detail">{{data.subject_name}}</div>
-    </div>
+  <div class="trendline-container">
+    <div 
+      class="trendline" 
+      :id="`trendline-${id}`"/>
+    <div class="detail">{{ data.subject_name }}</div>
+  </div>
 </template>
 
 <script>
@@ -13,13 +15,18 @@ export default {
         id: String,
         data: Object,
     },
+    data(){
+        return {
+            myChart:[]
+        };
+    },
     mounted() {
         this.chart = echarts.init(document.getElementById(`trendline-${this.id}`));
         this.renderChart(this.data);
     },
     watch: {
         data: {
-            handler: function (val, oldVal) {
+            handler: function (val) {
                 this.renderChart(val);
             },
             deep: true
@@ -28,7 +35,7 @@ export default {
     methods: {
         renderChart(data) {
             
-            const {timeLabels, ring, yoy} = data;
+            const { timeLabels, ring, yoy } = data;
             
             const options = {
                 tooltip: {
@@ -78,9 +85,14 @@ export default {
                 ]
             };
             this.chart.setOption(options);
+            var _this = this;
+            window.addEventListener("resize", function () {
+               _this.chart.resize();
+            });
+            
         }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>

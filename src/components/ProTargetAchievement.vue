@@ -1,24 +1,28 @@
 <template>
-    <div class="pie-container">
-        <div class="pie" :id="`pie-${id}`"></div>
-        <div class="detail">
-            <span class="text">目标: </span>
-            <span class="value">{{target}}</span>
-            &nbsp;<span>{{unit}}</span>
-        </div>
-        <div class="detail">
-            <span class="text">实际: </span>
-            <span class="value" v-bind:style="{color: color}">{{real}}</span>
-            &nbsp;<span>{{unit}}</span>
-        </div>
+  <div class="pie-container">
+    <div 
+      class="pie" 
+      :id="`pie-${id}`"/>
+    <div class="detail">
+      <span class="text">目标: </span>
+      <span class="value">{{ target }}</span>
+      &nbsp;<span>{{ unit }}</span>
     </div>
+    <div class="detail">
+      <span class="text">实际: </span>
+      <span 
+        class="value" 
+        :style="{color: color}">{{ real }}</span>
+      &nbsp;<span>{{ unit }}</span>
+    </div>
+  </div>
 </template>
 
 <script>
 import echarts from 'echarts';
 
-const REVERSE_TARGET = ['C', 'SA'] // 成本 库存额 是反向指标
-const COLORMAP = { over: '#b12725', below: '#308db9'};
+const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
+const COLORMAP = { over: '#b12725', below: '#308db9' };
 const colorLeft = '#E0E3E9';
 const FONTSIZE1 = 28;
 const FONTSIZE2 = 15;
@@ -32,17 +36,18 @@ export default {
     data() {
         return {
             color: '#000'
-        }
+        };
     },
     computed: {
         unit() {
             const { subject } = this.data;
-            if (subject === 'ROI') { // 投入产出比 %
+            if (subject === 'ROI'||subject== 'NIR'||subject== 'CTR') { // 投入产出比 %
                 return '%';
             } else if (subject === 'ITO') { // 库存周转率不需要单位
                 return '';
             }
-            return 'w';
+            
+            // return 'w';
         },
         real() {
             const { real } = this.data;
@@ -59,7 +64,7 @@ export default {
     },
     watch: {
         data: {
-            handler: function (val, oldVal) {
+            handler: function (val) {
                 this.renderChart(val);
             },
             deep: true
@@ -68,12 +73,21 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
+            
             if (subject === 'ROI') { // 投入产出比需要 * 100
                 return parseInt(val * 100);
             } else if (subject === 'ITO') { // 库存周转率不需要单位
                 return val;
+            }else if (subject === 'POR') { // 库存周转率不需要单位
+                return parseInt(val);
             }
-            return parseInt(val / 10000 / 100); // 金额从分转换为万
+            let Tenthousand = parseInt(val / 10000 / 100);
+            if(Tenthousand>=1){
+                return parseInt(val / 10000 / 100)+'w';
+            }else{
+                return parseInt(val/100);
+            }
+            // return parseInt(val / 10000 / 100); // 金额从分转换为万
         },
         renderChart(data) {
             const { subject, subject_name, progress } = data;
@@ -171,7 +185,7 @@ export default {
             this.chart.setOption(options);
         }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>

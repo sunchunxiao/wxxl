@@ -1,19 +1,35 @@
 <template>
-    <div class="login_container">
-        <div class="login_box">
-            <el-form :model="form" :rules="rules" ref="form" label-width="100px" >
-                <el-form-item label="用户名" prop="username">
-                    <el-input v-model="form.username" ref="username"></el-input>
-                </el-form-item>
-                <el-form-item label="密码" prop="password">
-                    <el-input type="password" v-model="form.password" @keyup.enter.native="submitForm('form')"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="submitForm('form')" :loading="submitLoading">登 录</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
+  <div class="login_container">
+    <div class="login_box">
+      <el-form 
+        :model="form" 
+        :rules="rules" 
+        ref="form" 
+        label-width="100px" >
+        <el-form-item 
+          label="用户名" 
+          prop="username">
+          <el-input 
+            v-model="form.username" 
+            ref="username"/>
+        </el-form-item>
+        <el-form-item 
+          label="密码" 
+          prop="password">
+          <el-input 
+            type="password" 
+            v-model="form.password" 
+            @keyup.enter.native="submitForm('form')"/>
+        </el-form-item>
+        <el-form-item>
+          <el-button 
+            type="primary" 
+            @click="submitForm('form')" 
+            :loading="submitLoading">登 录</el-button>
+        </el-form-item>
+      </el-form>
     </div>
+  </div>
 </template>
 
 <script>
@@ -51,7 +67,7 @@ export default {
                 password: '',
             },
             submitLoading: false,
-        }
+        };
     },
     mounted() {
         this.$refs['username'].focus();
@@ -63,7 +79,7 @@ export default {
                     this.submitLoading = true;
                     API.Login(this.form).then(res => {
                         setToken(res.token);
-                        this.$router.replace('/');
+                        this.$router.replace('/product/overview');
                     }).catch(e => {
                         this.form.password = '';
                         // eslint-disable-next-line
@@ -77,7 +93,7 @@ export default {
             });
         }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>

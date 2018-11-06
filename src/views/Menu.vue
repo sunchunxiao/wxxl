@@ -1,22 +1,32 @@
 <template>
-    <el-menu :default-active="activePath" router :collapse="isCollapse">
-        <template v-for="item in menuData">
-            <el-submenu :index="item.path" :key="item.path">
-                <template slot="title">
-                    <img class="menu_icon" :src="require(`../assets/${item.icon}`)" :alt="item.icon"/>
-                    <span slot="title">{{item.title}}</span>
-                </template>
-                <template v-for="itm in item.children">
-                    <el-menu-item :index="`${item.path}${itm.path}`" :key="`${item.path}${itm.path}`">
-                        <span class="sub-text">
-                            <span class="dot"></span>
-                            {{itm.title}}
-                        </span>
-                    </el-menu-item>
-                </template>
-            </el-submenu>
+  <el-menu 
+    :default-active="activePath" 
+    router 
+    :collapse="isCollapse">
+    <template v-for="item in menuData">
+      <el-submenu 
+        :index="item.path" 
+        :key="item.path">
+        <template slot="title">
+          <img 
+            class="menu_icon" 
+            :src="require(`../assets/${item.icon}`)" 
+            :alt="item.icon">
+          <span slot="title">{{ item.title }}</span>
         </template>
-    </el-menu>
+        <template v-for="itm in item.children">
+          <el-menu-item 
+            :index="`${item.path}${itm.path}`" 
+            :key="`${item.path}${itm.path}`">
+            <span class="sub-text">
+              <span class="dot"/>
+              {{ itm.title }}
+            </span>
+          </el-menu-item>
+        </template>
+      </el-submenu>
+    </template>
+  </el-menu>
 </template>
 
 <script>
@@ -115,12 +125,12 @@ export default {
         return {
             menuData: MENUDATA,
             activePath: '/product/overview'
-        }
+        };
     },
     mounted() {
         this.activePath = this.$route.fullPath;
     }
-}
+};
 </script>
 
 <style lang="scss">

@@ -21,9 +21,9 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(config => {
   // Do something before request is sent
-  if (getToken()) {
-    config.headers['Authorization'] = getToken(); // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
-  }
+//if (getToken()) {
+//  config.headers['Authorization'] = getToken(); // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
+//}
   return config;
 }, error => {
   // Do something with request error
@@ -44,20 +44,20 @@ service.interceptors.response.use(response => {
       removeToken();
       router.replace('/login');
     } else {
-      Message({message: res.api_info.message, type: 'warning', duration: MESSAGEDURATION});
+      Message({ message: res.api_info.message, type: 'warning', duration: MESSAGEDURATION });
       return Promise.reject(res);
     }
   }
-  Message({message: '接口异常', type: 'warning', duration: MESSAGEDURATION});
+  Message({ message: '接口异常', type: 'warning', duration: MESSAGEDURATION });
   return Promise.reject(res);
 },
   error => {
     // eslint-disable-next-line no-console
     console.log('AFTER_RESPONSE_RETURN_ERROR', error); // for debug
     if (error.code === "ECONNABORTED") {
-      Message({message: '请求超时', type: 'error', duration: MESSAGEDURATION});
+      Message({ message: '请求超时', type: 'error', duration: MESSAGEDURATION });
     } else {
-      Message({message: error.message, type: 'error', duration: MESSAGEDURATION});
+      Message({ message: error.message, type: 'error', duration: MESSAGEDURATION });
     }
     return Promise.reject(error);
   }
@@ -72,7 +72,18 @@ const FetchGet = (url, params) => {
     options.params = params;
   }
   return service(options);
-}
+};
+
+const FetchPostNew = (url, params) => {
+  const options = {
+    url,
+    method: 'post'
+  };
+  if(params) {
+    options.params = params;
+  }
+  return service(options);
+};
 
 const FetchPost = (url, data, params) => {
   const options = {
@@ -86,7 +97,6 @@ const FetchPost = (url, data, params) => {
     options.params = params;
   }
   return service(options);
-}
+};
 
-
-export {FetchGet, FetchPost};
+export { FetchGet, FetchPost, FetchPostNew };

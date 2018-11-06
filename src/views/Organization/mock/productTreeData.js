@@ -2049,4 +2049,4 @@ export default {
             }
         ]
     }
-}
+};

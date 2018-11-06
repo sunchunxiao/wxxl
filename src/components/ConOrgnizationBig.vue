@@ -2,7 +2,7 @@
   <div class="ConOrgComparisonAverage-container">
     <div 
       class="ConOrgComparisonAverage" 
-      :id="`ConOrgComparisonAverage-${id}`"/>
+      :id="`ConOrgComparisonAverage1-${id}`"/>
     <div class="detail">{{ title }}</div>
   </div>
 </template>
@@ -13,12 +13,12 @@ import echarts from 'echarts';
 export default {
     props: {
         id: String,
-        data: Array,
+        data: Object,
         title: String,
         index: Number
     },
     mounted() {
-        this.chart = echarts.init(document.getElementById(`ConOrgComparisonAverage-${this.id}`));
+        this.chart = echarts.init(document.getElementById(`ConOrgComparisonAverage1-${this.id}`));
         this.renderChart(this.data);
     },
     watch: {
@@ -32,11 +32,12 @@ export default {
     methods: {
         renderChart(data) {
             let _this = this;
+            const { timeLabels } = data.data;
             const options = {
                 grid: {
                     left: 0,
-                    right: 10,
-                    bottom: 0,
+                    right: 40,
+                    bottom: 10,
                     top: 10,
                     containLabel: true
                 },
@@ -60,42 +61,27 @@ export default {
                     type: 'category',
                     name: '日期',
                     boundaryGap: false,
-                    data: ['5.1', '5.2', '5.3', '5.4', '5.5', '5.6', '5.7']
+                    data: timeLabels
                 },
                 yAxis: {
                     type: 'value',
                     axisLabel: {
-                        formatter: _.includes([0,1,2,5,6], _this.index) ? '{value}' : '{value} %'
+                        formatter: _.includes([0,1,2,5,6], _this.index) ? '{value}' : '{value} '
                     }
                     // name: '报警次数',
                 },
-                series: [{
-                        name: '旅游运输',
-                        type: 'line',
-                        stack: '总量',
-                        data: data[0]
-                    },
-                    {
-                        name: '班线运输',
-                        type: 'line',
-                        stack: '总量',
-                        data: data[1]
-                    },
-                    {
-                        name: '危险品',
-                        type: 'line',
-                        stack: '总量',
-                        data: data[2]
-                    },
-                    {
-                        name: '普货',
-                        type: 'line',
-                        stack: '总量',
-                        data: data[3]
-                    },
-                ]
+                series: []
             };
-            this.chart.setOption(options);
+            
+			for(let i = 0; i < data.data.sub.length; i++) {
+				options.series.push({
+					name:  data.data.sub[i].name,
+					type: 'line',
+					stack: i,
+					data: data.data.sub[i].real
+				});
+            }
+            this.chart.setOption(options,true);
         }
     }
 };

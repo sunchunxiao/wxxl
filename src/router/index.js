@@ -1,5 +1,5 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from 'vue';
+import Router from 'vue-router';
 
 import productRoute from './product';
 import organizationRoute from './organization';
@@ -7,7 +7,7 @@ import customerRoute from './customer';
 import fundRoute from './fund';
 import channelRoute from './channel';
 
-Vue.use(Router)
+Vue.use(Router);
 
 // route level code-splitting
 // this generates a separate chunk (about.[hash].js) for this route
@@ -25,7 +25,7 @@ export default new Router({
             ...customerRoute,
             ...fundRoute,
             ...channelRoute,
-        ]}, {
+        ] }, {
             path: '/index',
             name: 'index',
             component: () => import('views/Index.vue')
@@ -34,9 +34,16 @@ export default new Router({
             name: 'login',
             component: () => import('views/Login.vue')
         }, {
+            path: '/searchbar',
+            name: 'searchbar',
+            component: () => import('components/SearchBar.vue')
+        }, {
             path: '/404',
             name: '404',
             component: () => import('views/404.vue')
+        }, {
+            path: '*',
+            redirect: '/404'
         }
 	]
-})
+});
