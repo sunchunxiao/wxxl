@@ -128,7 +128,7 @@
           v-loading="loading" 
           class="margin-top-50">
           <span class="common-title">
-            渠道效率
+            渠道效率-单店平均效率
           </span>
           <el-row v-loading="loading">
             <Card>
@@ -169,7 +169,7 @@
           v-loading="loading" 
           class="margin-top-10">
           <span class="common-title">
-            客户效率
+            客户效率-消费者人均效率
           </span>
           <el-row v-loading="loading">
             <Card>
@@ -211,7 +211,7 @@
           v-loading="loading" 
           class="margin-top-10">
           <span class="common-title">
-            组织效率
+            组织效率-企业人均效率
           </span>
           <el-row v-loading="loading">
             <Card>
