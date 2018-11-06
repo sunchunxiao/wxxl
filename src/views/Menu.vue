@@ -25,13 +25,27 @@
           </el-menu-item>
         </template>
       </el-submenu>
+      
     </template>
+    <!-- <template >
+      <div>首页</div>
+    </template> -->
   </el-menu>
 </template>
 
 <script>
 // TODO: icon
-const MENUDATA = [{
+const MENUDATA = [
+    {
+    title: '系统配置',
+    path: '/system',
+    icon: '8.png',
+    children: [{
+        title: '首页',
+        path: '/home'
+    }]
+},
+    {
     title: '产品效率',
     path: '/product',
     icon: '4.png',
@@ -124,7 +138,8 @@ export default {
     data () {
         return {
             menuData: MENUDATA,
-            activePath: '/product/overview'
+            activePath: '/system/home',
+            path:'/system/home'
         };
     },
     mounted() {

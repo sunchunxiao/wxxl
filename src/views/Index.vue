@@ -81,7 +81,7 @@
               href="/login">登录</a>
             <a 
               v-else 
-              href="/product/overview">进入系统</a>
+              href="/system/home">进入系统</a>
           </li>
         </ul>
       </div>
