@@ -1,0 +1,15 @@
+stages:
+  - deploy_ci
+
+deploy_ci:
+  stage: deploy_ci
+  tags:
+    - deploy_ci
+  only:
+    - develop
+  script:
+    - cd /var/dev/webroot/eff-frontend
+    - git checkout -- .
+    - git pull origin develop
+    - yarn
+    - yarn build
