@@ -139,6 +139,7 @@
                 for(let i = 0; i < 3; i++) {
                     children[i] && arr.push(children[i]);
                 }
+                
                 this.cidObjArr = arr;
                 const checkKeys = this.cidObjArr.map(i => i.cid);
                 this.$refs.tree.setCheckedKeys(checkKeys);
@@ -146,6 +147,7 @@
                 // 指标
                 const progressData = res[1];
                 this.$store.dispatch('SaveProgressData', progressData.data);
+                
             });
         },
 
