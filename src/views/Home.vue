@@ -30,6 +30,12 @@
           alt="">
       </div>
       <div class="menu_container">
+        <!-- <template >
+          <div 
+            :class="{homeBac:home_bac}"
+            class="home"
+            @click="home">首页</div>
+        </template> -->
         <Menu :isCollapse="isCollapse" />
       </div>
     </div>
@@ -55,10 +61,15 @@ export default {
   },
   data() {
     return {
-      isCollapse: false
+      isCollapse: false,
+      home_bac:false
     };
   },
   methods: {
+    home(){
+            this.home_bac = true;
+            this.$router.push('/home');
+        },
     handleClick() {
       this.isCollapse = !this.isCollapse;
     }
@@ -71,6 +82,15 @@ export default {
 $bgcolor: #224e6b;
 $width: 200px;
 $width_collapse: 64px;
+.home{
+    padding: 20px 0 10px 55px;
+    color: #fff;
+    cursor: pointer;
+}
+.homeBac{
+    background-color: #26354c;
+    border-left: 5px solid #16abe3;
+}
 .container {
   height: 100%;
   .left {
