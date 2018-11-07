@@ -11,7 +11,6 @@
       :gutter="20">
       <el-col 
         :span="5" 
-        
         class="tree_container">
         <div v-if="hasTree">
           <div class="title">毛利目标达成率</div>
