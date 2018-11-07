@@ -152,9 +152,11 @@ export default {
     },
     mounted() {
         this.activePath = this.$route.fullPath;
+        this.select();
     },
     methods:{
         select(val){
+            
             if(val == "/home"){
                 this.home_bac = true;
             }else{

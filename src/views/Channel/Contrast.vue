@@ -21,6 +21,7 @@
         </div>
         <!-- 有多个tree -->
         <el-tree 
+          empty-text="正在加载"
           :data="channelTree.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"

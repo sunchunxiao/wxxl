@@ -22,6 +22,7 @@
         <!-- 有多个tree -->
         <el-tree 
           :data="fundTree.children" 
+          empty-text="正在加载"
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
           @node-click="handleNodeClick"
@@ -186,7 +187,6 @@
                 });
             },
             getProgressbefore() {
-                
 				const params = {
 					rType:1
 				};

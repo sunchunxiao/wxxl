@@ -29,6 +29,7 @@
         <!-- 有多个tree -->
         <el-tree 
           ref="tree"
+          empty-text="正在加载"
           :data="organizationTree.children" 
           :props="defaultProps" 
           node-key="cid"

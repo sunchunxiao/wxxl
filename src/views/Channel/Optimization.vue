@@ -30,6 +30,7 @@
         <el-tree 
           ref="tree"
           node-key="cid"
+          empty-text="正在加载"
           :expand-on-click-node="false"
           :highlight-current="highlight" 
           :data="channelTree.children" 

@@ -29,6 +29,7 @@
           </div>
           <el-tree 
             ref="tree"
+            empty-text="正在加载"
             node-key="cid"
             :highlight-current="highlight" 
             :expand-on-click-node="false" 
