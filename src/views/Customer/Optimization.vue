@@ -14,8 +14,14 @@
         class="tree_container">
         <div class="title">毛利目标达成率</div>
         <div class="company">
-          <span class="left">{{ customerTree.name }}</span>
-          <span class="right">{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
+          <span class="left label">{{ customerTree.name }}</span>
+          <span
+            v-if="customerTree.children"
+            :class="{percent: true, red: !calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne, blue: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
+            class="right" >{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
+          <div 
+            :class="{comprogress: true, 'border-radius0': calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
+            :style="{width: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne ? '100%' : `${calculatePercent(customerTree.real_total, customerTree.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
@@ -98,10 +104,6 @@
     import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
     import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 
-    import mockPieData from './mock/pieData.js';
-    import mockComparisonAverageData from './mock/comparisonAverageData.js';
-    import tree from './mock/productTreeData.js';
-
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
         children: 'children',
@@ -132,11 +134,7 @@
                 },
                 cid:1,
                 loading:false,
-                tree: tree,
-                treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
-                pieData: mockPieData(),
-                comparisonAverageData: mockComparisonAverageData(),
                 index0: 0,
                 val:{},
 				post:1,
@@ -334,8 +332,14 @@
                         percent,
                         largerThanOne
                     };
+                }else{
+                    const percent = 0;
+                    const largerThanOne = false;
+                    return {
+                        percent,
+                        largerThanOne
+                    };
                 }
-                return {};
             },
         }
     };
