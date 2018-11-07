@@ -86,8 +86,6 @@
     // 组织对比分析和平均值分析
     import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
     import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
-
-    import tree from './mock/productTreeData.js';
     import { mapGetters } from 'vuex';
 
     const TREE_PROPS = {
@@ -106,8 +104,6 @@
         },
         data() {
             return {
-                tree: tree,
-                treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
                 index0: 0,
                 cidObjArr:[],
@@ -249,8 +245,14 @@
                         percent,
                         largerThanOne
                     };
+                }else{
+                    const percent = 0;
+                    const largerThanOne = false;
+                    return {
+                        percent,
+                        largerThanOne
+                    };
                 }
-                return {};
             },
         }
     };

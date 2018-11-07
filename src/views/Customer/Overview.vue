@@ -17,8 +17,14 @@
           @click="click" 
           :class="{bac:isbac}"
           class="company">
-          <span class="left">{{ customerTree.name }}</span>
-          <span class="right">{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
+          <span class="left label">{{ customerTree.name }}</span>
+          <span
+            v-if="customerTree.children"
+            :class="{percent: true, red: !calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne, blue: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
+            class="right" >{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
+          <div 
+            :class="{comprogress: true, 'border-radius0': calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
+            :style="{width: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne ? '100%' : `${calculatePercent(customerTree.real_total, customerTree.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
@@ -196,14 +202,7 @@
     import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
     // 智能评选和智能策略
     import IntelligentSelection from '../../components/IntelligentSelection';
-
-    // tree
-    import tree from './mock/productTreeData.js';
-    // mock
-    import mockPieData from './mock/pieData.js';
-    import mockTrendData from './mock/trendData.js';
-    import mockAverageData from './mock/averageData.js';
-    import mockHeatmapData from './mock/heatmapData.js';
+    //vuex
     import { mapGetters } from 'vuex';
 
     const TREE_PROPS = {
@@ -241,20 +240,12 @@
                 },
                 cid:1,
                 loading: false,
-                // tree
-                tree: tree,
-                treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
                 // index
                 index0: 0,
                 index1: 0,
                 index2: 0,
                 index3: 0,
-                // mockData
-                pieData: mockPieData(),
-                trendData: mockTrendData(),
-                averageData: mockAverageData(),
-                heatmapData: mockHeatmapData(),
                 // stragety
                 stragetyCheckList: [],
                 stragetyTitle: '',
@@ -513,8 +504,14 @@
                         percent,
                         largerThanOne
                     };
+                }else{
+                    const percent = 0;
+                    const largerThanOne = false;
+                    return {
+                        percent,
+                        largerThanOne
+                    };
                 }
-                return {};
             },
             clickIndex(i, idx) {
                 this[`index${i}`] = idx;

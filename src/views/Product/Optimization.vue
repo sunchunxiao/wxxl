@@ -20,6 +20,7 @@
             class="company">
             <span class="left label">{{ productTree.name }}</span>
             <span
+              v-if="productTree.children"
               :class="{percent: true, red: !calculatePercent(productTree.real_total, productTree.target_total).largerThanOne, blue: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
               class="right" >{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
             <div 
@@ -109,9 +110,6 @@
 	import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 	import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 
-	import mockPieData from './mock/pieData.js';
-	import mockComparisonAverageData from './mock/comparisonAverageData.js';
-	import tree from './mock/productTreeData.js';
 	import {
 		mapGetters
 	} from 'vuex';
@@ -144,11 +142,7 @@
 				},
 				cid:1,
 				loading:false,
-				tree: tree,
-				treeData: tree.data.children,
 				defaultProps: TREE_PROPS,
-				pieData: mockPieData(),
-				comparisonAverageData: mockComparisonAverageData(),
 				index0: 0,
 				val:{},
 				post:1,
@@ -344,8 +338,14 @@
 						percent,
 						largerThanOne
 					};
-				}
-				return {};
+				}else{
+							const percent = 0;
+							const largerThanOne = false;
+							return {
+									percent,
+									largerThanOne
+							};
+					}
 			},
 		}
 	};

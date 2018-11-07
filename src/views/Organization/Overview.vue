@@ -19,6 +19,7 @@
           class="company">
           <span class="left label">{{ organizationTree.name }}</span>
           <span
+            v-if="organizationTree.children"
             :class="{percent: true, red: !calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne, blue: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
             class="right" >{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
           <div 
@@ -233,14 +234,6 @@
 	// 智能评选和智能策略
 	import IntelligentSelection from '../../components/IntelligentSelection';
 
-	// tree
-	import tree from './mock/productTreeData.js';
-	// mock
-	import mockPieData from './mock/pieData.js';
-	import mockTrendData from './mock/trendData.js';
-	import mockAverageData from './mock/averageData.js';
-	import mockHeatmapData from './mock/heatmapData.js';
-
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
         children: 'children',
@@ -278,9 +271,6 @@
 				},
 				cid: 1,
 				loading: false,
-				// tree
-				tree: tree,
-				treeData: tree.data.children,
 				defaultProps: TREE_PROPS,
 				// index
 				index0: 0,
@@ -288,12 +278,6 @@
 				index2: 0,
 				index3: 0,
 				index4: 0,
-				// mockData
-				pieData: mockPieData(),
-				trendData: mockTrendData(),
-				averageData: mockAverageData(),
-				averageData1: mockAverageData(),
-				heatmapData: mockHeatmapData(),
 				// stragety
 				stragetyCheckList: [],
 				stragetyTitle: '',
@@ -305,6 +289,7 @@
 				nodeArr:[],
 				isbac:true,
 				highlight:true,
+				a:false
 			};
 		},
 		computed: {
@@ -320,7 +305,6 @@
 				this.getTree();
 			}
 			this.initFormDataFromUrl();
-			// console.log(this.orgrankArr)
 		},
 		watch: {
 			form: {
@@ -586,8 +570,14 @@
 						percent,
 						largerThanOne
 					};
+				}else{
+						const percent = 0;
+						const largerThanOne = false;
+						return {
+								percent,
+								largerThanOne
+						};
 				}
-				return {};
 			},
 			clickIndex(i, idx) {
 				this[`index${i}`] = idx;
