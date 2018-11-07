@@ -160,12 +160,8 @@ export default {
             }else{
                 this.home_bac = false;
             }
-
         },
-        home(){
-            this.home_bac = true;
-            this.$router.push('/home');
-        }
+        
     },
 };
 </script>

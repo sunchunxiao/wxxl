@@ -11,6 +11,7 @@
       :gutter="20">
       <el-col 
         :span="5" 
+        
         class="tree_container">
         <div v-if="hasTree">
           <div class="title">毛利目标达成率</div>
@@ -20,6 +21,7 @@
             class="company">
             <span class="left label">{{ productTree.name }}</span>
             <span
+              v-if="productTree.children"
               :class="{percent: true, red: !calculatePercent(productTree.real_total, productTree.target_total).largerThanOne, blue: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
               class="right" >{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
             <div 
@@ -268,6 +270,7 @@
             if(!this.hasTree) {
                 this.getTree();
             }
+            
             this.getProgress();
             this.getStructure();
             this.getRank();
@@ -541,8 +544,14 @@
 						percent,
 						largerThanOne
 					};
-				}
-				return {};
+				}else{
+                    const percent = 0;
+                    const largerThanOne = false;
+                    return {
+                        percent,
+                        largerThanOne
+                    };
+                }
 			},
 			clickIndex(i, idx) {
 				this[`index${i}`] = idx;
