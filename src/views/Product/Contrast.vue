@@ -25,6 +25,7 @@
         <el-tree 
           :data="productTree.children" 
           ref="tree" 
+          empty-text="正在加载"
           check-strictly
           node-key="cid" 
           :props="defaultProps" 

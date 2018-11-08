@@ -1,104 +1,106 @@
 <template>
   <div class="optimization">
     <el-row>
-      <el-row>
-        <search-bar 
-          ref="child"
-          @search="handleSearch" 
-          url="/product/search"/>
-      </el-row>
-      <el-row 
-        class="content_row" 
-        :gutter="20">
-        <el-col 
-          :span="4" 
-          class="tree_container">
-          <div class="title">毛利目标达成率</div>
+      <search-bar 
+        ref="child"
+        @search="handleSearch" 
+        url="/product/search"/>
+    </el-row>
+    <el-row 
+      class="content_row" 
+      :gutter="20">
+      <el-col 
+        :span="5" 
+        class="tree_container">
+        <div class="title">毛利目标达成率</div>
+        <div 
+          @click="click" 
+          :class="{bac:isbac}"
+          class="company">
+          <span class="left label">{{ productTree.name }}</span>
+          <span
+            v-if="productTree.children"
+            :class="{percent: true, red: !calculatePercent(productTree.real_total, productTree.target_total).largerThanOne, blue: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
+            class="right" >{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
           <div 
-            @click="click" 
-            :class="{bac:isbac}"
-            class="company">
-            <span class="left label">{{ productTree.name }}</span>
-            <span
-              v-if="productTree.children"
-              :class="{percent: true, red: !calculatePercent(productTree.real_total, productTree.target_total).largerThanOne, blue: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              class="right" >{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
+            :class="{comprogress: true, 'border-radius0': calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
+            :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '100%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}"/>
+        </div>
+        <!-- 有多个tree -->
+        <el-tree 
+          ref="tree"
+          node-key="cid"
+          empty-text="正在加载"
+          :expand-on-click-node="false"
+          :highlight-current="highlight" 
+          :data="productTree.children" 
+          :props="defaultProps" 
+          :default-expanded-keys="nodeArr"
+          @node-click="handleNodeClick" 
+          @check-change="handleCheckChange">
+          <span 
+            class="custom-tree-node" 
+            slot-scope="{ node, data }">
+            <span class="label">{{ data.name }}</span>
+            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
             <div 
-              :class="{comprogress: true, 'border-radius0': calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '100%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}"/>
-          </div>
-          <el-tree 
-            ref="tree"
-            node-key="cid"
-            :highlight-current="highlight" 
-            :expand-on-click-node="false" 
-            :props="defaultProps" 
-            :data="productTree.children" 
-            :default-expanded-keys="nodeArr"
-            @node-click="handleNodeClick" 
-            @check-change="handleCheckChange">
-            <span 
-              class="custom-tree-node" 
-              slot-scope="{ node, data }">
-              <span class="label">{{ data.name }}</span>
-              <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
-              <div 
-                :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
-                :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
-            </span>
-          </el-tree>
-        </el-col>
-        <el-col 
-          :span="18" 
-          v-loading="loading"
-          class="overflow">
-          <Card>
-            <el-row :gutter="10">
-              <template v-for="(item,index) in historyArr">
-                <el-col 
-                  :span="12" 
-                  :key="index">
-                  <el-table 
-                    :data="item.strategies" 
-                    size="mini" 
-                    :span-method="arraySpanMethod(item.strategies)">
-                    <el-table-column :label="`${item.start_date} - ${item.end_date}`">
-                      <el-table-column 
-                        prop="subject" 
-                        label="指标"/>
-                      <el-table-column 
-                        prop="package" 
-                        label="影响因素"/>
-                      <el-table-column 
-                        prop="strategy" 
-                        label="应用策略"/>
-                      <el-table-column 
-                        prop="rank" 
-                        label="评选结果"/>
-                      <el-table-column 
-                        prop="ring_rate" 
-                        label="环比增长率">
-                        <template slot-scope="scope">
-                          <img 
-                            v-if="largerThanZero(scope.row.ring_rate)" 
-                            src="../../assets/opt1.png" 
-                            alt="">
-                          <img 
-                            v-if="lessThanZero(scope.row.ring_rate)" 
-                            src="../../assets/opt2.png" 
-                            alt="">
-                          <span style="margin-left: 10px">{{ `${parseInt(scope.row.ring_rate*100)}` + '%' }}</span>
-                        </template>
-                      </el-table-column>
+              :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
+              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
+          </span>
+        </el-tree>
+      </el-col>
+      <el-col 
+        :span="18" 
+        v-loading="loading"
+        class="overflow">
+        <Card>
+          <el-row :gutter="10">
+            <template v-for="(item,index) in historyArr">
+              <el-col 
+                :span="12" 
+                :key="index">
+                <el-table 
+                  :data="item.strategies" 
+                  size="mini" 
+                  :span-method="arraySpanMethod(item.strategies)">
+                  <el-table-column :label="`${item.start_date} - ${item.end_date}`">
+                    <el-table-column 
+                      prop="subject" 
+                      label="指标"/>
+                    <el-table-column 
+                      prop="package" 
+                      label="影响因素"/>
+                    <el-table-column 
+                      prop="strategy" 
+                      label="应用策略"/>
+                    <el-table-column 
+                      prop="rank" 
+                      label="评选结果"/>
+                    <el-table-column 
+                      prop="ring_rate" 
+                      label="环比增长率">
+                      <template slot-scope="scope">
+                        <img 
+                          v-if="largerThanZero(scope.row.ring_rate)" 
+                          src="../../assets/opt1.png" 
+                          alt="">
+                        <img 
+                          v-if="lessThanZero(scope.row.ring_rate)" 
+                          src="../../assets/opt2.png" 
+                          alt="">
+                        <span style="margin-left: 10px">{{ `${parseInt(scope.row.ring_rate*100)}` + '%' }}</span>
+                      </template>
                     </el-table-column>
-                  </el-table>
-                </el-col>
-              </template>
-            </el-row>
-          </Card>
-        </el-col>
-      </el-row>
-  </el-row></div>
+                  </el-table-column>
+                </el-table>
+              </el-col>
+            </template>
+          </el-row>
+
+        </Card>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
 <script>

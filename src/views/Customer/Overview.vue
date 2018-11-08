@@ -30,6 +30,7 @@
         <el-tree 
           :data="customerTree.children" 
           ref="tree"
+          empty-text="正在加载"
           :props="defaultProps" 
           node-key="cid"
           :expand-on-click-node="false"

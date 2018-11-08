@@ -11,7 +11,6 @@
       :gutter="20">
       <el-col 
         :span="5" 
-        
         class="tree_container">
         <div v-if="hasTree">
           <div class="title">毛利目标达成率</div>
@@ -33,6 +32,7 @@
         <!-- 有多个tree -->
         <el-tree 
           ref="tree"
+          empty-text="正在加载"
           node-key="cid"
           :highlight-current="highlight" 
           :expand-on-click-node="false" 
