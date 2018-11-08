@@ -417,7 +417,7 @@
         mounted() {
             this.getProgress();
             this.getStructure();
-						this.getRank();
+            this.getRank();
         },
         watch: {
             // form: [
@@ -444,14 +444,7 @@
             }
         },
         methods: {
-					// dian(index){
-						// console.log(index);
-						
-						// this.$el.querySelector('.common-title');
-						// console.log(this.$el.querySelectorAll('.common-title'));
-						// let jump = this.$el.querySelectorAll('.common-title');
-						
-					// },
+					
             click(){
                 if(this.cid==this.productTree.cid){
                     return;

@@ -22,6 +22,7 @@
         <!-- 有多个tree -->
         <el-tree 
           empty-text="正在加载"
+          check-strictly
           :data="channelTree.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
