@@ -50,7 +50,7 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="18" 
+        :span="19" 
         v-loading="loading" 
         class="overflow">
         <Card>

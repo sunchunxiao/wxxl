@@ -22,23 +22,41 @@
           </template> -->
           <div class="slider_menu" >
             <div class="menu_company"><span class="company_before" /> 公司关键经营指标</div>
-            <!-- <div class="menu_list"> -->
             <a
               class="menu_list" 
-              href="#produce"> 产品效率</a>
-            <!-- </div> -->
+              href="#produce"> 产品效率
+              <img 
+                class="menu_list_img"
+                src="../../assets/right.png" 
+                alt=""></a>
             <a 
               class="menu_list"
-              href="#channel"> 渠道效率</a>
+              href="#channel"> 渠道效率
+              <img 
+                class="menu_list_img"
+                src="../../assets/right.png" 
+                alt=""></a>
             <a 
               class="menu_list"
-              href="#customer"> 客户效率</a>
+              href="#customer"> 客户效率
+              <img 
+                class="menu_list_img"
+                src="../../assets/right.png" 
+                alt=""></a>
             <a 
               class="menu_list"
-              href="#organization"> 组织效率</a>
+              href="#organization"> 组织效率
+              <img 
+                class="menu_list_img"
+                src="../../assets/right.png" 
+                alt=""></a>
             <a 
               class="menu_list"
-              href="#fund">资金效率</a>
+              href="#fund">资金效率
+              <img 
+                class="menu_list_img"
+                src="../../assets/right.png" 
+                alt=""></a>
           </div>
         </div>
       </el-col>

@@ -86,10 +86,10 @@
                     </el-table-column>
                   </el-table-column>
                 </el-table>
+                
               </el-col>
             </template>
           </el-row>
-
         </Card>
       </el-col>
     </el-row>
@@ -187,7 +187,6 @@
 				const params = {
                     cid:this.cid,
 					pt: this.form.pt,
-					version: this.form.version,
 					...this.getPeriodByPt(),
 				};
 				API.GetCusStrategiesOpt(params).then(res => {
@@ -199,7 +198,6 @@
                     pt: this.form.pt,
                     subject: this.form.subject,
                     ...this.getPeriodByPt(),
-                    version: this.form.version
                 };
                 API.GetCusTree(params).then(res => {
                     //                  console.log(res.tree)
