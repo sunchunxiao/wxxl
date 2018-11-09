@@ -5,11 +5,11 @@
         overflow-y: auto;
         border: 1px solid #eee;
         border-radius: 5px;
-        background: #e4e4e4;
+        background: rgb(230,230,230);
         .homeSlider{
             // padding: 10px;
             .slider_header{
-                color: #308db9;
+                color: rgb(49, 140, 184);
                 font-size: 20px;
                 font-weight: bold;
                 padding: 50px 0px 20px 50px;
@@ -19,9 +19,10 @@
             .slider_menu{
                 // padding-top: 20px;
                 .menu_company{
-                    color: #4e4646;
+                    color: rgb(77, 77, 77);
                     font-weight: bold;
                     padding:  10px 0 20px 45px;
+                    margin-bottom: 5px;
                     position: relative;
                     .company_before{
                         display: inline-block;
@@ -36,9 +37,10 @@
                 }
                 .menu_list{
                     color: #4e4646;
+                    font-weight: 600;
                     text-decoration: none;
                    display: block;
-                   padding: 15px 0 10px 45px;
+                   padding: 10px 0 10px 45px;
                    position: relative;
                    .menu_list_img{
                        position: absolute;
@@ -47,9 +49,15 @@
                    }
                 }
                 .menu_list:hover{
+                    color: rgb(49, 140, 184);
                     background:#e8e8e8;
-                    box-shadow: 0 3px 5px 0 rgba(113, 113, 114, 0.5);
+                    box-shadow: 0 3px 5px 0 rgba(204, 204, 204, 0.8);
                     transition: all 0.5s;
+                }
+                .menu_list_select{
+                    color: rgb(49, 140, 184);
+                    background:#e8e8e8;
+                    box-shadow: 0 3px 5px 0 rgba(204, 204, 204, 0.8);
                 }
                 .menu_list:hover .menu_list_img{
                     display: inline-block;

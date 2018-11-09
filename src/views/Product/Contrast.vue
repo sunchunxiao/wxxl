@@ -12,16 +12,24 @@
       <el-col 
         :span="5" 
         class="tree_container">
+        <div>
+          <el-button 
+            @click="cleanChecked"
+            size="mini" 
+            class="clean_btn">清空选择</el-button>
+        </div>
+        <!-- <div 
+          @click="cleanChecked"
+          size="mini" 
+          class="clean_btn">
+          <span 
+            class="clean_select" >取消全部</span>
+        </div> -->
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ productTree.name }}</span>
           <span class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
         </div>
-        <el-button 
-          @click="cleanChecked"
-          size="mini" 
-          v-if="cidObjArr.length > 0"
-          class="clean_btn">清空选择</el-button>
         <el-tree 
           :data="productTree.children" 
           ref="tree" 
@@ -108,7 +116,7 @@
                 defaultProps: TREE_PROPS,
                 index0: 0,
                 cidObjArr:[],
-                cancelKey: ''
+                cancelKey: '',
             };
         },
         computed: {
@@ -185,9 +193,9 @@
                     subject: subject
                 };
                 
-                if(this.cidObjArr.length==4){
-                    this.cidObjArr.pop();
-                }
+                // if(this.cidObjArr.length==4){
+                //     this.cidObjArr.pop();
+                // }
                 const checkKeys = this.cidObjArr.map(i => i.cid);
                 params.targets = checkKeys.join(',');
                 return API.GetProductCompare(params);
