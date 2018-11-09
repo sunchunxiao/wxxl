@@ -1,0 +1,17 @@
+stages:
+  - deploy_ci
+
+before_script:
+  - cd /home/www/env-ci/wxxl/frontend
+
+deploy_ci:
+  stage: deploy_ci
+  tags:
+    - deploy_ci
+  only:
+    - develop
+  script:
+    - git checkout -- .
+    - git pull origin develop
+    - yarn
+    - yarn build

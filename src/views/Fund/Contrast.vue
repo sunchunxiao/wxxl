@@ -15,11 +15,14 @@
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ fundTree.name }}</span>
-          <span class="right">{{ calculatePercent(fundTree.real_total, fundTree.target_total).percent + '%' }}</span>
+          <span
+            v-if="fundTree.children"
+            class="right">{{ calculatePercent(fundTree.real_total, fundTree.target_total).percent + '%' }}</span>
         </div>
         <!-- 有多个tree -->
         <el-tree 
           :data="fundTree.children" 
+          empty-text="正在加载"
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
           @node-click="handleNodeClick"
@@ -108,10 +111,6 @@
     import ConOrgComparisonAverage from '../../components/ConOrgnization';
     import ConOrgComparisonAverageBig from '../../components/ConOrgnizationBig';
 
-    import mockPieData from './mock/pieData.js';
-    import mockComparisonAverageData from './mock/comparisonAverageData.js';
-    import tree from './mock/productTreeData.js';
-
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
         children: 'children',
@@ -142,11 +141,7 @@
                 },
                 loading: false,
                 cid:1,
-                tree: tree,
-                treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
-                pieData: mockPieData(),
-                comparisonAverageData: mockComparisonAverageData(),
                 index0: 0,
                 index1: 0,
                 type:3,
@@ -192,7 +187,6 @@
                 });
             },
             getProgressbefore() {
-                
 				const params = {
 					rType:1
 				};
@@ -328,8 +322,14 @@
                         percent,
                         largerThanOne
                     };
+                }else{
+                    const percent = 0;
+                    const largerThanOne = false;
+                    return {
+                        percent,
+                        largerThanOne
+                    };
                 }
-                return {};
             },
         }
     };

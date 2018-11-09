@@ -19,6 +19,7 @@
           class="company">
           <span class="left label">{{ fundTree.name }}</span>
           <span
+            v-if="fundTree.children"
             :class="{percent: true, red: !calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne, blue: calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne}"
             class="right" >{{ calculatePercent(fundTree.real_total, fundTree.target_total).percent + '%' }}</span>
           <div 
@@ -28,6 +29,7 @@
         <!-- 有多个tree -->
         <el-tree 
           ref="tree"
+          empty-text="正在加载"
           :props="defaultProps" 
           node-key="cid"
           :highlight-current="highlight" 
@@ -232,14 +234,6 @@
     // 智能评选和智能策略
     import IntelligentSelection from '../../components/IntelligentSelection';
 
-    // tree
-    import tree from './mock/productTreeData.js';
-    // mock
-    import mockPieData from './mock/pieData.js';
-    import mockTrendData from './mock/trendData.js';
-    import mockAverageData from './mock/averageData.js';
-    import mockHeatmapData from './mock/heatmapData.js';
-
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
         children: 'children',
@@ -275,9 +269,6 @@
                 },
                 cid:1,
                 loading: false,
-                // tree
-                tree: tree,
-                treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
                 // index
                 index0: 0,
@@ -285,11 +276,6 @@
                 index2: 0,
                 index3: 0,
                 index4: 0,
-                // mockData
-                pieData: mockPieData(),
-                trendData: mockTrendData(),
-                averageData: mockAverageData(),
-                heatmapData: mockHeatmapData(),
                 // stragety
                 stragetyCheckList: [],
                 stragetyTitle: '',
@@ -567,8 +553,15 @@
                   percent,
                   largerThanOne
               };
+          }else{
+            const percent = 0;
+            const largerThanOne = false;
+            return {
+                  percent,
+                  largerThanOne
+              };
           }
-          return {};
+          
       },
       clickIndex(i, idx) {
           this[`index${i}`] = idx;

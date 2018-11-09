@@ -15,10 +15,13 @@
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ organizationTree.name }}</span>
-          <span class="right">{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
+          <span
+            v-if="organizationTree.children"
+            class="right">{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
         </div>
         <!-- 有多个tree -->
         <el-tree 
+          empty-text="正在加载"
           :data="organizationTree.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
@@ -37,7 +40,7 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="18" 
+        :span="19" 
         class="overflow">
         <el-row v-loading="loading">
           <Card v-if="type==1||type==3">
@@ -110,10 +113,6 @@
 	import ConOrgComparisonAverage from '../../components/ConOrgnization';
 	import ConOrgComparisonAverageBig from '../../components/ConOrgnizationBig';
 
-	import mockPieData from './mock/pieData.js';
-	import mockComparisonAverageData from './mock/comparisonAverageData.js';
-	import tree from './mock/productTreeData.js';
-
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
         children: 'children',
@@ -144,11 +143,7 @@
 				},
 				loading: false,
 				cid: 1,
-				tree: tree,
-				treeData: tree.data.children,
 				defaultProps: TREE_PROPS,
-				pieData: mockPieData(),
-				comparisonAverageData: mockComparisonAverageData(),
 				index0: 0,
 				index1: 0,
 				length:0,
@@ -340,8 +335,14 @@
 						percent,
 						largerThanOne
 					};
+				}else{
+						const percent = 0;
+						const largerThanOne = false;
+						return {
+								percent,
+								largerThanOne
+						};
 				}
-				return {};
 			},
 		}
 	};

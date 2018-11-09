@@ -11,177 +11,302 @@
       :gutter="20">
       <el-col 
         :span="5" 
-        class="tree_container">
-        <div v-if="hasTree">
-          <div class="title">毛利目标达成率</div>
-          <div 
-            @click="click" 
-            :class="{bac:isbac}"
-            class="company">
-            <span class="left label">{{ productTree.name }}</span>
-            <span
-              v-if="productTree.children"
-              :class="{percent: true, red: !calculatePercent(productTree.real_total, productTree.target_total).largerThanOne, blue: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              class="right" >{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
-            <div 
-              :class="{comprogress: true, 'border-radius0': calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '100%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}"/>
-              
+        class="tree_container1">
+        <div class="homeSlider">
+          <div class="slider_header">首页</div>
+          <!-- <template
+            v-for="(item,index) in step">
+            <div class="slider_menu">
+              <div @click="dian(index)">{{ item.title }}</div>
+            </div>
+          </template> -->
+          <div class="slider_menu" >
+            <div class="menu_company"><span class="company_before" /> 公司关键经营指标</div>
+            <a
+              class="menu_list" 
+              href="#produce"> 产品效率
+              <img 
+                class="menu_list_img"
+                src="../../assets/right.png" 
+                alt=""></a>
+            <a 
+              class="menu_list"
+              href="#channel"> 渠道效率
+              <img 
+                class="menu_list_img"
+                src="../../assets/right.png" 
+                alt=""></a>
+            <a 
+              class="menu_list"
+              href="#customer"> 客户效率
+              <img 
+                class="menu_list_img"
+                src="../../assets/right.png" 
+                alt=""></a>
+            <a 
+              class="menu_list"
+              href="#organization"> 组织效率
+              <img 
+                class="menu_list_img"
+                src="../../assets/right.png" 
+                alt=""></a>
+            <a 
+              class="menu_list"
+              href="#fund">资金效率
+              <img 
+                class="menu_list_img"
+                src="../../assets/right.png" 
+                alt=""></a>
           </div>
         </div>
-        <!-- 有多个tree -->
-        <el-tree 
-          ref="tree"
-          empty-text="正在加载"
-          node-key="cid"
-          :highlight-current="highlight" 
-          :expand-on-click-node="false" 
-          :props="defaultProps" 
-          :data="productTree.children"
-          :default-expanded-keys="nodeArr"
-          @node-click="handleNodeClick">
-          <span 
-            class="custom-tree-node" 
-            slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
-            <div 
-              :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
-              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
-          </span>
-        </el-tree>
       </el-col>
       <el-col 
         :span="18" 
-        class="overflow">
-        <el-row v-loading="loading">
-          <Card>
-            <el-row class="card-title">目标达成情况总览</el-row>
-            <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in progressArr">
+        class="overflow common">
+        <el-row id="#company">
+          <span 
+            class="common-title">
+            公司关键经营指标
+          </span>
+          <el-row v-loading="loading">
+            <Card>
+              <div class="card_company">
+                <el-row class="card-title">目标达成情况总览</el-row>
+                <el-row>
+                  <el-col>
+                    <template v-for="(item, index) in progressArr">
+                      <el-col 
+                        :key="index">
+                        <ProTargetAchievement 
+                          :id="`${index}`" 
+                          :data="item"/>
+                      </el-col>
+                    </template>
+                  </el-col>
+                </el-row>
+              </div>
+              <div class="card_company_target">
+                <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                <template v-for="(item, index) in trendArr">
                   <el-col 
                     :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(0 ,index)">
-                    <ProTargetAchievement 
+                    @click.native="clickIndex(1 ,index)">
+                    <ProTargetActualDiffTrend 
                       :id="`${index}`" 
                       :data="item"/>
                   </el-col>
                 </template>
-              </el-col>
-              <el-col 
-                v-if="progressArr.length > 0" 
-                :span="8" 
-                class="border-left">
-                <ProTargetAchievementBig 
-                  :id="'select'" 
-                  :data="progressArr[index0]"/>
-              </el-col>
-            </el-row>
-          </Card>
+              </div>
+            </Card>
+          </el-row>
         </el-row>
-        <el-row 
+        <el-row
+          id="produce" 
           v-loading="loading" 
-          class="margin-top-10">
-          <Card>
-            <el-row class="card-title">目标-实际-差异趋势分析</el-row>
-            <el-row>
-              <template v-for="(item, index) in trendArr">
-                <el-col 
-                  :key="index" 
-                  :span="12" 
-                  @click.native="clickIndex(1 ,index)">
-                  <ProTargetActualDiffTrend 
-                    :id="`${index}`" 
-                    :data="item"/>
-                </el-col>
-              </template>
-            </el-row>
-          </Card>
-        </el-row>
-        <el-row 
-          v-loading="loading" 
-          class="margin-top-10">
-          <Card>
-            <el-row class="card-title">同比环比趋势分析</el-row>
-            <el-row>
-              <template v-for="(item, index) in trendArr">
-                <el-col 
-                  :key="index" 
-                  :span="12" 
-                  @click.native="clickIndex(2 ,index)">
-                  <ProYearOnYearTrend 
-                    :id="`${index}`" 
-                    :data="item"/>
-                </el-col>
-              </template>
-            </el-row>
-          </Card>
-        </el-row>
-        <el-row 
-          v-loading="loading" 
-          class="margin-top-10">
-          <Card>
-            <el-row class="card-title">比例结构与平均值对比分析</el-row>
-            <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in structureArr">
+          class="margin-top-50">
+          <span class="common-title">
+            产品效率-单品平均效率
+          </span>
+          <el-row v-loading="loading">
+            <Card>
+              <div class="card_company">
+                <el-row class="card-title">目标达成情况总览</el-row>
+                <el-row>
+                  <el-col>
+                    <template v-for="(item, index) in pieDataProduce">
+                      <el-col 
+                        v-if="progressArr.length>0"
+                        :key="index" >
+                        <ProTargetAchievement 
+                          :id="`${index+progressArr.length}`" 
+                          :data="item"/>
+                      </el-col>
+                    </template>
+                  </el-col>
+                </el-row>
+              </div>
+              <div class="card_company_target">
+                <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                <template v-for="(item, index) in trend">
                   <el-col 
+                    v-if="trendArr.length>0"
                     :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(3 ,index)">
-                    <ProportionalStructureAverageComparison 
-                      :id="`${index}`" 
+                    @click.native="clickIndex(1 ,index)">
+                    <ProTargetActualDiffTrend 
+                      :id="`${index+trendArr.length}`" 
                       :data="item"/>
                   </el-col>
                 </template>
-              </el-col>
-              <el-col 
-                :span="8" 
-                class="border-left">
-                <ProportionalStructureAverageComparisonBig 
-                  v-if="structureArr.length>0" 
-                  id="ProportionalStructureAverageComparisonBig"
-                  :data="structureArr[index3]"/>
-              </el-col>
-            </el-row>
-          </Card>
+              </div>
+            </Card>
+          </el-row>
         </el-row>
         <el-row 
+          id="channel"
+          v-loading="loading" 
+          class="margin-top-50">
+          <span class="common-title">
+            渠道效率-单店平均效率
+          </span>
+          <el-row v-loading="loading">
+            <Card>
+              <div class="card_company">
+                <el-row class="card-title">目标达成情况总览</el-row>
+                <el-row>
+                  <el-col>
+                    <template v-for="(item, index) in pieData1">
+                      <el-col 
+                        v-if="progressArr.length>0"
+                        :key="index" >
+                        <ProTargetAchievement 
+                          :id="`${index+progressArr.length*2}`" 
+                          :data="item"/>
+                      </el-col>
+                    </template>
+                  </el-col>
+                </el-row>
+              </div>
+              <div class="card_company_target">
+                <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                <template v-for="(item, index) in dataChannel">
+                  <el-col 
+                    v-if="trendArr.length>0"
+                    :key="index" 
+                    @click.native="clickIndex(1 ,index)">
+                    <ProTargetActualDiffTrend 
+                      :id="`${index+trendArr.length*2}`" 
+                      :data="item"/>
+                  </el-col>
+                </template>
+              </div>
+            </Card>
+          </el-row>
+        </el-row>
+        <el-row 
+          id="customer"
           v-loading="loading" 
           class="margin-top-10">
-          <Card>
-            <el-row class="card-title">智能评选和智能策略</el-row>
-            <el-row>
-              <el-col :span="14">
-                <IntelligentSelection 
-                  id="rank" 
-                  @showStragety="showStragety" 
-                  :data="rankArr"/>
-              </el-col>
-              <el-col :span="10">
-                <div class="stragety">
-                  <div class="stragety-title">智能策略</div>
-                  <div class="stragety-box">
-                    <div class="stragety-selected-title">{{ stragetyTitle }}</div>
-                    <el-checkbox-group 
-                      v-model="stragetyCheckList">
-                      <el-checkbox 
-                        v-for="(item,index) in stragety" 
+          <span class="common-title">
+            客户效率-消费者人均效率
+          </span>
+          <el-row v-loading="loading">
+            <Card>
+              <div class="card_company">
+                <el-row class="card-title">目标达成情况总览</el-row>
+                <el-row>
+                  <el-col>
+                    <template v-for="(item, index) in pieCustomer">
+                      <el-col 
+                        v-if="progressArr.length>0"
                         :key="index" 
-                        :label="item.id" 
-                        @change="change">{{ item.strategy }}</el-checkbox>
-                    </el-checkbox-group>
-                    <el-button 
-                      @click="submit" 
-                      type="primary" 
-                      class="center">确 认</el-button>
-                  </div>
-                </div>
-              </el-col>
-            </el-row>
-          </Card>
+                        @click.native="clickIndex(0 ,index)">
+                        <ProTargetAchievement 
+                          :id="`${index+progressArr.length*3}`" 
+                          :data="item"/>
+                      </el-col>
+                    </template>
+                  </el-col>
+                </el-row>
+              </div>
+              <div class="card_company_target">
+                <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                <template v-for="(item, index) in dataCustomer">
+                  <el-col 
+                    v-if="trendArr.length>0"
+                    :key="index" 
+                    @click.native="clickIndex(1 ,index)">
+                    <ProTargetActualDiffTrend 
+                      :id="`${index+trendArr.length*3}`" 
+                      :data="item"/>
+                  </el-col>
+                </template>
+              </div>
+            </Card>
+          </el-row>
+        </el-row>
+        <el-row 
+          id="organization"
+          v-loading="loading" 
+          class="margin-top-10">
+          <span class="common-title">
+            组织效率-企业人均效率
+          </span>
+          <el-row v-loading="loading">
+            <Card>
+              <div class="card_company">
+                <el-row class="card-title">目标达成情况总览</el-row>
+                <el-row>
+                  <el-col>
+                    <template v-for="(item, index) in pieOrganization">
+                      <el-col 
+                        v-if="progressArr.length>0"
+                        :key="index" 
+                        @click.native="clickIndex(0 ,index)">
+                        <ProTargetAchievement 
+                          :id="`${index+progressArr.length*4}`" 
+                          :data="item"/>
+                      </el-col>
+                    </template>
+                  </el-col>
+                </el-row>
+              </div>
+              <div class="card_company_target">
+                <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                <template v-for="(item, index) in dataOrganization">
+                  <el-col 
+                    v-if="trendArr.length>0"
+                    :key="index" 
+                    @click.native="clickIndex(1 ,index)">
+                    <ProTargetActualDiffTrend 
+                      :id="`${index+trendArr.length*4}`" 
+                      :data="item"/>
+                  </el-col>
+                </template>
+              </div>
+            </Card>
+          </el-row>
+        </el-row>
+        <el-row 
+          id="fund"
+          v-loading="loading" 
+          class="margin-top-10">
+          <span class="common-title">
+            资金效率
+          </span>
+          <el-row v-loading="loading">
+            <Card>
+              <div class="card_company">
+                <el-row class="card-title">目标达成情况总览</el-row>
+                <el-row>
+                  <el-col>
+                    <template v-for="(item, index) in pieFund">
+                      <el-col 
+                        v-if="progressArr.length>0"
+                        :key="index" 
+                        @click.native="clickIndex(0 ,index)">
+                        <ProTargetAchievement 
+                          :id="`${index+progressArr.length*5}`" 
+                          :data="item"/>
+                      </el-col>
+                    </template>
+                  </el-col>
+                </el-row>
+              </div>
+              <div class="card_company_target">
+                <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                <template v-for="(item, index) in dataFund">
+                  <el-col 
+                    v-if="trendArr.length>0"
+                    :key="index" 
+                    @click.native="clickIndex(1 ,index)">
+                    <ProTargetActualDiffTrend 
+                      :id="`${index+trendArr.length*5}`" 
+                      :data="item"/>
+                  </el-col>
+                </template>
+              </div>
+            </Card>
+          </el-row>
         </el-row>
       </el-col>
     </el-row>
@@ -204,7 +329,11 @@
 	import ProportionalStructureAverageComparison from 'components/ProportionalStructureAverageComparison';
 	import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
 	// 智能评选和智能策略
-    import IntelligentSelection from 'components/IntelligentSelection';
+		import IntelligentSelection from 'components/IntelligentSelection';
+		
+		// mock
+		import { dataProduce,dataChannel,dataCustomer,dataOrganization,dataFund } from './mock/trendData.js';
+		import { pieChannel,pieDataProduce,pieCustomer,pieOrganization,pieFund } from './mock/pieData.js';
     
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
@@ -237,8 +366,28 @@
                     date: [], // date
                     search: '', // 暂时没有接口 先这样
                     subject: 'S', // S: 销售额 P: 利润额
-                },
-                cid: 1,
+								},
+								pieData1:pieChannel(),
+								pieDataProduce:pieDataProduce(),
+								pieCustomer:pieCustomer(),
+								pieOrganization:pieOrganization(),
+								pieFund:pieFund(),
+								trend:dataProduce(),
+								dataChannel:dataChannel(),
+								dataCustomer:dataCustomer(),
+								dataOrganization:dataOrganization(),
+								dataFund:dataFund(),
+								// mockData
+                // pieData: mockPieData(),
+								cid: 1,
+								step:[
+									{ title:'公司关键经营指标' },
+									{ title:'产品效率' },
+									{ title:'渠道效率' },
+									{ title:'客户效率' },
+									{ title:'组织效率' },
+									{ title:'资金效率' },
+								],
                 defaultProps: TREE_PROPS,
                 loading: false,
                 // index
@@ -260,21 +409,15 @@
             };
         },
         computed: {
-            ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr']),
-            hasTree() {
-                return !_.isEmpty(this.productTree);
-            }
+            ...mapGetters(['productTree','trendArr','rankArr','structureArr','progressArr', 'channelProgressArr','channelTrendArr'])
+            // hasTree() {
+            //     return !_.isEmpty(this.productTree);
+            // }
         },
         mounted() {
-            // this.initFormDataFromUrl();
-            if(!this.hasTree) {
-                this.getTree();
-            }
-            
             this.getProgress();
             this.getStructure();
             this.getRank();
-
         },
         watch: {
             // form: [
@@ -301,6 +444,7 @@
             }
         },
         methods: {
+					
             click(){
                 if(this.cid==this.productTree.cid){
                     return;
@@ -544,14 +688,8 @@
 						percent,
 						largerThanOne
 					};
-				}else{
-                    const percent = 0;
-                    const largerThanOne = false;
-                    return {
-                        percent,
-                        largerThanOne
-                    };
-                }
+				}
+				return {};
 			},
 			clickIndex(i, idx) {
 				this[`index${i}`] = idx;
@@ -593,6 +731,6 @@
 </script>
 
 <style lang="scss">
-    @import './style/overview.scss';
-    
+   @import '../Product/style/overview.scss';
+	@import './style/home.scss'
 </style>

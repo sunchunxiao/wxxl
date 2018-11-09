@@ -15,10 +15,14 @@
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ channelTree.name }}</span>
-          <span class="right">{{ calculatePercent(channelTree.real_total, channelTree.target_total).percent + '%' }}</span>
+          <span
+            v-if="channelTree.children"
+            class="right">{{ calculatePercent(channelTree.real_total, channelTree.target_total).percent + '%' }}</span>
         </div>
         <!-- 有多个tree -->
         <el-tree 
+          empty-text="正在加载"
+          check-strictly
           :data="channelTree.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
@@ -82,10 +86,6 @@
     import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
     import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 
-    import mockPieData from './mock/pieData.js';
-    import mockComparisonAverageData from './mock/comparisonAverageData.js';
-    import tree from './mock/channelData.js';
-
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
         children: 'children',
@@ -116,11 +116,7 @@
                 },
                 cid:1,
                 loading:false,
-                tree: tree,
-                treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
-                pieData: mockPieData(),
-                comparisonAverageData: mockComparisonAverageData(),
                 index0: 0,
                 val:{},
                 post:1,
@@ -271,8 +267,14 @@
                         percent,
                         largerThanOne
                     };
+                }else{
+                    const percent = 0;
+                    const largerThanOne = false;
+                    return {
+                        percent,
+                        largerThanOne
+                    };
                 }
-                return {};
             },
         }
     };

@@ -6,6 +6,7 @@ import organizationRoute from './organization';
 import customerRoute from './customer';
 import fundRoute from './fund';
 import channelRoute from './channel';
+import homeRoute from './home';
 
 Vue.use(Router);
 
@@ -25,6 +26,7 @@ export default new Router({
             ...customerRoute,
             ...fundRoute,
             ...channelRoute,
+            ...homeRoute
         ] }, {
             path: '/index',
             name: 'index',
@@ -33,11 +35,7 @@ export default new Router({
             path: '/login',
             name: 'login',
             component: () => import('views/Login.vue')
-        }, {
-            path: '/searchbar',
-            name: 'searchbar',
-            component: () => import('components/SearchBar.vue')
-        }, {
+        },  {
             path: '/404',
             name: '404',
             component: () => import('views/404.vue')

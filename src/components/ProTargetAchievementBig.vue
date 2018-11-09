@@ -25,7 +25,7 @@ const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
 const COLORMAP = { over: '#b12725', below: '#308db9' };
 const colorLeft = '#E0E3E9';
 const FONTSIZE1 = 56;
-const FONTSIZE2 = 30;
+const FONTSIZE2 = 20;
 const FONTWEIGHT = 600;
 
 export default {
@@ -103,6 +103,7 @@ export default {
                 tooltip: {
                     trigger: 'item',
                 },
+                
                 grid: {
                     left: 0,
                     right: 0,
@@ -113,6 +114,7 @@ export default {
                 series: [{
                     type: 'pie',
                     radius: ['100', '120'],
+                    name:subject_name,
                     hoverAnimation: false,
                     label: {
                         normal: {
@@ -121,7 +123,7 @@ export default {
                     },
                     data: [{
                             value: valuePercent,
-                            name: '',
+                            name: subject_name,
                             itemStyle: {
                                 normal: {
                                     color: color,
@@ -151,6 +153,7 @@ export default {
                             label: {
                                 normal: {
                                     textStyle: {
+                                        width:'20px',
                                         fontSize: FONTSIZE2,
                                         fontWeight: FONTWEIGHT,
                                         color: '#5e5e5e'
@@ -181,7 +184,7 @@ export default {
                     ]
                 }]
             };
-            this.chart.setOption(options);
+            this.chart.setOption(options,true);
         }
     }
 };

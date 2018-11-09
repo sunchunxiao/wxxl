@@ -79,7 +79,7 @@ export default {
                     this.submitLoading = true;
                     API.Login(this.form).then(res => {
                         setToken(res.token);
-                        this.$router.replace('/product/overview');
+                        this.$router.replace('/home');
                     }).catch(e => {
                         this.form.password = '';
                         // eslint-disable-next-line

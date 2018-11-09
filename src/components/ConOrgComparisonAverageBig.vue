@@ -31,6 +31,7 @@
         },
         methods: {
             renderChart(data) {
+                
                 const { timeLabels } = data;
                 let _this = this;
                 const options = {

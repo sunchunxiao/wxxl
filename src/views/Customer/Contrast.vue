@@ -15,10 +15,13 @@
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ customerTree.name }}</span>
-          <span class="right">{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
+          <span
+            v-if="customerTree.children"
+            class="right">{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
         </div>
         <!-- 有多个tree -->
         <el-tree 
+          empty-text="正在加载"
           :data="customerTree.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
@@ -37,7 +40,7 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="20" 
+        :span="19" 
         class="overflow">
         <el-row>
           <Card>
@@ -80,10 +83,6 @@
     import ConOrgComparisonAverage from '../../components/ConOrgnization';
     import ConOrgComparisonAverageBig from '../../components/ConOrgnizationBig';
 
-    import mockPieData from './mock/pieData.js';
-    import mockComparisonAverageData from './mock/comparisonAverageData.js';
-    import tree from './mock/productTreeData.js';
-
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
         children: 'children',
@@ -113,11 +112,7 @@
                     version: '0'
                 },
                 cid:1,
-                tree: tree,
-                treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
-                pieData: mockPieData(),
-                comparisonAverageData: mockComparisonAverageData(),
                 index0: 0,
                 val:{},
 				post:1,
@@ -153,7 +148,6 @@
                 const params = {
                     subject: this.form.subject,
                     ...this.getPeriodByPt(),
-                    version: this.form.version
                 };
                 API.GetCusTree(params).then(res => {
                     //                  console.log(res.tree)
@@ -180,7 +174,6 @@
 					cid: this.cid,
 					...this.getPeriodByPt(),
 					subject: subject,
-					version: this.form.version,
 					rType: 1
 				};
 				return API.GetCusCompare(params);
@@ -267,8 +260,14 @@
                         percent,
                         largerThanOne
                     };
+                }else{
+                    const percent = 0;
+                    const largerThanOne = false;
+                    return {
+                        percent,
+                        largerThanOne
+                    };
                 }
-                return {};
             },
         }
     };

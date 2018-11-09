@@ -1,8 +1,28 @@
 <template>
   <el-menu 
+    @select="select"
     :default-active="activePath" 
     router 
     :collapse="isCollapse">
+    <el-menu-item
+      :class="{homeBac:home_bac}"
+      index="/home">
+      <img 
+        class="menu_icon" 
+        :src="require(`../assets/3.png`)" 
+      >
+      <span 
+        class="home"
+        style="color:#fff" 
+        slot="title">首页</span>
+      
+    </el-menu-item>
+    <!-- <template >
+      <div 
+        :class="{homeBac:home_bac}"
+        class="home"
+        @click="home">首页</div>
+    </template> -->
     <template v-for="item in menuData">
       <el-submenu 
         :index="item.path" 
@@ -26,6 +46,7 @@
         </template>
       </el-submenu>
     </template>
+    
   </el-menu>
 </template>
 
@@ -124,12 +145,26 @@ export default {
     data () {
         return {
             menuData: MENUDATA,
-            activePath: '/product/overview'
+            activePath: '/home',
+            path:'/home',
+            home_bac:false,
         };
     },
     mounted() {
         this.activePath = this.$route.fullPath;
-    }
+        this.select();
+    },
+    methods:{
+        select(val){
+            
+            if(val == "/home"){
+                this.home_bac = true;
+            }else{
+                this.home_bac = false;
+            }
+        },
+        
+    },
 };
 </script>
 
@@ -158,9 +193,28 @@ $scale: 1.8;
 //         margin-right: 10px;
 //     }
 // }
+.el-menu-item:focus, .el-menu-item:hover{
+    
+    background-color: #26354c;
+}
 .menu_icon {
     margin: 0 10px 0 0;
 }
+.home{
+    color: #fff;
+    cursor: pointer;
+    font-size: 18px;
+}
+.el-menu-item{
+    border-left: 5px solid $bgcolor;
+}
+.homeBac{
+    background-color: #26354c;
+    border-left: 5px solid #16abe3;
+}
+// .el-menu-item.is-active{
+//     border-left: 5px solid $bgcolor;
+// }
 ul.el-menu {
     background-color: $bgcolor;
     border-right: none;
@@ -196,6 +250,7 @@ ul.el-menu {
         background-color: $bgcolor;
         color: $white;
         padding: 0 0 0 50px!important;
+        border-left: 5px solid $bgcolor;
         .sub-text {
             padding: 2px 30px;
             border-radius: 10px;

@@ -19,6 +19,7 @@
           class="company">
           <span class="left label">{{ channelTree.name }}</span>
           <span
+            v-if="channelTree.children"
             :class="{percent: true, red: !calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne, blue: calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne}"
             class="right" >{{ calculatePercent(channelTree.real_total, channelTree.target_total).percent + '%' }}</span>
           <div 
@@ -29,6 +30,7 @@
         <el-tree 
           ref="tree"
           node-key="cid"
+          empty-text="正在加载"
           :expand-on-click-node="false"
           :highlight-current="highlight" 
           :data="channelTree.children" 
@@ -48,7 +50,7 @@
         </el-tree>
       </el-col>
       <el-col 
-        :span="18" 
+        :span="19" 
         v-loading="loading"
         class="overflow">
         <Card>
@@ -110,10 +112,6 @@
     import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
     import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 
-    import mockPieData from './mock/pieData.js';
-    import mockComparisonAverageData from './mock/comparisonAverageData.js';
-    import tree from './mock/channelData.js';
-
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
         children: 'children',
@@ -144,12 +142,8 @@
                 },
                 cid:1,
                 loading:false,
-                tree: tree,
-                treeData: tree.data.children,
                 defaultProps: TREE_PROPS,
                 time: '7.30 - 8.05',
-                pieData: mockPieData(),
-                comparisonAverageData: mockComparisonAverageData(),
                 index0: 0,
                 val:{},
 				post:1,
@@ -345,8 +339,14 @@
                         percent,
                         largerThanOne
                     };
+                }else{
+                    const percent = 0;
+                    const largerThanOne = false;
+                    return {
+                        percent,
+                        largerThanOne
+                    };
                 }
-                return {};
             },
         }
     };
