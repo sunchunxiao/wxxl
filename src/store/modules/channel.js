@@ -26,7 +26,10 @@ const channel = {
         },
         SAVE_CHANCOMPARE_ARR: (state, arr) => {
             state.channelCompareArr = arr;
-          },
+        },
+        CLEAR_CHANCOMPARE_ARR: state => {
+            state.channelCompareArr = [];
+        },
         SAVE_CHANHISTORY_ARR: (state, arr) => {
             state.channelHistoryArr = arr;
         },
@@ -49,7 +52,10 @@ const channel = {
         },
         SaveChannelCompareArr({ commit }, arr) {
             commit('SAVE_CHANCOMPARE_ARR', arr);
-          },
+        },
+        ClearChannelCompareArr({ commit }) {
+            commit('CLEAR_CHANCOMPARE_ARR');
+        },
         SaveChannelHistory({ commit }, arr) {
             commit('SAVE_CHANHISTORY_ARR', arr);
         },
