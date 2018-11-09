@@ -155,7 +155,6 @@
                 if (val.length > 0) {
                     const throttle = _.throttle(this.getCompare, 500);
                     throttle();
-                    
                 } else if (val.length === 0) {
                     this.$store.dispatch('ClearChannelCompareArr');
                 }
