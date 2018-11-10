@@ -117,6 +117,7 @@
                 index0: 0,
                 cidObjArr:[],
                 cancelKey: '',
+                isFirstLoad: true
             };
         },
         computed: {
@@ -144,15 +145,18 @@
                 let arr = [];
                 for(let i = 0; i < 3; i++) {
                     children[i] && arr.push(children[i]);
-                    
                 }
                 this.cidObjArr = arr;
-                const checkKeys = this.cidObjArr.map(i => i.cid);
+                const checkKeys = arr.map(i => i.cid);
                 this.$refs.tree.setCheckedKeys(checkKeys);
                 this.$store.dispatch('SaveProductTree', treeData.tree);
                 // 指标
                 const progressData = res[1];
                 this.$store.dispatch('SaveProgressData', progressData.data);
+                // 首次加载标志变量
+                this.$nextTick(() => {
+                    this.isFirstLoad = false;
+                });
             });
         },
 
@@ -173,14 +177,12 @@
             },
             getCompare() {
                 const promises = _.map(this.progressArr, o => this.getTrend(o.subject));
-                
                 Promise.all(promises).then(resultList => {
                     _.forEach(resultList, (v, k) => {
                         v.subject = this.progressArr[k].subject;
                         v.subject_name = this.progressArr[k].subject_name;
                     });
                     const cidName = this.cidObjArr.map(o => o.name);
-                    // console.log(cidName);
                     // 只有当返回的跟当前选中的一样才更新 store
                     if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                         this.$store.dispatch('SaveCompareArr', resultList);
@@ -192,10 +194,6 @@
                     ...this.getPeriodByPt(),
                     subject: subject
                 };
-                
-                // if(this.cidObjArr.length==4){
-                //     this.cidObjArr.pop();
-                // }
                 const checkKeys = this.cidObjArr.map(i => i.cid);
                 params.targets = checkKeys.join(',');
                 return API.GetProductCompare(params);
@@ -216,6 +214,10 @@
             },
             handleCheckChange(data, checked) {
                 // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
+                // 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
+                if (this.isFirstLoad) {
+                    return;
+                }
                 if(!checked && this.cancelKey && data.cid === this.cancelKey) {
                     return;
                 }
