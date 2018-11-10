@@ -22,6 +22,8 @@
         <!-- 有多个tree -->
         <el-tree 
           empty-text="正在加载"
+          ref="tree"
+          node-key="cid"
           :data="organizationTree.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
@@ -69,7 +71,6 @@
                   :index="index0"/>
               </el-col>
             </el-row>
-
           </Card>
           <Card v-if="type==2||type==3">
             <el-row class="card-title">组织对比分析和平均值分析后端</el-row>
@@ -110,8 +111,8 @@
 	import Card from '../../components/Card';
 	import SearchBar from 'components/SearchBarOrg';
 	// 组织对比分析和平均值分析
-	import ConOrgComparisonAverage from '../../components/ConOrgnization';
-	import ConOrgComparisonAverageBig from '../../components/ConOrgnizationBig';
+	import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
+	import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
@@ -152,6 +153,8 @@
 				post:1,
 				nodeArr:[],
 				idTarget:[10,20,30],
+				cidObjArr:[],
+        cancelKey: ''
 			};
 		},
 		computed: {
@@ -161,58 +164,128 @@
 			}
 		},
 		watch: {
-			form: {
-				handler: function() {},
-				deep: true
-			},
-			cid: function() {
-					// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-					// 暂时先在这里做
-					this.getProgressbefore();
-					this.getProgressback();
+			// form: {
+			// 	handler: function() {},
+			// 	deep: true
+			// },
+			// cid: function() {
+			// 		// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+			// 		// 暂时先在这里做
+			// 		this.getProgressbefore();
+			// 		this.getProgressback();
 
-			}
+			// }
+			cidObjArr(val) {
+                if (val.length > 0) {
+                    const throttle = _.throttle(this.getCompare, 500);
+                    throttle();
+                } else if (val.length === 0) {
+                    this.$store.dispatch('ClearCompareArr');
+                }
+            }
 		},
 		mounted() {
-			if (!this.hasTree) {
-				this.getTree();
-			}
-			this.getProgressbefore();
-			this.getProgressback();
+			// if (!this.hasTree) {
+			// 	this.getTree();
+			// }
+			// this.getProgressbefore();
+			// this.getProgressback();
+			Promise.all([this.getTree(), this.getProgressbefore(),this.getProgressback()]).then(res => {
+                // 树
+                const treeData = res[0];
+                const children = treeData.tree.children;
+                let arr = [];
+                for(let i = 0; i < 2; i++) {
+                    children[i] && arr.push(children[i]);
+								}
+								// for(let i = 0; i < children.length; i++) {
+								// 	if(children[i].type==1){
+								// 		for(let j=i;j<i+1;j++){
+								// 				children[i] && arr.push(children[i]);
+								// 		    console.log(arr);
+								// 		}
+								// 	} 
+                // }
+                
+                this.cidObjArr = arr;
+                const checkKeys = this.cidObjArr.map(i => i.cid);
+                this.$refs.tree.setCheckedKeys(checkKeys);
+                this.$store.dispatch('SaveOrgTree', treeData.tree);
+                // 前端指标
+                const progressData = res[1];
+                this.$store.dispatch('SaveOrgProgressData', progressData.data);
+                // 后端指标
+                // const progressbackData = res[1];
+                // this.$store.dispatch('SaveOrgProgressData', progressData.data);
+            });
 
 		},
 
 		methods: {
+			// getTree() {
+			// 	const params = {
+			// 		subject: this.form.subject,
+			// 		...this.getPeriodByPt(),
+			// 		version: this.form.version
+			// 	};
+			// 	API.GetOrgTree(params).then(res => {
+			// 		//                  console.log(res)
+			// 		this.type = res.tree.type;
+			// 		this.$store.dispatch('SaveOrgTree', res.tree);
+			// 	});
+			// },
 			getTree() {
-				const params = {
-					subject: this.form.subject,
-					...this.getPeriodByPt(),
-					version: this.form.version
-				};
-				API.GetOrgTree(params).then(res => {
-					//                  console.log(res)
-					this.type = res.tree.type;
-					this.$store.dispatch('SaveOrgTree', res.tree);
-				});
+						const params = {
+								subject: this.form.subject,
+								...this.getPeriodByPt(),
+								version: this.form.version
+						};
+						return API.GetOrgTree(params);
 			},
 			getProgressbefore() {
-				const params = {
-					rType:1
-				};
-				API.GetOrgSubject(params).then(res => {
-					// console.log(res.data)
-					// this.$store.dispatch('SaveOrgProgressData', res.data);
-					const promises = _.map(res.data, o => this.getTrend(o.subject));
-					Promise.all(promises).then(resultList => {
-						_.forEach(resultList, (v, k) => {
-							v.subject = res.data[k].subject;
-							v.subject_name = res.data[k].subject_name;
-						});
-
-						this.$store.dispatch('SaveOrgCompareArr', resultList);
-					});
-				});
+					const params = {
+							rType:1
+					};
+					return API.GetOrgSubject(params);
 			},
+			getProgressback() {
+					const params = {
+							rType:2
+					};
+					return API.GetOrgSubject(params);
+			},
+			getCompare() {
+					const promises = _.map(this.orgprogressArr, o => this.getTrend(o.subject));
+					Promise.all(promises).then(resultList => {
+							_.forEach(resultList, (v, k) => {
+									v.subject = this.orgprogressArr[k].subject;
+									v.subject_name = this.orgprogressArr[k].subject_name;
+							});
+							const cidName = this.cidObjArr.map(o => o.name);
+							// 只有当返回的跟当前选中的一样才更新 store
+							if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
+									this.$store.dispatch('SaveOrgCompareArr', resultList);
+							}
+					});
+      },
+			// getProgressbefore() {
+			// 	const params = {
+			// 		rType:1
+			// 	};
+			// 	API.GetOrgSubject(params).then(res => {
+			// 		// console.log(res.data)
+			// 		// this.$store.dispatch('SaveOrgProgressData', res.data);
+			// 		const promises = _.map(res.data, o => this.getTrend(o.subject));
+			// 		Promise.all(promises).then(resultList => {
+			// 			_.forEach(resultList, (v, k) => {
+			// 				v.subject = res.data[k].subject;
+			// 				v.subject_name = res.data[k].subject_name;
+			// 			});
+
+			// 			this.$store.dispatch('SaveOrgCompareArr', resultList);
+			// 		});
+			// 	});
+			// },
 			getTrend(subject) {
 				const params = {
 					targets: this.idTarget.join(),
@@ -223,23 +296,49 @@
 				};
 				return API.GetOrgCompare(params);
 			},
-			getProgressback() {
-				const params = {
-					rType:2
-				};
-				API.GetOrgSubject(params).then(res => {
+			// getProgressback() {
+			// 	const params = {
+			// 		rType:2
+			// 	};
+			// 	API.GetOrgSubject(params).then(res => {
 
-					const promises = _.map(res.data, o => this.getTrendback(o.subject));
-					Promise.all(promises).then(resultList => {
-						_.forEach(resultList, (v, k) => {
-							v.subject = res.data[k].subject;
-							v.subject_name = res.data[k].subject_name;
-						});
+			// 			let params = {
+			// 					...this.getPeriodByPt(),
+			// 					subject: subject,
+			// 					version: this.form.version,
+			// 					rType: 1
+			// 			};
+			// 			const checkKeys = this.cidObjArr.map(i => i.cid);
+			// 			params.targets = checkKeys.join(',');
+			// 			return API.GetOrgCompare(params);
+			// });
+			// },
+			// getTrend(subject) {
+			// 	const params = {
+			// 		cid: this.cid,
+			// 		...this.getPeriodByPt(),
+			// 		subject: subject,
+			// 		version: this.form.version,
+			// 		rType: 1
+			// 	};
+			// 	return API.GetOrgCompare(params);
+			// },
+			// getProgressback() {
+			// 	const params = {
+			// 		rType:2
+			// 	};
+			// 	API.GetOrgSubject(params).then(res => {
+			// 		const promises = _.map(res.data, o => this.getTrendback(o.subject));
+			// 		Promise.all(promises).then(resultList => {
+			// 			_.forEach(resultList, (v, k) => {
+			// 				v.subject = res.data[k].subject;
+			// 				v.subject_name = res.data[k].subject_name;
+			// 			});
 
-						this.$store.dispatch('SaveOrgCompareArrback', resultList);
-					});
-				});
-			},
+			// 			this.$store.dispatch('SaveOrgCompareArrback', resultList);
+			// 		});
+			// 	});
+			// },
 			getTrendback(subject) {
 				const params = {
 					cid: this.cid,
@@ -309,7 +408,7 @@
 						this.loading = false;
 				}, 1000);
 						
-				},
+		},
 			handleNodeClick(data) {
 				this.$refs.child.parentMsg(this.post);
 				this.type = data.type;
