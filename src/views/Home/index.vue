@@ -14,31 +14,20 @@
         class="tree_container1">
         <div class="homeSlider">
           <div class="slider_header">首页</div>
-          <!-- <template
-            v-for="(item,index) in step">
-            <div class="slider_menu">
-              <div @click="dian(index)">{{ item.title }}</div>
-            </div>
-          </template> -->
           <div class="slider_menu" >
             <div class="menu_company"><span class="company_before" /> 公司关键经营指标</div>
-            <!-- <div class="menu_list"> -->
-            <a
-              class="menu_list" 
-              href="#produce"> 产品效率</a>
-            <!-- </div> -->
-            <a 
-              class="menu_list"
-              href="#channel"> 渠道效率</a>
-            <a 
-              class="menu_list"
-              href="#customer"> 客户效率</a>
-            <a 
-              class="menu_list"
-              href="#organization"> 组织效率</a>
-            <a 
-              class="menu_list"
-              href="#fund">资金效率</a>
+            <template v-for="(item,index) in menuData">
+              <a 
+                class="menu_list"
+                :href="item.path"
+                @click="select(index)"
+                :class="{'menu_list_select':style==index}"
+                :key="item.path">{{ item.title }}
+                <img 
+                  class="menu_list_img"
+                  src="../../assets/right.png" 
+                  alt=""></a>
+            </template>
           </div>
         </div>
       </el-col>
@@ -167,7 +156,7 @@
         <el-row 
           id="customer"
           v-loading="loading" 
-          class="margin-top-10">
+          class="margin-top-50">
           <span class="common-title">
             客户效率-消费者人均效率
           </span>
@@ -209,7 +198,7 @@
         <el-row 
           id="organization"
           v-loading="loading" 
-          class="margin-top-10">
+          class="margin-top-50">
           <span class="common-title">
             组织效率-企业人均效率
           </span>
@@ -251,7 +240,7 @@
         <el-row 
           id="fund"
           v-loading="loading" 
-          class="margin-top-10">
+          class="margin-top-50">
           <span class="common-title">
             资金效率
           </span>
@@ -322,6 +311,27 @@
         children: 'children',
         label: 'name'
     };
+    const MENUDATA = [{
+      title:'产品效率',
+      path:'#produce',
+    },
+    {
+      title:'渠道效率',
+      path:'#channel',
+    },
+    {
+      title:'客户效率',
+      path:'#customer',
+    },
+    {
+      title:'组织效率',
+      path:'#organization',
+    },
+    {
+      title:'资金效率',
+      path:'#fund',
+    },
+    ];
     // const TIMEPT = {
     //     '周': 'week',
     //     '月': 'month',
@@ -348,7 +358,8 @@
                     date: [], // date
                     search: '', // 暂时没有接口 先这样
                     subject: 'S', // S: 销售额 P: 利润额
-								},
+                },
+                menuData: MENUDATA,
 								pieData1:pieChannel(),
 								pieDataProduce:pieDataProduce(),
 								pieCustomer:pieCustomer(),
@@ -362,14 +373,6 @@
 								// mockData
                 // pieData: mockPieData(),
 								cid: 1,
-								step:[
-									{ title:'公司关键经营指标' },
-									{ title:'产品效率' },
-									{ title:'渠道效率' },
-									{ title:'客户效率' },
-									{ title:'组织效率' },
-									{ title:'资金效率' },
-								],
                 defaultProps: TREE_PROPS,
                 loading: false,
                 // index
@@ -388,6 +391,7 @@
                 nodeArr:[],
                 isbac:true,
                 highlight:true,
+                style:undefined
             };
         },
         computed: {
@@ -399,7 +403,7 @@
         mounted() {
             this.getProgress();
             this.getStructure();
-						this.getRank();
+            this.getRank();
         },
         watch: {
             // form: [
@@ -426,14 +430,9 @@
             }
         },
         methods: {
-					// dian(index){
-						// console.log(index);
-						
-						// this.$el.querySelector('.common-title');
-						// console.log(this.$el.querySelectorAll('.common-title'));
-						// let jump = this.$el.querySelectorAll('.common-title');
-						
-					// },
+					select(index){
+            this.style = index;
+          },
             click(){
                 if(this.cid==this.productTree.cid){
                     return;

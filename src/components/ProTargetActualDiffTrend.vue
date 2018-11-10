@@ -58,17 +58,23 @@ export default {
                     show: true,
                     trigger: 'axis'
                 },
-                toolbox: {
-                    show: true,
-                    feature: {
-                        dataZoom: {},
-                        dataView: {},
-                        restore: {},
-                        saveAsImage: {}
-                    },
-                    top: 0,
-                    right: 0
+                color:['#fcb448','#318cb8','#318cb8','#b12725'],
+                legend: {
+                    data: ['目标', '实际'],
+                    left:'right',
+                    show:true,
                 },
+                // toolbox: {
+                //     show: true,
+                //     feature: {
+                //         dataZoom: {},
+                //         dataView: {},
+                //         restore: {},
+                //         saveAsImage: {}
+                //     },
+                //     top: -5,
+                //     right: 150
+                // },
                 xAxis: {
                     type: 'category',
                     data: timeLabels
@@ -79,13 +85,16 @@ export default {
                 series: [
                     {
                         data: realClone,
+                        name:'实际',
                         type: 'line',
                         lineStyle: {
-                            type: 'dotted',
-                            width: 1
+                            color:'#fcb448',
+                            type: 'solid',
+                            width: 2
                         }
                     },
                     {
+                        name:'目标',
                         data: targetClone,
                         type: 'line',
                     },
@@ -93,7 +102,7 @@ export default {
                         data: bottom,
                         type: 'bar',
                         stack: 1,
-                        barWidth: 3,
+                        barWidth: 8,
                         itemStyle: {
                             normal: {
                                 color: 'rgba(0,0,0,0)'
@@ -105,11 +114,11 @@ export default {
                     },
                     {
                         data: diff,
+                        name:'差异',
                         type: 'bar',
                         stack: 1,
                         itemStyle: {
-                            color: function (param) {
-                                return -1 == underTarget.indexOf(param.dataIndex) ? '#b12725' : '#318cb8';
+                            color: function (param) {                                            return -1 == underTarget.indexOf(param.dataIndex) ? '#b12725' : '#318cb8';
                             }
                         },
                     }

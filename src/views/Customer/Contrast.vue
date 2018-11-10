@@ -148,7 +148,6 @@
                 const params = {
                     subject: this.form.subject,
                     ...this.getPeriodByPt(),
-                    version: this.form.version
                 };
                 API.GetCusTree(params).then(res => {
                     //                  console.log(res.tree)
@@ -175,7 +174,6 @@
 					cid: this.cid,
 					...this.getPeriodByPt(),
 					subject: subject,
-					version: this.form.version,
 					rType: 1
 				};
 				return API.GetCusCompare(params);

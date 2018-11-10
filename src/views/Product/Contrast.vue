@@ -12,16 +12,24 @@
       <el-col 
         :span="5" 
         class="tree_container">
+        <div>
+          <el-button 
+            @click="cleanChecked"
+            size="mini" 
+            class="clean_btn">清空选择</el-button>
+        </div>
+        <!-- <div 
+          @click="cleanChecked"
+          size="mini" 
+          class="clean_btn">
+          <span 
+            class="clean_select" >取消全部</span>
+        </div> -->
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ productTree.name }}</span>
           <span class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
         </div>
-        <el-button 
-          @click="cleanChecked"
-          size="mini" 
-          v-if="cidObjArr.length > 0"
-          class="clean_btn">清空选择</el-button>
         <el-tree 
           :data="productTree.children" 
           ref="tree" 
@@ -108,7 +116,8 @@
                 defaultProps: TREE_PROPS,
                 index0: 0,
                 cidObjArr:[],
-                cancelKey: ''
+                cancelKey: '',
+                isFirstLoad: true
             };
         },
         computed: {
@@ -122,6 +131,7 @@
                 if (val.length > 0) {
                     const throttle = _.throttle(this.getCompare, 500);
                     throttle();
+                    
                 } else if (val.length === 0) {
                     this.$store.dispatch('ClearCompareArr');
                 }
@@ -138,13 +148,17 @@
                 }
                 
                 this.cidObjArr = arr;
-                const checkKeys = this.cidObjArr.map(i => i.cid);
+                const checkKeys = arr.map(i => i.cid);
                 this.$refs.tree.setCheckedKeys(checkKeys);
                 this.$store.dispatch('SaveProductTree', treeData.tree);
                 // 指标
                 const progressData = res[1];
                 this.$store.dispatch('SaveProgressData', progressData.data);
-                
+
+                // 首次加载标志变量
+                this.$nextTick(() => {
+                    this.isFirstLoad = false;
+                });
             });
         },
 
@@ -202,6 +216,10 @@
             },
             handleCheckChange(data, checked) {
                 // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
+                // 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
+                if (this.isFirstLoad) {
+                    return;
+                }
                 if(!checked && this.cancelKey && data.cid === this.cancelKey) {
                     return;
                 }

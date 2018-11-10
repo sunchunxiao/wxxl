@@ -4,7 +4,7 @@
     :default-active="activePath" 
     router 
     :collapse="isCollapse">
-    <el-menu-item
+    <!-- <el-menu-item
       :class="{homeBac:home_bac}"
       index="/home">
       <img 
@@ -15,8 +15,7 @@
         class="home"
         style="color:#fff" 
         slot="title">首页</span>
-      
-    </el-menu-item>
+    </el-menu-item> -->
     <!-- <template >
       <div 
         :class="{homeBac:home_bac}"
@@ -156,7 +155,6 @@ export default {
     },
     methods:{
         select(val){
-            
             if(val == "/home"){
                 this.home_bac = true;
             }else{

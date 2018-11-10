@@ -346,7 +346,6 @@
                 const params = {
                     subject: this.form.subject,
                     ...this.getPeriodByPt(),
-                    version: this.form.version
                 };
                 API.GetCusTree(params).then(res => {
                     //                  console.log(res.tree)
@@ -357,7 +356,6 @@
 				const params = {
 					cid: this.cid,
 					...this.getPeriodByPt(),
-					version: this.form.version
 				};
 				API.GetCusProgress(params).then(res => {
 					this.$store.dispatch('SaveCusProgressData', res.data);
@@ -376,7 +374,6 @@
 					cid: this.cid,
 					...this.getPeriodByPt(),
 					subject: subject,
-					version: this.form.version
 				};
 				return API.GetCusTrend(params);
 			},
@@ -384,7 +381,6 @@
 				const params = {
 					cid: this.cid,
 					...this.getPeriodByPt(),
-					version: this.form.version,
 				};
 				API.GetCusStructure(params).then(res => {
 					this.$store.dispatch('SaveCusStructureArr', res.data);
@@ -393,7 +389,6 @@
             getRank() {
 				const params = {
 					cid: this.cid,
-					version: this.form.version,
 					...this.getPeriodByPt(),
 				};
 				API.GetCusRank(params).then(res => {

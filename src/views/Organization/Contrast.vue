@@ -150,7 +150,8 @@
 				type:3,
 				val:{},
 				post:1,
-				nodeArr:[]
+				nodeArr:[],
+				idTarget:[10,20,30],
 			};
 		},
 		computed: {
@@ -214,7 +215,7 @@
 			},
 			getTrend(subject) {
 				const params = {
-					cid: this.cid,
+					targets: this.idTarget.join(),
 					...this.getPeriodByPt(),
 					subject: subject,
 					version: this.form.version,

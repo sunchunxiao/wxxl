@@ -1,8 +1,13 @@
 .optimization {
-    min-width: 1024px;
+    min-width: 1160px;
     height: 100%;
     .el-date-editor.el-range-editor {
         width: 300px;
+    }
+    .please_select {
+        min-height: 300px;
+        text-align: center;
+        line-height: 300px;
     }
     .content_row {
         height: calc(100% - 48px);

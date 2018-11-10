@@ -1,25 +1,29 @@
 <template>
   <div class="container">
     <div :class="['left', {'left_collapse': isCollapse} ]">
-      <div :class="{logo1: !isCollapse,logo1_collapse: isCollapse}">
-        <img 
-          v-if="!isCollapse" 
-          src="../assets/logo1.png" 
-          alt="五项效率">
-        <img 
-          v-else 
-          src="../assets/logo2.png" 
-          alt="五">
-      </div>
-      <div class="logo2">
-        <img 
-          v-if="!isCollapse" 
-          src="../assets/logo3.png" 
-          alt="gyxr">
-        <img 
-          v-else 
-          src="../assets/logo4.png" 
-          alt="g">
+      <div 
+        style="cursor: pointer"
+        @click="home">
+        <div :class="{logo1: !isCollapse,logo1_collapse: isCollapse}">
+          <img 
+            v-if="!isCollapse" 
+            src="../assets/logo1.png" 
+            alt="五项效率">
+          <img 
+            v-else 
+            src="../assets/logo2.png" 
+            alt="五">
+        </div>
+        <div class="logo2">
+          <img 
+            v-if="!isCollapse" 
+            src="../assets/logo3.png" 
+            alt="gyxr">
+          <img 
+            v-else 
+            src="../assets/logo4.png" 
+            alt="g">
+        </div>
       </div>
       <div 
         class="collapse_btn" 
@@ -30,12 +34,6 @@
           alt="">
       </div>
       <div class="menu_container">
-        <!-- <template >
-          <div 
-            :class="{homeBac:home_bac}"
-            class="home"
-            @click="home">首页</div>
-        </template> -->
         <Menu :isCollapse="isCollapse" />
       </div>
     </div>
@@ -62,12 +60,10 @@ export default {
   data() {
     return {
       isCollapse: false,
-      home_bac:false
     };
   },
   methods: {
     home(){
-            this.home_bac = true;
             this.$router.push('/home');
         },
     handleClick() {
