@@ -12,6 +12,12 @@
       <el-col 
         :span="5" 
         class="tree_container">
+        <div class="padding_top">
+          <el-button 
+            @click="cleanChecked"
+            size="mini" 
+            class="clean_btn">清空选择</el-button>
+        </div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ organizationTree.name }}</span>
@@ -24,10 +30,10 @@
           empty-text="正在加载"
           ref="tree"
           node-key="cid"
+          check-strictly
           :data="organizationTree.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
-          @node-click="handleNodeClick" 
           show-checkbox
           @check-change="handleCheckChange">
           <span 
@@ -47,7 +53,7 @@
         <el-row v-loading="loading">
           <Card v-if="type==1||type==3">
             <el-row class="card-title">组织对比分析和平均值分析前端</el-row>
-            <el-row >
+            <el-row v-if="orgcompareArr.length > 0">
               <el-col :span="6">
                 <template v-for="(item, index) in orgcompareArr">
                   <el-col 
@@ -71,10 +77,15 @@
                   :index="index0"/>
               </el-col>
             </el-row>
+            <el-row 
+              v-else 
+              class="please_select">
+              请选择要对比的项目
+            </el-row>
           </Card>
           <Card v-if="type==2||type==3">
             <el-row class="card-title">组织对比分析和平均值分析后端</el-row>
-            <el-row>
+            <el-row v-if="orgcompareArrback.length > 0">
               <el-col :span="6">
                 <template v-for="(item, index) in orgcompareArrback">
                   <el-col 
@@ -98,7 +109,11 @@
                   :index="index0"/>
               </el-col>
             </el-row>
-
+            <el-row 
+              v-else 
+              class="please_select">
+              请选择要对比的项目
+            </el-row>
           </Card>
         </el-row>
       </el-col>
@@ -154,11 +169,13 @@
 				nodeArr:[],
 				idTarget:[10,20,30],
 				cidObjArr:[],
-        cancelKey: ''
+				cidObjBackArr:[],
+				cancelKey: '',
+				isFirstLoad: true
 			};
 		},
 		computed: {
-			...mapGetters(['organizationTree', 'orgprogressArr', 'orgcompareArr','orgcompareArrback']),
+			...mapGetters(['organizationTree', 'orgprogressArr','orgprogressbackArr', 'orgcompareArr','orgcompareArrback']),
 			hasTree() {
 				return !_.isEmpty(this.organizationTree);
 			}
@@ -176,13 +193,21 @@
 
 			// }
 			cidObjArr(val) {
-                if (val.length > 0) {
-                    const throttle = _.throttle(this.getCompare, 500);
-                    throttle();
-                } else if (val.length === 0) {
-                    this.$store.dispatch('ClearCompareArr');
-                }
-            }
+						if (val.length > 0) {
+								const throttle = _.throttle(this.getCompare, 500);
+								throttle();
+						} else if (val.length === 0) {
+								this.$store.dispatch('ClearOrgCompareArr');
+						}
+			},
+			cidObjBackArr(val) {
+						if (val.length > 0) {
+								const throttle = _.throttle(this.getCompareBack, 500);
+								throttle();
+						} else if (val.length === 0) {
+								this.$store.dispatch('ClearOrgBackCompareArr');
+						}
+			},				
 		},
 		mounted() {
 			// if (!this.hasTree) {
@@ -191,49 +216,44 @@
 			// this.getProgressbefore();
 			// this.getProgressback();
 			Promise.all([this.getTree(), this.getProgressbefore(),this.getProgressback()]).then(res => {
-                // 树
+								// 树
                 const treeData = res[0];
                 const children = treeData.tree.children;
-                let arr = [];
-                for(let i = 0; i < 2; i++) {
-                    children[i] && arr.push(children[i]);
-								}
-								// for(let i = 0; i < children.length; i++) {
-								// 	if(children[i].type==1){
-								// 		for(let j=i;j<i+1;j++){
-								// 				children[i] && arr.push(children[i]);
-								// 		    console.log(arr);
-								// 		}
-								// 	} 
-                // }
-                
-                this.cidObjArr = arr;
-                const checkKeys = this.cidObjArr.map(i => i.cid);
-                this.$refs.tree.setCheckedKeys(checkKeys);
+								let arr = [];
+								let arrback = [];
+                // for(let i = 0; i < 2; i++) {
+                //     children[i] && arr.push(children[i]);
+								// }
+								for(let i = 0; i < children.length; i++) {
+									if(children[i].type==1){
+												children[i] && arr.push(children[i]);
+									}else if(children[i].type==2){
+											children[i] && arrback.push(children[i]);
+									} 
+                }
+								this.cidObjArr = arr;
+								this.cidObjBackArr = arrback;
+								const checkKeys = this.cidObjArr.map(i => i.cid);
+								const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
+								const cc=[...checkKeys,...checkBackKeys];
+								this.$refs.tree.setCheckedKeys(cc);
                 this.$store.dispatch('SaveOrgTree', treeData.tree);
                 // 前端指标
                 const progressData = res[1];
                 this.$store.dispatch('SaveOrgProgressData', progressData.data);
                 // 后端指标
-                // const progressbackData = res[1];
-                // this.$store.dispatch('SaveOrgProgressData', progressData.data);
-            });
+                const progressbackData = res[2];
+								this.$store.dispatch('SaveOrgBackData', progressbackData.data);
+								
+								// 首次加载标志变量
+                this.$nextTick(() => {
+                    this.isFirstLoad = false;
+                });
+						});
 
 		},
 
 		methods: {
-			// getTree() {
-			// 	const params = {
-			// 		subject: this.form.subject,
-			// 		...this.getPeriodByPt(),
-			// 		version: this.form.version
-			// 	};
-			// 	API.GetOrgTree(params).then(res => {
-			// 		//                  console.log(res)
-			// 		this.type = res.tree.type;
-			// 		this.$store.dispatch('SaveOrgTree', res.tree);
-			// 	});
-			// },
 			getTree() {
 						const params = {
 								subject: this.form.subject,
@@ -267,87 +287,41 @@
 									this.$store.dispatch('SaveOrgCompareArr', resultList);
 							}
 					});
-      },
-			// getProgressbefore() {
-			// 	const params = {
-			// 		rType:1
-			// 	};
-			// 	API.GetOrgSubject(params).then(res => {
-			// 		// console.log(res.data)
-			// 		// this.$store.dispatch('SaveOrgProgressData', res.data);
-			// 		const promises = _.map(res.data, o => this.getTrend(o.subject));
-			// 		Promise.all(promises).then(resultList => {
-			// 			_.forEach(resultList, (v, k) => {
-			// 				v.subject = res.data[k].subject;
-			// 				v.subject_name = res.data[k].subject_name;
-			// 			});
-
-			// 			this.$store.dispatch('SaveOrgCompareArr', resultList);
-			// 		});
-			// 	});
-			// },
-			getTrend(subject) {
-				const params = {
-					targets: this.idTarget.join(),
-					...this.getPeriodByPt(),
-					subject: subject,
-					version: this.form.version,
-					rType: 1
-				};
-				return API.GetOrgCompare(params);
 			},
-			// getProgressback() {
-			// 	const params = {
-			// 		rType:2
-			// 	};
-			// 	API.GetOrgSubject(params).then(res => {
+			getCompareBack() {
+					const promises = _.map(this.orgprogressbackArr, o => this.getTrendback(o.subject));
+					Promise.all(promises).then(resultList => {
+							_.forEach(resultList, (v, k) => {
+									v.subject = this.orgprogressbackArr[k].subject;
+									v.subject_name = this.orgprogressbackArr[k].subject_name;
+							});
+							const cidName = this.cidObjBackArr.map(o => o.name);
+							// 只有当返回的跟当前选中的一样才更新 store
+							if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
+									this.$store.dispatch('SaveOrgCompareArrback', resultList);
+							}
+					});
+      },
 
-			// 			let params = {
-			// 					...this.getPeriodByPt(),
-			// 					subject: subject,
-			// 					version: this.form.version,
-			// 					rType: 1
-			// 			};
-			// 			const checkKeys = this.cidObjArr.map(i => i.cid);
-			// 			params.targets = checkKeys.join(',');
-			// 			return API.GetOrgCompare(params);
-			// });
-			// },
-			// getTrend(subject) {
-			// 	const params = {
-			// 		cid: this.cid,
-			// 		...this.getPeriodByPt(),
-			// 		subject: subject,
-			// 		version: this.form.version,
-			// 		rType: 1
-			// 	};
-			// 	return API.GetOrgCompare(params);
-			// },
-			// getProgressback() {
-			// 	const params = {
-			// 		rType:2
-			// 	};
-			// 	API.GetOrgSubject(params).then(res => {
-			// 		const promises = _.map(res.data, o => this.getTrendback(o.subject));
-			// 		Promise.all(promises).then(resultList => {
-			// 			_.forEach(resultList, (v, k) => {
-			// 				v.subject = res.data[k].subject;
-			// 				v.subject_name = res.data[k].subject_name;
-			// 			});
-
-			// 			this.$store.dispatch('SaveOrgCompareArrback', resultList);
-			// 		});
-			// 	});
-			// },
+			getTrend(subject) {
+						let params = {
+								...this.getPeriodByPt(),
+								subject: subject,
+								version: this.form.version,
+						};
+						const checkKeys = this.cidObjArr.map(i => i.cid);
+						params.targets = checkKeys.join(',');
+						return API.GetOrgCompare(params);
+			},
 			getTrendback(subject) {
-				const params = {
-					cid: this.cid,
-					...this.getPeriodByPt(),
-					subject: subject,
-					version: this.form.version,
-					rType: 2
-				};
-				return API.GetOrgCompare(params);
+				let params = {
+							...this.getPeriodByPt(),
+							subject: subject,
+							version: this.form.version,
+					};
+					const checkKeys = this.cidObjBackArr.map(i => i.cid);
+					params.targets = checkKeys.join(',');
+					return API.GetOrgCompare(params);
 			},
 			getPeriodByPt() {
 						const {
@@ -409,20 +383,81 @@
 				}, 1000);
 						
 		},
-			handleNodeClick(data) {
-				this.$refs.child.parentMsg(this.post);
-				this.type = data.type;
-				if (data.children != undefined) {
-					this.cid = data.cid;
-					this.loading = true;
-					
-					setTimeout(() => {
-						this.loading = false;
-					}, 1000);
-				}
+			cleanChecked() {
+						this.cidObjArr = [];
+						this.$refs.tree.setCheckedKeys([]);
+      },
+			handleCheckChange(data, checked) {
+				// this.type = data.type;
+						// 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
+						// 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
+						if (this.isFirstLoad) {
+								return;
+						}
+						if(!checked && this.cancelKey && data.cid === this.cancelKey) {
+								return;
+						}
+						if (checked) { // 如果选中
+								if(data.type==2){
+										// 如果有选中的节点 并且此次选择了不同pid的节点
+										if (this.cidObjBackArr[0] && data.parent_id !== this.cidObjBackArr[0].parent_id) {
+												this.warn('请选择相同父级下的进行对比');
+												this.cancelKey = data.cid;
+
+												const checkKeys = this.cidObjArr.map(i => i.cid);
+												const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
+												const cc = [...checkKeys,...checkBackKeys];
+												this.$refs.tree.setCheckedKeys(cc);
+												return;
+										}
+										this.cidObjBackArr.push(data);
+										// else if (this.cidObjArr.length === 4) {
+										// 		this.warn('最多对比 4 条');
+										// 		this.cancelKey = data.cid;
+										// 		const checkKeys = this.cidObjArr.map(i => i.cid);
+										// 		this.$refs.tree.setCheckedKeys(checkKeys);
+										// }
+								}else{
+                    // 如果有选中的节点 并且此次选择了不同pid的节点
+										if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
+												this.warn('请选择相同父级下的进行对比');
+												this.cancelKey = data.cid;
+												const checkKeys = this.cidObjArr.map(i => i.cid);
+												const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
+												const cc = [...checkKeys,...checkBackKeys];
+												this.$refs.tree.setCheckedKeys(cc);
+												return;
+										}
+										this.cidObjArr.push(data);
+										// 如果选中的个数不超过 4
+										// if (this.cidObjArr.length < 4) {
+										// 		this.cidObjArr.push(data);
+										// } else if (this.cidObjArr.length === 4) {
+										// 		this.warn('最多对比 4 条');
+										// 		this.cancelKey = data.cid;
+										// 		const checkKeys = this.cidObjArr.map(i => i.cid);
+										// 		this.$refs.tree.setCheckedKeys(checkKeys);
+										// }
+								}
+						} else { // 如果取消选择
+								// 找到取消选择的下标
+								if(data.type==2){
+								// 找到取消选择的下标
+								const index = _.findIndex(this.cidObjBackArr, item => item.cid === data.cid);
+								this.cidObjBackArr.splice(index, 1);
+								}else{
+									const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
+                  this.cidObjArr.splice(index, 1);
+								}
+								
+						}
 			},
-			handleCheckChange() {
-			},
+			warn(msg) {
+					this.$message({
+							message: msg,
+							type: 'warning'
+					});
+      },
 			clickIndex(i, idx) {
 				this[`index${i}`] = idx;
 
