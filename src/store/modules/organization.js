@@ -3,6 +3,7 @@ const organization = {
 	state: {
 		orgtree: {},
 		orgprogressArr: [],
+		orgprogressbackArr: [],
 		orgtrendArr: [],
 		orgstructureArr1:[],
 		orgstructureArr2:[],
@@ -17,6 +18,9 @@ const organization = {
 		},
 		SAVE_ORGPROGRESS_ARR: (state, arr) => {
 			state.orgprogressArr = arr;
+		},
+		SAVE_ORGPROGRESSBACK_ARR: (state, arr) => {
+			state.orgprogressbackArr = arr;
 		},
 		SAVE_ORGTREND_ARR: (state, arr) => {
 			state.orgtrendArr = arr;
@@ -33,6 +37,12 @@ const organization = {
 		SAVE_ORGCOMPARE_ARR: (state, arr) => {
 			state.orgcompareArr = arr;
 		},
+		CLEAR_ORGCOMPARE_ARR: state => {
+			state.orgcompareArr = [];
+		},
+		CLEAR_ORGBACKCOMPARE_ARR: state => {
+			state.orgcompareArrback = [];
+		},
 		SAVE_ORGCOMPAREBACK_ARR: (state, arr) => {
 			state.orgcompareArrback = arr;
 		},
@@ -46,6 +56,9 @@ const organization = {
 		},
 		SaveOrgProgressData({ commit }, arr) {
 			commit('SAVE_ORGPROGRESS_ARR', arr);
+		},
+		SaveOrgBackData({ commit }, arr) {
+			commit('SAVE_ORGPROGRESSBACK_ARR', arr);
 		},
 		SaveOrgTrendArr({ commit }, arr) {
 			commit('SAVE_ORGTREND_ARR', arr);
@@ -62,9 +75,16 @@ const organization = {
 		SaveOrgCompareArr({ commit }, arr) {
 			commit('SAVE_ORGCOMPARE_ARR', arr);
 		},
+		ClearOrgCompareArr({ commit }) {
+			commit('CLEAR_ORGCOMPARE_ARR');
+		},
+		ClearOrgBackCompareArr({ commit }) {
+			commit('CLEAR_ORGBACKCOMPARE_ARR');
+		},
 		SaveOrgCompareArrback({ commit }, arr) {
 			commit('SAVE_ORGCOMPAREBACK_ARR', arr);
 		},
+
 		SaveOrgtHistory({ commit }, arr) {
 			commit('SAVE_ORGHISTORY_ARR', arr);
 		},

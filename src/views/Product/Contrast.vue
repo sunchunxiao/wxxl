@@ -12,7 +12,7 @@
       <el-col 
         :span="5" 
         class="tree_container">
-        <div>
+        <div class="padding_top">
           <el-button 
             @click="cleanChecked"
             size="mini" 
@@ -148,6 +148,7 @@
                 for(let i = 0; i < 3; i++) {
                     children[i] && arr.push(children[i]);
                 }
+                this.cidObjArr = arr;
                 const checkKeys = arr.map(i => i.cid);
                 this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
                     this.$refs.tree.setCheckedKeys(checkKeys);
@@ -155,6 +156,11 @@
                 // 指标
                 const progressData = res[1];
                 this.$store.dispatch('SaveProgressData', progressData.data);
+
+                // 首次加载标志变量
+                this.$nextTick(() => {
+                    this.isFirstLoad = false;
+                });
             });
         },
 
