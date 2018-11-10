@@ -108,8 +108,8 @@
     import Card from '../../components/Card';
     import SearchBar from 'components/SearchBarOrg';
     // 组织对比分析和平均值分析
-    import ConOrgComparisonAverage from '../../components/ConOrgnization';
-    import ConOrgComparisonAverageBig from '../../components/ConOrgnizationBig';
+    import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
+    import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 
     import { mapGetters } from 'vuex';
     const TREE_PROPS = {
@@ -147,7 +147,9 @@
                 type:3,
                 val:{},
 				post:1,
-				nodeArr:[]
+                nodeArr:[],
+                idTarget:[2,3],
+				idback:[4,5],
             };
         },
         computed: {
@@ -204,7 +206,7 @@
             },
             getTrend(subject) {
 				const params = {
-					cid: this.cid,
+					targets: this.idTarget.join(),
 					...this.getPeriodByPt(),
 					subject: subject,
 					version: this.form.version,
@@ -229,7 +231,7 @@
 			},
 			getTrendback(subject) {
 				const params = {
-					cid: this.cid,
+					targets: this.idback.join(),
 					...this.getPeriodByPt(),
 					subject: subject,
 					version: this.form.version,

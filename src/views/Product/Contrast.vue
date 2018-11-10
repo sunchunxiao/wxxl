@@ -155,7 +155,6 @@
                 this.$store.dispatch('SaveProgressData', progressData.data);
             });
         },
-
         methods: {
             getTree() {
                 const params = {
