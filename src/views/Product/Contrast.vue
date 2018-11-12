@@ -148,7 +148,6 @@
                 for(let i = 0; i < 3; i++) {
                     children[i] && arr.push(children[i]);
                 }
-                this.cidObjArr = arr;
                 const checkKeys = arr.map(i => i.cid);
                 this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
                     this.$refs.tree.setCheckedKeys(checkKeys);
@@ -157,10 +156,6 @@
                 const progressData = res[1];
                 this.$store.dispatch('SaveProgressData', progressData.data);
 
-                // 首次加载标志变量
-                // this.$nextTick(() => {
-                //     this.isFirstLoad = false;
-                // });
             });
         },
         methods: {

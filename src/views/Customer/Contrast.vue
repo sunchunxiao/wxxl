@@ -133,6 +133,7 @@
                 cidTarget:[10,20,30],
                 cidObjArr:[],
                 cancelKey: '',
+                debounce: null,
             };
         },
         computed: {
@@ -142,26 +143,18 @@
             }
         },
         watch: {
-            // form: {
-            //     handler: function() {},
-            //     deep: true
-            // },
-            // cid: function() {
-			// 		// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-			// 		// 暂时先在这里做
-			// 		this.getProgress();
-            // }
             cidObjArr(val) {
                 if (val.length > 0) {
-                    const throttle = _.throttle(this.getCompare, 500);
-                    throttle();
-                    
+                    this.debounce();
                 } else if (val.length === 0) {
                     this.$store.dispatch('ClearCusCompare');
                 }
             }
         },
-        
+        created() {
+            // 防抖函数 减少发请求次数
+            this.debounce = _.debounce(this.getCompare, 1000);
+        },
         mounted() {
             Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
@@ -170,27 +163,19 @@
                 let arr = [];
                 for(let i = 0; i < 3; i++) {
                     children[i] && arr.push(children[i]);
-                    
                 }
-                this.cidObjArr = arr;
-                const checkKeys = this.cidObjArr.map(i => i.cid);
-                this.$refs.tree.setCheckedKeys(checkKeys);
-                this.$store.dispatch('SaveCusTree', treeData.tree);
+                const checkKeys = arr.map(i => i.cid);
+                this.$store.dispatch('SaveCusTree', treeData.tree).then(() => {
+                    this.$refs.tree.setCheckedKeys(checkKeys);
+                });
+                // this.$refs.tree.setCheckedKeys(checkKeys);
+                // this.$store.dispatch('SaveCusTree', treeData.tree);
                 // 指标
                 const progressData = res[1];
                 this.$store.dispatch('SaveCusProgressData', progressData.data);
             });
         },
         methods: {
-            // getTree() {
-            //     const params = {
-            //         subject: this.form.subject,
-            //         ...this.getPeriodByPt(),
-            //     };
-            //     API.GetCusTree(params).then(res => {
-            //         this.$store.dispatch('SaveCusTree', res.tree);
-            //     });
-            // },
             getTree() {
                 const params = {
                     subject: this.form.subject,
@@ -207,7 +192,6 @@
             },
             getCompare() {
                 const promises = _.map(this.cusprogressArr, o => this.getTrend(o.subject));
-                
                 Promise.all(promises).then(resultList => {
                     _.forEach(resultList, (v, k) => {
                         v.subject = this.cusprogressArr[k].subject;
@@ -221,21 +205,6 @@
                     }
                 });
             },
-            // getProgress() {
-			// 	const params = {
-			// 		rType:0
-			// 	};
-			// 	API.GetCusSubject(params).then(res => {
-			// 		const promises = _.map(res.data, o => this.getTrend(o.subject));
-			// 		Promise.all(promises).then(resultList => {
-			// 			_.forEach(resultList, (v, k) => {
-			// 				v.subject = res.data[k].subject;
-			// 				v.subject_name = res.data[k].subject_name;
-            //             });
-			// 			this.$store.dispatch('SaveCusCompareArr', resultList);
-			// 		});
-			// 	});
-            // },
             getTrend(subject) {
                 let params = {
                     ...this.getPeriodByPt(),
@@ -245,15 +214,6 @@
                 params.targets = checkKeys.join(',');
                 return API.GetCusCompare(params);
             },
-			// getTrend(subject) {
-			// 	const params = {
-			// 		targets: this.cidTarget.join(),
-			// 		...this.getPeriodByPt(),
-			// 		subject: subject,
-			// 		rType: 1
-			// 	};
-			// 	return API.GetCusCompare(params);
-			// },
             getPeriodByPt() {
                 const {
                     sDate,
@@ -285,15 +245,15 @@
                     date
                 } = this.form;
                 if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
-                    return {
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
+                        return {
+                        sDate: this.val.sDate,
+                        eDate: this.val.eDate,
+                    };
                 }else{
-                    return {
-                    sDate: date[0] || '',
-                    eDate: date[1] || '',
-                };
+                        return {
+                        sDate: date[0] || '',
+                        eDate: date[1] || '',
+                    };
                 }
             },
             handleSearch(val) {
@@ -312,17 +272,17 @@
                 }, 1000);
                 
             },
-            handleNodeClick(data) {
-                this.$refs.child.parentMsg(this.post);
-                if(data.children != undefined) {
-                    this.cid = data.cid;
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
-                }
+            // handleNodeClick(data) {
+            //     this.$refs.child.parentMsg(this.post);
+            //     if(data.children != undefined) {
+            //         this.cid = data.cid;
+            //         this.loading = true;
+            //         setTimeout(() => {
+            //             this.loading = false;
+            //         }, 1000);
+            //     }
 
-            },
+            // },
             cleanChecked() {
                 this.cidObjArr = [];
                 this.$refs.tree.setCheckedKeys([]);
