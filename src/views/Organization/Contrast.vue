@@ -181,17 +181,6 @@
 			}
 		},
 		watch: {
-			// form: {
-			// 	handler: function() {},
-			// 	deep: true
-			// },
-			// cid: function() {
-			// 		// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-			// 		// 暂时先在这里做
-			// 		this.getProgressbefore();
-			// 		this.getProgressback();
-
-			// }
 			cidObjArr(val) {
 						if (val.length > 0) {
 								const throttle = _.throttle(this.getCompare, 500);
@@ -210,11 +199,6 @@
 			},				
 		},
 		mounted() {
-			// if (!this.hasTree) {
-			// 	this.getTree();
-			// }
-			// this.getProgressbefore();
-			// this.getProgressback();
 			Promise.all([this.getTree(), this.getProgressbefore(),this.getProgressback()]).then(res => {
 								// 树
                 const treeData = res[0];
@@ -303,7 +287,6 @@
 							}
 					});
       },
-
 			getTrend(subject) {
 						let params = {
 								...this.getPeriodByPt(),
