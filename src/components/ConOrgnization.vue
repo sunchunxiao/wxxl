@@ -76,12 +76,12 @@ export default {
                 },
                 series: []
             };
-			for(let i = 0; i < data.data.sub.length; i++) {
+			for(let i = 0; i < data.series.length; i++) {
 				options.series.push({
-					name:  data.data.sub[i].name,
+					name: this.data.nodes[i],
 					type: 'line',
 					stack: i,
-					data: data.data.sub[i].real
+					data: data.series[i]
 				});
 			}
             this.chart.setOption(options,true);
