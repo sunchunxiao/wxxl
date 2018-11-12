@@ -12,7 +12,7 @@
       <el-col 
         :span="5" 
         class="tree_container">
-        <div>
+        <div class="padding_top">
           <el-button 
             @click="cleanChecked"
             size="mini" 
@@ -142,29 +142,20 @@
             }
         },
         watch: {
-            // form: {
-            //     handler: function() {},
-            //     deep: true
-            // },
-            // cid: function() {
-            //     // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            //     // 暂时先在这里做
-            //     this.getProgress();
-            // }
+            
             cidObjArr(val) {
                 if (val.length > 0) {
-                    const throttle = _.throttle(this.getCompare, 500);
-                    throttle();
+                    this.debounce();
                 } else if (val.length === 0) {
                     this.$store.dispatch('ClearChannelCompareArr');
                 }
             }
         },
+        created() {
+            // 防抖函数 减少发请求次数
+            this.debounce = _.debounce(this.getCompare, 1000);
+        },
         mounted() {
-            // if(!this.hasTree) {
-            //     this.getTree();
-            // }
-            // this.getProgress();
             Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
@@ -173,10 +164,12 @@
                 for(let i = 0; i < 3; i++) {
                     children[i] && arr.push(children[i]);
                 }
-                this.cidObjArr = arr;
-                const checkKeys = this.cidObjArr.map(i => i.nid);
-                this.$refs.tree.setCheckedKeys(checkKeys);
-                this.$store.dispatch('SaveChannelTree', treeData.tree);
+                const checkKeys = arr.map(i => i.nid);
+                // this.$refs.tree.setCheckedKeys(checkKeys);
+                // this.$store.dispatch('SaveChannelTree', treeData.tree);
+                this.$store.dispatch('SaveChannelTree', treeData.tree).then(() => {
+                    this.$refs.tree.setCheckedKeys(checkKeys);
+                });
                 // 指标
                 const progressData = res[1];
                 this.$store.dispatch('SaveChannelProgress', progressData.data);
@@ -192,16 +185,6 @@
                 };
                 return API.GetChannelTree(params);
             },
-            // getTree() {
-            //     const params = {
-            //         subject: this.form.subject,
-            //         ...this.getPeriodByPt(),
-                   
-            //     };
-            //     API.GetChannelTree(params).then(res => {
-            //         this.$store.dispatch('SaveChannelTree', res.tree);
-            //     });
-            // },
             getProgress() {
                 const params = {
                     chId :1,
@@ -209,23 +192,6 @@
                 };
                 return API.GetChannelProgress(params);
             },
-            //  getProgress() {
-            //     const params = {
-            //         chId: this.cid,
-            //         ...this.getPeriodByPt(),
-            //     };
-            //     API.GetChannelProgress(params).then(res => {
-            //         // this.$store.dispatch('SaveChannelProgress', res.data);
-            //         const promises = _.map(res.data, o => this.getTrend(o.subject));
-            //         Promise.all(promises).then(resultList => {
-            //             _.forEach(resultList, (v, k) => {
-            //                 v.subject = res.data[k].subject;
-            //                 v.subject_name = res.data[k].subject_name;
-            //             });
-            //             this.$store.dispatch('SaveChannelCompareArr', resultList);
-            //         });
-            //     });
-            // },
             getCompare() {
                 const promises = _.map(this.channelProgressArr, o => this.getTrend(o.subject));
                 
@@ -247,21 +213,10 @@
                     ...this.getPeriodByPt(),
                     subject: subject
                 };
-                // if(this.cidObjArr.length==4){
-                //     this.cidObjArr.pop();
-                // }
                 const checkKeys = this.cidObjArr.map(i => i.nid);
                 params.targets = checkKeys.join(',');
                 return API.GetChannelCompare(params);
             },
-            // getTrend(subject) {
-            //     const params = {
-            //         nid: this.cid,
-            //         ...this.getPeriodByPt(),
-            //         subject: subject
-            //     };
-            //     return API.GetChannelCompare(params);
-            // },
             getPeriodByPt() {
                 const {
                     sDate,
@@ -322,18 +277,6 @@
                 }, 1000);
                 
             },
-        //    handleNodeClick(data) {
-        //         this.$refs.child.parentMsg(this.post);
-        //         if(data.children != undefined) {
-        //             this.cid = data.nid;
-        //             this.loading = true;
-                   
-        //             setTimeout(() => {
-        //                 this.loading = false;
-        //             }, 1000);
-        //         }
-
-        //     },
             cleanChecked() {
                 this.cidObjArr = [];
                 this.$refs.tree.setCheckedKeys([]);

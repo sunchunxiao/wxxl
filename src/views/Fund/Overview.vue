@@ -374,18 +374,18 @@
 				});
 
 			},
-            getTree() {
-                const params = {
-                    subject: this.form.subject,
-                    ...this.getPeriodByPt(),
-                    version: this.form.version
-                };
-                API.GetFundTree(params).then(res => {
+      getTree() {
+          const params = {
+              subject: this.form.subject,
+              ...this.getPeriodByPt(),
+              version: this.form.version
+          };
+          API.GetFundTree(params).then(res => {
 //                  console.log(res.tree)
-                    this.$store.dispatch('SaveFundTree', res.tree);
-                });
-            },
-            getProgress() {
+              this.$store.dispatch('SaveFundTree', res.tree);
+          });
+      },
+      getProgress() {
 				const params = {
 					cid: this.cid,
 					...this.getPeriodByPt(),
@@ -402,8 +402,8 @@
 						this.$store.dispatch('SaveFundTrendArr', resultList);
 					});
 				});
-            },
-            getTrend(subject) {
+          },
+          getTrend(subject) {
 				const params = {
 					cid: this.cid,
 					...this.getPeriodByPt(),

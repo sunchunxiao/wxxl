@@ -12,7 +12,7 @@
       <el-col 
         :span="4" 
         class="tree_container">
-        <div>
+        <div class="padding_top">
           <el-button 
             @click="cleanChecked"
             size="mini" 
