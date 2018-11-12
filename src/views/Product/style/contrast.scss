@@ -1,6 +1,9 @@
 .contrast {
     min-width: 1200px;
     height: 100%;
+    .padding_top{
+        padding-top: 10px;
+    }
     .clean_btn {
         // position: absolute;
         // z-index: 10;
@@ -20,12 +23,15 @@
             background-color: #3c80ad;
             box-shadow: 0 3px 5px 0 rgba(113, 113, 114, 0.5);
         }
+        
 
     }
     .please_select {
         min-height: 300px;
         text-align: center;
         line-height: 300px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
     }
     .el-date-editor.el-range-editor {
         width: 300px;

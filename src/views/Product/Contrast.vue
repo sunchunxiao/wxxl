@@ -12,7 +12,7 @@
       <el-col 
         :span="5" 
         class="tree_container">
-        <div>
+        <div class="padding_top">
           <el-button 
             @click="cleanChecked"
             size="mini" 
@@ -117,6 +117,7 @@
                 index0: 0,
                 cidObjArr:[],
                 cancelKey: '',
+                debounce: null,
             };
         },
         computed: {
@@ -128,14 +129,16 @@
         watch: {
             cidObjArr(val) {
                 if (val.length > 0) {
-                    const throttle = _.throttle(this.getCompare, 500);
-                    throttle();
-                    
+                    this.debounce();
                 } else if (val.length === 0) {
                     this.$store.dispatch('ClearCompareArr');
                 }
             }
-        },   
+        },
+        created() {
+            // 防抖函数 减少发请求次数
+            this.debounce = _.debounce(this.getCompare, 1000);
+        },
         mounted() {
             Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
@@ -144,15 +147,20 @@
                 let arr = [];
                 for(let i = 0; i < 3; i++) {
                     children[i] && arr.push(children[i]);
-                    
                 }
                 this.cidObjArr = arr;
-                const checkKeys = this.cidObjArr.map(i => i.cid);
-                this.$refs.tree.setCheckedKeys(checkKeys);
-                this.$store.dispatch('SaveProductTree', treeData.tree);
+                const checkKeys = arr.map(i => i.cid);
+                this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
+                    this.$refs.tree.setCheckedKeys(checkKeys);
+                });
                 // 指标
                 const progressData = res[1];
                 this.$store.dispatch('SaveProgressData', progressData.data);
+
+                // 首次加载标志变量
+                // this.$nextTick(() => {
+                //     this.isFirstLoad = false;
+                // });
             });
         },
         methods: {
@@ -172,14 +180,12 @@
             },
             getCompare() {
                 const promises = _.map(this.progressArr, o => this.getTrend(o.subject));
-                
                 Promise.all(promises).then(resultList => {
                     _.forEach(resultList, (v, k) => {
                         v.subject = this.progressArr[k].subject;
                         v.subject_name = this.progressArr[k].subject_name;
                     });
                     const cidName = this.cidObjArr.map(o => o.name);
-                    // console.log(cidName);
                     // 只有当返回的跟当前选中的一样才更新 store
                     if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                         this.$store.dispatch('SaveCompareArr', resultList);
@@ -191,10 +197,6 @@
                     ...this.getPeriodByPt(),
                     subject: subject
                 };
-                
-                // if(this.cidObjArr.length==4){
-                //     this.cidObjArr.pop();
-                // }
                 const checkKeys = this.cidObjArr.map(i => i.cid);
                 params.targets = checkKeys.join(',');
                 return API.GetProductCompare(params);
