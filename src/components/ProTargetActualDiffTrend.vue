@@ -20,6 +20,11 @@ export default {
         this.renderChart(this.data);
 		
     },
+    data(){
+        return {
+            arr:''
+        };
+    },
     watch: {
         data: {
             handler: function (val) {
@@ -42,9 +47,28 @@ export default {
 //                 targetClone[i] = parseInt(targetClone[i] / 10000 / 100);
                 const realItem = realClone[i];
                 const targetItem = targetClone[i];
-                bottom.push(realItem < targetItem ? realItem : targetItem);
-                diff.push(Math.abs(realItem - targetItem));
+
+                // realClone[i] = -20;
+                // const realItem = realClone[i];
+                // targetClone[i] = 30;
+                // const targetItem = targetClone[i];
+                
+                if(realItem<0&&targetItem<0){
+                    bottom.push(realItem < targetItem ?targetItem  :realItem );
+                    diff.push(-Math.abs(realItem - targetItem));
+                }else if(realItem>0&&targetItem>0){
+                    bottom.push(realItem < targetItem ? realItem : targetItem);
+                    diff.push(Math.abs(realItem - targetItem));
+                }
+                // else{
+                //     // bottom.push(Math.abs(realItem)+targetItem);
+                //     diff.push(Math.abs(realItem)+targetItem);
+                // }
+
+                // bottom.push(realItem < targetItem ? realItem : targetItem);
+                // diff.push(Math.abs(realItem - targetItem));
                 realItem < targetItem && underTarget.push(i);
+                
             }
             const options = {
                 grid: {
@@ -56,9 +80,23 @@ export default {
                 },
                 tooltip: {
                     show: true,
-                    trigger: 'axis'
+                    trigger: 'axis',
+                    axisPointer: {
+                            type: 'line',
+                    },
+                    // formatter:"{a0}:{c0}<br/>{a1}:{c1}<br/>{a3}:{c3}",
+                    formatter: function(params){
+                        var result = params[0].axisValue+"<br />";
+                        params.forEach(function (item) {
+                        if(item.seriesIndex!=2){
+                            result += item.marker + " " + item.seriesName + " : " + item.value +"</br>";
+                        }
+                    });
+                    return result;
+                    },
+                    
                 },
-                color:['#fcb448','#318cb8','#318cb8','#b12725'],
+                color:['#fcb448','#318cb8','#b12725'],
                 legend: {
                     data: ['目标', '实际'],
                     left:'right',
@@ -118,7 +156,8 @@ export default {
                         type: 'bar',
                         stack: 1,
                         itemStyle: {
-                            color: function (param) {                                            return -1 == underTarget.indexOf(param.dataIndex) ? '#b12725' : '#318cb8';
+                            color: function (params) {
+                                return -1 == underTarget.indexOf(params.dataIndex) ?'#318cb8': '#b12725'  ;
                             }
                         },
                     }

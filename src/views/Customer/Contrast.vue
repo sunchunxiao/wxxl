@@ -39,8 +39,20 @@
           <span 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+            <el-tooltip 
+              class="item" 
+              effect="dark" 
+              placement="right" > 
+              <div slot="content">
+                <div class="tooltip_margin">{{ data.name }}</div>
+                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+              </div>
+              <span class="label">
+                <span class="label_left">{{ data.name }}</span>
+                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+              </span>
+            </el-tooltip>
+            
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
@@ -156,7 +168,15 @@
             this.debounce = _.debounce(this.getCompare, 1000);
         },
         mounted() {
-            Promise.all([this.getTree(), this.getProgress()]).then(res => {
+            if(this.customerTree.children){
+                let arr = [];
+                for(let i = 0; i < 3; i++) {
+                    this.customerTree.children[i] && arr.push(this.customerTree.children[i]);
+                }
+                const checkKeys = arr.map(i => i.cid);
+                this.$refs.tree.setCheckedKeys(checkKeys);
+            }else{
+               Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
                 const children = treeData.tree.children;
@@ -168,12 +188,11 @@
                 this.$store.dispatch('SaveCusTree', treeData.tree).then(() => {
                     this.$refs.tree.setCheckedKeys(checkKeys);
                 });
-                // this.$refs.tree.setCheckedKeys(checkKeys);
-                // this.$store.dispatch('SaveCusTree', treeData.tree);
                 // 指标
                 const progressData = res[1];
                 this.$store.dispatch('SaveCusProgressData', progressData.data);
-            });
+            }); 
+            }
         },
         methods: {
             getTree() {
@@ -272,17 +291,6 @@
                 }, 1000);
                 
             },
-            // handleNodeClick(data) {
-            //     this.$refs.child.parentMsg(this.post);
-            //     if(data.children != undefined) {
-            //         this.cid = data.cid;
-            //         this.loading = true;
-            //         setTimeout(() => {
-            //             this.loading = false;
-            //         }, 1000);
-            //     }
-
-            // },
             cleanChecked() {
                 this.cidObjArr = [];
                 this.$refs.tree.setCheckedKeys([]);

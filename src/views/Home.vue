@@ -78,15 +78,7 @@ export default {
 $bgcolor: #224e6b;
 $width: 200px;
 $width_collapse: 64px;
-.home{
-    padding: 20px 0 10px 55px;
-    color: #fff;
-    cursor: pointer;
-}
-.homeBac{
-    background-color: #26354c;
-    border-left: 5px solid #16abe3;
-}
+
 .container {
   height: 100%;
   .left {
@@ -127,7 +119,7 @@ $width_collapse: 64px;
   .right {
     height: 100%;
     margin-left: $width;
-    background: #eee;
+    // background: #eee;
   }
   .left_collapse {
     width: $width_collapse;
@@ -136,8 +128,9 @@ $width_collapse: 64px;
     margin-left: $width_collapse;
   }
   .content {
-    padding: 76px 16px 16px;
+    padding: 60px 16px 16px;
     height: calc(100% - 92px);
+    background-color: #eee;
   }
 }
 </style>

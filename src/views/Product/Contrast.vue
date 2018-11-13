@@ -28,7 +28,9 @@
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ productTree.name }}</span>
-          <span class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
+          <span 
+            v-if="productTree.children"
+            class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
         </div>
         <el-tree 
           :data="productTree.children" 
@@ -42,8 +44,20 @@
           <span 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{ red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+            <el-tooltip 
+              class="item" 
+              effect="dark" 
+              placement="right" > 
+              <div slot="content">
+                <div class="tooltip_margin">{{ data.name }}</div>
+                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+              </div>
+              <span class="label">
+                <span class="label_left">{{ data.name }}</span>
+                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+              </span>
+            </el-tooltip>
+            
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
@@ -140,7 +154,15 @@
             this.debounce = _.debounce(this.getCompare, 1000);
         },
         mounted() {
-            Promise.all([this.getTree(), this.getProgress()]).then(res => {
+            if(this.productTree.children){
+                let arr = [];
+                for(let i = 0; i < 3; i++) {
+                    this.productTree.children[i] && arr.push(this.productTree.children[i]);
+                }
+                const checkKeys = arr.map(i => i.cid);
+                this.$refs.tree.setCheckedKeys(checkKeys);
+            }else{
+                Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
                 const children = treeData.tree.children;
@@ -155,8 +177,8 @@
                 // 指标
                 const progressData = res[1];
                 this.$store.dispatch('SaveProgressData', progressData.data);
-
             });
+            }
         },
         methods: {
             getTree() {

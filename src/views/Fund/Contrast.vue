@@ -39,8 +39,21 @@
           <span 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+            <el-tooltip 
+              class="item" 
+              effect="dark" 
+              placement="right" > 
+              <div slot="content">
+                <div class="tooltip_margin">{{ data.name }}</div>
+                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+              </div>
+              <span class="label">
+                <span class="label_left">{{ data.name }}</span>
+                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+              </span>
+            </el-tooltip>
+            <!-- <span class="label">{{ data.name }}</span> -->
+            
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
@@ -169,6 +182,7 @@
 				cancelKey: '',
                 isFirstLoad: true,
                 debounce: null,
+                debounceBack:null
             };
         },
         computed: {
@@ -180,8 +194,6 @@
         watch: {
 			cidObjArr(val) {
                     if (val.length > 0) {
-                            // const throttle = _.throttle(this.getCompare, 500);
-                            // throttle();
                             this.debounce();
                     } else if (val.length === 0) {
                             this.$store.dispatch('ClearFundCompareArr');
@@ -189,8 +201,7 @@
 			},
 			cidObjBackArr(val) {
                 if (val.length > 0) {
-                        const throttle = _.throttle(this.getCompareBack, 500);
-                        throttle();
+                        this.debounceBack();
                 } else if (val.length === 0) {
                         this.$store.dispatch('ClearFundBackCompareArr');
                 }
@@ -199,15 +210,30 @@
         created() {
             // 防抖函数 减少发请求次数
             this.debounce = _.debounce(this.getCompare, 1000);
+            this.debounceBack = _.debounce(this.getCompareBack, 1000);
         },
         mounted() {
-			Promise.all([this.getTree(), this.getProgressbefore(),this.getProgressback()]).then(res => {
+            if(this.fundTree.children){
+                let arr = [];
+                let arrback = [];
+                for(let i = 0; i < this.fundTree.children.length; i++) {
+                    if(this.fundTree.children[i].type==1){
+                                this.fundTree.children[i] && arr.push(this.fundTree.children[i]);
+                    }else if(this.fundTree.children[i].type==2){
+                            this.fundTree.children[i] && arrback.push(this.fundTree.children[i]);
+                    } 
+                }
+                const checkKeys = arr.map(i => i.cid);
+                const checkBackKeys = arrback.map(i => i.cid);
+                const cc=[...checkKeys,...checkBackKeys];
+                this.$refs.tree.setCheckedKeys(cc);
+            }else{
+                Promise.all([this.getTree(), this.getProgressbefore(),this.getProgressback()]).then(res => {
                 // 树
                 const treeData = res[0];
                 const children = treeData.tree.children;
                 let arr = [];
                 let arrback = [];
-                
                 for(let i = 0; i < children.length; i++) {
                     if(children[i].type==1){
                                 children[i] && arr.push(children[i]);
@@ -220,8 +246,7 @@
                 const checkKeys = arr.map(i => i.cid);
                 const checkBackKeys = arrback.map(i => i.cid);
                 const cc=[...checkKeys,...checkBackKeys];
-                // this.$refs.tree.setCheckedKeys(cc);
-                // this.$store.dispatch('SaveFundTree', treeData.tree);
+                
                 this.$store.dispatch('SaveFundTree', treeData.tree).then(() => {
                     this.$refs.tree.setCheckedKeys(cc);
                 });
@@ -232,11 +257,8 @@
                 const progressbackData = res[2];
 				this.$store.dispatch('SaveFundBackData', progressbackData.data);
 								
-				// 首次加载标志变量
-                // this.$nextTick(() => {
-                //     this.isFirstLoad = false;
-                // });
 			});
+            }
 
 		},
         methods: {
@@ -369,7 +391,8 @@
 						
             },
             cleanChecked() {
-						this.cidObjArr = [];
+                        this.cidObjArr = [];
+                        this.cidObjBackArr = [];
 						this.$refs.tree.setCheckedKeys([]);
             },
             handleCheckChange(data, checked) {

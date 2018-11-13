@@ -13,29 +13,48 @@
         :span="4" 
         class="tree_container">
         <div class="title">毛利目标达成率</div>
-        <div class="company">
+        <div
+          @click="click" 
+          :class="{bac:isbac}"
+          v-if="customerTree.children"
+          class="company">
           <span class="left label">{{ customerTree.name }}</span>
           <span
-            v-if="customerTree.children"
             :class="{percent: true, red: !calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne, blue: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
             class="right" >{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
           <div 
             :class="{comprogress: true, 'border-radius0': calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne ? '100%' : `${calculatePercent(customerTree.real_total, customerTree.target_total).percent + 5}%`}"/>
+            :style="{width: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne ? '105%' : `${calculatePercent(customerTree.real_total, customerTree.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
+          ref="tree"
           empty-text="正在加载"
           :data="customerTree.children" 
           :props="defaultProps" 
+          node-key="cid"
           :default-expanded-keys="nodeArr"
           @node-click="handleNodeClick" 
+          :highlight-current="highlight" 
           @check-change="handleCheckChange">
           <span 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+            <el-tooltip 
+              class="item" 
+              effect="dark" 
+              placement="right" > 
+              <div slot="content">
+                <div class="tooltip_margin">{{ data.name }}</div>
+                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+              </div>
+              <span class="label">
+                <span class="label_left">{{ data.name }}</span>
+                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+              </span>
+            </el-tooltip>
+            <!-- <span class="label">{{ data.name }}</span>
+            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span> -->
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
@@ -100,7 +119,7 @@
     import API from './api';
     import _ from 'lodash';
     import Card from '../../components/Card';
-    import SearchBar from 'components/SearchBar';
+    import SearchBar from 'components/SearchBarOrg';
     // 组织对比分析和平均值分析
     import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
     import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
@@ -139,7 +158,9 @@
                 index0: 0,
                 val:{},
 				post:1,
-				nodeArr:[]
+                nodeArr:[],
+                isbac:true,
+                highlight:true,
             };
         },
         computed: {

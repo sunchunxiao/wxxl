@@ -38,8 +38,20 @@
           <span 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+            <el-tooltip 
+              class="item" 
+              effect="dark" 
+              placement="right" > 
+              <div slot="content">
+                <div class="tooltip_margin">{{ data.name }}</div>
+                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+              </div>
+              <span class="label">
+                <span class="label_left">{{ data.name }}</span>
+                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+              </span>
+            </el-tooltip>
+            
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
@@ -156,7 +168,15 @@
             this.debounce = _.debounce(this.getCompare, 1000);
         },
         mounted() {
-            Promise.all([this.getTree(), this.getProgress()]).then(res => {
+            if(this.channelTree.children){
+                let arr = [];
+                for(let i = 0; i < 3; i++) {
+                    this.channelTree.children[i] && arr.push(this.channelTree.children[i]);
+                }
+                const checkKeys = arr.map(i => i.nid);
+                this.$refs.tree.setCheckedKeys(checkKeys);
+            }else{
+                Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
                 const children = treeData.tree.children;
@@ -165,8 +185,6 @@
                     children[i] && arr.push(children[i]);
                 }
                 const checkKeys = arr.map(i => i.nid);
-                // this.$refs.tree.setCheckedKeys(checkKeys);
-                // this.$store.dispatch('SaveChannelTree', treeData.tree);
                 this.$store.dispatch('SaveChannelTree', treeData.tree).then(() => {
                     this.$refs.tree.setCheckedKeys(checkKeys);
                 });
@@ -174,6 +192,7 @@
                 const progressData = res[1];
                 this.$store.dispatch('SaveChannelProgress', progressData.data);
             });
+            }
             
         },
         methods: {
@@ -194,7 +213,6 @@
             },
             getCompare() {
                 const promises = _.map(this.channelProgressArr, o => this.getTrend(o.subject));
-                
                 Promise.all(promises).then(resultList => {
                     _.forEach(resultList, (v, k) => {
                         v.subject = this.channelProgressArr[k].subject;
