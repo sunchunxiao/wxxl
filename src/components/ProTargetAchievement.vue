@@ -103,6 +103,7 @@ export default {
                 backgroundColor: '#fff',
                 tooltip: {
                     trigger: 'item',
+                    formatter: "{a} <br/>{b}: {c}%"
                 },
                 grid: {
                     left: 0,
@@ -113,6 +114,7 @@ export default {
                 },
                 series: [{
                     type: 'pie',
+                    name:'目标达成情况',
                     radius: ['56', '60'],
                     hoverAnimation: false,
                     label: {
@@ -122,7 +124,7 @@ export default {
                     },
                     data: [{
                             value: valuePercent,
-                            name: '',
+                            name: subject_name,
                             itemStyle: {
                                 normal: {
                                     color: color,

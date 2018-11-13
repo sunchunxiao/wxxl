@@ -102,8 +102,8 @@ export default {
                 backgroundColor: '#fff',
                 tooltip: {
                     trigger: 'item',
+                    formatter: "{a} <br/>{b}: {c}%"
                 },
-                
                 grid: {
                     left: 0,
                     right: 0,
@@ -114,7 +114,7 @@ export default {
                 series: [{
                     type: 'pie',
                     radius: ['100', '120'],
-                    name:subject_name,
+                    name:'目标达成情况',
                     hoverAnimation: false,
                     label: {
                         normal: {

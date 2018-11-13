@@ -39,8 +39,21 @@
           <span 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+            <el-tooltip 
+              class="item" 
+              effect="dark" 
+              placement="right" > 
+              <div slot="content">
+                <div class="tooltip_margin">{{ data.name }}</div>
+                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+              </div>
+              <span class="label">
+                <span class="label_left">{{ data.name }}</span>
+                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+              </span>
+            </el-tooltip>
+            <!-- <span class="label">{{ data.name }}</span> -->
+            
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
@@ -167,11 +180,12 @@
 				val:{},
 				post:1,
 				nodeArr:[],
-				idTarget:[10,20,30],
 				cidObjArr:[],
 				cidObjBackArr:[],
 				cancelKey: '',
-				isFirstLoad: true
+				isFirstLoad: true,
+				debounce: null,
+				debounceBack:null
 			};
 		},
 		computed: {
@@ -183,31 +197,47 @@
 		watch: {
 			cidObjArr(val) {
 						if (val.length > 0) {
-								const throttle = _.throttle(this.getCompare, 500);
-								throttle();
+								this.debounce();
 						} else if (val.length === 0) {
 								this.$store.dispatch('ClearOrgCompareArr');
 						}
 			},
 			cidObjBackArr(val) {
 						if (val.length > 0) {
-								const throttle = _.throttle(this.getCompareBack, 500);
-								throttle();
+								this.debounceBack();
 						} else if (val.length === 0) {
 								this.$store.dispatch('ClearOrgBackCompareArr');
 						}
 			},				
 		},
+		created() {
+            // 防抖函数 减少发请求次数
+            this.debounce = _.debounce(this.getCompare, 1000);
+            this.debounceBack = _.debounce(this.getCompareBack, 1000);
+    },
 		mounted() {
-			Promise.all([this.getTree(), this.getProgressbefore(),this.getProgressback()]).then(res => {
+			if(this.organizationTree.children){
+					let arr = [];
+					let arrback = [];
+					for(let i = 0; i < this.organizationTree.children.length; i++) {
+							if(this.organizationTree.children[i].type==1){
+													this.organizationTree.children[i] && arr.push(this.organizationTree.children[i]);
+							}else if(this.organizationTree.children[i].type==2){
+											this.organizationTree.children[i] && arrback.push(this.organizationTree.children[i]);
+							} 
+					}
+					const checkKeys = arr.map(i => i.cid);
+					const checkBackKeys = arrback.map(i => i.cid);
+					const cc=[...checkKeys,...checkBackKeys];
+					this.$refs.tree.setCheckedKeys(cc);
+			}else{
+					Promise.all([this.getTree(), this.getProgressbefore(),this.getProgressback()]).then(res => {
 								// 树
                 const treeData = res[0];
                 const children = treeData.tree.children;
 								let arr = [];
 								let arrback = [];
-                // for(let i = 0; i < 2; i++) {
-                //     children[i] && arr.push(children[i]);
-								// }
+                
 								for(let i = 0; i < children.length; i++) {
 									if(children[i].type==1){
 												children[i] && arr.push(children[i]);
@@ -215,30 +245,27 @@
 											children[i] && arrback.push(children[i]);
 									} 
                 }
-								this.cidObjArr = arr;
-								this.cidObjBackArr = arrback;
-								const checkKeys = this.cidObjArr.map(i => i.cid);
-								const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
+								// this.cidObjArr = arr;
+								// this.cidObjBackArr = arrback;
+								const checkKeys = arr.map(i => i.cid);
+								const checkBackKeys = arrback.map(i => i.cid);
 								const cc=[...checkKeys,...checkBackKeys];
-								this.$refs.tree.setCheckedKeys(cc);
-                this.$store.dispatch('SaveOrgTree', treeData.tree);
+								
+								this.$store.dispatch('SaveOrgTree', treeData.tree).then(() => {
+                    this.$refs.tree.setCheckedKeys(cc);
+                });
                 // 前端指标
                 const progressData = res[1];
                 this.$store.dispatch('SaveOrgProgressData', progressData.data);
                 // 后端指标
                 const progressbackData = res[2];
 								this.$store.dispatch('SaveOrgBackData', progressbackData.data);
-								
-								// 首次加载标志变量
-                this.$nextTick(() => {
-                    this.isFirstLoad = false;
-                });
 						});
+			}
 
 		},
 
 		methods: {
-			
 			getTree() {
 						const params = {
 								subject: this.form.subject,
@@ -369,15 +396,13 @@
 		},
 			cleanChecked() {
 						this.cidObjArr = [];
+						this.cidObjBackArr = [];
 						this.$refs.tree.setCheckedKeys([]);
       },
 			handleCheckChange(data, checked) {
 				// this.type = data.type;
 						// 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
 						// 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
-						if (this.isFirstLoad) {
-								return;
-						}
 						if(!checked && this.cancelKey && data.cid === this.cancelKey) {
 								return;
 						}

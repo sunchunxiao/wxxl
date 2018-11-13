@@ -72,14 +72,6 @@
 					}
 				}
 
-				//取id
-				// for (let i = 0; i < cid.length; i++) {
-				// 	if (params.data[1] == i) {
-				// 		this.cid = cid[i];
-				// 	}
-				// }
-				// const brand = brands[Math.floor(params.dataIndex / 7)];
-				
 				if (params.componentType == "series") {
 					_this.$emit('showStragety', {
 						brand: this.brand,

@@ -1,5 +1,7 @@
 .overview {
         min-width: 1120px;
+        padding-top: 26px;
+        background-color: #eee;
         height: 100%;
         .el-date-editor.el-range-editor {
             width: 300px;
@@ -15,22 +17,24 @@
                 color: #747474
             }
             .company {
-                height: 15px;
-                padding: 7px 0;
+                height: 17px;
+                line-height: 17px;
+                padding: 5px 0;
                 display: flex;
                 justify-content: space-between;
                 margin-bottom: 24px;
                 position: relative;
                 z-index: 1;
+                overflow: hidden;
                 cursor: pointer;
                 .comprogress {
                     display: none;
                     position: absolute;
                     width: 40%;
-                    height: 30px;
-                    left: 0;
+                    height: 27px;
+                    left: -5%;
                     top: 0;
-                    border-radius: 0px;
+                    border-radius: 15px;
                     background: #227daa;
                     z-index: -1;
                 }
@@ -68,14 +72,16 @@
             .tree_container {
                 height: 100%;
                 min-width: 280px;
-                // max-width: 300px;
+                max-width: 320px;
                 padding-bottom: 18px;
                 overflow-y: auto;
                 border: 1px solid #eee;
                 border-radius: 5px;
                 background: #fff;
                 .bac {
-                    background-color: #f0f7ff;
+                    // background-color: #f0f7ff;
+                    background:#e8e8e8;
+                    box-shadow: 0 3px 5px 0 rgba(204, 204, 204, 0.8);
                 }
                 
             }
@@ -85,6 +91,7 @@
                 width: 100%;
                 display: flex;
                 justify-content: space-between;
+                
                 .percent {
                     margin-right: 20px;
                 }
@@ -113,10 +120,15 @@
                 position: relative;
                 overflow: hidden;
                 z-index: 1;
-                // .label{
-                //     width: 128px;
-                //     overflow: hidden;
-                // }
+                .label{
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    // overflow: hidden;
+                    .label_left{
+                        width: 80%;
+                    }
+                }
                 &:hover {
                     background-color: rgb(238, 238, 238);
                     .label {
@@ -210,7 +222,17 @@
                 }
             }
         }
-        // .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content{
-        //     background-color: #cedef1;
-        // }
+        .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content{
+            background:#e8e8e8;
+            box-shadow: 0 3px 5px 0 rgba(204, 204, 204, 0.8);
+        }
     }
+.el-tooltip__popper.is-dark{
+        background: rgba(0, 0, 0, 0.5)!important;
+        font-size: 16px;
+        font-weight:500;
+}
+.tooltip_margin{
+    margin-bottom: 5px;
+    font-weight: bolder;
+}

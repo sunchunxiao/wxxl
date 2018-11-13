@@ -8,6 +8,7 @@
     </el-row>
     <el-row 
       class="content_row" 
+			
       :gutter="20">
       <el-col 
         :span="5" 
@@ -15,16 +16,17 @@
         <div class="title">毛利目标达成率</div>
         <div
           @click="click" 
+          v-if="organizationTree.children"
           :class="{bac:isbac}"
           class="company">
           <span class="left label">{{ organizationTree.name }}</span>
           <span
-            v-if="organizationTree.children"
             :class="{percent: true, red: !calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne, blue: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
             class="right" >{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
           <div 
             :class="{comprogress: true, 'border-radius0': calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne ? '100%' : `${calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + 5}%`}"/>
+            :style="{width: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne ? '105%' : `${calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + 5}%`}"/>
+          
         </div>
         <!-- 有多个tree -->
         <el-tree 
@@ -37,15 +39,28 @@
           :default-expanded-keys="nodeArr"
           :highlight-current="highlight" 
           @node-click="handleNodeClick">
-          <span 
+          <div 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+            <el-tooltip 
+              class="item" 
+              effect="dark" 
+              placement="right" > 
+              <div slot="content">
+                <div class="tooltip_margin">{{ data.name }}</div>
+                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+              </div>
+              <span class="label">
+                <span class="label_left">{{ data.name }}</span>
+                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+              </span>
+            </el-tooltip>
+            
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
-          </span>
+          </div>
+          
         </el-tree>
       </el-col>
       <el-col 
@@ -290,7 +305,12 @@
 				nodeArr:[],
 				isbac:true,
 				highlight:true,
-				a:false
+				a:false,
+				name:[{
+					name:'aa'
+				},{
+					name:'bb'
+				}]
 			};
 		},
 		computed: {
@@ -636,5 +656,10 @@
 </script>
 
 <style lang="scss">
-    @import '../Product/style/overview.scss'
+		@import '../Product/style/overview.scss';
+		// .el-tooltip__popper.is-dark{
+		// 		background: rgba(0, 0, 0, 0.5)!important;
+		// 		font-size: 14px;
+		// 		font-weight:500;
+		// }
 </style>
