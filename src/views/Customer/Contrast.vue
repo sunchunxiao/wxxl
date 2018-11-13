@@ -294,7 +294,7 @@
                 }
                 if (checked) { // 如果选中
                     // 如果有选中的节点 并且此次选择了不同pid的节点
-                    if (this.cidObjArr[0] && data.is_parent !== this.cidObjArr[0].is_parent) {
+                    if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
                         this.warn('请选择相同父级下的进行对比');
                         this.cancelKey = data.cid;
                         const checkKeys = this.cidObjArr.map(i => i.cid);
