@@ -321,7 +321,6 @@
 				}).then(() => {
 					const data = {
 						cid: data1.cid,
-						rank:this.Rank(data1.rank),
 						subject: data1.subject,
 						time_label: data1.time_label,
 						strategies: this.idArr.join(',')
@@ -543,7 +542,6 @@
 				const params = {
 					cid: cid,
 					subject: subject,
-					rank: this.Rank(rank),
 					time_label: time_label,
 				};
 
