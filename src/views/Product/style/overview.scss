@@ -124,7 +124,6 @@
                     width: 100%;
                     display: flex;
                     align-items: center;
-                    // overflow: hidden;
                     .label_left{
                         width: 80%;
                     }
@@ -232,7 +231,10 @@
         font-size: 16px;
         font-weight:500;
 }
+.bold{
+    font-weight: bolder;
+}
 .tooltip_margin{
     margin-bottom: 5px;
-    font-weight: bolder;
+    
 }

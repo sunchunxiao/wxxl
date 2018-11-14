@@ -3,7 +3,7 @@
     <div
       class="averagebar"
       :id="`averagebar-${id}`"/>
-    <div class="detail">{{ data.subject }}</div>
+    <div class="detail">{{ data.subject_name }}</div>
   </div>
 </template>
 
@@ -36,6 +36,36 @@
             },
         },
         methods: {
+            calculateToShow(val) {
+                const { subject } = this.data;
+                
+                // if (subject === 'ROI') { // 投入产出比需要 * 100
+                //     return parseInt(val * 100);
+                // } else if (subject === 'ITO') { // 库存周转率不需要单位
+                //     return val;
+                // }else if (subject === 'POR') { // 库存周转率不需要单位
+                //     return parseInt(val);
+                // }
+
+                if(subject=='SD'){
+                    let Tenthousand = (val / 10000 / 100).toFixed(2);
+                    // console.log(Tenthousand);
+                    if(Tenthousand>=1){
+                        return Tenthousand+'w';
+                    }else{
+                        return val/100;
+                    }
+                }else if(subject=='ROI'){
+                    if(val>=10000){
+                        return (val/10000).toFixed(2) +'w';
+                    }else{
+                        return val;
+                    }
+                }else{
+                    return val;
+                }
+                
+            },
             renderChart(nodes) {
                 var _this = this;
                 const {
@@ -46,49 +76,16 @@
                 const percentArr = [];
                 const average = nodes.avg;
                 this.color = nodes["28nodes"];
-                // console.log(this.color);
-                
-                // for(let i=values.length-1;i>=0;i--){
-                    
-                //     _this.val.push(values[i]);
-                //     console.log(_this.val);
-                //     var sum = _this.val.reduce(function(prev,cur,index,array){
-                //         return prev + cur;
-                // });
-                // // console.log(sum/nodes.total);
-                // this.sum28 = sum/nodes.total;
-                // // console.log(this.sum28);
-                // if(this.sum28>0.8){
-                //     console.log(i);
-                //     this.color.push('true');
-                //     // for(let i=0;i<values.length;i++){
-                //     //     this.color.pus
-                //     // }
-                // }else{
-                //     console.log(i);
-                //     this.color.push('false');
-                //     console.log(this.color);
-                // }
-                // }
                 
                 for(let i in pData) {
                     //              percentArr.push(Math.floor(parseInt(pData[i].total) / sumTarget * 100));
                     //              var arr = (nodes.values[i] / nodes.total).toFixed(4)
                     //              percentArr.push((arr * 100).toFixed(2));
-
-                    //                  if(nodes.subject == "投入产出比" || nodes.subject == "日销" || nodes.subject == "库存周转率") {
-                    //                      percentArr.push(nodes.values[i]);
-                    //
-                    //                  } else {
-                    //                      var arr = (parseInt(nodes.values[i] / 1000000))
-                    //                      //                      console.log(arr)
-                    //
-                    //                      percentArr.push(arr);
-                    //
-                    //                  }
+                    
                     percentArr.push(nodes.values[i]);
 
                 }
+                
                 const options = {
                     grid: {
                         left: 10,
@@ -130,8 +127,6 @@
                         itemStyle: {
                             normal: {
                                 color: function(params) {
-                                    // console.log(params);
-                                    // console.log(_this.color[`${params.dataIndex}`]);
                                     
                                     return _this.color[`${params.dataIndex}`] === params.dataIndex ? '#318cb8' : '#b0afad';
                                 },
@@ -145,9 +140,11 @@
                                 color: "#000",
                                 formatter: function(params) {
                                     if(nodes.display_rate == 0) {
-                                        return `${pData[params.dataIndex]} : ${params.data}`;
+                                        _this.calculateToShow(params.data);
+                                        return `${pData[params.dataIndex]} : ${ _this.calculateToShow(params.data)}`;
                                     }else{
                                         if(nodes.total==0){
+                                            
                                             return `${pData[params.dataIndex]} : ${params.data}`;
                                         }else{
                                             return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
@@ -157,14 +154,13 @@
                                 },
                             }
                         },
-                        
                         data: percentArr,
                         markLine: {
                             symbol: 'none',
                             label: {
                                 formatter:function(){
                                     if( nodes.display_rate == 0){
-                                       return `平均值${average}`; 
+                                       return `平均值${_this.calculateToShow(average)}`; 
                                     }else{
                                         if(average==0){
                                             return `平均值${average}`;
