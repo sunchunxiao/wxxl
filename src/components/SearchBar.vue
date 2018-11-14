@@ -29,6 +29,7 @@
         <el-date-picker 
           v-model="form.dayRange" 
           type="datetimerange" 
+          :default-value="timeDefaultShow" 
           :picker-options="pickerBaseOptions"
           range-separator="-" 
           start-placeholder="开始日期"
@@ -171,6 +172,7 @@ export default {
     data() {
         return {
             units: UNITS,
+            timeDefaultShow:'',
             pickerBaseOptions: { firstDayOfWeek: 1 },
             form: {
                 pt: '日',
@@ -198,6 +200,7 @@ export default {
       },
     },
     computed: {
+        
         weekStartOptions() {
             const { weekEnd } = this.form;
             return {
@@ -264,6 +267,8 @@ export default {
     mounted() {
       // todo: 设置初始值
     //   console.log(this.url);
+         this.timeDefaultShow = new Date();
+         this.timeDefaultShow.setMonth(new Date().getMonth() - 1);
     },
     methods: {
         t(){

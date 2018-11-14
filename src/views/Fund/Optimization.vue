@@ -46,7 +46,11 @@
               effect="dark" 
               placement="right" > 
               <div slot="content">
-                <div class="tooltip_margin">{{ data.name }}</div>
+                <div class="tooltip_margin bold">品类:{{ data.name }}</div>
+                <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                <div 
+                  v-if="data.children"
+                  class="tooltip_margin">子项目数 : {{ data.children.length }}</div>
                 <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
               </div>
               <span class="label">
@@ -152,7 +156,7 @@
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
-                cid:1,
+                cid:'',
                 loading:false,
                 defaultProps: TREE_PROPS,
                 time: '7.30 - 8.05',
@@ -185,8 +189,9 @@
         mounted() {
             if(!this.hasTree) {
                 this.getTree();
+            }else{
+                this.cid = this.fundTree.cid;
             }
-            this.getHistory();
         },
         methods: {
             click(){
@@ -222,7 +227,7 @@
                     version: this.form.version
                 };
                 API.GetFundTree(params).then(res => {
-                    //                  console.log(res.tree)
+                    this.cid = res.tree.cid;
                     this.$store.dispatch('SaveFundTree', res.tree);
                 });
             },

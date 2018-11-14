@@ -98,7 +98,6 @@
 		},
 		mounted(){
 			this.getProductStrategy();
-			// console.log(this.strategyArr)
 		},
 		methods: {
 			getProductStrategy() {
