@@ -25,7 +25,6 @@
         mounted() {
             this.chart = echarts.init(document.getElementById(`averagebar-${this.id}`));
             this.renderChart(this.data);
-
         },
         watch: {
             data: {
@@ -46,8 +45,8 @@
                 // }else if (subject === 'POR') { // 库存周转率不需要单位
                 //     return parseInt(val);
                 // }
-
-                if(subject=='SD'){
+                //日销，投入产出比和库存周转率是显示原值
+                if(subject=='SD'){//日销
                     let Tenthousand = (val / 10000 / 100).toFixed(2);
                     // console.log(Tenthousand);
                     if(Tenthousand>=1){
@@ -55,7 +54,7 @@
                     }else{
                         return val/100;
                     }
-                }else if(subject=='ROI'){
+                }else if(subject=='ROI'){//投入产出比 
                     if(val>=10000){
                         return (val/10000).toFixed(2) +'w';
                     }else{
