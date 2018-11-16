@@ -7,7 +7,7 @@
         url="/product/search"/>
     </el-row>
     <el-row 
-      class="content_row" 
+      class="content_row padding_top " 
       :gutter="20">
       <el-col 
         :span="5" 

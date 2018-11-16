@@ -25,7 +25,6 @@
         mounted() {
             this.chart = echarts.init(document.getElementById(`averagebar-${this.id}`));
             this.renderChart(this.data);
-
         },
         watch: {
             data: {
@@ -39,15 +38,8 @@
             calculateToShow(val) {
                 const { subject } = this.data;
                 
-                // if (subject === 'ROI') { // 投入产出比需要 * 100
-                //     return parseInt(val * 100);
-                // } else if (subject === 'ITO') { // 库存周转率不需要单位
-                //     return val;
-                // }else if (subject === 'POR') { // 库存周转率不需要单位
-                //     return parseInt(val);
-                // }
-
-                if(subject=='SD'){
+                //日销，投入产出比和库存周转率是显示原值
+                if(subject=='SD'){//日销
                     let Tenthousand = (val / 10000 / 100).toFixed(2);
                     // console.log(Tenthousand);
                     if(Tenthousand>=1){
@@ -55,7 +47,8 @@
                     }else{
                         return val/100;
                     }
-                }else if(subject=='ROI'){
+                }else if(subject=='ROI'){//投入产出比 
+                
                     if(val>=10000){
                         return (val/10000).toFixed(2) +'w';
                     }else{
@@ -69,24 +62,30 @@
             renderChart(nodes) {
                 var _this = this;
                 const {
-                    transSubjects,
                     nodes: pData
                 } = nodes;
-            
+                // console.log(pData);
                 const percentArr = [];
                 const average = nodes.avg;
                 this.color = nodes["28nodes"];
                 
                 for(let i in pData) {
-                    //              percentArr.push(Math.floor(parseInt(pData[i].total) / sumTarget * 100));
-                    //              var arr = (nodes.values[i] / nodes.total).toFixed(4)
-                    //              percentArr.push((arr * 100).toFixed(2));
+                    if(nodes.subject=='ROI'||nodes.subject=='POR'){//投入产出比  人员冗余值
+                         percentArr.push(nodes.values[i]);
+                    }else{
+                        percentArr.push(parseInt(nodes.values[i]/100));
+                    }
                     
-                    percentArr.push(nodes.values[i]);
-
                 }
                 
                 const options = {
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        },
+                        position: ['50%', '50%']
+                    },
                     grid: {
                         left: 10,
                         right: 30,
@@ -111,23 +110,21 @@
                         },
                     },
                     yAxis: {
-                        // inverse: true,
                         type: 'category',
                         axisTick: {
                             show: false
                         },
-                        data: transSubjects,
+                        data: pData,
                         axisLabel: {
                             show: false,
                         }
                     },
                     series: [{
-                        name:this.sum28,
+                        // name:pData,
                         type: 'bar',
                         itemStyle: {
                             normal: {
                                 color: function(params) {
-                                    
                                     return _this.color[`${params.dataIndex}`] === params.dataIndex ? '#318cb8' : '#b0afad';
                                 },
                                 barBorderRadius: [0, 20, 20, 0],
@@ -140,7 +137,7 @@
                                 color: "#000",
                                 formatter: function(params) {
                                     if(nodes.display_rate == 0) {
-                                        _this.calculateToShow(params.data);
+                                        // _this.calculateToShow(params.data);
                                         return `${pData[params.dataIndex]} : ${ _this.calculateToShow(params.data)}`;
                                     }else{
                                         if(nodes.total==0){

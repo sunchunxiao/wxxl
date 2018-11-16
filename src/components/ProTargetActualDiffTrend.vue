@@ -34,19 +34,42 @@ export default {
         },
     },
     methods: {
+        calculateToShow(val) {
+            const { subject_name } = this.data;
+            // console.log(val);
+            if (subject_name === '投入产出比'||subject_name === '库存周转率') { // 投入产出比需要,库存周转率不需要单位
+                return val;
+            }else{
+                let Tenthousand = parseInt(val / 10000);
+                if(Tenthousand>=1){
+                    return parseInt(val / 10000)+'w';
+                }else{
+                    return parseInt(val);
+                }
+            }
+            
+            // return parseInt(val / 10000 / 100); // 金额从分转换为万
+        },
         renderChart(data) {
-            const { real, target, timeLabels } = data;
+            var _this = this;
+            const { real, target, timeLabels,subject_name } = data;
             // console.log(timeLabels);
             const diff = [];
+            var realItem,targetItem;
             const bottom = [];
             const underTarget = [];
             const realClone = _.cloneDeep(real);
             const targetClone = _.cloneDeep(target);
             for (let i = 0; i < realClone.length; i++) {
-//                 realClone[i] = parseInt(realClone[i] / 10000 / 100);
-//                 targetClone[i] = parseInt(targetClone[i] / 10000 / 100);
-                const realItem = realClone[i];
-                const targetItem = targetClone[i];
+                if(subject_name=='投入产出比'||subject_name=='库存周转率'){
+                     realItem = realClone[i];
+                     targetItem = targetClone[i];
+                }else{
+                    realClone[i] = parseInt(realClone[i] / 100);
+                    targetClone[i] = parseInt(targetClone[i] / 100);
+                     realItem = realClone[i];
+                     targetItem = targetClone[i];
+                }
 
                 // realClone[i] = -20;
                 // const realItem = realClone[i];
@@ -60,13 +83,7 @@ export default {
                     bottom.push(realItem < targetItem ? realItem : targetItem);
                     diff.push(Math.abs(realItem - targetItem));
                 }
-                // else{
-                //     // bottom.push(Math.abs(realItem)+targetItem);
-                //     diff.push(Math.abs(realItem)+targetItem);
-                // }
-
-                // bottom.push(realItem < targetItem ? realItem : targetItem);
-                // diff.push(Math.abs(realItem - targetItem));
+                
                 realItem < targetItem && underTarget.push(i);
                 
             }
@@ -84,7 +101,6 @@ export default {
                     axisPointer: {
                             type: 'line',
                     },
-                    // formatter:"{a0}:{c0}<br/>{a1}:{c1}<br/>{a3}:{c3}",
                     formatter: function(params){
                         var result = params[0].axisValue+"<br />";
                         params.forEach(function (item) {
@@ -118,7 +134,13 @@ export default {
                     data: timeLabels
                 },
                 yAxis: {
-                    type: 'value'
+                    // type: 'value',
+                    // data: value
+                    axisLabel:{
+                        formatter: function (val) {
+                           return _this.calculateToShow(val);
+                        }
+                    }
                 },
                 series: [
                     {
@@ -164,7 +186,6 @@ export default {
                 ]
             };
             this.chart.setOption(options);
-            var _this = this;
             window.addEventListener("resize", function () {
                _this.chart.resize();
             });

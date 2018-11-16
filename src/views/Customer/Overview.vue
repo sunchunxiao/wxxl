@@ -379,10 +379,12 @@
 					this.$store.dispatch('SaveCusProgressData', res.data);
 					const promises = _.map(res.data, o => this.getTrend(o.subject));
 					Promise.all(promises).then(resultList => {
+                        
 						_.forEach(resultList, (v, k) => {
 							v.subject = res.data[k].subject;
 							v.subject_name = res.data[k].subject_name;
-						});
+                        });
+                        
 						this.$store.dispatch('SaveCusTrendArr', resultList);
 					});
 				});

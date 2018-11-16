@@ -1,6 +1,6 @@
 .overview {
         min-width: 1120px;
-        padding-top: 26px;
+        padding-top: 30px;
         background-color: #eee;
         height: 100%;
         .el-date-editor.el-range-editor {
@@ -8,6 +8,7 @@
         }
         .content_row {
             height: calc(100% - 48px);
+            padding-top: 20px;
             overflow-y: scroll;
             overflow: hidden;
             margin: 0!important;
