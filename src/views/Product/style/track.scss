@@ -4,8 +4,8 @@
     .table_container {
         border-radius: 5px;
         background: #fff;
-        margin: 20px 0;
-        padding-top: 20px
+        padding: 20px 0 20px;
+        margin-top: 20px
     }
     .title {
         margin: 0 0 25px 25px;
@@ -14,6 +14,10 @@
         .el-table__row {
             >td {
                 background: #EEE;
+            }
+            .cell{
+                text-align: center;
+                cursor: pointer;
             }
         }
         thead {

@@ -62,9 +62,12 @@ export default {
       isCollapse: false,
     };
   },
+  mounted(){
+    // console.log(this.isCollapse);
+  },
   methods: {
     home(){
-            this.$router.push('/home');
+          this.$router.push('/home');
         },
     handleClick() {
       this.isCollapse = !this.isCollapse;

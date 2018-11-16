@@ -147,19 +147,18 @@ export default {
             activePath: '/home',
             path:'/home',
             home_bac:false,
+            val:''
         };
     },
     mounted() {
         this.activePath = this.$route.fullPath;
-        this.select();
+        // this.select();
     },
+   
     methods:{
         select(val){
-            if(val == "/home"){
-                this.home_bac = true;
-            }else{
-                this.home_bac = false;
-            }
+            this.val = val;
+            // return this.val;
         },
         
     },
