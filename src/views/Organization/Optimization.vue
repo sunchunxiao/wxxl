@@ -322,7 +322,11 @@
 				this.loading = true;
 				this.val = val;
 				if(val.cid!=""){
-						this.cid = val.cid;
+                    this.cid = val.cid;
+                    if(this.cid==this.organizationTree.cid){
+                            this.isbac = true;
+                            this.highlight = false;
+                    }
 				}else{
                     this.getTree();
                     this.getHistory();

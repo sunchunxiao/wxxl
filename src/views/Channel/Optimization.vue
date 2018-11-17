@@ -4,7 +4,7 @@
       <search-bar 
         ref="child"
         @search="handleSearch" 
-        url="/product/search"/>
+        url="/channel/search"/>
     </el-row>
     <el-row 
       class="content_row" 
@@ -309,6 +309,7 @@
             },
             handleSearch(val) {
                     // 默认公司的背景色
+                    this.highlight = true;
                     this.isbac = false;
                     this.nodeArr = [];
                     this.nodeArr.push(val.cid);
@@ -319,6 +320,10 @@
                     this.val = val;
                     if(val.cid!=""){
                             this.cid = val.cid;
+                            if(this.cid==this.channelTree.cid){
+                                this.isbac = true;
+                                this.highlight = false;
+                            }
                     }else{
                         this.getTree();
                         this.getHistory();

@@ -505,6 +505,7 @@
                 }
             },
             handleSearch(val) {
+                this.highlight = true;
                 // 默认公司的背景色
                 this.isbac = false;
                 this.nodeArr = [];
@@ -516,8 +517,12 @@
                 this.val = val;
                 if(val.cid!=""){
                     this.cid = val.cid;
+                    if(this.cid==this.productTree.cid){
+                        this.isbac = true;
+                        this.highlight = false;
+                    }
                 }else{
-                    if(this.cid==1){
+                    if(this.cid==this.productTree.cid){
                         this.isbac = true;
                     }
                     this.getTree();

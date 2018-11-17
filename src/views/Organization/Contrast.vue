@@ -189,7 +189,7 @@
 				cancelKey: '',
 				isFirstLoad: true,
 				debounce: null,
-				debounceBack:null
+				debounceBack:null,
 			};
 		},
 		computed: {
@@ -213,6 +213,7 @@
 								this.$store.dispatch('ClearOrgBackCompareArr');
 						}
 			},				
+
 		},
 		created() {
             // 防抖函数 减少发请求次数
@@ -258,7 +259,7 @@
 								this.$store.dispatch('SaveOrgTree', treeData.tree).then(() => {
                     this.$refs.tree.setCheckedKeys(cc);
                 });
-                // 前端指标
+
                 const progressData = res[1];
                 this.$store.dispatch('SaveOrgProgressData', progressData.data);
                 // 后端指标
@@ -270,6 +271,7 @@
 		},
 
 		methods: {
+			
 			getTree() {
 						const params = {
 								subject: this.form.subject,
@@ -329,11 +331,13 @@
 								...this.getPeriodByPt(),
 								subject: subject,
 								version: this.form.version,
+								rType: 1
 						};
 						const checkKeys = this.cidObjArr.map(i => i.cid);
 						params.targets = checkKeys.join(',');
 						return API.GetOrgCompare(params);
 			},
+
 			getTrendback(subject) {
 				let params = {
 							...this.getPeriodByPt(),

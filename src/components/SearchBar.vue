@@ -281,6 +281,8 @@ export default {
                 return "产品编号/产品名称";
             }else if(this.url=='/cus/search'){
                 return "客户编号/客户名称";
+            }else if(this.url=='/channel/search'){
+                return "渠道编号/渠道名称";
             }
         },
         parentMsg: function (msg) {
