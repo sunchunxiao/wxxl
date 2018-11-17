@@ -312,7 +312,8 @@
 				};
 			},
 			handleSearch(val) {
-				// 默认公司的背景色
+					this.highlight = true;
+					// 默认公司的背景色
 						this.isbac = false;
 						this.nodeArr = [];
 						this.nodeArr.push(val.cid);

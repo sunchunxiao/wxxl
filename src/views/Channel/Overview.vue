@@ -32,7 +32,7 @@
           ref="tree"
           empty-text="正在加载"
           :props="defaultProps" 
-          node-key="cid"
+          node-key="nid"
           :default-expanded-keys="nodeArr"
           :highlight-current="highlight" 
           @node-click="handleNodeClick">
@@ -476,6 +476,7 @@
                 };
             },
             handleSearch(val) {
+                this.highlight = true;
                 // 默认公司的背景色
                 this.isbac = false;
                 this.nodeArr = [];
@@ -487,7 +488,7 @@
                 this.val = val;
                 if(val.cid!=""){
                     this.cid = val.cid;
-                    if(this.cid==this.channelTree.cid){
+                    if(this.cid==this.channelTree.nid){
                         this.isbac = true;
                         this.highlight = false;
                     }

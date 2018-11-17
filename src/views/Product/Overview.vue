@@ -505,6 +505,7 @@
                 }
             },
             handleSearch(val) {
+                this.highlight = true;
                 // 默认公司的背景色
                 this.isbac = false;
                 this.nodeArr = [];
