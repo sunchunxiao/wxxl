@@ -512,12 +512,17 @@
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
+                
                 this.loading = true;
                 this.val = val;
                 if(val.cid!=""){
                     this.cid = val.cid;
+                    if(this.cid==this.productTree.cid){
+                        this.isbac = true;
+                        this.highlight = false;
+                    }
                 }else{
-                    if(this.cid==1){
+                    if(this.cid==this.productTree.cid){
                         this.isbac = true;
                     }
                     this.getTree();
