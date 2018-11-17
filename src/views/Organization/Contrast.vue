@@ -291,6 +291,9 @@
 					return API.GetOrgSubject(params);
 			},
 			getCompare() {
+					if(!this.cidObjArr.length){
+							return;
+					}
 					const promises = _.map(this.orgprogressArr, o => this.getTrend(o.subject));
 					Promise.all(promises).then(resultList => {
 							_.forEach(resultList, (v, k) => {
@@ -305,6 +308,9 @@
 					});
 			},
 			getCompareBack() {
+					if(!this.cidObjBackArr.length){
+							return;
+					}
 					const promises = _.map(this.orgprogressbackArr, o => this.getTrendback(o.subject));
 					Promise.all(promises).then(resultList => {
 							_.forEach(resultList, (v, k) => {

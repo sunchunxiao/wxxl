@@ -201,6 +201,9 @@
                 return API.GetProductProgress(params);
             },
             getCompare() {
+                if(!this.cidObjArr.length){
+                    return;
+                }
                 const promises = _.map(this.progressArr, o => this.getTrend(o.subject));
                 Promise.all(promises).then(resultList => {
                     _.forEach(resultList, (v, k) => {

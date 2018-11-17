@@ -35,8 +35,41 @@
         <el-table-column
           prop="count_use"
           label="采纳次数"
-          sortable
-        />
+          sortable>
+          <template 
+            
+            slot-scope="scope">
+            <el-popover
+              
+              @show = 'show(scope.row)'
+              trigger="click" 
+              placement="top">
+              <el-table 
+                :data="trackList1">
+                <el-table-column
+                  type="index"
+                  label="序号"/>
+                <el-table-column
+                  prop="level"
+                  label="应用产品" />
+                <el-table-column
+                  prop="time"
+                  label="时间" />
+                <el-table-column
+                  prop="rank1"
+                  label="策略应用前" />
+                <el-table-column
+                  prop=rank2
+                  label="策略应用前" />
+              </el-table>
+              <div 
+                slot="reference" 
+                class="name-wrapper cell_count_use">
+                {{ scope.row.rate }}
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="count_eff"
           label="有效次数"
@@ -73,7 +106,7 @@
               </el-table>
               <div 
                 slot="reference" 
-                class="name-wrapper">
+                class="name-wrapper cell_count_use">
                 {{ scope.row.rate }}
               </div>
             </el-popover>

@@ -34,7 +34,39 @@
         <el-table-column 
           prop="use_num" 
           label="采纳次数" 
-          sortable/>
+          sortable>
+          <!-- 点击策略准确度,弹出下面这个窗口的所有策略应用情况 -->
+          <template slot-scope="scope">
+            <el-popover
+              @show = 'show(scope.row)'
+              trigger="click" 
+              placement="top">
+              <el-table 
+                :data="trackList1">
+                <el-table-column
+                  type="index"
+                  label="序号"/>
+                <el-table-column
+                  prop="level"
+                  label="应用产品" />
+                <el-table-column
+                  prop="time"
+                  label="时间" />
+                <el-table-column
+                  prop="rank1"
+                  label="策略应用前" />
+                <el-table-column
+                  prop="rank2"
+                  label="策略应用前" />
+              </el-table>
+              <div 
+                slot="reference" 
+                class="name-wrapper cell_count_use">
+                {{ scope.row.use_num }}
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column 
           prop="suc_num" 
           label="有效次数" 
@@ -69,7 +101,7 @@
               </el-table>
               <div 
                 slot="reference" 
-                class="name-wrapper">
+                class="name-wrapper cell_count_use">
                 {{ scope.row.acc_rate }}
               </div>
             </el-popover>
@@ -122,12 +154,12 @@
 				this.trackList1 = [];
 				if(val){
 					this.trackList1.push({
-					level:"品牌A-品类AA",
+					level:"整体人群A-聚类人群A",
 					time:'2018.1.2',
 					rank1:'差',
 					rank2:'优'
 				},{
-					level:"品牌A-品类AC",
+					level:"整体人群A-聚类人群B",
 					time:'2018.1.2',
 					rank1:'中',
 					rank2:'差'
