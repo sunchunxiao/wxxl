@@ -29,12 +29,13 @@
         <el-date-picker 
           v-model="form.dayRange" 
           type="datetimerange" 
-          :picker-options="pickerBaseOptions"
+          :picker-options="dayRangeOptions"
           range-separator="-" 
           start-placeholder="开始日期"
           end-placeholder="结束日期" 
           format="yyyy-MM-dd" 
-          value-format="yyyy-MM-dd" 
+          value-format="yyyy-MM-dd"
+          :default-value="defaultValue" 
           align="right"/>
       </el-form-item>
       <template v-if="form.pt === '周'">
@@ -231,13 +232,33 @@ export default {
         cptPlaceholder(){
             return this.placeholder || '产品编号/产品名称';
         },
+        defaultValue() {
+          const endTimeSet = process.env.VUE_APP_END_TIME_SET;
+            if (endTimeSet && _.isDate(new Date(endTimeSet))) {
+              return moment(endTimeSet).valueOf();
+            }
+          return moment().valueOf();
+        },
+        dayRangeOptions() {
+          return {
+            disabledDate(time) {
+              const endTimeSet = process.env.VUE_APP_END_TIME_SET;
+              if (endTimeSet && _.isDate(new Date(endTimeSet))) {
+                return time.getTime() > moment(endTimeSet).valueOf();
+              }
+              return time.getTime() > Date.now();
+            },
+            ...this.pickerBaseOptions
+          };
+        },
         weekStartOptions() {
             const { weekEnd } = this.form;
             return {
                 disabledDate(time) {
                     if (weekEnd) {
-                        return time.getTime() > _.toNumber(moment(weekEnd).add(5, 'd').format('x'));
+                        return time.getTime() > _.toNumber(moment(weekEnd).add(5, 'd').format('x')) && time.getTime() > Date.now();
                     }
+                    return time.getTime() > Date.now();
                 },
                 ...this.pickerBaseOptions
             };
@@ -247,8 +268,9 @@ export default {
             return {
                 disabledDate(time) {
                     if (weekStart) {
-                        return time.getTime() < _.toNumber(moment(weekStart).subtract(1, 'd').format('x'));
+                        return time.getTime() < _.toNumber(moment(weekStart).subtract(1, 'd').format('x')) && time.getTime() > Date.now();
                     }
+                    return time.getTime() > Date.now();
                 },
                 ...this.pickerBaseOptions
             };
@@ -258,8 +280,9 @@ export default {
             return {
                 disabledDate(time) {
                     if (monthEnd) {
-                        return time.getTime() > _.toNumber(moment(monthEnd).format('x'));
+                        return time.getTime() > _.toNumber(moment(monthEnd).format('x')) && time.getTime() > Date.now();
                     }
+                    return time.getTime() > Date.now();
                 }
             };
         },
@@ -268,8 +291,9 @@ export default {
             return {
                 disabledDate(time) {
                     if (monthStart) {
-                        return time.getTime() < _.toNumber(moment(monthStart).format('x'));
+                        return time.getTime() < _.toNumber(moment(monthStart).format('x')) && time.getTime() > Date.now();
                     }
+                    return time.getTime() > Date.now();
                 }
             };
         },
@@ -278,8 +302,9 @@ export default {
             return {
                 disabledDate(time) {
                     if (yearEnd) {
-                        return time.getTime() > _.toNumber(moment(yearEnd).format('x'));
+                        return time.getTime() > _.toNumber(moment(yearEnd).format('x')) && time.getTime() > Date.now();
                     }
+                    return time.getTime() > Date.now();
                 }
             };
         },
@@ -288,8 +313,9 @@ export default {
             return {
                 disabledDate(time) {
                     if (yearStart) {
-                        return time.getTime() < _.toNumber(moment(yearStart).format('x'));
+                        return time.getTime() < _.toNumber(moment(yearStart).format('x')) && time.getTime() > Date.now();
                     }
+                    return time.getTime() > Date.now();
                 }
             };
         }
