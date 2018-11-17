@@ -171,7 +171,6 @@
 
 <script>
 import { FetchGet } from 'utils/fetch';
-import _ from 'lodash';
 
 // TODO: 季
 const UNITS = ['日', '周', '月','年'];
