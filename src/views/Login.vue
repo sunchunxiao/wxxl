@@ -34,7 +34,7 @@
 
 <script>
 import API from './api';
-import { setToken } from 'utils/auth';
+import { setToken, setUsername } from 'utils/auth';
 
 export default {
     data() {
@@ -79,6 +79,7 @@ export default {
                     this.submitLoading = true;
                     API.Login(this.form).then(res => {
                         setToken(res.token);
+                        setUsername(this.form.username);
                         this.$router.replace('/home');
                     }).catch(e => {
                         this.form.password = '';
