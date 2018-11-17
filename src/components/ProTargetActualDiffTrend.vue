@@ -197,7 +197,6 @@ export default {
                 ]
             };
             this.chart.setOption(options);
-
         }
     }
 };

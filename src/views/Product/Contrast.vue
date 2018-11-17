@@ -201,7 +201,7 @@
                 return API.GetProductProgress(params);
             },
             getCompare() {
-                if(!this.cidObjArr.length){
+                if (!this.cidObjArr.length) {
                     return;
                 }
                 const promises = _.map(this.progressArr, o => this.getTrend(o.subject));

@@ -127,7 +127,6 @@
 
 <script>
 	import API from './api';
-	import _ from 'lodash';
 	import { mapGetters } from 'vuex';
 	const TIMEPT = {
         '周': 'week',

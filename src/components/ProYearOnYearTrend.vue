@@ -99,11 +99,6 @@ export default {
                 ]
             };
             this.chart.setOption(options);
-            
-            // window.addEventListener("resize", function () {
-            //    _this.chart.resize();
-            // });
-            
         }
     }
 };

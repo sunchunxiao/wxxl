@@ -9,7 +9,6 @@
 
 <script>
 	import echarts from 'echarts';
-	import _ from 'lodash';
 
 	const stragetyArr = [
 		"持续优化成本成本结构",
@@ -48,25 +47,19 @@
 			this.renderChart(this.data);
 			let _this = this;
 			this.chart.on('click', function(params) {
-				// let length = _this.data[0].subjects.length;
 				let time = params.seriesId;
-				// console.log(time);
 
 				for(let i=0;i<_this.data.length;i++){
 					if(_this.data[i].timeLabel == time){
 						for(let j=0;j<_this.data[i].subjects.length;j++){
 							if(params.data[0] == j){
 								this.name = _this.data[i].subjects[j];
-								// console.log(this.name)
-								
 							}
-							
 						}
 						for(let m=0;m<_this.data[i].categoryNames.length;m++){
 								if(params.data[1] == m){
 									this.brand = _this.data[i].categoryNames[m];
 									this.cid = _this.data[i].categoryIds[m];
-								// console.log(this.brand)
 								}
 						}
 					}
@@ -242,7 +235,6 @@
 					options: options
 				};
 				this.chart.setOption(heatMapOption,true);
-				window.onresize = this.chart.resize;
 			}
 		}
 	};
