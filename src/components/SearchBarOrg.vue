@@ -229,7 +229,8 @@ export default {
                         // console.log(cid);
                         this.$message({
                             type:'error',
-                            message:'请选择日期'
+                            message:'请选择日期',
+                            duration:2000
                         });
                         // return;
                     } 
@@ -238,10 +239,6 @@ export default {
                         this.$emit('search', obj);
                     }
 
-            //     } else {
-            //         return false;
-            //     }
-            // });
         },
         searchKw(kw, cb) {
             // console.log(kw,cb);

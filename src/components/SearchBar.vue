@@ -284,7 +284,6 @@ export default {
             }else if(this.url=='/cus/search'){
                 return "客户编号/客户名称";
             }
-            
         },
         parentMsg: function (msg) {
             //在点击左侧节点的时候 搜素框值为空
@@ -319,24 +318,14 @@ export default {
                         // console.log(cid);
                         this.$message({
                             type:'error',
-                            message:'请选择日期'
+                            message:'请选择日期',
+                            duration:2000
                         });
                         // return;
                     } 
-                    // else if(cid==''){
-                    //     this.$message({
-                    //         type:'error',
-                    //         message:'请选择产品'
-                    //     });
-                    // }
                     else{
                         this.$emit('search', obj);
                     }
-
-            //     } else {
-            //         return false;
-            //     }
-            // });
         },
         searchKw(kw, cb) {
             // console.log(kw,cb);
