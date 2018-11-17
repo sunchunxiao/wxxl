@@ -206,7 +206,6 @@ export default {
       },
     },
     computed: {
-        
         weekStartOptions() {
             const { weekEnd } = this.form;
             return {

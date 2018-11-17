@@ -73,6 +73,7 @@
             border: 1px solid #eee;
             border-radius: 5px;
             background: #fff;
+            
         }
     }
     
@@ -160,6 +161,7 @@
         .el-tree-node__expand-icon.is-leaf {
             visibility: hidden;
         }
+        
     }
     .card-title {
         margin-bottom: 20px;
@@ -207,6 +209,7 @@
             }
         }
     }
+    
 }
 .el-tooltip__popper.is-dark{
     background: rgba(0, 0, 0, 0.5)!important;

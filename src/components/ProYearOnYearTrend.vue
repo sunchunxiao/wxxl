@@ -17,12 +17,18 @@ export default {
     },
     data(){
         return {
-            myChart:[]
+            myChart:[],
+            debounce:null
         };
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`trendline-${this.id}`));
         this.renderChart(this.data);
+        this.debounce = _.debounce(this.chart.resize,1000);
+        window.addEventListener("resize",this.debounce);
+    },
+    beforeDestroy () {
+        window.removeEventListener('resize', this.debounce);
     },
     watch: {
         data: {
@@ -34,7 +40,6 @@ export default {
     },
     methods: {
         renderChart(data) {
-            
             const { timeLabels, ring, yoy } = data;
             
             const options = {
