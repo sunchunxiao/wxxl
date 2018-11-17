@@ -3,8 +3,10 @@
     <el-row>
       <search-bar 
         @search="handleSearch"
-        ref="child"
-        url="/product/search"/>
+        url="/product/search"
+        v-model="searchBarValue"
+        :pt-options="['日', '周', '月','年']"
+      />
     </el-row>
     <el-row 
       class="content_row" 
@@ -272,6 +274,11 @@
                 nodeArr:[],
                 isbac:true,
                 highlight:true,
+                searchBarValue: {
+                    pt: '',
+                    sDate: '',
+                    eDate: ''
+                }
             };
         },
         computed: {
@@ -287,25 +294,9 @@
             }else{
                 this.cid = this.productTree.cid;
             }
-
         },
         watch: {
-            // form: [
-            //     {
-            //         handler: function() {
-            //             this.getTree();
-            //         },
-            //         deep: true,
-            //     },
-            //     {
-            //         handler: function(val, oldVal) {
-            //             console.log(val, oldVal);
-            //             this.getProgress();
-            //         },
-            //         deep: true,
-            //     }
-            // ],
-            cid: function() {
+            cid() {
                 // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
                 // 暂时先在这里做
                 this.getProgress();
@@ -320,7 +311,7 @@
                 }else{
                     this.loading = true;
                     //点击发送请求清除搜索框
-                    this.$refs.child.parentMsg(this.post);
+                    this.$refs.child.clearKw();
                     this.isbac = true;
                     this.highlight = false;
                     this.cid=this.productTree.cid;
@@ -538,7 +529,7 @@
             handleNodeClick(data) {
                 this.isbac = false;
                 this.highlight = true;
-                this.$refs.child.parentMsg(this.post);
+                this.$refs.child.clearKw();
                 if(this.cid === data.cid){
                     return ;
                 }else if(data.children != undefined) {
