@@ -4,7 +4,7 @@
       <search-bar 
         @search="handleSearch" 
         ref="child"
-        url="/product/search"/>
+        url="/channel/search"/>
     </el-row>
     <el-row 
       class="content_row" 
