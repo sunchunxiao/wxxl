@@ -121,8 +121,6 @@
 
 <script>
     import API from './api';
-
-    import _ from 'lodash';
     import Card from '../../components/Card';
     import SearchBar from 'components/SearchBarOrg';
     // 组织对比分析和平均值分析

@@ -94,11 +94,6 @@ export default {
                 ]
             };
             this.chart.setOption(options);
-            var _this = this;
-            window.addEventListener("resize", function () {
-               _this.chart.resize();
-            });
-            
         }
     }
 };

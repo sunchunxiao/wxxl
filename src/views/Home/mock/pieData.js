@@ -1,4 +1,3 @@
-import _ from 'lodash';
 
 //产品效率
 const pieProduce = [{
