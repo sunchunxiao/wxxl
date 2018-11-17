@@ -287,6 +287,9 @@
                 return API.GetFundSubject(params);
             },
             getCompare() {
+                if(!this.cidObjArr.length){
+                        return;
+                }
                 const promises = _.map(this.fundprogressArr, o => this.getTrend(o.subject));
                 Promise.all(promises).then(resultList => {
                         _.forEach(resultList, (v, k) => {
@@ -311,6 +314,9 @@
                 return API.GetFundCompare(params);
 			},
             getCompareBack() {
+                if(!this.cidObjBackArr.length){
+                    return;
+                }
                 const promises = _.map(this.fundprogressbackArr, o => this.getTrendback(o.subject));
                 Promise.all(promises).then(resultList => {
                         _.forEach(resultList, (v, k) => {

@@ -216,6 +216,9 @@
                 return API.GetChannelProgress(params);
             },
             getCompare() {
+                if(!this.cidObjArr.length){
+                    return;
+                }
                 const promises = _.map(this.channelProgressArr, o => this.getTrend(o.subject));
                 Promise.all(promises).then(resultList => {
                     _.forEach(resultList, (v, k) => {
