@@ -15,16 +15,16 @@
         <div class="title">毛利目标达成率</div>
         <div
           @click="click" 
+          v-if="customerTree.children"
           :class="{bac:isbac}"
           class="company">
           <span class="left label">{{ customerTree.name }}</span>
           <span
-            v-if="customerTree.children"
             :class="{percent: true, red: !calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne, blue: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
             class="right" >{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
           <div 
             :class="{comprogress: true, 'border-radius0': calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne ? '100%' : `${calculatePercent(customerTree.real_total, customerTree.target_total).percent + 5}%`}"/>
+            :style="{width: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne ? '105%' : `${calculatePercent(customerTree.real_total, customerTree.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
@@ -40,8 +40,25 @@
           <span 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+            <el-tooltip 
+              class="item" 
+              effect="dark" 
+              placement="right" > 
+              <div slot="content">
+                <div class="tooltip_margin bold">品类:{{ data.name }}</div>
+                <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                <div 
+                  v-if="data.children"
+                  class="tooltip_margin">子项目数 : {{ data.children.length }}</div>
+                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+              </div>
+              <span class="label">
+                <span class="label_left">{{ data.name }}</span>
+                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+              </span>
+            </el-tooltip>
+            <!-- <span class="label">{{ data.name }}</span>
+            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span> -->
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
@@ -239,7 +256,7 @@
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
-                cid:1,
+                cid:'',
                 loading: false,
                 defaultProps: TREE_PROPS,
                 // index
@@ -268,8 +285,10 @@
         mounted() {
             if(!this.hasTree) {
                 this.getTree();
+            }else{
+                this.cid = this.customerTree.cid;
             }
-            this.initFormDataFromUrl();
+            // this.initFormDataFromUrl();
         },
         watch: {
             form: {
@@ -321,7 +340,6 @@
 				}).then(() => {
 					const data = {
 						cid: data1.cid,
-						rank:this.Rank(data1.rank),
 						subject: data1.subject,
 						time_label: data1.time_label,
 						strategies: this.idArr.join(',')
@@ -348,7 +366,7 @@
                     ...this.getPeriodByPt(),
                 };
                 API.GetCusTree(params).then(res => {
-                    //                  console.log(res.tree)
+                    this.cid = res.tree.cid;
                     this.$store.dispatch('SaveCusTree', res.tree);
                 });
             },
@@ -543,7 +561,6 @@
 				const params = {
 					cid: cid,
 					subject: subject,
-					rank: this.Rank(rank),
 					time_label: time_label,
 				};
 

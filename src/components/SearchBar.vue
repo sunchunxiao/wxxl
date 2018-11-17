@@ -18,7 +18,8 @@
         </el-select>
       </el-form-item>
     </el-col>
-    <el-col :span="9">
+    <el-col 
+      :span="9">
       <el-form-item
         v-if="form.pt === '日'"
         label="时间段选择"
@@ -29,6 +30,7 @@
         <el-date-picker 
           v-model="form.dayRange" 
           type="datetimerange" 
+          :default-value="timeDefaultShow" 
           :picker-options="pickerBaseOptions"
           range-separator="-" 
           start-placeholder="开始日期"
@@ -37,8 +39,12 @@
           value-format="yyyy-MM-dd" 
           align="right"/>
       </el-form-item>
-      <template v-if="form.pt === '周'">
-        <el-col :span="12">
+      <el-col 
+        class="special_month"
+      >
+        <template 
+          v-if="form.pt === '周'">
+          <!-- <el-col :span="14"> -->
           <el-form-item 
             label="时间段选择" 
             prop="weekStart" 
@@ -52,26 +58,27 @@
               :picker-options="weekStartOptions"
               placeholder="请选择开始周"/>
           </el-form-item>
-        </el-col>
-        <el-col 
-          :span="12" 
-          class="align_center">
-          <el-form-item
-            prop="weekEnd" 
-            :rules="{
-              required: true, message: '请选择结束周', trigger: 'blur'
-          }">
-            <el-date-picker
-              v-model="form.weekEnd"
-              type="week"
-              format="yyyy 第 WW 周"
-              :picker-options="weekEndOptions"
-              placeholder="请选择结束周"/>
-          </el-form-item>
-        </el-col>
-      </template>
-      <template v-if="form.pt === '月'">
-        <el-col :span="12">
+          <!-- </el-col> -->
+          <el-col 
+            :span="9" 
+            class="align_center">
+            <el-form-item
+              prop="weekEnd" 
+              :rules="{
+                required: true, message: '请选择结束周', trigger: 'blur'
+            }">
+              <el-date-picker
+                v-model="form.weekEnd"
+                type="week"
+                format="yyyy 第 WW 周"
+                :picker-options="weekEndOptions"
+                placeholder="请选择结束周"/>
+            </el-form-item>
+          </el-col>
+        </template>
+      
+        <template v-if="form.pt === '月'">
+          <!-- <el-col :span="12"> -->
           <el-form-item 
             label="时间段选择"
             prop="monthStart" 
@@ -85,26 +92,26 @@
               :picker-options="monthStartOptions"
               placeholder="请选择开始月"/>
           </el-form-item>
-        </el-col>
-        <el-col 
-          :span="12" 
-          class="align_center">
-          <el-form-item 
-            prop="monthEnd" 
-            :rules="{
-              required: true, message: '请选择结束月', trigger: 'blur'
-          }">
-            <el-date-picker
-              v-model="form.monthEnd"
-              type="month"
-              format="yyyy MM 月"
-              :picker-options="monthEndOptions"
-              placeholder="请选择结束月"/>
-          </el-form-item>
-        </el-col>
-      </template>
-      <template v-if="form.pt === '年'">
-        <el-col :span="12">
+          <!-- </el-col> -->
+          <el-col 
+            :span="9" 
+            class="align_center">
+            <el-form-item 
+              prop="monthEnd" 
+              :rules="{
+                required: true, message: '请选择结束月', trigger: 'blur'
+            }">
+              <el-date-picker
+                v-model="form.monthEnd"
+                type="month"
+                format="yyyy MM 月"
+                :picker-options="monthEndOptions"
+                placeholder="请选择结束月"/>
+            </el-form-item>
+          </el-col>
+        </template>
+        <template v-if="form.pt === '年'">
+          <!-- <el-col :span="12"> -->
           <el-form-item 
             label="时间段选择"
             prop="yearStart" 
@@ -117,23 +124,24 @@
               :picker-options="yearStartOptions"
               placeholder="请选择开始年"/>
           </el-form-item>
-        </el-col>
-        <el-col 
-          :span="12" 
-          class="align_center">
-          <el-form-item 
-            prop="yearEnd" 
-            :rules="{
-              required: true, message: '请选择结束年', trigger: 'blur'
-          }">
-            <el-date-picker
-              v-model="form.yearEnd"
-              type="year"
-              :picker-options="yearEndOptions"
-              placeholder="请选择结束年"/>
-          </el-form-item>
-        </el-col>
-      </template>
+          <!-- </el-col> -->
+          <el-col 
+            :span="9" 
+            class="align_center">
+            <el-form-item 
+              prop="yearEnd" 
+              :rules="{
+                required: true, message: '请选择结束年', trigger: 'blur'
+            }">
+              <el-date-picker
+                v-model="form.yearEnd"
+                type="year"
+                :picker-options="yearEndOptions"
+                placeholder="请选择结束年"/>
+            </el-form-item>
+          </el-col>
+        </template>
+      </el-col>
     </el-col>
     <el-col :span="6">
       <el-form-item label="精确搜索">
@@ -151,11 +159,13 @@
         </el-autocomplete>
       </el-form-item>
     </el-col>
-    <el-col :span="4">
+    <el-col 
+      class="time_submit"
+      :span="4">
       <el-form-item>
         <el-button 
           @click="handleClick" 
-          type="primary">GO</el-button>
+          type="primary">确认</el-button>
       </el-form-item>
     </el-col> 
   </el-form>
@@ -163,7 +173,6 @@
 
 <script>
 import { FetchGet } from 'utils/fetch';
-import _ from 'lodash';
 
 // TODO: 季
 const UNITS = ['日', '周', '月','年'];
@@ -171,6 +180,7 @@ export default {
     data() {
         return {
             units: UNITS,
+            timeDefaultShow:'',
             pickerBaseOptions: { firstDayOfWeek: 1 },
             form: {
                 pt: '日',
@@ -264,6 +274,8 @@ export default {
     mounted() {
       // todo: 设置初始值
     //   console.log(this.url);
+         this.timeDefaultShow = new Date();
+         this.timeDefaultShow.setMonth(new Date().getMonth() - 1);
     },
     methods: {
         t(){
@@ -271,8 +283,9 @@ export default {
                 return "产品编号/产品名称";
             }else if(this.url=='/cus/search'){
                 return "客户编号/客户名称";
+            }else if(this.url=='/channel/search'){
+                return "渠道编号/渠道名称";
             }
-            
         },
         parentMsg: function (msg) {
             //在点击左侧节点的时候 搜素框值为空
@@ -307,24 +320,14 @@ export default {
                         // console.log(cid);
                         this.$message({
                             type:'error',
-                            message:'请选择日期'
+                            message:'请选择日期',
+                            duration:2000
                         });
                         // return;
                     } 
-                    // else if(cid==''){
-                    //     this.$message({
-                    //         type:'error',
-                    //         message:'请选择产品'
-                    //     });
-                    // }
                     else{
                         this.$emit('search', obj);
                     }
-
-            //     } else {
-            //         return false;
-            //     }
-            // });
         },
         searchKw(kw, cb) {
             // console.log(kw,cb);
@@ -356,5 +359,30 @@ export default {
         }
     }
 }
+.special_month {
+    .el-form-item{
+        float: left;
+    }
+    .align_center{
+        float: left;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner{
+        width: 160px;
+    }
+}
+.special_month .el-form-item__content{
+    margin-left: 28px!important;
+    overflow: hidden;
+}
+
+.time_submit .el-form-item__content{
+        margin-left: 40px!important;
+        button{
+            width: 140px;
+            background-color: #3090c0;
+            box-shadow:  0 3px 5px 0 rgba(204, 204, 204, 0.8)
+        }
+}
+
 </style>
 

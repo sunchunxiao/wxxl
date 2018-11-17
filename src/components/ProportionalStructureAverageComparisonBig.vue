@@ -3,7 +3,7 @@
     <div 
       class="averagebar" 
       :id="`averagebar-${id}`"/>
-    <div class="detail">{{ data.subject }}</div>
+    <div class="detail">{{ data.subject_name }}</div>
   </div>
 </template>
 
@@ -34,10 +34,33 @@
             },
         },
         methods: {
+            calculateToShow(val) {
+                const { subject } = this.data;
+                
+                //日销，投入产出比和库存周转率是显示原值
+                if(subject=='SD'){//日销
+                    let Tenthousand = (val / 10000 / 100).toFixed(2);
+                    // console.log(Tenthousand);
+                    if(Tenthousand>=1){
+                        return Tenthousand+'w';
+                    }else{
+                        return val/100;
+                    }
+                }else if(subject=='ROI'){//投入产出比 
+                
+                    if(val>=10000){
+                        return (val/10000).toFixed(2) +'w';
+                    }else{
+                        return val;
+                    }
+                }else{
+                    return val;
+                }
+                
+            },
             renderChart(nodes) {
                 var _this = this;
                 const {
-                    transSubjects,
                     nodes: pData
                 } = nodes;
                 const percentArr = [];
@@ -45,9 +68,6 @@
 
                 const average = nodes.avg;
                 for(let i in pData) {
-                    //              percentArr.push(Math.floor(parseInt(pData[i].total) / sumTarget * 100));
-                    //              var arr = (nodes.values[i] / nodes.total).toFixed(4)
-                    //              percentArr.push((arr * 100).toFixed(2));
                     percentArr.push(nodes.values[i]);
                 }
                 const options = {
@@ -57,6 +77,27 @@
                         bottom: 5,
                         top: 20,
                         containLabel: true
+                    },
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        },
+                        formatter: function(params){
+                            var result =[];
+                            if(nodes.subject=='ROI'||nodes.subject=='POR'){
+                                params.forEach(function (item) {
+                                    result += item.marker + " " + item.seriesName + " : " + item.value +"</br>";
+                                });
+                            }else{
+                                params.forEach(function (item) {
+                                    result += item.marker + " " + item.name  + " : " + parseInt(item.value/100 )+"</br>";
+                                });
+                            }
+                            
+                            return result;
+                        },
+                        position: ['50%', '50%']
                     },
                     xAxis: {
                         type: 'value',
@@ -74,12 +115,11 @@
                         },
                     },
                     yAxis: {
-                        // inverse: true,
                         type: 'category',
                         axisTick: {
                             show: false
                         },
-                        data: transSubjects,
+                        data: pData,
                         axisLabel: {
                             show: false,
                         }
@@ -102,9 +142,11 @@
                                 color: "#000",
                                 formatter: function(params) {
                                     if(nodes.display_rate == 0) {
-                                        return `${pData[params.dataIndex]} : ${params.data}`;
+                                        // _this.calculateToShow(params.data);
+                                        return `${pData[params.dataIndex]} : ${ _this.calculateToShow(params.data)}`;
                                     }else{
                                         if(nodes.total==0){
+                                            
                                             return `${pData[params.dataIndex]} : ${params.data}`;
                                         }else{
                                             return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
@@ -120,9 +162,9 @@
                             label: {
                                 formatter:function(){
                                     if( nodes.display_rate == 0){
-                                       return `平均值${average}`; 
+                                       return `平均值${_this.calculateToShow(average)}`; 
                                     }else{
-                                        if(nodes.total==0){
+                                        if(average==0){
                                             return `平均值${average}`;
                                         }else{
                                             return `平均值${(average/nodes.total*100).toFixed(2)}%`;

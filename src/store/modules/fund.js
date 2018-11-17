@@ -2,6 +2,7 @@ const fund = {
     state: {
         tree: {},
         fundprogressArr: [],
+        fundprogressbackArr: [],
         fundtrendArr: [],
         fundstructureArr1:[],
         fundstructureArr2:[],
@@ -16,6 +17,9 @@ const fund = {
         },
         SAVE_FUNDPROGRESS_ARR: (state, arr) => {
 			state.fundprogressArr = arr;
+        },
+        SAVE_FUNDBACKPROGRESS_ARR: (state, arr) => {
+			state.fundprogressbackArr = arr;
         },
         SAVE_FUNDTREND_ARR: (state, arr) => {
 			state.fundtrendArr = arr;
@@ -35,6 +39,12 @@ const fund = {
         SAVE_FUNDCOMPAREBACK_ARR: (state, arr) => {
 			state.fundcompareArrback = arr;
         },
+        CLEAR_FUNDCOMPARE_ARR: state => {
+			state.fundcompareArr = [];
+		},
+		CLEAR_FUNDBACKCOMPARE_ARR: state => {
+			state.fundcompareArrback = [];
+		},
         SAVE_FUNDHISTORY_ARR: (state, arr) => {
 			state.fundhistoryArr = arr;
 		},
@@ -45,6 +55,9 @@ const fund = {
         },
         SaveFundProgressData({ commit }, arr) {
 			commit('SAVE_FUNDPROGRESS_ARR', arr);
+        },
+        SaveFundBackData({ commit }, arr) {
+			commit('SAVE_FUNDBACKPROGRESS_ARR', arr);
         },
         SaveFundTrendArr({ commit }, arr) {
 			commit('SAVE_FUNDTREND_ARR', arr);
@@ -59,12 +72,17 @@ const fund = {
 			commit('SAVE_RANKRANK_ARR', arr);
         },
         SaveFundCompareArr({ commit }, arr) {
-            
 			commit('SAVE_FUNDCOMPARE_ARR', arr);
         },
         SaveFundCompareArrback({ commit }, arr) {
 			commit('SAVE_FUNDCOMPAREBACK_ARR', arr);
         },
+        ClearFundCompareArr({ commit }) {
+			commit('CLEAR_FUNDCOMPARE_ARR');
+		},
+		ClearFundBackCompareArr({ commit }) {
+			commit('CLEAR_FUNDBACKCOMPARE_ARR');
+		},
         SaveFundtHistory({ commit }, arr) {
 			commit('SAVE_FUNDHISTORY_ARR', arr);
 		},

@@ -34,18 +34,79 @@
         <el-table-column 
           prop="count_use" 
           label="采纳次数" 
-          :filters="[{text: '30', value: '30'},{text: '21', value: '21'},{text: '20', value: '20'},{text: '16', value: '16'},{text: '15', value: '15'},{text: '12', value: '12'},{text: '10', value: '10'},{text: '8', value: '8'},{text: '7', value: '7'},{text: '6', value: '6'}]" 
-          :filter-method="filterF"/>
+          sortable>
+          <!-- 点击策略准确度,弹出下面这个窗口的所有策略应用情况 -->
+          <template slot-scope="scope">
+            <el-popover
+              @show = 'show(scope.row)'
+              trigger="click" 
+              placement="top">
+              <el-table 
+                :data="trackList1">
+                <el-table-column
+                  type="index"
+                  label="序号"/>
+                <el-table-column
+                  prop="level"
+                  label="应用产品" />
+                <el-table-column
+                  prop="time"
+                  label="时间" />
+                <el-table-column
+                  prop="rank1"
+                  label="策略应用前" />
+                <el-table-column
+                  prop="rank2"
+                  label="策略应用前" />
+              </el-table>
+              <div 
+                slot="reference" 
+                class="name-wrapper cell_count_use">
+                {{ scope.row.count_use }}
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column 
           prop="count_eff" 
           label="有效次数" 
-          :filters="[{text: '19', value: '19'},{text: '18', value: '18'},{text: '14', value: '14'},{text: '12', value: '12'},{text: '10', value: '10'},{text: '9', value: '9'},{text: '8', value: '8'},{text: '7', value: '7'},{text: '5', value: '5'},{text: '4', value: '4'},{text: '3', value: '3'},]" 
-          :filter-method="filterG"/>
+          sortable/>
         <el-table-column 
-          prop="rate" 
+          prop="rate"
           label="策略准确度/适用度" 
-          :filters="[{text: '100%', value: '100%'},{text: '95%', value: '95%'},{text: '93%', value: '93%'},{text: '90%', value: '90%'},{text: '87%', value: '87%'},{text: '83%', value: '83%'},{text: '75%', value: '75%'},{text: '67%', value: '67%'},{text: '60%', value: '60%'},{text: '50%', value: '50%'},]" 
-          :filter-method="filterH"/>
+          sortable>
+          <!-- 点击策略准确度,弹出下面这个窗口的所有策略应用情况 -->
+          <template slot-scope="scope">
+            <el-popover
+              @show = 'show(scope.row)'
+              trigger="click" 
+              placement="top">
+              <el-table 
+                :data="trackList1">
+                <el-table-column
+                  type="index"
+                  label="序号"/>
+                <el-table-column
+                  prop="level"
+                  label="应用产品" />
+                <el-table-column
+                  prop="time"
+                  label="时间" />
+                <el-table-column
+                  prop="rank1"
+                  label="策略应用前" />
+                <el-table-column
+                  prop="rank2"
+                  label="策略应用前" />
+              </el-table>
+              <div 
+                slot="reference" 
+                class="name-wrapper cell_count_use">
+                {{ scope.row.rate }}
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
       </el-table>
       <div class="page_container">
         <el-pagination 
@@ -601,7 +662,8 @@
 				trackList:[],
 				total:0,
                 currentPage: 1,
-                tableData: tableData
+                tableData: tableData,
+                trackList1:[]
             };
         },
         watch: {
@@ -611,6 +673,23 @@
 			this.getChannelStrategy();
 		},
         methods: {
+            show(val){
+				// console.log(val);
+				this.trackList1 = [];
+				if(val){
+					this.trackList1.push({
+					level:"公司-品牌A-平台A",
+					time:'2018.3.2',
+					rank1:'差',
+					rank2:'优'
+				},{
+					level:"公司-品牌A-平台A",
+					time:'2018.3.2',
+					rank1:'中',
+					rank2:'差'
+				});
+				}
+			},
             getChannelStrategy() {
 				const params = {
 					page: this.currentPage,

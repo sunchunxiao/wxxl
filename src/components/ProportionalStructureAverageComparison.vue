@@ -3,7 +3,7 @@
     <div
       class="averagebar"
       :id="`averagebar-${id}`"/>
-    <div class="detail">{{ data.subject }}</div>
+    <div class="detail">{{ data.subject_name }}</div>
   </div>
 </template>
 
@@ -25,7 +25,6 @@
         mounted() {
             this.chart = echarts.init(document.getElementById(`averagebar-${this.id}`));
             this.renderChart(this.data);
-
         },
         watch: {
             data: {
@@ -36,60 +35,65 @@
             },
         },
         methods: {
+            calculateToShow(val) {
+                const { subject } = this.data;
+                
+                //日销，投入产出比和库存周转率是显示原值
+                if(subject=='SD'){//日销
+                    let Tenthousand = (val / 10000 / 100).toFixed(2);
+                    // console.log(Tenthousand);
+                    if(Tenthousand>=1){
+                        return Tenthousand+'w';
+                    }else{
+                        return val/100;
+                    }
+                }else if(subject=='ROI'){//投入产出比 
+                    if(val>=10000){
+                        return (val/10000).toFixed(2) +'w';
+                    }else{
+                        return val;
+                    }
+                }else{
+                    return val;
+                }
+                
+            },
             renderChart(nodes) {
                 var _this = this;
                 const {
-                    transSubjects,
                     nodes: pData
                 } = nodes;
-            
+                // console.log(pData);
                 const percentArr = [];
                 const average = nodes.avg;
                 this.color = nodes["28nodes"];
-                // console.log(this.color);
-                
-                // for(let i=values.length-1;i>=0;i--){
-                    
-                //     _this.val.push(values[i]);
-                //     console.log(_this.val);
-                //     var sum = _this.val.reduce(function(prev,cur,index,array){
-                //         return prev + cur;
-                // });
-                // // console.log(sum/nodes.total);
-                // this.sum28 = sum/nodes.total;
-                // // console.log(this.sum28);
-                // if(this.sum28>0.8){
-                //     console.log(i);
-                //     this.color.push('true');
-                //     // for(let i=0;i<values.length;i++){
-                //     //     this.color.pus
-                //     // }
-                // }else{
-                //     console.log(i);
-                //     this.color.push('false');
-                //     console.log(this.color);
-                // }
-                // }
                 
                 for(let i in pData) {
-                    //              percentArr.push(Math.floor(parseInt(pData[i].total) / sumTarget * 100));
-                    //              var arr = (nodes.values[i] / nodes.total).toFixed(4)
-                    //              percentArr.push((arr * 100).toFixed(2));
-
-                    //                  if(nodes.subject == "投入产出比" || nodes.subject == "日销" || nodes.subject == "库存周转率") {
-                    //                      percentArr.push(nodes.values[i]);
-                    //
-                    //                  } else {
-                    //                      var arr = (parseInt(nodes.values[i] / 1000000))
-                    //                      //                      console.log(arr)
-                    //
-                    //                      percentArr.push(arr);
-                    //
-                    //                  }
                     percentArr.push(nodes.values[i]);
-
                 }
+                
                 const options = {
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        },
+                        formatter: function(params){
+                            var result =[];
+                            if(nodes.subject=='ROI'||nodes.subject=='POR'){
+                                params.forEach(function (item) {
+                                    result += item.marker + " " + item.name + " : " + item.value +"</br>";
+                                });
+                            }else{
+                                params.forEach(function (item) {
+                                    result += item.marker + " " + item.name  + " : " + parseInt(item.value/100 )+"</br>";
+                                });
+                            }
+                            
+                            return result;
+                        },
+                        position: ['50%', '50%']
+                    },
                     grid: {
                         left: 10,
                         right: 30,
@@ -114,25 +118,21 @@
                         },
                     },
                     yAxis: {
-                        // inverse: true,
                         type: 'category',
                         axisTick: {
                             show: false
                         },
-                        data: transSubjects,
+                        data: pData,
                         axisLabel: {
                             show: false,
                         }
                     },
                     series: [{
-                        name:this.sum28,
+                        // name:pData,
                         type: 'bar',
                         itemStyle: {
                             normal: {
                                 color: function(params) {
-                                    // console.log(params);
-                                    // console.log(_this.color[`${params.dataIndex}`]);
-                                    
                                     return _this.color[`${params.dataIndex}`] === params.dataIndex ? '#318cb8' : '#b0afad';
                                 },
                                 barBorderRadius: [0, 20, 20, 0],
@@ -145,7 +145,8 @@
                                 color: "#000",
                                 formatter: function(params) {
                                     if(nodes.display_rate == 0) {
-                                        return `${pData[params.dataIndex]} : ${params.data}`;
+                                        
+                                        return `${pData[params.dataIndex]} : ${ _this.calculateToShow(params.data)}`;
                                     }else{
                                         if(nodes.total==0){
                                             return `${pData[params.dataIndex]} : ${params.data}`;
@@ -157,14 +158,13 @@
                                 },
                             }
                         },
-                        
                         data: percentArr,
                         markLine: {
                             symbol: 'none',
                             label: {
                                 formatter:function(){
                                     if( nodes.display_rate == 0){
-                                       return `平均值${average}`; 
+                                       return `平均值${_this.calculateToShow(average)}`; 
                                     }else{
                                         if(average==0){
                                             return `平均值${average}`;

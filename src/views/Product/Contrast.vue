@@ -12,16 +12,26 @@
       <el-col 
         :span="5" 
         class="tree_container">
+        <div class="padding_top">
+          <el-button 
+            @click="cleanChecked"
+            size="mini" 
+            class="clean_btn">清空选择</el-button>
+        </div>
+        <!-- <div 
+          @click="cleanChecked"
+          size="mini" 
+          class="clean_btn">
+          <span 
+            class="clean_select" >取消全部</span>
+        </div> -->
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ productTree.name }}</span>
-          <span class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
+          <span 
+            v-if="productTree.children"
+            class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
         </div>
-        <el-button 
-          @click="cleanChecked"
-          size="mini" 
-          v-if="cidObjArr.length > 0"
-          class="clean_btn">清空选择</el-button>
         <el-tree 
           :data="productTree.children" 
           ref="tree" 
@@ -34,8 +44,24 @@
           <span 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{ red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+            <el-tooltip 
+              class="item" 
+              effect="dark" 
+              placement="right" > 
+              <div slot="content">
+                <div class="tooltip_margin bold">品类:{{ data.name }}</div>
+                <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                <div 
+                  v-if="data.children"
+                  class="tooltip_margin">子项目数 : {{ data.children.length }}</div>
+                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+              </div>
+              <span class="label">
+                <span class="label_left">{{ data.name }}</span>
+                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+              </span>
+            </el-tooltip>
+            
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
@@ -108,7 +134,9 @@
                 defaultProps: TREE_PROPS,
                 index0: 0,
                 cidObjArr:[],
-                cancelKey: ''
+                cancelKey: '',
+                debounce: null,
+                isFirstLoad:true,
             };
         },
         computed: {
@@ -120,34 +148,43 @@
         watch: {
             cidObjArr(val) {
                 if (val.length > 0) {
-                    const throttle = _.throttle(this.getCompare, 500);
-                    throttle();
-                    
+                    this.debounce();
                 } else if (val.length === 0) {
                     this.$store.dispatch('ClearCompareArr');
                 }
             }
-        },   
+        },
+        created() {
+            // 防抖函数 减少发请求次数
+            this.debounce = _.debounce(this.getCompare, 1000);
+        },
         mounted() {
-            Promise.all([this.getTree(), this.getProgress()]).then(res => {
+            if(this.productTree.children){
+                let arr = [];
+                for(let i = 0; i < 3; i++) {
+                    this.productTree.children[i] && arr.push(this.productTree.children[i]);
+                }
+                const checkKeys = arr.map(i => i.cid);
+                this.$refs.tree.setCheckedKeys(checkKeys);
+            }else{
+                Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
                 const children = treeData.tree.children;
                 let arr = [];
                 for(let i = 0; i < 3; i++) {
                     children[i] && arr.push(children[i]);
-                    
                 }
-                this.cidObjArr = arr;
-                const checkKeys = this.cidObjArr.map(i => i.cid);
-                this.$refs.tree.setCheckedKeys(checkKeys);
-                this.$store.dispatch('SaveProductTree', treeData.tree);
+                const checkKeys = arr.map(i => i.cid);
+                this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
+                    this.$refs.tree.setCheckedKeys(checkKeys);
+                });
                 // 指标
                 const progressData = res[1];
                 this.$store.dispatch('SaveProgressData', progressData.data);
             });
+            }
         },
-
         methods: {
             getTree() {
                 const params = {
@@ -164,15 +201,16 @@
                 return API.GetProductProgress(params);
             },
             getCompare() {
+                if (!this.cidObjArr.length) {
+                    return;
+                }
                 const promises = _.map(this.progressArr, o => this.getTrend(o.subject));
-                
                 Promise.all(promises).then(resultList => {
                     _.forEach(resultList, (v, k) => {
                         v.subject = this.progressArr[k].subject;
                         v.subject_name = this.progressArr[k].subject_name;
                     });
                     const cidName = this.cidObjArr.map(o => o.name);
-                    // console.log(cidName);
                     // 只有当返回的跟当前选中的一样才更新 store
                     if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                         this.$store.dispatch('SaveCompareArr', resultList);
@@ -184,10 +222,6 @@
                     ...this.getPeriodByPt(),
                     subject: subject
                 };
-                
-                if(this.cidObjArr.length==4){
-                    this.cidObjArr.pop();
-                }
                 const checkKeys = this.cidObjArr.map(i => i.cid);
                 params.targets = checkKeys.join(',');
                 return API.GetProductCompare(params);

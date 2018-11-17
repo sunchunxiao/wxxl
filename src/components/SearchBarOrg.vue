@@ -18,25 +18,27 @@
         </el-select>
       </el-form-item>
     </el-col>
-    <el-col :span="9">
+    <el-col 
+      class="special_month"
+      :span="9">
       <template v-if="form.pt === '月'">
-        <el-col :span="12">
-          <el-form-item 
-            label="时间段选择"
-            prop="monthStart" 
-            :rules="{
-              required: true, message: '请选择开始月', trigger: 'blur'
-          }">
-            <el-date-picker
-              v-model="form.monthStart"
-              type="month"
-              format="yyyy MM 月"
-              :picker-options="monthStartOptions"
-              placeholder="请选择开始月"/>
-          </el-form-item>
-        </el-col>
+        <!-- <el-col :span="10"> -->
+        <el-form-item 
+          label="时间段选择"
+          prop="monthStart" 
+          :rules="{
+            required: true, message: '请选择开始月', trigger: 'blur'
+        }">
+          <el-date-picker
+            v-model="form.monthStart"
+            type="month"
+            format="yyyy MM 月"
+            :picker-options="monthStartOptions"
+            placeholder="请选择开始月"/>
+        </el-form-item>
+        <!-- </el-col> -->
         <el-col 
-          :span="12" 
+          :span="9" 
           class="align_center">
           <el-form-item 
             prop="monthEnd" 
@@ -53,22 +55,22 @@
         </el-col>
       </template>
       <template v-if="form.pt === '年'">
-        <el-col :span="12">
-          <el-form-item 
-            label="时间段选择"
-            prop="yearStart" 
-            :rules="{
-              required: true, message: '请选择开始年', trigger: 'blur'
-          }">
-            <el-date-picker
-              v-model="form.yearStart"
-              type="year"
-              :picker-options="yearStartOptions"
-              placeholder="请选择开始年"/>
-          </el-form-item>
-        </el-col>
+        <!-- <el-col :span="12"> -->
+        <el-form-item 
+          label="时间段选择"
+          prop="yearStart" 
+          :rules="{
+            required: true, message: '请选择开始年', trigger: 'blur'
+        }">
+          <el-date-picker
+            v-model="form.yearStart"
+            type="year"
+            :picker-options="yearStartOptions"
+            placeholder="请选择开始年"/>
+        </el-form-item>
+        <!-- </el-col> -->
         <el-col 
-          :span="12" 
+          :span="9" 
           class="align_center">
           <el-form-item 
             prop="yearEnd" 
@@ -100,11 +102,13 @@
         </el-autocomplete>
       </el-form-item>
     </el-col>
-    <el-col :span="4">
+    <el-col 
+      class="time_submit"
+      :span="4">
       <el-form-item>
         <el-button 
           @click="handleClick" 
-          type="primary">GO</el-button>
+          type="primary">确认</el-button>
       </el-form-item>
     </el-col> 
   </el-form>
@@ -112,7 +116,6 @@
 
 <script>
 import { FetchGet } from 'utils/fetch';
-import _ from 'lodash';
 
 // TODO: 季
 const UNITS = ['月','年'];
@@ -225,7 +228,8 @@ export default {
                         // console.log(cid);
                         this.$message({
                             type:'error',
-                            message:'请选择日期'
+                            message:'请选择日期',
+                            duration:2000
                         });
                         // return;
                     } 
@@ -234,10 +238,6 @@ export default {
                         this.$emit('search', obj);
                     }
 
-            //     } else {
-            //         return false;
-            //     }
-            // });
         },
         searchKw(kw, cb) {
             // console.log(kw,cb);
@@ -267,5 +267,28 @@ export default {
             text-align: center;
         }
     }
+}
+.special_month {
+    .el-form-item{
+        float: left;
+    }
+    .align_center{
+        float: left;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner{
+        width: 160px;
+    }
+}
+.special_month .el-form-item__content{
+    margin-left: 28px!important;
+    overflow: hidden;
+}
+.time_submit .el-form-item__content{
+        margin-left: 40px!important;
+        button{
+            width: 140px;
+            background-color: #3090c0;
+            box-shadow:  0 3px 5px 0 rgba(204, 204, 204, 0.8)
+        }
 }
 </style>

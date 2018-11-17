@@ -27,6 +27,9 @@ const customer = {
         SAVE_CUSCOMPARE_ARR: (state, arr) => {
 			state.cuscompareArr = arr;
 		},
+		CLEAR_CUSCOMPARE_ARR: state => {
+			state.cuscompareArr = [];
+		},
 		SAVE_CUSHISTORY_ARR: (state, arr) => {
 			state.cushistoryArr = arr;
 		},
@@ -49,6 +52,9 @@ const customer = {
         },
         SaveCusCompareArr({ commit }, arr) {
 			commit('SAVE_CUSCOMPARE_ARR', arr);
+		},
+		ClearCusCompare({ commit }) {
+			commit('CLEAR_CUSCOMPARE_ARR');
 		},
 		SaveCustHistory({ commit }, arr) {
 			commit('SAVE_CUSHISTORY_ARR', arr);

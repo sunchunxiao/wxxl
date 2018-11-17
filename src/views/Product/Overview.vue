@@ -16,17 +16,16 @@
           <div class="title">毛利目标达成率</div>
           <div 
             @click="click" 
+            v-if="productTree.children"
             :class="{bac:isbac}"
             class="company">
             <span class="left label">{{ productTree.name }}</span>
             <span
-              v-if="productTree.children"
               :class="{percent: true, red: !calculatePercent(productTree.real_total, productTree.target_total).largerThanOne, blue: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
               class="right" >{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
             <div 
               :class="{comprogress: true, 'border-radius0': calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '100%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}"/>
-              
+              :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '105%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}"/>
           </div>
         </div>
         <!-- 有多个tree -->
@@ -43,8 +42,24 @@
           <span 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+            <el-tooltip 
+              class="item" 
+              effect="dark" 
+              placement="right" > 
+              <div slot="content">
+                <div class="tooltip_margin bold">品类:{{ data.name }}</div>
+                <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                <div 
+                  v-if="data.children"
+                  class="tooltip_margin">子项目数 : {{ data.children.length }}</div>
+                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+              </div>
+              <span class="label">
+                <span class="label_left">{{ data.name }}</span>
+                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+              </span>
+            </el-tooltip>
+            
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
@@ -238,7 +253,7 @@
                     search: '', // 暂时没有接口 先这样
                     subject: 'S', // S: 销售额 P: 利润额
                 },
-                cid: 1,
+                cid: 0,
                 defaultProps: TREE_PROPS,
                 loading: false,
                 // index
@@ -269,11 +284,9 @@
             // this.initFormDataFromUrl();
             if(!this.hasTree) {
                 this.getTree();
+            }else{
+                this.cid = this.productTree.cid;
             }
-            
-            this.getProgress();
-            this.getStructure();
-            this.getRank();
 
         },
         watch: {
@@ -382,6 +395,7 @@
                     ...this.getPeriodByPt(),
                 };
                 API.GetProductTree(params).then(res => {
+                    this.cid = res.tree.cid;
                     this.$store.dispatch('SaveProductTree', res.tree);
                 });
             },
@@ -418,18 +432,15 @@
                     ...this.getPeriodByPt(),
                 };
                 API.GetProductStructure(params).then(res => {
-                    //              console.log(res.data);
                     this.$store.dispatch('SaveStructureArr', res.data);
                 });
             },
             getRank() {
                 const params = {
                     cid: this.cid,
-                    // pt: this.form.pt,
                     ...this.getPeriodByPt(),
                 };
                 API.GetProductRank(params).then(res => {
-                    //              console.log(res.data);
                     this.$store.dispatch('SaveRankArr', res.data);
                 });
             },
@@ -494,6 +505,7 @@
                 }
             },
             handleSearch(val) {
+                this.highlight = true;
                 // 默认公司的背景色
                 this.isbac = false;
                 this.nodeArr = [];
@@ -505,7 +517,14 @@
                 this.val = val;
                 if(val.cid!=""){
                     this.cid = val.cid;
+                    if(this.cid==this.productTree.cid){
+                        this.isbac = true;
+                        this.highlight = false;
+                    }
                 }else{
+                    if(this.cid==this.productTree.cid){
+                        this.isbac = true;
+                    }
                     this.getTree();
                     this.getProgress();
                     this.getStructure();
@@ -525,11 +544,6 @@
                 }else if(data.children != undefined) {
                     this.cid = data.cid;
                     this.loading = true;
-                    //                  setTimeout(() => {
-                    //                      this.getProgress();
-                    //                      this.getStructure();
-                    //                      this.getRank();
-                    //                  }, 300);
                     setTimeout(() => {
                         this.loading = false;
                     }, 1000);

@@ -8,6 +8,7 @@
     </el-row>
     <el-row 
       class="content_row" 
+			
       :gutter="20">
       <el-col 
         :span="5" 
@@ -15,16 +16,17 @@
         <div class="title">毛利目标达成率</div>
         <div
           @click="click" 
+          v-if="organizationTree.children"
           :class="{bac:isbac}"
           class="company">
           <span class="left label">{{ organizationTree.name }}</span>
           <span
-            v-if="organizationTree.children"
             :class="{percent: true, red: !calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne, blue: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
             class="right" >{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
           <div 
             :class="{comprogress: true, 'border-radius0': calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne ? '100%' : `${calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + 5}%`}"/>
+            :style="{width: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne ? '105%' : `${calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + 5}%`}"/>
+          
         </div>
         <!-- 有多个tree -->
         <el-tree 
@@ -37,15 +39,32 @@
           :default-expanded-keys="nodeArr"
           :highlight-current="highlight" 
           @node-click="handleNodeClick">
-          <span 
+          <div 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+            <el-tooltip 
+              class="item" 
+              effect="dark" 
+              placement="right" > 
+              <div slot="content">
+                <div class="tooltip_margin bold">品类:{{ data.name }}</div>
+                <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                <div 
+                  v-if="data.children"
+                  class="tooltip_margin">子项目数 : {{ data.children.length }}</div>
+                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+              </div>
+              <span class="label">
+                <span class="label_left">{{ data.name }}</span>
+                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+              </span>
+            </el-tooltip>
+  
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
-          </span>
+          </div>
+          
         </el-tree>
       </el-col>
       <el-col 
@@ -270,7 +289,7 @@
 					subject: 'S', // S: 销售额 P: 利润额
 					version: '0'
 				},
-				cid: 1,
+				cid: 0,
 				loading: false,
 				defaultProps: TREE_PROPS,
 				// index
@@ -290,7 +309,12 @@
 				nodeArr:[],
 				isbac:true,
 				highlight:true,
-				a:false
+				a:false,
+				name:[{
+					name:'aa'
+				},{
+					name:'bb'
+				}]
 			};
 		},
 		computed: {
@@ -302,10 +326,13 @@
 			}
 		},
 		mounted() {
-			if (!this.hasTree) {
-				this.getTree();
+			
+			if(!this.hasTree) {
+					this.getTree();
+			}else{
+					this.cid = this.organizationTree.cid;
 			}
-			this.initFormDataFromUrl();
+			// this.initFormDataFromUrl();
 		},
 		watch: {
 			form: {
@@ -358,7 +385,7 @@
 				}).then(() => {
 					const data = {
 						cid: data1.cid,
-						rank:this.Rank(data1.rank),
+						// rank:this.Rank(data1.rank),
 						subject: data1.subject,
 						time_label: data1.time_label,
 						strategies: this.idArr.join(',')
@@ -387,6 +414,7 @@
 					version: this.form.version
 				};
 				API.GetOrgTree(params).then(res => {
+					this.cid = res.tree.cid;
 					this.type = res.tree.type;
 					this.$store.dispatch('SaveOrgTree', res.tree);
 				});
@@ -535,8 +563,15 @@
 				this.val = val;
 				if(val.cid!=""){
 						this.cid = val.cid;
+						if(this.cid==this.organizationTree.cid){
+								this.isbac = true;
+								this.highlight = false;
+						}
 				}else{
-					this.getTree();
+					if(this.cid==1){
+								this.isbac = true;
+						}
+						this.getTree();
 						this.getProgress();
 						this.getStructure1();
 						this.getStructure2();
@@ -615,7 +650,6 @@
 				const params = {
 					cid: cid,
 					subject: subject,
-					rank: this.Rank(rank),
 					time_label: time_label,
 				};
 
@@ -629,7 +663,6 @@
 							// console.log(this.stragetyCheckList)
 						}
 					}
-					// this.$store.dispatch('SaveRankArr', res.data);
 				});
 
 			}
@@ -638,5 +671,10 @@
 </script>
 
 <style lang="scss">
-    @import '../Product/style/overview.scss'
+		@import '../Product/style/overview.scss';
+		// .el-tooltip__popper.is-dark{
+		// 		background: rgba(0, 0, 0, 0.5)!important;
+		// 		font-size: 14px;
+		// 		font-weight:500;
+		// }
 </style>

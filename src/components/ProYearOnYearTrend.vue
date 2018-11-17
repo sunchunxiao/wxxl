@@ -17,12 +17,18 @@ export default {
     },
     data(){
         return {
-            myChart:[]
+            myChart:[],
+            debounce:null
         };
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`trendline-${this.id}`));
         this.renderChart(this.data);
+        this.debounce = _.debounce(this.chart.resize,1000);
+        window.addEventListener("resize",this.debounce);
+    },
+    beforeDestroy () {
+        window.removeEventListener('resize', this.debounce);
     },
     watch: {
         data: {
@@ -34,7 +40,6 @@ export default {
     },
     methods: {
         renderChart(data) {
-            
             const { timeLabels, ring, yoy } = data;
             
             const options = {
@@ -49,6 +54,13 @@ export default {
                     top: 35,
                     containLabel: true
                 },
+                legend: {
+                    data: ['同比增长率', '环比增长率'],
+                    left:'right',
+                    show:true,
+                    
+                },
+                color:['#b12725','#338cb6'],
                 xAxis: {
                     type: 'category',
                     data: timeLabels
@@ -56,20 +68,21 @@ export default {
                 yAxis: {
                     type: 'value'
                 },
-                toolbox: {
-                    show: true,
-                    feature: {
-                        dataZoom: {},
-                        dataView: {},
-                        restore: {},
-                        saveAsImage: {}
-                    },
-                    top: 0,
-                    right: 0
-                },
+                // toolbox: {
+                //     show: true,
+                //     feature: {
+                //         dataZoom: {},
+                //         dataView: {},
+                //         restore: {},
+                //         saveAsImage: {}
+                //     },
+                //     top: 0,
+                //     right: 0
+                // },
                 series: [
                     {
                         data: ring,
+                        name:'环比增长率',
                         type: 'line',
                         lineStyle: {
                             color: '#b12725'
@@ -77,19 +90,15 @@ export default {
                     },
                     {
                         data: yoy,
+                        name:'同比增长率',
                         type: 'line',
                         lineStyle: {
-                            color: '#318cb8'
+                            color: '#338cb6',
                         }
                     }
                 ]
             };
             this.chart.setOption(options);
-            var _this = this;
-            window.addEventListener("resize", function () {
-               _this.chart.resize();
-            });
-            
         }
     }
 };

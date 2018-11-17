@@ -37,10 +37,37 @@
             },
         },
         methods: {
+            calculateToShow(val) {
+            const { subject } = this.data;
+            
+            if (subject === 'ROI'||subject === 'ITO') { // ROI投入产出比需要,ITO库存周转率不需要单位
+                return val;
+            }else{
+                let Tenthousand = parseInt(val / 10000);
+                if(Tenthousand>=1){
+                    return parseInt(val / 10000)+'w';
+                }else{
+                    return parseInt(val);
+                }
+            }
+          },
             renderChart(data) {
-				
                 let _this = this;
-                const { timeLabels } = data;
+                const { series,timeLabels,subject } = data;
+                const seriesClone = _.cloneDeep(series);
+                
+                for(let i = 0;i < seriesClone.length; i++) {
+                    if(subject=='ROI'||subject=='ITO'){
+                        _.forEach(seriesClone[i], (v,k) => {
+                             seriesClone[i][k] = v;
+                        });
+                    }else{
+                        _.forEach(seriesClone[i], (v,k) => {
+                             seriesClone[i][k] = parseInt(v/100);
+                        });
+                    }
+                        
+                }
                 
                 const options = {
                     grid: {
@@ -75,22 +102,25 @@
                     yAxis: {
                         type: 'value',
                         axisLabel: {
-                            formatter: _.includes([0, 1, 2, 6, 7], parseInt(_this.id)) ? '{value}' : '{value} '
+                            formatter: function (val) {
+                            return _this.calculateToShow(val);
+                            }
                         }
-                        // name: '报警次数',
+
                     },
                     series: []
                 };
-                for(let i = 0; i < data.series.length; i++) {
+                for(let i = 0; i < seriesClone.length; i++) {
                     options.series.push({
                         name: this.data.nodes[i],
                         type: 'line',
                         stack: i,
-                        data: data.series[i]
+                        data: seriesClone[i]
                     });
                 }
 
                 this.chart.setOption(options,true);
+               
             }
         }
     };

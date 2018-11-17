@@ -1,25 +1,29 @@
 <template>
   <div class="container">
     <div :class="['left', {'left_collapse': isCollapse} ]">
-      <div :class="{logo1: !isCollapse,logo1_collapse: isCollapse}">
-        <img 
-          v-if="!isCollapse" 
-          src="../assets/logo1.png" 
-          alt="五项效率">
-        <img 
-          v-else 
-          src="../assets/logo2.png" 
-          alt="五">
-      </div>
-      <div class="logo2">
-        <img 
-          v-if="!isCollapse" 
-          src="../assets/logo3.png" 
-          alt="gyxr">
-        <img 
-          v-else 
-          src="../assets/logo4.png" 
-          alt="g">
+      <div 
+        style="cursor: pointer"
+        @click="home">
+        <div :class="{logo1: !isCollapse,logo1_collapse: isCollapse}">
+          <img 
+            v-if="!isCollapse" 
+            src="../assets/logo1.png" 
+            alt="五项效率">
+          <img 
+            v-else 
+            src="../assets/logo2.png" 
+            alt="五">
+        </div>
+        <div class="logo2">
+          <img 
+            v-if="!isCollapse" 
+            src="../assets/logo3.png" 
+            alt="gyxr">
+          <img 
+            v-else 
+            src="../assets/logo4.png" 
+            alt="g">
+        </div>
       </div>
       <div 
         class="collapse_btn" 
@@ -30,12 +34,6 @@
           alt="">
       </div>
       <div class="menu_container">
-        <!-- <template >
-          <div 
-            :class="{homeBac:home_bac}"
-            class="home"
-            @click="home">首页</div>
-        </template> -->
         <Menu :isCollapse="isCollapse" />
       </div>
     </div>
@@ -62,13 +60,14 @@ export default {
   data() {
     return {
       isCollapse: false,
-      home_bac:false
     };
+  },
+  mounted(){
+    // console.log(this.isCollapse);
   },
   methods: {
     home(){
-            this.home_bac = true;
-            this.$router.push('/home');
+          this.$router.push('/home');
         },
     handleClick() {
       this.isCollapse = !this.isCollapse;
@@ -82,15 +81,7 @@ export default {
 $bgcolor: #224e6b;
 $width: 200px;
 $width_collapse: 64px;
-.home{
-    padding: 20px 0 10px 55px;
-    color: #fff;
-    cursor: pointer;
-}
-.homeBac{
-    background-color: #26354c;
-    border-left: 5px solid #16abe3;
-}
+
 .container {
   height: 100%;
   .left {
@@ -131,7 +122,7 @@ $width_collapse: 64px;
   .right {
     height: 100%;
     margin-left: $width;
-    background: #eee;
+    // background: #eee;
   }
   .left_collapse {
     width: $width_collapse;
@@ -140,8 +131,9 @@ $width_collapse: 64px;
     margin-left: $width_collapse;
   }
   .content {
-    padding: 76px 16px 16px;
+    padding: 60px 16px 16px;
     height: calc(100% - 92px);
+    background-color: #eee;
   }
 }
 </style>

@@ -30,10 +30,39 @@
             },
         },
         methods: {
+            calculateToShow(val) {
+            const { subject } = this.data;
+            // console.log(val);
+            if (subject === 'ROI'||subject === 'ITO') { // ROI投入产出比需要,ITO库存周转率不需要单位
+                return val;
+            }else{
+                let Tenthousand = parseInt(val / 10000);
+                if(Tenthousand/10000>=1){
+                    return parseInt(Tenthousand/10000)+'亿';
+                }else if(Tenthousand>=1){
+                    return parseInt(val / 10000)+'w';
+                }else{
+                    return parseInt(val);
+                }
+            }
+          },
             renderChart(data) {
-                
-                const { timeLabels } = data;
+                const { series,timeLabels,subject } = data;
+                const seriesClone = _.cloneDeep(series);
                 let _this = this;
+                
+                for(let i = 0;i < seriesClone.length; i++) {
+                    if(subject=='ROI'||subject=='ITO'){
+                        _.forEach(seriesClone[i], (v,k) => {
+                             seriesClone[i][k] = v;
+                        });
+                    }else{
+                        _.forEach(seriesClone[i], (v,k) => {
+                             seriesClone[i][k] = parseInt(v/100);
+                        });
+                    }
+                        
+                }
                 const options = {
                     grid: {
                         left: 0,
@@ -42,6 +71,7 @@
                         top: 10,
                         containLabel: true
                     },
+                    
                     // color: ['#D53A35', '#E98F6F', '#6AB0B8', '#334B5C'],
                     //title: {
                     //    text: '报警次数'
@@ -67,18 +97,23 @@
                     yAxis: {
                         type: 'value',
                         axisLabel: {
-                            formatter: _.includes([0, 1, 2, 5, 6], _this.index) ? '{value}' : '{value} %'
+                            formatter: function (val) {
+                            return _this.calculateToShow(val);
+                            }
                         }
+                        // axisLabel: {
+                        //     formatter: _.includes([0, 1, 2, 5, 6], _this.index) ? '{value}' : '{value} %'
+                        // }
                         // name: '报警次数',
                     },
                     series: []
                 };
-                for(let i = 0; i < data.series.length; i++) {
+                for(let i = 0; i < seriesClone.length; i++) {
                     options.series.push({
                         name: this.data.nodes[i],
                         type: 'line',
                         stack: i,
-                        data: data.series[i]
+                        data: seriesClone[i]
                     });
                 }
                 this.chart.setOption(options,true);

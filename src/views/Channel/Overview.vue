@@ -4,7 +4,7 @@
       <search-bar 
         @search="handleSearch"
         ref="child"
-        url="/product/search"/>
+        url="/channel/search"/>
     </el-row>
     <el-row 
       class="content_row" 
@@ -15,16 +15,16 @@
         <div class="title">毛利目标达成率</div>
         <div
           @click="click" 
+          v-if="channelTree.children"
           :class="{bac:isbac}"
           class="company">
           <span class="left label">{{ channelTree.name }}</span>
           <span
-            v-if="channelTree.children"
             :class="{percent: true, red: !calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne, blue: calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne}"
             class="right" >{{ calculatePercent(channelTree.real_total, channelTree.target_total).percent + '%' }}</span>
           <div 
             :class="{comprogress: true, 'border-radius0': calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne ? '100%' : `${calculatePercent(channelTree.real_total, channelTree.target_total).percent + 5}%`}"/>
+            :style="{width: calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne ? '105%' : `${calculatePercent(channelTree.real_total, channelTree.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
@@ -32,16 +32,31 @@
           ref="tree"
           empty-text="正在加载"
           :props="defaultProps" 
-          node-key="cid"
-          :expand-on-click-node="false"
+          node-key="nid"
           :default-expanded-keys="nodeArr"
           :highlight-current="highlight" 
           @node-click="handleNodeClick">
           <span 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
-            <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+            <el-tooltip 
+              class="item" 
+              effect="dark" 
+              placement="right" > 
+              <div slot="content">
+                <div class="tooltip_margin bold">品类:{{ data.name }}</div>
+                <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                <div 
+                  v-if="data.children"
+                  class="tooltip_margin">子项目数 : {{ data.children.length }}</div>
+                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+              </div>
+              <span class="label">
+                <span class="label_left">{{ data.name }}</span>
+                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+              </span>
+            </el-tooltip>
+            
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
@@ -236,7 +251,7 @@
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
-                cid:1,
+                cid:'',
                 loading: false,
                 defaultProps: TREE_PROPS,
                 // index
@@ -278,8 +293,10 @@
         mounted() {
             if(!this.hasTree) {
                 this.getTree();
+            }else{
+                this.cid = this.channelTree.nid;
             }
-            this.initFormDataFromUrl();
+            // this.initFormDataFromUrl();
         },
         methods: {
             click(){
@@ -343,7 +360,6 @@
                         duration: 1500
                     });
                 });
-
             },
             getTree() {
                 const params = {
@@ -352,7 +368,7 @@
                     version: this.form.version
                 };
                 API.GetChannelTree(params).then(res => {
-                    //                  console.log(res.tree)
+                    this.cid  = res.tree.nid;
                     this.$store.dispatch('SaveChannelTree', res.tree);
                 });
             },
@@ -460,6 +476,7 @@
                 };
             },
             handleSearch(val) {
+                this.highlight = true;
                 // 默认公司的背景色
                 this.isbac = false;
                 this.nodeArr = [];
@@ -471,6 +488,10 @@
                 this.val = val;
                 if(val.cid!=""){
                     this.cid = val.cid;
+                    if(this.cid==this.channelTree.nid){
+                        this.isbac = true;
+                        this.highlight = false;
+                    }
                 }else{
                     this.getTree();
                     this.getProgress();
