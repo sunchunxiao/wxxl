@@ -19,7 +19,6 @@
       </el-form-item>
     </el-col>
     <el-col 
-      
       :span="9">
       <el-form-item
         v-if="form.pt === '日'"
@@ -77,71 +76,72 @@
             </el-form-item>
           </el-col>
         </template>
-      </el-col>
-      <template v-if="form.pt === '月'">
-        <!-- <el-col :span="12"> -->
-        <el-form-item 
-          label="时间段选择"
-          prop="monthStart" 
-          :rules="{
-            required: true, message: '请选择开始月', trigger: 'blur'
-        }">
-          <el-date-picker
-            v-model="form.monthStart"
-            type="month"
-            format="yyyy MM 月"
-            :picker-options="monthStartOptions"
-            placeholder="请选择开始月"/>
-        </el-form-item>
-        <!-- </el-col> -->
-        <el-col 
-          :span="9" 
-          class="align_center">
+      
+        <template v-if="form.pt === '月'">
+          <!-- <el-col :span="12"> -->
           <el-form-item 
-            prop="monthEnd" 
+            label="时间段选择"
+            prop="monthStart" 
             :rules="{
-              required: true, message: '请选择结束月', trigger: 'blur'
+              required: true, message: '请选择开始月', trigger: 'blur'
           }">
             <el-date-picker
-              v-model="form.monthEnd"
+              v-model="form.monthStart"
               type="month"
               format="yyyy MM 月"
-              :picker-options="monthEndOptions"
-              placeholder="请选择结束月"/>
+              :picker-options="monthStartOptions"
+              placeholder="请选择开始月"/>
           </el-form-item>
-        </el-col>
-      </template>
-      <template v-if="form.pt === '年'">
-        <!-- <el-col :span="12"> -->
-        <el-form-item 
-          label="时间段选择"
-          prop="yearStart" 
-          :rules="{
-            required: true, message: '请选择开始年', trigger: 'blur'
-        }">
-          <el-date-picker
-            v-model="form.yearStart"
-            type="year"
-            :picker-options="yearStartOptions"
-            placeholder="请选择开始年"/>
-        </el-form-item>
-        <!-- </el-col> -->
-        <el-col 
-          :span="9" 
-          class="align_center">
+          <!-- </el-col> -->
+          <el-col 
+            :span="9" 
+            class="align_center">
+            <el-form-item 
+              prop="monthEnd" 
+              :rules="{
+                required: true, message: '请选择结束月', trigger: 'blur'
+            }">
+              <el-date-picker
+                v-model="form.monthEnd"
+                type="month"
+                format="yyyy MM 月"
+                :picker-options="monthEndOptions"
+                placeholder="请选择结束月"/>
+            </el-form-item>
+          </el-col>
+        </template>
+        <template v-if="form.pt === '年'">
+          <!-- <el-col :span="12"> -->
           <el-form-item 
-            prop="yearEnd" 
+            label="时间段选择"
+            prop="yearStart" 
             :rules="{
-              required: true, message: '请选择结束年', trigger: 'blur'
+              required: true, message: '请选择开始年', trigger: 'blur'
           }">
             <el-date-picker
-              v-model="form.yearEnd"
+              v-model="form.yearStart"
               type="year"
-              :picker-options="yearEndOptions"
-              placeholder="请选择结束年"/>
+              :picker-options="yearStartOptions"
+              placeholder="请选择开始年"/>
           </el-form-item>
-        </el-col>
-      </template>
+          <!-- </el-col> -->
+          <el-col 
+            :span="9" 
+            class="align_center">
+            <el-form-item 
+              prop="yearEnd" 
+              :rules="{
+                required: true, message: '请选择结束年', trigger: 'blur'
+            }">
+              <el-date-picker
+                v-model="form.yearEnd"
+                type="year"
+                :picker-options="yearEndOptions"
+                placeholder="请选择结束年"/>
+            </el-form-item>
+          </el-col>
+        </template>
+      </el-col>
     </el-col>
     <el-col :span="6">
       <el-form-item label="精确搜索">
