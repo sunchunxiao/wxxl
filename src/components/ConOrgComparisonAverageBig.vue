@@ -110,7 +110,7 @@
                 };
                 for(let i = 0; i < seriesClone.length; i++) {
                     options.series.push({
-                        // name: this.data.nodes[i],
+                        name: this.data.nodes[i],
                         type: 'line',
                         stack: i,
                         data: seriesClone[i]

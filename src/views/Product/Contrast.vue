@@ -136,6 +136,7 @@
                 cidObjArr:[],
                 cancelKey: '',
                 debounce: null,
+                isFirstLoad:true,
             };
         },
         computed: {

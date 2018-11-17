@@ -70,12 +70,7 @@
                 this.color = nodes["28nodes"];
                 
                 for(let i in pData) {
-                    if(nodes.subject=='ROI'||nodes.subject=='POR'){//投入产出比  人员冗余值
-                         percentArr.push(nodes.values[i]);
-                    }else{
-                        percentArr.push(parseInt(nodes.values[i]/100));
-                    }
-                    
+                    percentArr.push(parseInt(nodes.values[i]));
                 }
                 
                 const options = {
@@ -83,6 +78,20 @@
                         trigger: 'axis',
                         axisPointer : {            // 坐标轴指示器，坐标轴触发有效
                             type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        },
+                        formatter: function(params){
+                            var result =[];
+                            if(nodes.subject=='ROI'||nodes.subject=='POR'){
+                                params.forEach(function (item) {
+                                    result += item.marker + " " + item.seriesName + " : " + item.value +"</br>";
+                                });
+                            }else{
+                                params.forEach(function (item) {
+                                    result += item.marker + " " + item.name  + " : " + parseInt(item.value/100 )+"</br>";
+                                });
+                            }
+                            
+                            return result;
                         },
                         position: ['50%', '50%']
                     },
@@ -141,7 +150,6 @@
                                         return `${pData[params.dataIndex]} : ${ _this.calculateToShow(params.data)}`;
                                     }else{
                                         if(nodes.total==0){
-                                            
                                             return `${pData[params.dataIndex]} : ${params.data}`;
                                         }else{
                                             return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
