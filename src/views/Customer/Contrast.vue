@@ -4,7 +4,9 @@
       <search-bar 
         @search="handleSearch" 
         ref="child"
-        url="/cus/search"/>
+        url="/cus/search"
+        placeholder="客户编号/客户名称"
+      />
     </el-row>
     <el-row 
       class="content_row" 

@@ -199,7 +199,7 @@
               }else{
                     this.loading = true;
                 //点击发送请求清除搜索框
-                this.$refs.child.parentMsg(this.post);
+                this.$refs.child.clearKw();
                 this.isbac = true;
                 this.highlight = false;
                 this.cid=this.fundTree.cid;
@@ -334,7 +334,7 @@
             handleNodeClick(data) {
                 this.isbac = false;
                 this.highlight = true;
-                this.$refs.child.parentMsg(this.post);
+                this.$refs.child.clearKw();
                 this.type = data.type;
                 if(this.cid === data.cid){
                     return ;
