@@ -19,7 +19,7 @@
       </el-form-item>
     </el-col>
     <el-col 
-      class="special_month"
+      
       :span="9">
       <el-form-item
         v-if="form.pt === '日'"
@@ -40,7 +40,9 @@
           value-format="yyyy-MM-dd" 
           align="right"/>
       </el-form-item>
-      <el-col >
+      <el-col 
+        class="special_month"
+      >
         <template 
           v-if="form.pt === '周'">
           <!-- <el-col :span="14"> -->
