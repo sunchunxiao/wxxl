@@ -3,7 +3,7 @@
     <div 
       class="averagebar" 
       :id="`averagebar-${id}`"/>
-    <div class="detail">{{ data.subject }}</div>
+    <div class="detail">{{ data.subject_name }}</div>
   </div>
 </template>
 
@@ -68,12 +68,7 @@
 
                 const average = nodes.avg;
                 for(let i in pData) {
-                    if(nodes.subject=='ROI'||nodes.subject=='POR'){//投入产出比  人员冗余值
-                         percentArr.push(nodes.values[i]);
-                    }else{
-                        percentArr.push(parseInt(nodes.values[i]/100));
-                    }
-                    
+                    percentArr.push(parseInt(nodes.values[i]));
                 }
                 const options = {
                     grid: {
@@ -87,6 +82,20 @@
                         trigger: 'axis',
                         axisPointer : {            // 坐标轴指示器，坐标轴触发有效
                             type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        },
+                        formatter: function(params){
+                            var result =[];
+                            if(nodes.subject=='ROI'||nodes.subject=='POR'){
+                                params.forEach(function (item) {
+                                    result += item.marker + " " + item.seriesName + " : " + item.value +"</br>";
+                                });
+                            }else{
+                                params.forEach(function (item) {
+                                    result += item.marker + " " + item.name  + " : " + parseInt(item.value/100 )+"</br>";
+                                });
+                            }
+                            
+                            return result;
                         },
                         position: ['50%', '50%']
                     },
