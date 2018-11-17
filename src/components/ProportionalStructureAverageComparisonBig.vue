@@ -68,7 +68,7 @@
 
                 const average = nodes.avg;
                 for(let i in pData) {
-                    percentArr.push(parseInt(nodes.values[i]));
+                    percentArr.push(nodes.values[i]);
                 }
                 const options = {
                     grid: {

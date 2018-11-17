@@ -48,7 +48,6 @@
                         return val/100;
                     }
                 }else if(subject=='ROI'){//投入产出比 
-                
                     if(val>=10000){
                         return (val/10000).toFixed(2) +'w';
                     }else{
@@ -70,7 +69,7 @@
                 this.color = nodes["28nodes"];
                 
                 for(let i in pData) {
-                    percentArr.push(parseInt(nodes.values[i]));
+                    percentArr.push(nodes.values[i]);
                 }
                 
                 const options = {
@@ -83,7 +82,7 @@
                             var result =[];
                             if(nodes.subject=='ROI'||nodes.subject=='POR'){
                                 params.forEach(function (item) {
-                                    result += item.marker + " " + item.seriesName + " : " + item.value +"</br>";
+                                    result += item.marker + " " + item.name + " : " + item.value +"</br>";
                                 });
                             }else{
                                 params.forEach(function (item) {
@@ -146,7 +145,7 @@
                                 color: "#000",
                                 formatter: function(params) {
                                     if(nodes.display_rate == 0) {
-                                        // _this.calculateToShow(params.data);
+                                        
                                         return `${pData[params.dataIndex]} : ${ _this.calculateToShow(params.data)}`;
                                     }else{
                                         if(nodes.total==0){
