@@ -79,9 +79,18 @@
             <a 
               v-if="!token" 
               href="/login">登录</a>
-            <a 
+            
+            <el-dropdown 
               v-else 
-              href="/home">进入系统</a>
+              size="medium">
+              <a href="/home">进入系统</a>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>
+                  <el-button 
+                    type="text" 
+                    @click="logout">退出登录</el-button></el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </li>
         </ul>
       </div>
@@ -90,12 +99,18 @@
 </template>
 
 <script>
-import { getToken } from 'utils/auth';
+import { getToken, removeToken } from 'utils/auth';
 
 export default {
   computed: {
     token() {
       return getToken();
+    }
+  },
+  methods: {
+    logout() {
+      removeToken();
+      this.$router.replace('/login');
     }
   }
 };
@@ -187,6 +202,15 @@ export default {
     height: 18px;
     line-height: 18px;
     font-size: 14px;
+  }
+  .el-dropdown {
+    > a {
+      font-size: 22px;
+      color: #fff;
+      &:hover {
+        color: #158CB3;
+      }
+    }
   }
 }
 
