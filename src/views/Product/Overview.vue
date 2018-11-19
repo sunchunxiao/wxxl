@@ -5,10 +5,10 @@
         @search="handleSearch"
         @date="date"
         url="/product/search"
-        placeholder_search="产品编号/产品名称"
+        placeholder="产品编号/产品名称"
         v-model="searchBarValue"
         ref="child"
-        :pt-options="['日', '周', '月','年']"
+        :pt-options="['日', '周', '月', '季', '年']"
       />
     </el-row>
     <el-row 
