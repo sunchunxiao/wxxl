@@ -210,7 +210,7 @@ export default {
         type: String,
         required: true
       },
-      placeholder: String,
+      placeholder_search: String,
       ptOptions: Array,
     },
     mounted() {
@@ -227,10 +227,13 @@ export default {
           moment().subtract(1, 'd').format('YYYY-MM-DD')
         ];
       }
+      const dateContact = [...this.form.dayRange,...this.form.pt];
+    //   console.log(dateContact);
+      this.$emit('date',dateContact);
     },
     computed: {
         cptPlaceholder(){
-            return this.placeholder || '产品编号/产品名称';
+            return this.placeholder_search; 
         },
         defaultValue() {
           const endTimeSet = process.env.VUE_APP_END_TIME_SET;
@@ -340,6 +343,7 @@ export default {
           //在点击左侧节点的时候 清空搜索框
           if (this.kw) {
             this.kw = '';
+            
           }
         },
         calculateDate(form) {
@@ -373,8 +377,12 @@ export default {
               });
               return;
           } else{
-            obj.cid = this.cid;
-            this.$emit('search', obj);
+              if(this.kw){
+                  obj.cid = this.cid;
+              }else{
+                  obj.cid = '';
+              }
+              this.$emit('search', obj);
           }
         },
         searchKw(kw, cb) {

@@ -3,6 +3,8 @@
     <el-row>
       <search-bar 
         @search="handleSearch"
+        @date="date"
+        placeholder_search="渠道编号/渠道名称"
         ref="child"
         url="/channel/search"/>
     </el-row>
@@ -299,6 +301,10 @@
             // this.initFormDataFromUrl();
         },
         methods: {
+            date(val){ 
+                // console.log(val);
+                this.form.date = val;
+            },
             click(){
                 if(this.cid==this.channelTree.nid){
 						return;
@@ -418,18 +424,17 @@
             },
             getPeriodByPt() {
                 const {
+                    pt,
                     sDate,
                     eDate
                 } = this.getDateObj();
-                // const {
-                //     pt
-                // } = this.form;
-                // console.log(sDate,eDate);
                 if(sDate && eDate) { // 计算时间周期
                         return {
-                            pt:this.val.pt,
-                            sDate: this.val.sDate,
-                            eDate: this.val.eDate,
+                            pt:pt,
+                            sDate: sDate,
+                            eDate: eDate,
+                            // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+                            // eDate: moment().format('YYYY-MM-DD'),
                         };
                 } else {
                     return {
@@ -446,17 +451,19 @@
                 const {
                     date
                 } = this.form;
-                // console.log(this.val.eDate);
+                // console.log(this.val.sDate,date);
                 if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
                     return {
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
+                        pt:this.val.pt,
+                        sDate: this.val.sDate,
+                        eDate: this.val.eDate,
+                    };
                 }else{
                     return {
-                    sDate: date[0] || '',
-                    eDate: date[1] || '',
-                };
+                        pt:date[2],
+                        sDate: date[0] ,
+                        eDate: date[1] ,
+                    };
                 }
             },
             initFormDataFromUrl() {
@@ -480,20 +487,24 @@
                 // 默认公司的背景色
                 this.isbac = false;
                 this.nodeArr = [];
-                this.nodeArr.push(val.cid);
-                this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                });
+                
                 this.loading = true;
                 this.val = val;
                 if(val.cid!=""){
+                    this.nodeArr.push(val.cid);
+                    this.$nextTick(() => {
+                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                    });
                     this.cid = val.cid;
                     if(this.cid==this.channelTree.nid){
                         this.isbac = true;
                         this.highlight = false;
                     }
                 }else{
-                    this.getTree();
+                    if(this.cid==this.channelTree.nid){
+                        this.isbac = true;
+                        this.highlight = false;
+                    }
                     this.getProgress();
                     this.getStructure();
                     this.getRank();

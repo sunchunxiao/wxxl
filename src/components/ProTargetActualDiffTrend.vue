@@ -90,7 +90,7 @@ export default {
                 if (realItem < 0 && targetItem < 0) {
                     bottom.push(realItem < targetItem ? targetItem : realItem);
                     diff.push(-Math.abs(realItem - targetItem));
-                } else if (realItem > 0 && targetItem > 0) {
+                } else if (realItem >= 0 && targetItem >= 0) {
                     bottom.push(realItem < targetItem ? realItem : targetItem);
                     diff.push(Math.abs(realItem - targetItem));
                 }

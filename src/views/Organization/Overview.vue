@@ -4,6 +4,8 @@
       <search-bar 
         @search="handleSearch"
         ref="child"
+        @date="date"
+        placeholder="产品"
         url="/org/search"/>
     </el-row>
     <el-row 
@@ -414,6 +416,9 @@
 					version: this.form.version
 				};
 				API.GetOrgTree(params).then(res => {
+					if(this.organizationTree.cid==undefined){
+							this.cid = res.tree.cid;
+					}
 					this.cid = res.tree.cid;
 					this.type = res.tree.type;
 					this.$store.dispatch('SaveOrgTree', res.tree);
@@ -554,24 +559,25 @@
 				// 默认公司的背景色
 				this.isbac = false;
 				this.nodeArr = [];
-				this.nodeArr.push(val.cid);
 				
-				this.$nextTick(() => {
-						this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
-				});
 				this.loading = true;
 				this.val = val;
 				if(val.cid!=""){
 						this.cid = val.cid;
+						this.nodeArr.push(val.cid);
+				
+						this.$nextTick(() => {
+								this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
+						});
 						if(this.cid==this.organizationTree.cid){
 								this.isbac = true;
 								this.highlight = false;
 						}
 				}else{
-					if(this.cid==1){
+					if(this.cid==this.organizationTree.cid){
 								this.isbac = true;
+								this.highlight = false;
 						}
-						this.getTree();
 						this.getProgress();
 						this.getStructure1();
 						this.getStructure2();
