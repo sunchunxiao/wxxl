@@ -209,7 +209,10 @@
             }
         }
     }
-    
+    .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content{
+        background:#e8e8e8;
+        box-shadow: 0 3px 5px 0 rgba(204, 204, 204, 0.8);
+    }
 }
 .el-tooltip__popper.is-dark{
     background: rgba(0, 0, 0, 0.5)!important;

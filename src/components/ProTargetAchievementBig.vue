@@ -88,8 +88,14 @@ export default {
             // return parseInt(val / 10000 / 100); // 金额从分转换为万
         },
         renderChart(data) {
-            const { subject, subject_name, progress } = data;
-            const valuePercent = parseInt(progress * 100);
+            const { subject, subject_name, progress ,real } = data;
+            var valuePercent;
+            if(progress==null){
+                valuePercent = this.calculateToShow(real);
+            }else{
+                valuePercent = parseInt(progress * 100);
+                
+            }
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
             // 反向指标 颜色需要相反
             if (_.includes(REVERSE_TARGET, subject)) {
@@ -102,7 +108,7 @@ export default {
                 backgroundColor: '#fff',
                 tooltip: {
                     trigger: 'item',
-                    formatter: "{a} <br/>{b}: {c}%"
+                    formatter: "{a} <br/>{b}: {c}"
                 },
                 grid: {
                     left: 0,
@@ -131,7 +137,14 @@ export default {
                             },
                             label: {
                                 normal: {
-                                    formatter: valuePercent + '%',
+                                    formatter: function(data){
+                                        if(progress==null){
+                                            return data.value;
+                                        }else{
+                                            return data.value+"%";
+                                        }
+                                            
+                                    },
                                     textStyle: {
                                         fontSize: FONTSIZE1,
                                         color: color,

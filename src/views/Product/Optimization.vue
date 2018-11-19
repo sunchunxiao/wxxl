@@ -3,6 +3,7 @@
     <el-row>
       <search-bar 
         ref="child"
+        @date="date"
         @search="handleSearch" 
         url="/product/search"/>
     </el-row>
@@ -194,6 +195,10 @@
 			}
 		},
 		methods: {
+			date(val){ 
+					// console.log(val);
+					this.form.date = val;
+			},
 			click(){
 						if(this.cid==this.productTree.cid){
 								return;
@@ -223,7 +228,6 @@
 			},
 			getTree() {
 				const params = {
-					pt: this.form.pt,
 					subject: this.form.subject,
 					...this.getPeriodByPt(),
 				};
@@ -232,21 +236,39 @@
 					this.$store.dispatch('SaveProductTree', res.tree);
 				});
 			},
+			getDateObj() {
+					const {
+							date
+					} = this.form;
+					// console.log(this.val.eDate);
+					if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+							return {
+									pt:this.val.pt,
+									sDate: this.val.sDate,
+									eDate: this.val.eDate,
+							};
+					}else{
+							return {
+									sDate: date[0] ,
+									eDate: date[1] ,
+									pt:date[2],
+							};
+					}
+			},
 			getPeriodByPt() {
 						const {
-								sDate,
-								eDate
+							pt,
+							sDate,
+							eDate
 						} = this.getDateObj();
-						// const {
-						//     pt
-						// } = this.form;
+						
 						// console.log(sDate,eDate);
 						if(sDate && eDate) { // 计算时间周期
-										return {
-												pt:this.val.pt,
-												sDate: this.val.sDate,
-												eDate: this.val.eDate,
-										};
+								return {
+										pt:pt,
+										sDate: sDate,
+										eDate: eDate,
+								};
 						} else {
 								return {
 										pt:'日',
@@ -258,23 +280,6 @@
 								};
 						}
       },
-			getDateObj() {
-					const {
-							date
-					} = this.form;
-					// console.log(this.val.eDate);
-					if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
-							return {
-							sDate: this.val.sDate,
-							eDate: this.val.eDate,
-					};
-					}else{
-							return {
-							sDate: date[0] || '',
-							eDate: date[1] || '',
-					};
-					}
-			},
 			largerThanZero(val) {
 				return val && _.isNumber(parseFloat(val*100)) && parseFloat(val) > 0;
 			},
@@ -316,23 +321,24 @@
 					// 默认公司的背景色
 						this.isbac = false;
 						this.nodeArr = [];
-						this.nodeArr.push(val.cid);
-						this.$nextTick(() => {
-								this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-						});
 						this.loading = true;
 						this.val = val;
 						if(val.cid!=""){
+								this.nodeArr.push(val.cid);
+								this.$nextTick(() => {
+										this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+								});
 								this.cid = val.cid;
 								if(this.cid==this.productTree.cid){
 										this.isbac = true;
 										this.highlight = false;
 								}
 						}else{
-									if(this.cid==1){
+								if(this.cid==this.productTree.cid){
 										this.isbac = true;
+										this.highlight = false;
 								}
-								this.getTree();
+								// this.getTree();
 								this.getHistory();
 						}
 						setTimeout(() => {
