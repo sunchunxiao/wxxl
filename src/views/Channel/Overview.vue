@@ -4,7 +4,7 @@
       <search-bar 
         @search="handleSearch"
         @date="date"
-        placeholder_search="渠道编号/渠道名称"
+        placeholder="渠道编号/渠道名称"
         ref="child"
         url="/channel/search"/>
     </el-row>
