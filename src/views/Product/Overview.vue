@@ -3,7 +3,6 @@
     <el-row>
       <search-bar 
         @search="handleSearch"
-        @date="date"
         url="/product/search"
         placeholder="产品编号/产品名称"
         v-model="searchBarValue"
@@ -231,12 +230,6 @@
         children: 'children',
         label: 'name'
     };
-    // const TIMEPT = {
-    //     '周': 'week',
-    //     '月': 'month',
-    //     '季': 'quarter',
-    //     '年': 'year'
-    // };
 
     export default {
         components: {
@@ -290,8 +283,6 @@
             }
         },
         mounted() {
-            
-            // this.initFormDataFromUrl();
             if(!this.hasTree) {
                 this.getTree();
             }else{
@@ -308,10 +299,6 @@
             }
         },
         methods: {
-            date(val){ 
-                // console.log(val);
-                this.form.date = val;
-            },
             click(){
                 if(this.cid==this.productTree.cid){
                     return;

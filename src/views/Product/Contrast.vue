@@ -4,7 +4,6 @@
       <search-bar 
         @search="handleSearch" 
         ref="child"
-        @date="date"
         url="/product/search"/>
     </el-row>
     <el-row 
@@ -197,10 +196,6 @@
             }
         },
         methods: {
-            date(val){ 
-					// console.log(val);
-					this.form.date = val;
-			},
             getTree() {
                 const params = {
                     subject: SUBJECT,

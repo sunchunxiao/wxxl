@@ -238,6 +238,7 @@ export default {
         moment().subtract(1, 'd').format('YYYY-MM-DD')
       ];
     }
+    this.handleFormChange(this.form);
   },
   computed: {
     cptPlaceholder () {
@@ -334,19 +335,22 @@ export default {
   watch: {
     form: {
       handler: function (val) {
-        const obj = this.calculateDate(val);
-        if (!obj.sDate || obj.sDate === 'Invalid date') {
-          obj.sDate = '';
-        }
-        if (!obj.eDate || obj.eDate === 'Invalid date') {
-          obj.eDate = '';
-        }
-        this.$emit('input', obj);
+        this.handleFormChange(val);
       },
       deep: true
     }
   },
   methods: {
+    handleFormChange(val) {
+      const obj = this.calculateDate(val);
+      if (!obj.sDate || obj.sDate === 'Invalid date') {
+        obj.sDate = '';
+      }
+      if (!obj.eDate || obj.eDate === 'Invalid date') {
+        obj.eDate = '';
+      }
+      this.$emit('input', obj);
+    },
     clearKw () {
       //在点击左侧节点的时候 清空搜索框
       if (this.kw) {
