@@ -3,7 +3,7 @@
     <el-row>
       <search-bar 
         @search="handleSearch"
-        @date="date"
+        @input="input"
         url="/product/search"
         placeholder="产品编号/产品名称"
         v-model="searchBarValue"
@@ -254,7 +254,7 @@
             return {
                 form: {
                     pt: '', // 周期类型
-                    date: [], // date
+                    date: {}, // date
                     search: '', // 暂时没有接口 先这样
                     subject: 'S', // S: 销售额 P: 利润额
                 },
@@ -293,7 +293,9 @@
             
             // this.initFormDataFromUrl();
             if(!this.hasTree) {
-                this.getTree();
+                this.$nextTick(() => {
+                    this.getTree();
+                });
             }else{
                 this.cid = this.productTree.cid;
             }
@@ -305,10 +307,10 @@
                 this.getProgress();
                 this.getStructure();
                 this.getRank();
-            }
+            },
         },
         methods: {
-            date(val){ 
+            input(val){
                 // console.log(val);
                 this.form.date = val;
             },
@@ -392,11 +394,12 @@
                     subject: this.form.subject,
                     ...this.getPeriodByPt(),
                 };
+                
                 API.GetProductTree(params).then(res => {
                     // console.log(this.productTree.cid);
-                    // if(this.productTree.cid==undefined){
+                    if(this.productTree.cid==undefined){
                         this.cid = res.tree.cid;
-                    // }
+                    }
                     this.$store.dispatch('SaveProductTree', res.tree);
                 });
             },
@@ -458,9 +461,9 @@
                     };
                 }else{
                     return {
-                        pt:date[2],
-                        sDate: date[0] ,
-                        eDate: date[1] ,
+                        pt:date.pt,
+                        sDate: date.sDate ,
+                        eDate: date.eDate ,
                     };
                 }
             },
@@ -490,34 +493,35 @@
                 }
             },
             handleSearch(val) {
-                this.highlight = true;
-                // 默认公司的背景色
-                this.isbac = false;
-                this.nodeArr = [];
-                this.loading = true;
-                this.val = val;
-                if(val.cid!=""){
-                    this.nodeArr.push(val.cid);
-                    this.$nextTick(() => {
-                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                    });
-                    this.cid = val.cid;
-                    if(this.cid==this.productTree.cid){
-                        this.isbac = true;
-                        this.highlight = false;
+                    this.highlight = true;
+                    // 默认公司的背景色
+                    this.isbac = false;
+                    this.nodeArr = [];
+                    this.loading = true;
+                    this.val = val;
+                    if(val.cid!=""){
+                        this.nodeArr.push(val.cid);
+                        this.$nextTick(() => {
+                            this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                        });
+                        this.cid = val.cid;
+                        if(this.cid==this.productTree.cid){
+                            this.isbac = true;
+                            this.highlight = false;
+                        }
+                    }else{
+                        if(this.cid==this.productTree.cid){
+                            this.isbac = true;
+                            this.highlight = false;
+                        }
+                        this.getTree();
+                        this.getProgress();
+                        this.getStructure();
+                        this.getRank();
                     }
-                }else{
-                    if(this.cid==this.productTree.cid){
-                        this.isbac = true;
-                        this.highlight = false;
-                    }
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
-                }
-                setTimeout(() => {		       
-                    this.loading = false;
-                }, 1000);
+                    setTimeout(() => {		       
+                        this.loading = false;
+                    }, 1000);
                 
             },
             handleNodeClick(data) {

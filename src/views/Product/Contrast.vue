@@ -286,24 +286,26 @@
                 }
             },
             handleSearch(val) {
-                // 默认公司的背景色
-                this.nodeArr = [];
-                this.loading = true;
-                this.val = val;
-                if(val.cid!=""){
-                    this.nodeArr.push(val.cid);
-                    this.$nextTick(() => {
-                            this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                    });
-                    this.cid = val.cid;
-                    
-                }else{
-                    
-                    this.getCompare();
+                if(val.cid!=this.cid){
+                    // 默认公司的背景色
+                    this.nodeArr = [];
+                    this.loading = true;
+                    this.val = val;
+                    if(val.cid!=""){
+                        this.nodeArr.push(val.cid);
+                        this.$nextTick(() => {
+                                this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                        });
+                        this.cid = val.cid;
+                        
+                    }else{
+                        this.getTree();
+                        this.getCompare();
+                    }
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 1000);
                 }
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             },
             cleanChecked() {
                 this.cidObjArr = [];
