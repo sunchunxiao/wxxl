@@ -99,7 +99,9 @@
           >
             <SeasonPicker 
               v-model="form.seasonStart" 
-              placeholder="请选择开始季度"/>
+              placeholder="请选择开始季度"
+              :picker-options="seasonStartOptions" 
+            />
           </el-form-item>
         </el-col>
         <el-col :span="9">
@@ -109,7 +111,9 @@
           >
             <SeasonPicker 
               v-model="form.seasonEnd" 
-              placeholder="请选择结束季度"/>
+              placeholder="请选择结束季度"
+              :picker-options="seasonEndOptions" 
+            />
           </el-form-item>
         </el-col>
       </template>
@@ -195,7 +199,7 @@ export default {
       units: this.ptOptions || UNITS,
       pickerBaseOptions: { firstDayOfWeek: 1 },
       form: {
-        pt: '日',
+        pt: '季',
 
         dayRange: [],
 
@@ -268,7 +272,7 @@ export default {
       return {
         disabledDate (time) {
           if (weekEnd) {
-            return time.getTime() > _.toNumber(moment(weekEnd).add(5, 'd').format('x')) && time.getTime() > Date.now();
+            return time.getTime() > moment(weekEnd).add(5, 'd').valueOf() || time.getTime() > Date.now();
           }
           return time.getTime() > Date.now();
         },
@@ -280,7 +284,7 @@ export default {
       return {
         disabledDate (time) {
           if (weekStart) {
-            return time.getTime() < _.toNumber(moment(weekStart).subtract(1, 'd').format('x')) && time.getTime() > Date.now();
+            return time.getTime() < moment(weekStart).subtract(1, 'd').valueOf() || time.getTime() > Date.now();
           }
           return time.getTime() > Date.now();
         },
@@ -292,7 +296,7 @@ export default {
       return {
         disabledDate (time) {
           if (monthEnd) {
-            return time.getTime() > _.toNumber(moment(monthEnd).format('x')) && time.getTime() > Date.now();
+            return time.getTime() > moment(monthEnd).valueOf() || time.getTime() > Date.now();
           }
           return time.getTime() > Date.now();
         }
@@ -303,7 +307,29 @@ export default {
       return {
         disabledDate (time) {
           if (monthStart) {
-            return time.getTime() < _.toNumber(moment(monthStart).format('x')) && time.getTime() > Date.now();
+            return time.getTime() < moment(monthStart).valueOf() || time.getTime() > Date.now();
+          }
+          return time.getTime() > Date.now();
+        }
+      };
+    },
+    seasonStartOptions() {
+      const { seasonEnd } = this.form;
+      return {
+        disabledDate(time) {
+          if(seasonEnd) {
+            return time.getTime() > seasonEnd.getTime() || time.getTime() > Date.now();
+          }
+          return time.getTime() > Date.now();
+        }
+      };
+    },
+    seasonEndOptions() {
+      const { seasonStart } = this.form;
+      return {
+        disabledDate(time) {
+          if(seasonStart) {
+            return time.getTime() < seasonStart.getTime() || time.getTime() > Date.now();
           }
           return time.getTime() > Date.now();
         }
@@ -314,7 +340,7 @@ export default {
       return {
         disabledDate (time) {
           if (yearEnd) {
-            return time.getTime() > _.toNumber(moment(yearEnd).format('x')) && time.getTime() > Date.now();
+            return time.getTime() > moment(yearEnd).valueOf() || time.getTime() > Date.now();
           }
           return time.getTime() > Date.now();
         }
@@ -325,7 +351,7 @@ export default {
       return {
         disabledDate (time) {
           if (yearStart) {
-            return time.getTime() < _.toNumber(moment(yearStart).format('x')) && time.getTime() > Date.now();
+            return time.getTime() < moment(yearStart).valueOf() || time.getTime() > Date.now();
           }
           return time.getTime() > Date.now();
         }

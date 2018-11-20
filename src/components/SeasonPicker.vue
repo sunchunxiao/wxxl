@@ -46,9 +46,8 @@
             <template v-for="(item, index) in seasons">
               <li 
                 :key="index" 
-                class="el-select-dropdown__item" 
-                :class="{'selected': isSelect(index + 1), 'hover': isSelect(index + 1)}"
-                @click.stop="selectSeason(index + 1)">{{ item }}</li>
+                :class="{'selected': isSelect(index + 1), 'hover': isSelect(index + 1), 'el-select-dropdown__item': true, 'is-disabled': isDisabled(index + 1)}"
+                @click.stop="!isDisabled(index + 1) ? selectSeason(index + 1) : null">{{ item }}</li>
             </template>
           </ul>
         </div>
@@ -77,7 +76,26 @@ export default {
     };
   },
   props: {
-    placeholder: String
+    placeholder: String,
+    pickerOptions: Object
+  },
+  computed: {
+    isDisabled() {
+      return (season) => {
+        if (!_.includes([1,2,3,4], season)) {
+          return false;
+        }
+        if (_.isObject(this.pickerOptions)) {
+          const disabledDate = _.get(this.pickerOptions, 'disabledDate');
+          if(_.isFunction(disabledDate)) {
+            const date = new Date(`${this.year}-${season * 3}`);
+            const lastDay = moment(date).endOf('month').format('YYYY-MM-DD');
+            const time = new Date(lastDay);
+            return disabledDate(time);
+          }
+        }
+      };
+    }
   },
   methods: {
     toggleMenu() {
