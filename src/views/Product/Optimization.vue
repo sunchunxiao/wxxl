@@ -3,7 +3,6 @@
     <el-row>
       <search-bar 
         ref="child"
-        @date="date"
         @search="handleSearch" 
         url="/product/search"/>
     </el-row>
@@ -195,10 +194,6 @@
 			}
 		},
 		methods: {
-			date(val){ 
-					// console.log(val);
-					this.form.date = val;
-			},
 			click(){
 						if(this.cid==this.productTree.cid){
 								return;

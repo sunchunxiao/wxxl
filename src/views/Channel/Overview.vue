@@ -3,7 +3,6 @@
     <el-row>
       <search-bar 
         @search="handleSearch"
-        @date="date"
         placeholder="渠道编号/渠道名称"
         ref="child"
         url="/channel/search"/>
@@ -301,10 +300,6 @@
             // this.initFormDataFromUrl();
         },
         methods: {
-            date(val){ 
-                // console.log(val);
-                this.form.date = val;
-            },
             click(){
                 if(this.cid==this.channelTree.nid){
 						return;
