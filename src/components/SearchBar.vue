@@ -188,7 +188,7 @@ export default {
       units: this.ptOptions || UNITS,
       pickerBaseOptions: { firstDayOfWeek: 1 },
       form: {
-        pt: '季',
+        pt: '日',
 
         dayRange: [],
 

@@ -61,17 +61,29 @@ export default {
             // return parseInt(val / 10000 / 100); // 金额从分转换为万
         },
         renderChart (data) {
+            // console.log(data.hasTarget);
             var _this = this;
             // console.log(111);
-            const { real, target, timeLabels, subject_name } = data;
+            const { real, target, timeLabels,subject_name } = data;
             // console.log(timeLabels);
+            var targetClone = [];
             const diff = [];
             var realItem, targetItem;
             const bottom = [];
             const underTarget = [];
             const realClone = _.cloneDeep(real);
-            const targetClone = _.cloneDeep(target);
-            for (let i = 0; i < realClone.length; i++) {
+            
+            if(data.hasTarget){
+                 for(let i=0;i<data.hasTarget.length;i++){
+                      targetClone.push({
+                          value:target[i],
+                          hasTarget:data.hasTarget[i]
+                      });
+                 }
+                //  targetClone = _.cloneDeep(target);
+            }else{
+                 targetClone = _.cloneDeep(target);
+                 for (let i = 0; i < realClone.length; i++) {
                 if (subject_name == '投入产出比' || subject_name == '库存周转率') {
                     realItem = realClone[i];
                     targetItem = targetClone[i];
@@ -98,6 +110,8 @@ export default {
                 realItem < targetItem && underTarget.push(i);
 
             }
+            }
+            
             const options = {
                 grid: {
                     left: 0,
@@ -113,17 +127,26 @@ export default {
                         type: 'line',
                     },
                     formatter: function (params) {
+                        // console.log(params);
                         var result = params[0].axisValue + "<br />";
                         params.forEach(function (item) {
-                            if (item.seriesIndex != 2) {
-                                result += item.marker + " " + item.seriesName + " : " + item.value + "</br>";
+                            if(item.data.hasTarget==0){
+                                if (item.seriesIndex != 0) {
+                                    result += item.marker + " " + item.seriesName + " : " + item.value + "</br>";
+                                }else{
+                                    result += item.marker + " " + item.seriesName + " : " + '未设定' + "</br>";
+                                }
+                            }else{
+                                if (item.seriesIndex != 2) {
+                                    result += item.marker + " " + item.seriesName + " : " + item.value + "</br>";
+                                }
                             }
                         });
                         return result;
                     },
 
                 },
-                color: ['#fcb448', '#318cb8', '#b12725'],
+                color: ['#318cb8', '#fcb448', '#b12725'],
                 legend: {
                     data: ['目标', '实际'],
                     left: 'right',
@@ -155,6 +178,11 @@ export default {
                 },
                 series: [
                     {
+                        name: '目标',
+                        data: targetClone,
+                        type: 'line',
+                    },
+                    {
                         data: realClone,
                         name: '实际',
                         type: 'line',
@@ -164,11 +192,7 @@ export default {
                             width: 2
                         }
                     },
-                    {
-                        name: '目标',
-                        data: targetClone,
-                        type: 'line',
-                    },
+                    
                     {
                         data: bottom,
                         type: 'bar',

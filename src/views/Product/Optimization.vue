@@ -312,7 +312,8 @@
 				};
 			},
 			handleSearch(val) {
-					this.highlight = true;
+					if(val.cid!=this.cid){
+						this.highlight = true;
 					// 默认公司的背景色
 						this.isbac = false;
 						this.nodeArr = [];
@@ -333,12 +334,13 @@
 										this.isbac = true;
 										this.highlight = false;
 								}
-								// this.getTree();
+								this.getTree();
 								this.getHistory();
 						}
 						setTimeout(() => {
 							this.loading = false;
 						}, 1000);
+					}
       },
 			handleNodeClick(data) {
 				this.isbac = false;

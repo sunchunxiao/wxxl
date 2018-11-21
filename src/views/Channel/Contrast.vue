@@ -288,14 +288,17 @@
             },
             handleSearch(val) {
                 this.nodeArr = [];
-                this.nodeArr.push(val.cid);
                 this.loading = true;
                 this.val = val;
                 if(val.cid!=""){
+                    this.nodeArr.push(val.cid);
+                    this.$nextTick(() => {
+                            this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                    });
                     this.cid = val.cid;
                 }else{
                     this.getTree();
-                    this.getProgress();
+                    this.getCompare();
                 }
                 setTimeout(() => {		       
                     this.loading = false;
