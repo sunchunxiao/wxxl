@@ -2,7 +2,9 @@
   <div class="contrast">
     <el-row>
       <search-bar 
+        @input="input"
         @search="handleSearch" 
+        placeholder="产品编号/产品名称"
         ref="child"
         url="/product/search"/>
     </el-row>
@@ -196,6 +198,9 @@
             }
         },
         methods: {
+            input(val){
+                this.form.date = val;
+            },
             getTree() {
                 const params = {
                     subject: SUBJECT,
@@ -236,25 +241,25 @@
                 params.targets = checkKeys.join(',');
                 return API.GetProductCompare(params);
             },
-            getDateObj() {
+            getDateObj () {
                 const {
-                        date
+                    date
                 } = this.form;
-                // console.log(this.val.eDate);
-                if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
-                        return {
-                                pt:this.val.pt,
-                                sDate: this.val.sDate,
-                                eDate: this.val.eDate,
-                        };
-                }else{
-                        return {
-                                sDate: date[0] ,
-                                eDate: date[1] ,
-                                pt:date[2],
-                        };
+                // console.log(this.val.sDate,date);
+                if (this.val.sDate != undefined && this.val.eDate != undefined) {
+                    return {
+                        pt: this.val.pt,
+                        sDate: this.val.sDate,
+                        eDate: this.val.eDate,
+                    };
+                } else {
+                    return {
+                            pt:date.pt,
+                            sDate: date.sDate ,
+                            eDate: date.eDate ,
+                    };
                 }
-			},
+            },
             getPeriodByPt() {
                 const {
                     pt,
@@ -265,18 +270,15 @@
                 // console.log(sDate,eDate);
                 if(sDate && eDate) { // 计算时间周期
                         return {
-                                pt:pt,
-                                sDate: sDate,
-                                eDate: eDate,
+                            pt:pt,
+                            sDate: sDate,
+                            eDate: eDate,
                         };
                 } else {
                         return {
-                                pt:'日',
-                                sDate: '2018-01-01',
-                                eDate: '2018-01-07',
-                                // 先写死个时间
-                                // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                                // eDate: moment().format('YYYY-MM-DD'),
+                            pt:'日',
+                            sDate: '2018-01-01',
+                            eDate: '2018-01-07',
                         };
                 }
             },

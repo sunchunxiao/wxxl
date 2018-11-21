@@ -51,7 +51,6 @@ export default {
         },
         real() {
             const { real } = this.data;
-            
             return this.calculateToShow(real);
         },
         target() {
