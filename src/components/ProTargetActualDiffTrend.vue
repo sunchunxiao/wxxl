@@ -131,7 +131,7 @@ export default {
                         var result = params[0].axisValue + "<br />";
                         params.forEach(function (item) {
                             if(item.data.hasTarget==0){
-                                if (item.seriesIndex != 1) {
+                                if (item.seriesIndex != 0) {
                                     result += item.marker + " " + item.seriesName + " : " + item.value + "</br>";
                                 }else{
                                     result += item.marker + " " + item.seriesName + " : " + '未设定' + "</br>";
@@ -146,7 +146,7 @@ export default {
                     },
 
                 },
-                color: ['#fcb448', '#318cb8', '#b12725'],
+                color: ['#318cb8', '#fcb448', '#b12725'],
                 legend: {
                     data: ['目标', '实际'],
                     left: 'right',
@@ -178,6 +178,11 @@ export default {
                 },
                 series: [
                     {
+                        name: '目标',
+                        data: targetClone,
+                        type: 'line',
+                    },
+                    {
                         data: realClone,
                         name: '实际',
                         type: 'line',
@@ -187,11 +192,7 @@ export default {
                             width: 2
                         }
                     },
-                    {
-                        name: '目标',
-                        data: targetClone,
-                        type: 'line',
-                    },
+                    
                     {
                         data: bottom,
                         type: 'bar',
