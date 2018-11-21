@@ -39,7 +39,6 @@
           <template 
             slot-scope="scope">
             <el-popover
-              v-model="visible2"
               @show = 'show(scope.row)'
               trigger="click" 
               placement="top">
