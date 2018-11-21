@@ -6,7 +6,8 @@ const product = {
     structureArr: state => state.product.structureArr,
     compareArr: state => state.product.compareArr,
     historyArr: state => state.product.historyArr,
-	strategyArr: state => state.product.strategyArr,
+    strategyArr: state => state.product.strategyArr,
+    productDateArr: state => state.product.productDateArr,
 };
 
 export default product;

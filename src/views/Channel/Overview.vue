@@ -3,6 +3,7 @@
     <el-row>
       <search-bar 
         @search="handleSearch"
+        @input="input"
         placeholder="渠道编号/渠道名称"
         ref="child"
         url="/channel/search"/>
@@ -300,6 +301,9 @@
             // this.initFormDataFromUrl();
         },
         methods: {
+            input(val){
+                this.form.date = val;
+            },
             click(){
                 if(this.cid==this.channelTree.nid){
 						return;
@@ -417,6 +421,25 @@
                     this.$store.dispatch('SaveChannelRankArr', res.data);
                 });
             },
+            getDateObj () {
+                const {
+                    date
+                } = this.form;
+                // console.log(this.val.sDate,date);
+                if (this.val.sDate != undefined && this.val.eDate != undefined) {
+                    return {
+                        pt: this.val.pt,
+                        sDate: this.val.sDate,
+                        eDate: this.val.eDate,
+                    };
+                } else {
+                    return {
+                            pt:date.pt,
+                            sDate: date.sDate ,
+                            eDate: date.eDate ,
+                    };
+                }
+            },
             getPeriodByPt() {
                 const {
                     pt,
@@ -428,8 +451,6 @@
                             pt:pt,
                             sDate: sDate,
                             eDate: eDate,
-                            // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                            // eDate: moment().format('YYYY-MM-DD'),
                         };
                 } else {
                     return {
@@ -439,25 +460,6 @@
                         // 先写死个时间
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),
-                    };
-                }
-            },
-            getDateObj() {
-                const {
-                    date
-                } = this.form;
-                // console.log(this.val.sDate,date);
-                if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
-                    return {
-                        pt:this.val.pt,
-                        sDate: this.val.sDate,
-                        eDate: this.val.eDate,
-                    };
-                }else{
-                    return {
-                        pt:date[2],
-                        sDate: date[0] ,
-                        eDate: date[1] ,
                     };
                 }
             },

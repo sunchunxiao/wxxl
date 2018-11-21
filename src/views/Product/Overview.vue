@@ -276,7 +276,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr']),
+        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr','productDateArr']),
         hasTree () {
             return !_.isEmpty(this.productTree);
         }
@@ -301,7 +301,6 @@ export default {
     },
         methods: {
             input(val){
-                // console.log(val);
                 this.form.date = val;
             },
             click(){
@@ -467,8 +466,6 @@ export default {
                     pt: pt,
                     sDate: sDate,
                     eDate: eDate,
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
                 };
             } else {
                 return {
