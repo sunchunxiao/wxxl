@@ -4,7 +4,6 @@
       <search-bar 
         @search="handleSearch"
         ref="child"
-        @date="date"
         placeholder="产品"
         url="/org/search"/>
     </el-row>

@@ -21,8 +21,7 @@
       <el-form-item 
         v-if="form.pt === '日'"
         label="时间段选择"
-        prop="dayRange"
-      >
+        prop="dayRange">
         <el-date-picker 
           v-model="form.dayRange"
           type="datetimerange"
@@ -39,8 +38,7 @@
         <el-col :span="14">
           <el-form-item 
             label="时间段选择"
-            prop="weekStart"
-          >
+            prop="weekStart">
             <el-date-picker 
               v-model="form.weekStart"
               type="week"
@@ -52,8 +50,7 @@
         <el-col :span="9">
           <el-form-item 
             class="endFormItem"
-            prop="weekEnd"
-          >
+            prop="weekEnd">
             <el-date-picker 
               v-model="form.weekEnd"
               type="week"
@@ -67,8 +64,7 @@
         <el-col :span="14">
           <el-form-item 
             label="时间段选择"
-            prop="monthStart"
-          >
+            prop="monthStart">
             <el-date-picker 
               v-model="form.monthStart"
               type="month"
@@ -80,8 +76,7 @@
         <el-col :span="9">
           <el-form-item 
             class="endFormItem"
-            prop="monthEnd"
-          >
+            prop="monthEnd">
             <el-date-picker 
               v-model="form.monthEnd"
               type="month"
@@ -95,21 +90,21 @@
         <el-col :span="14">
           <el-form-item 
             label="时间段选择"
-            prop="seasonStart"
-          >
+            prop="seasonStart">
             <SeasonPicker 
-              v-model="form.seasonStart" 
-              placeholder="请选择开始季度"/>
+              v-model="form.seasonStart"
+              placeholder="请选择开始季度"
+              :picker-options="seasonStartOptions" />
           </el-form-item>
         </el-col>
         <el-col :span="9">
           <el-form-item 
             class="endFormItem"
-            prop="seasonEnd"
-          >
+            prop="seasonEnd">
             <SeasonPicker 
-              v-model="form.seasonEnd" 
-              placeholder="请选择结束季度"/>
+              v-model="form.seasonEnd"
+              placeholder="请选择结束季度"
+              :picker-options="seasonEndOptions" />
           </el-form-item>
         </el-col>
       </template>
@@ -117,8 +112,7 @@
         <el-col :span="14">
           <el-form-item 
             label="时间段选择"
-            prop="yearStart"
-          >
+            prop="yearStart">
             <el-date-picker 
               v-model="form.yearStart"
               type="year"
@@ -129,8 +123,7 @@
         <el-col :span="9">
           <el-form-item 
             class="endFormItem"
-            prop="yearEnd"
-          >
+            prop="yearEnd">
             <el-date-picker 
               v-model="form.yearEnd"
               type="year"
@@ -188,7 +181,7 @@ eg:
 */
 export default {
   components: {
-      SeasonPicker
+    SeasonPicker
   },
   data () {
     return {
@@ -238,6 +231,7 @@ export default {
         moment().subtract(1, 'd').format('YYYY-MM-DD')
       ];
     }
+    this.handleFormChange(this.form);
   },
   computed: {
     cptPlaceholder () {
@@ -267,7 +261,7 @@ export default {
       return {
         disabledDate (time) {
           if (weekEnd) {
-            return time.getTime() > _.toNumber(moment(weekEnd).add(5, 'd').format('x')) && time.getTime() > Date.now();
+            return time.getTime() > moment(weekEnd).add(5, 'd').valueOf() || time.getTime() > Date.now();
           }
           return time.getTime() > Date.now();
         },
@@ -279,7 +273,7 @@ export default {
       return {
         disabledDate (time) {
           if (weekStart) {
-            return time.getTime() < _.toNumber(moment(weekStart).subtract(1, 'd').format('x')) && time.getTime() > Date.now();
+            return time.getTime() < moment(weekStart).subtract(1, 'd').valueOf() || time.getTime() > Date.now();
           }
           return time.getTime() > Date.now();
         },
@@ -291,7 +285,7 @@ export default {
       return {
         disabledDate (time) {
           if (monthEnd) {
-            return time.getTime() > _.toNumber(moment(monthEnd).format('x')) && time.getTime() > Date.now();
+            return time.getTime() > moment(monthEnd).valueOf() || time.getTime() > Date.now();
           }
           return time.getTime() > Date.now();
         }
@@ -302,7 +296,29 @@ export default {
       return {
         disabledDate (time) {
           if (monthStart) {
-            return time.getTime() < _.toNumber(moment(monthStart).format('x')) && time.getTime() > Date.now();
+            return time.getTime() < moment(monthStart).valueOf() || time.getTime() > Date.now();
+          }
+          return time.getTime() > Date.now();
+        }
+      };
+    },
+    seasonStartOptions () {
+      const { seasonEnd } = this.form;
+      return {
+        disabledDate (time) {
+          if (seasonEnd) {
+            return time.getTime() > seasonEnd.getTime() || time.getTime() > Date.now();
+          }
+          return time.getTime() > Date.now();
+        }
+      };
+    },
+    seasonEndOptions () {
+      const { seasonStart } = this.form;
+      return {
+        disabledDate (time) {
+          if (seasonStart) {
+            return time.getTime() < seasonStart.getTime() || time.getTime() > Date.now();
           }
           return time.getTime() > Date.now();
         }
@@ -313,7 +329,7 @@ export default {
       return {
         disabledDate (time) {
           if (yearEnd) {
-            return time.getTime() > _.toNumber(moment(yearEnd).format('x')) && time.getTime() > Date.now();
+            return time.getTime() > moment(yearEnd).valueOf() || time.getTime() > Date.now();
           }
           return time.getTime() > Date.now();
         }
@@ -324,7 +340,7 @@ export default {
       return {
         disabledDate (time) {
           if (yearStart) {
-            return time.getTime() < _.toNumber(moment(yearStart).format('x')) && time.getTime() > Date.now();
+            return time.getTime() < moment(yearStart).valueOf() || time.getTime() > Date.now();
           }
           return time.getTime() > Date.now();
         }
@@ -334,19 +350,22 @@ export default {
   watch: {
     form: {
       handler: function (val) {
-        const obj = this.calculateDate(val);
-        if (!obj.sDate || obj.sDate === 'Invalid date') {
-          obj.sDate = '';
-        }
-        if (!obj.eDate || obj.eDate === 'Invalid date') {
-          obj.eDate = '';
-        }
-        this.$emit('input', obj);
+        this.handleFormChange(val);
       },
       deep: true
     }
   },
   methods: {
+    handleFormChange (val) {
+      const obj = this.calculateDate(val);
+      if (!obj.sDate || obj.sDate === 'Invalid date') {
+        obj.sDate = '';
+      }
+      if (!obj.eDate || obj.eDate === 'Invalid date') {
+        obj.eDate = '';
+      }
+      this.$emit('input', obj);
+    },
     clearKw () {
       //在点击左侧节点的时候 清空搜索框
       if (this.kw) {
