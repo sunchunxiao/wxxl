@@ -63,59 +63,72 @@ export default {
         },
     },
     methods: {
-         calculateToShow(val) {
-            const { subject } = this.data;
-            if(val==null){
-                return "未设定";
-            }else{
-                if (subject === 'ITO'||subject === 'ROI') { // 库存周转率不需要单位
-                return val;
-                }else if (subject === 'POR') { // 库存周转率不需要单位
-                    return parseInt(val);
+         getRank(score) {
+                if (1 == score) {
+                    return '差';
                 }
-                let Tenthousand = parseInt(val / 10000 / 100);
-                if(Tenthousand>=1){
-                    return parseInt(val / 10000 / 100)+'w';
-                }else{
-                    return parseInt(val/100);
+                if (2 == score) {
+                    return '中';
                 }
-            // return parseInt(val / 10000 / 100); // 金额从分转换为万
-            }
-            
+                if (3 == score) {
+                    return '良';
+                }
+                if (4 === score) {
+                    return '优';
+                }
+                return '';
         },
         renderChart(data) {
             // console.log(data);
-            const { transSubjects } = data;
+            var _this =this;
+            const { transSubjects,radarValues } = data;
             var arr= [];
             for(let i of transSubjects){
                 arr.push({
                     name:i,
-                    max:100
+                    max:4
                 });
             }
             // console.log(arr);
             const options = {
-                title: {
-                    text: '多雷达图'
+                title:{
+                    text:"综合评估"
                 },
                 // backgroundColor: '#fff',
                 tooltip: {
+                    // trigger: 'axis',
+                    formatter: function(params){
+                            // console.log(params);
+                            var result =[];
+                            for(let i=0;i<params.name.length;i++){
+                                result += params.name[i] + " : " + _this.getRank(params.value[i]) +"</br>";
+                            }
+                            
+                            return result;
+                        },
                 },
-                legend: {
-                    data: ['预算分配']
-                },
+                // legend: {
+                //     data: ['预算分配']
+                // },
                 radar: {
                     name: {
                         textStyle: {
-                            color: '#fff',
-                            backgroundColor: '#999',
+                            color: '#000',
+                            // backgroundColor:'',
                             borderRadius: 3,
                             padding: [3, 5]
                         }
                     },
                     indicator: arr,
                     radius: 100,
-                    center: ['50%','60%'],
+                    center: ['50%','50%'],
+                    splitArea: {
+                        areaStyle: {
+                            color: ['#eee','#a7dcfc', '#70bcde','#23a9cc','#007eb0'],
+                            shadowColor: 'rgba(0, 0, 0, 0.3)',
+                            shadowBlur: 10
+                        }
+                    },
                 },
                 // grid: {
                 //     left: 0,
@@ -125,13 +138,13 @@ export default {
                 //     containLabel: true
                 // },
                 series: [{
-                        name: '预算 vs 开销',
+                        name: '',
                         type: 'radar',
                         // areaStyle: {normal: {}},
                         data : [
                             {
-                                value : [10,43, 10, 28, 35, 50, 19],
-                                name : '预算分配'
+                                value : radarValues,
+                                name:transSubjects
                             },
                         ]
                     }]
