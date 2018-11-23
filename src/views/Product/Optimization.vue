@@ -4,6 +4,8 @@
       <search-bar 
         ref="child"
         @search="handleSearch" 
+        placeholder="产品编号/产品名称"
+        @input="input"
         url="/product/search"/>
     </el-row>
     <el-row 
@@ -194,13 +196,16 @@
 			}
 		},
 		methods: {
+			input(val){
+            this.form.date = val;
+      },
 			click(){
 						if(this.cid==this.productTree.cid){
 								return;
 						}else{
 								this.loading = true;
 								//点击发送请求清除搜索框
-								this.$refs.child.parentMsg(this.post);
+								this.$refs.child.clearKw();
 								this.isbac = true;
 								this.highlight = false;
 								this.cid=this.productTree.cid;
@@ -223,7 +228,6 @@
 			},
 			getTree() {
 				const params = {
-					pt: this.form.pt,
 					subject: this.form.subject,
 					...this.getPeriodByPt(),
 				};
@@ -232,21 +236,39 @@
 					this.$store.dispatch('SaveProductTree', res.tree);
 				});
 			},
+			getDateObj () {
+            const {
+                date
+            } = this.form;
+            // console.log(this.val.sDate,date);
+            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+                return {
+                    pt: this.val.pt,
+                    sDate: this.val.sDate,
+                    eDate: this.val.eDate,
+                };
+            } else {
+                return {
+                        pt:date.pt,
+                        sDate: date.sDate ,
+                        eDate: date.eDate ,
+                };
+            }
+        },
 			getPeriodByPt() {
 						const {
-								sDate,
-								eDate
+							pt,
+							sDate,
+							eDate
 						} = this.getDateObj();
-						// const {
-						//     pt
-						// } = this.form;
+						
 						// console.log(sDate,eDate);
 						if(sDate && eDate) { // 计算时间周期
-										return {
-												pt:this.val.pt,
-												sDate: this.val.sDate,
-												eDate: this.val.eDate,
-										};
+								return {
+										pt:pt,
+										sDate: sDate,
+										eDate: eDate,
+								};
 						} else {
 								return {
 										pt:'日',
@@ -258,23 +280,6 @@
 								};
 						}
       },
-			getDateObj() {
-					const {
-							date
-					} = this.form;
-					// console.log(this.val.eDate);
-					if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
-							return {
-							sDate: this.val.sDate,
-							eDate: this.val.eDate,
-					};
-					}else{
-							return {
-							sDate: date[0] || '',
-							eDate: date[1] || '',
-					};
-					}
-			},
 			largerThanZero(val) {
 				return val && _.isNumber(parseFloat(val*100)) && parseFloat(val) > 0;
 			},
@@ -312,25 +317,27 @@
 				};
 			},
 			handleSearch(val) {
-					this.highlight = true;
+					if(val.cid!=this.cid){
+						this.highlight = true;
 					// 默认公司的背景色
 						this.isbac = false;
 						this.nodeArr = [];
-						this.nodeArr.push(val.cid);
-						this.$nextTick(() => {
-								this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-						});
 						this.loading = true;
 						this.val = val;
 						if(val.cid!=""){
+								this.nodeArr.push(val.cid);
+								this.$nextTick(() => {
+										this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+								});
 								this.cid = val.cid;
 								if(this.cid==this.productTree.cid){
 										this.isbac = true;
 										this.highlight = false;
 								}
 						}else{
-									if(this.cid==1){
+								if(this.cid==this.productTree.cid){
 										this.isbac = true;
+										this.highlight = false;
 								}
 								this.getTree();
 								this.getHistory();
@@ -338,11 +345,12 @@
 						setTimeout(() => {
 							this.loading = false;
 						}, 1000);
+					}
       },
 			handleNodeClick(data) {
 				this.isbac = false;
 				this.highlight = true;
-				this.$refs.child.parentMsg(this.post);
+				this.$refs.child.clearKw();
 				if(this.cid === data.cid){
 						return ;
 				}else{

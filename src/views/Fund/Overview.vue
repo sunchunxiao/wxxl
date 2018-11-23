@@ -240,7 +240,7 @@
     import ProTargetAchievement from '../../components/ProTargetAchievement';
     import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
     // 目标-实际-差异趋势分析
-    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
+    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend1';
     // 同比环比趋势分析
     import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
     // import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
@@ -339,7 +339,7 @@
               }else{
                   this.loading = true;
                   //点击发送请求清除搜索框
-                  this.$refs.child.parentMsg(this.post);
+                  this.$refs.child.clearKw();
                   this.isbac = true;
                   this.highlight = false;
                   this.cid=this.fundTree.cid;
@@ -549,7 +549,7 @@
       handleNodeClick(data) {
           this.isbac = false;
           this.highlight = true;
-          this.$refs.child.parentMsg(this.post);
+          this.$refs.child.clearKw();
           this.type = data.type;
           if(this.cid === data.cid){
             return ;

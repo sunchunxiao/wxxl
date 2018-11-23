@@ -3,6 +3,8 @@
     <el-row>
       <search-bar 
         @search="handleSearch"
+        @input="input"
+        placeholder="渠道编号/渠道名称"
         ref="child"
         url="/channel/search"/>
     </el-row>
@@ -299,13 +301,16 @@
             // this.initFormDataFromUrl();
         },
         methods: {
+            input(val){
+                this.form.date = val;
+            },
             click(){
                 if(this.cid==this.channelTree.nid){
 						return;
 				}else{
                     this.loading = true;
                 //点击发送请求清除搜索框
-                this.$refs.child.parentMsg(this.post);
+                this.$refs.child.clearKw();
                 this.isbac = true;
                 this.highlight = false;
                 this.cid=this.channelTree.nid;
@@ -416,20 +421,36 @@
                     this.$store.dispatch('SaveChannelRankArr', res.data);
                 });
             },
+            getDateObj () {
+                const {
+                    date
+                } = this.form;
+                // console.log(this.val.sDate,date);
+                if (this.val.sDate != undefined && this.val.eDate != undefined) {
+                    return {
+                        pt: this.val.pt,
+                        sDate: this.val.sDate,
+                        eDate: this.val.eDate,
+                    };
+                } else {
+                    return {
+                            pt:date.pt,
+                            sDate: date.sDate ,
+                            eDate: date.eDate ,
+                    };
+                }
+            },
             getPeriodByPt() {
                 const {
+                    pt,
                     sDate,
                     eDate
                 } = this.getDateObj();
-                // const {
-                //     pt
-                // } = this.form;
-                // console.log(sDate,eDate);
                 if(sDate && eDate) { // 计算时间周期
                         return {
-                            pt:this.val.pt,
-                            sDate: this.val.sDate,
-                            eDate: this.val.eDate,
+                            pt:pt,
+                            sDate: sDate,
+                            eDate: eDate,
                         };
                 } else {
                     return {
@@ -440,23 +461,6 @@
                         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                         // eDate: moment().format('YYYY-MM-DD'),
                     };
-                }
-            },
-            getDateObj() {
-                const {
-                    date
-                } = this.form;
-                // console.log(this.val.eDate);
-                if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
-                    return {
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-                }else{
-                    return {
-                    sDate: date[0] || '',
-                    eDate: date[1] || '',
-                };
                 }
             },
             initFormDataFromUrl() {
@@ -480,20 +484,24 @@
                 // 默认公司的背景色
                 this.isbac = false;
                 this.nodeArr = [];
-                this.nodeArr.push(val.cid);
-                this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                });
+                
                 this.loading = true;
                 this.val = val;
                 if(val.cid!=""){
+                    this.nodeArr.push(val.cid);
+                    this.$nextTick(() => {
+                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                    });
                     this.cid = val.cid;
                     if(this.cid==this.channelTree.nid){
                         this.isbac = true;
                         this.highlight = false;
                     }
                 }else{
-                    this.getTree();
+                    if(this.cid==this.channelTree.nid){
+                        this.isbac = true;
+                        this.highlight = false;
+                    }
                     this.getProgress();
                     this.getStructure();
                     this.getRank();
@@ -506,7 +514,7 @@
             handleNodeClick(data) {
                 this.isbac = false;
                 this.highlight = true;
-                this.$refs.child.parentMsg(this.post);
+                this.$refs.child.clearKw();
                 if(this.cid === data.nid){
                     return ;
                 }else if(data.children != undefined) {

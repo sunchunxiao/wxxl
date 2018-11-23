@@ -37,7 +37,6 @@
           label="采纳次数"
           sortable>
           <template 
-            
             slot-scope="scope">
             <el-popover
               
@@ -149,6 +148,7 @@
 				total:0,
 				currentPage: 1,
 				trackList1:[],
+				// visible2:false
 
 			};
 		},
@@ -166,7 +166,6 @@
 		},
 		methods: {
 			show(val){
-				// console.log(val);
 				this.trackList1 = [];
 				if(val){
 					this.trackList1.push({

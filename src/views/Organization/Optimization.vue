@@ -195,7 +195,7 @@
         methods: {
             click(){
                 //点击发送请求清除搜索框
-				this.$refs.child.parentMsg(this.post);
+				this.$refs.child.clearKw();
                 if(this.cid==this.organizationTree.cid){
 								return;
                 }else{
@@ -340,7 +340,7 @@
             handleNodeClick(data) {
                 this.isbac = false;
                 this.highlight = true;
-                this.$refs.child.parentMsg(this.post);
+                this.$refs.child.clearKw();
                 this.type = data.type;
                 if(this.cid === data.cid){
                     return ;

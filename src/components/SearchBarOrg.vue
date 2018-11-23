@@ -201,14 +201,11 @@ export default {
             }
             
         },
-        parentMsg: function (msg) {
+        clearKw: function () {
             //在点击左侧节点的时候 搜素框值为空
-            if(msg){
-                if(this.form.kw!=""){
-                 this.form.kw='';
-              }
+            if(this.form.kw){
+                this.form.kw = '';
             }
-            
         },
         handleClick() {
           // todo: 暂时去掉表单验证 觉得交互不太好

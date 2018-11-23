@@ -41,7 +41,7 @@ export default {
     computed: {
         unit() {
             const { subject } = this.data;
-            if (subject === 'ROI'||subject== 'NIR'||subject== 'CTR') { // 投入产出比 %
+            if (subject== 'NIR'||subject== 'CTR') { // 投入产出比 %
                 return '%';
             } else if (subject === 'ITO') { // 库存周转率不需要单位
                 return '';
@@ -73,25 +73,34 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
-            
-            if (subject === 'ROI') { // 投入产出比需要 * 100
-                return parseInt(val * 100);
-            } else if (subject === 'ITO') { // 库存周转率不需要单位
-                return val;
-            }else if (subject === 'POR') { // 库存周转率不需要单位
-                return parseInt(val);
-            }
-            let Tenthousand = parseInt(val / 10000 / 100);
-            if(Tenthousand>=1){
-                return parseInt(val / 10000 / 100)+'w';
+            if(val==null){
+                return "未设定";
             }else{
-                return parseInt(val/100);
-            }
+                if (subject === 'ITO'||subject === 'ROI') { // 库存周转率不需要单位
+                return val;
+                }else if (subject === 'POR') { // 库存周转率不需要单位
+                    return parseInt(val);
+                }
+                let Tenthousand = parseInt(val / 10000 / 100);
+                if(Tenthousand>=1){
+                    return parseInt(val / 10000 / 100)+'w';
+                }else{
+                    return parseInt(val/100);
+                }
             // return parseInt(val / 10000 / 100); // 金额从分转换为万
+            }
+            
         },
         renderChart(data) {
-            const { subject, subject_name, progress } = data;
-            const valuePercent = parseInt(progress * 100);
+            const { subject, subject_name, progress ,real } = data;
+            var valuePercent;
+            if(progress==null){
+                valuePercent = this.calculateToShow(real);
+            }else{
+                valuePercent = parseInt(progress * 100);
+                
+            }
+    
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
             // 反向指标 颜色需要相反
             if (_.includes(REVERSE_TARGET, subject)) {
@@ -103,7 +112,16 @@ export default {
                 backgroundColor: '#fff',
                 tooltip: {
                     trigger: 'item',
-                    formatter: "{a} <br/>{b}: {c}%"
+                    formatter: function(params){
+                        var result = [];
+                        if(progress==null){
+                            result += params.marker + " " + params.name + " : " + params.value + "</br>";
+                        }else{
+                            result += params.marker + " " + params.name + " : " + params.value+
+                            '%' + "</br>";
+                        }
+                        return result;
+                    }
                 },
                 grid: {
                     left: 0,
@@ -132,7 +150,14 @@ export default {
                             },
                             label: {
                                 normal: {
-                                    formatter: valuePercent + '%',
+                                    formatter: function(data){
+                                        if(progress==null){
+                                            return data.value;
+                                        }else{
+                                            return data.value+"%";
+                                        }
+                                            
+                                    },
                                     textStyle: {
                                         fontSize: FONTSIZE1,
                                         color: color,

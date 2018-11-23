@@ -4,6 +4,7 @@
       <search-bar 
         @search="handleSearch"
         ref="child"
+        placeholder="产品"
         url="/org/search"/>
     </el-row>
     <el-row 
@@ -243,7 +244,7 @@
 	import ProTargetAchievement from '../../components/ProTargetAchievement';
 	import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
 	// 目标-实际-差异趋势分析
-	import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
+	import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend1';
 	// import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
 	// 同比环比趋势分析
 	import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
@@ -350,7 +351,7 @@
 		},
 		methods: {
 			click(){
-				this.$refs.child.parentMsg(this.post);
+				this.$refs.child.clearKw();
 				if(this.cid==this.organizationTree.cid){
 								return;
 						}else{
@@ -414,6 +415,9 @@
 					version: this.form.version
 				};
 				API.GetOrgTree(params).then(res => {
+					if(this.organizationTree.cid==undefined){
+							this.cid = res.tree.cid;
+					}
 					this.cid = res.tree.cid;
 					this.type = res.tree.type;
 					this.$store.dispatch('SaveOrgTree', res.tree);
@@ -554,24 +558,25 @@
 				// 默认公司的背景色
 				this.isbac = false;
 				this.nodeArr = [];
-				this.nodeArr.push(val.cid);
 				
-				this.$nextTick(() => {
-						this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
-				});
 				this.loading = true;
 				this.val = val;
 				if(val.cid!=""){
 						this.cid = val.cid;
+						this.nodeArr.push(val.cid);
+				
+						this.$nextTick(() => {
+								this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
+						});
 						if(this.cid==this.organizationTree.cid){
 								this.isbac = true;
 								this.highlight = false;
 						}
 				}else{
-					if(this.cid==1){
+					if(this.cid==this.organizationTree.cid){
 								this.isbac = true;
+								this.highlight = false;
 						}
-						this.getTree();
 						this.getProgress();
 						this.getStructure1();
 						this.getStructure2();
@@ -585,7 +590,7 @@
 			handleNodeClick(data) {
 				this.isbac = false;
         this.highlight = true;
-				this.$refs.child.parentMsg(this.post);
+				this.$refs.child.clearKw();
 				this.type = data.type;
 				if(this.cid === data.cid){
             return ;

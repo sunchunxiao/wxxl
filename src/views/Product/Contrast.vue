@@ -2,7 +2,9 @@
   <div class="contrast">
     <el-row>
       <search-bar 
+        @input="input"
         @search="handleSearch" 
+        placeholder="产品编号/产品名称"
         ref="child"
         url="/product/search"/>
     </el-row>
@@ -38,6 +40,8 @@
           empty-text="正在加载"
           check-strictly
           node-key="cid" 
+          :default-expanded-keys="nodeArr"
+          :highlight-current="highlight" 
           :props="defaultProps" 
           show-checkbox 
           @check-change="handleCheckChange">
@@ -131,12 +135,20 @@
         },
         data() {
             return {
+                form: {
+					date: [],
+					subject: 'S', // S: 销售额 P: 利润额
+				},
                 defaultProps: TREE_PROPS,
                 index0: 0,
                 cidObjArr:[],
                 cancelKey: '',
                 debounce: null,
                 isFirstLoad:true,
+                val:{},
+                post:1,
+				nodeArr:[],
+                highlight:true,
             };
         },
         computed: {
@@ -186,6 +198,9 @@
             }
         },
         methods: {
+            input(val){
+                this.form.date = val;
+            },
             getTree() {
                 const params = {
                     subject: SUBJECT,
@@ -226,15 +241,68 @@
                 params.targets = checkKeys.join(',');
                 return API.GetProductCompare(params);
             },
-            getPeriodByPt() {
-                // 先写死个时间
-                return {
-                    pt:'日',
-                    sDate: '2018-01-01',
-                    eDate: '2018-01-07',
-                };
+            getDateObj () {
+                const {
+                    date
+                } = this.form;
+                // console.log(this.val.sDate,date);
+                if (this.val.sDate != undefined && this.val.eDate != undefined) {
+                    return {
+                        pt: this.val.pt,
+                        sDate: this.val.sDate,
+                        eDate: this.val.eDate,
+                    };
+                } else {
+                    return {
+                            pt:date.pt,
+                            sDate: date.sDate ,
+                            eDate: date.eDate ,
+                    };
+                }
             },
-            handleSearch() {
+            getPeriodByPt() {
+                const {
+                    pt,
+                    sDate,
+                    eDate
+                } = this.getDateObj();
+                
+                // console.log(sDate,eDate);
+                if(sDate && eDate) { // 计算时间周期
+                        return {
+                            pt:pt,
+                            sDate: sDate,
+                            eDate: eDate,
+                        };
+                } else {
+                        return {
+                            pt:'日',
+                            sDate: '2018-01-01',
+                            eDate: '2018-01-07',
+                        };
+                }
+            },
+            handleSearch(val) {
+                if(val.cid!=this.cid){
+                    // 默认公司的背景色
+                    this.nodeArr = [];
+                    this.loading = true;
+                    this.val = val;
+                    if(val.cid!=""){
+                        this.nodeArr.push(val.cid);
+                        this.$nextTick(() => {
+                                this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                        });
+                        this.cid = val.cid;
+                        
+                    }else{
+                        this.getTree();
+                        this.getCompare();
+                    }
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 1000);
+                }
             },
             cleanChecked() {
                 this.cidObjArr = [];

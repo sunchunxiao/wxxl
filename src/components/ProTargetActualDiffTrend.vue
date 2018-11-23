@@ -15,6 +15,12 @@ export default {
         id: String,
         data: Object,
     },
+    data () {
+        return {
+            arr: '',
+            debounce: null
+        };
+    },
     mounted () {
         this.chart = echarts.init(document.getElementById(`bar-${this.id}`));
         this.renderChart(this.data);
@@ -23,12 +29,6 @@ export default {
     },
     beforeDestroy () {
         window.removeEventListener('resize', this.debounce);
-    },
-    data () {
-        return {
-            arr: '',
-            debounce: null
-        };
     },
     watch: {
         data: {
@@ -61,43 +61,78 @@ export default {
             // return parseInt(val / 10000 / 100); // 金额从分转换为万
         },
         renderChart (data) {
+            // console.log(data.hasTarget);
             var _this = this;
             // console.log(111);
-            const { real, target, timeLabels, subject_name } = data;
+            const { real, target, timeLabels,subject_name,hasTarget } = data;
             // console.log(timeLabels);
+            var arr = [];
             const diff = [];
             var realItem, targetItem;
             const bottom = [];
             const underTarget = [];
             const realClone = _.cloneDeep(real);
             const targetClone = _.cloneDeep(target);
-            for (let i = 0; i < realClone.length; i++) {
-                if (subject_name == '投入产出比' || subject_name == '库存周转率') {
-                    realItem = realClone[i];
-                    targetItem = targetClone[i];
-                } else {
-                    realClone[i] = parseInt(realClone[i] / 100);
-                    targetClone[i] = parseInt(targetClone[i] / 100);
-                    realItem = realClone[i];
-                    targetItem = targetClone[i];
-                }
-
-                // realClone[i] = -20;
-                // const realItem = realClone[i];
-                // targetClone[i] = 30;
-                // const targetItem = targetClone[i];
-
-                if (realItem < 0 && targetItem < 0) {
+            // if(data.hasTarget){
+                 for(let i=0;i<hasTarget.length;i++){
+                     if (subject_name == '投入产出比' || subject_name == '库存周转率') {
+                         arr.push({
+                            value:targetClone[i],
+                            hasTarget:hasTarget[i]
+                        });
+                        realItem = realClone[i];
+                        targetItem = arr[i].value;
+                        }else{
+                            realClone[i] = parseInt(realClone[i] / 100);
+                            arr.push({
+                                value:parseInt(targetClone[i]/100),
+                                hasTarget:hasTarget[i]
+                            });
+                            realItem = realClone[i];
+                            targetItem = arr[i].value;
+                        }
+                    if (realItem < 0 && targetItem < 0) {
                     bottom.push(realItem < targetItem ? targetItem : realItem);
                     diff.push(-Math.abs(realItem - targetItem));
-                } else if (realItem > 0 && targetItem > 0) {
-                    bottom.push(realItem < targetItem ? realItem : targetItem);
-                    diff.push(Math.abs(realItem - targetItem));
-                }
+                    } else if (realItem >= 0 && targetItem >= 0) {
+                        bottom.push(realItem < targetItem ? realItem : targetItem);
+                        diff.push(Math.abs(realItem - targetItem));
+                    }
 
-                realItem < targetItem && underTarget.push(i);
+                    realItem < targetItem && underTarget.push(i);
 
-            }
+                 }
+            // }else{
+                 
+            //      for (let i = 0; i < realClone.length; i++) {
+            //     if (subject_name == '投入产出比' || subject_name == '库存周转率') {
+            //         realItem = realClone[i];
+            //         targetItem = targetClone[i];
+            //     } else {
+            //         realClone[i] = parseInt(realClone[i] / 100);
+            //         targetClone[i] = parseInt(targetClone[i] / 100);
+            //         realItem = realClone[i];
+            //         targetItem = targetClone[i];
+            //     }
+
+            //     // realClone[i] = -20;
+            //     // const realItem = realClone[i];
+            //     // targetClone[i] = 30;
+            //     // const targetItem = targetClone[i];
+
+            //     if (realItem < 0 && targetItem < 0) {
+            //         bottom.push(realItem < targetItem ? targetItem : realItem);
+            //         diff.push(-Math.abs(realItem - targetItem));
+            //     } else if (realItem >= 0 && targetItem >= 0) {
+            //         bottom.push(realItem < targetItem ? realItem : targetItem);
+            //         diff.push(Math.abs(realItem - targetItem));
+            //     }
+
+            //     realItem < targetItem && underTarget.push(i);
+
+            // }
+            // }
+            
             const options = {
                 grid: {
                     left: 0,
@@ -113,17 +148,30 @@ export default {
                         type: 'line',
                     },
                     formatter: function (params) {
+                        // console.log(params);
                         var result = params[0].axisValue + "<br />";
+                        const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
-                            if (item.seriesIndex != 2) {
-                                result += item.marker + " " + item.seriesName + " : " + item.value + "</br>";
+                            if(hasTarget==0){
+                                if (item.seriesIndex != 2&&item.seriesIndex != 3) {
+                                    if (item.seriesIndex == 0) {//目标
+                                        result += item.marker + " " + item.seriesName + " : " + '未设定' + "</br>";
+                                    }else{
+                                        result += item.marker + " " + item.seriesName + " : " + item.value + "</br>";
+                                    }
+                                }
+                                    
+                            }else{
+                                if (item.seriesIndex != 2) {
+                                    result += item.marker + " " + item.seriesName + " : " + item.value + "</br>";
+                                }
                             }
                         });
                         return result;
                     },
 
                 },
-                color: ['#fcb448', '#318cb8', '#b12725'],
+                color: ['#318cb8', '#fcb448', '#b12725'],
                 legend: {
                     data: ['目标', '实际'],
                     left: 'right',
@@ -155,6 +203,11 @@ export default {
                 },
                 series: [
                     {
+                        name: '目标',
+                        data: arr,
+                        type: 'line',
+                    },
+                    {
                         data: realClone,
                         name: '实际',
                         type: 'line',
@@ -164,11 +217,7 @@ export default {
                             width: 2
                         }
                     },
-                    {
-                        name: '目标',
-                        data: targetClone,
-                        type: 'line',
-                    },
+                    
                     {
                         data: bottom,
                         type: 'bar',
