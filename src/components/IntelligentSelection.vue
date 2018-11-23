@@ -211,7 +211,6 @@
 
 				}
 				let heatMapOption = {
-
 					baseOption: {
 						timeline: {
 							// y: 0,

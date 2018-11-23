@@ -219,23 +219,36 @@ export default {
     ptOptions: Array,
   },
   mounted () {
-    if(this.productDateArr.pt){
-      this.form.dayRange=[this.productDateArr.sDate,this.productDateArr.eDate];
-    }else{
-      const endTimeSet = process.env.VUE_APP_END_TIME_SET;
-        if (endTimeSet && _.isDate(new Date(endTimeSet))) {
-          this.form.dayRange = [
-            moment(endTimeSet).subtract(1, 'M').format('YYYY-MM-DD'),
-            endTimeSet
-          ];
-        } else {
-          // 前一个月 - 昨天
-          this.form.dayRange = [
-            moment().subtract(1, 'd').subtract(1, 'M').format('YYYY-MM-DD'),
-            moment().subtract(1, 'd').format('YYYY-MM-DD')
-          ];
-        }
-    }
+    // if(this.productDateArr.pt){
+    //   this.form.dayRange=[this.productDateArr.sDate,this.productDateArr.eDate];
+    // }else{
+    //   const endTimeSet = process.env.VUE_APP_END_TIME_SET;
+    //     if (endTimeSet && _.isDate(new Date(endTimeSet))) {
+    //       this.form.dayRange = [
+    //         moment(endTimeSet).subtract(1, 'M').format('YYYY-MM-DD'),
+    //         endTimeSet
+    //       ];
+    //     } else {
+    //       // 前一个月 - 昨天
+    //       this.form.dayRange = [
+    //         moment().subtract(1, 'd').subtract(1, 'M').format('YYYY-MM-DD'),
+    //         moment().subtract(1, 'd').format('YYYY-MM-DD')
+    //       ];
+    //     }
+    // }
+    const endTimeSet = process.env.VUE_APP_END_TIME_SET;
+      if (endTimeSet && _.isDate(new Date(endTimeSet))) {
+        this.form.dayRange = [
+          moment(endTimeSet).subtract(1, 'M').format('YYYY-MM-DD'),
+          endTimeSet
+        ];
+      } else {
+        // 前一个月 - 昨天
+        this.form.dayRange = [
+          moment().subtract(1, 'd').subtract(1, 'M').format('YYYY-MM-DD'),
+          moment().subtract(1, 'd').format('YYYY-MM-DD')
+        ];
+      }
     this.handleFormChange(this.form);
   },
   computed: {
