@@ -244,7 +244,7 @@
 	import ProTargetAchievement from '../../components/ProTargetAchievement';
 	import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
 	// 目标-实际-差异趋势分析
-	import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
+	import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend1';
 	// import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
 	// 同比环比趋势分析
 	import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';

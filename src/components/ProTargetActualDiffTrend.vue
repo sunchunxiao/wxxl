@@ -15,6 +15,12 @@ export default {
         id: String,
         data: Object,
     },
+    data () {
+        return {
+            arr: '',
+            debounce: null
+        };
+    },
     mounted () {
         this.chart = echarts.init(document.getElementById(`bar-${this.id}`));
         this.renderChart(this.data);
@@ -23,12 +29,6 @@ export default {
     },
     beforeDestroy () {
         window.removeEventListener('resize', this.debounce);
-    },
-    data () {
-        return {
-            arr: '',
-            debounce: null
-        };
     },
     watch: {
         data: {
