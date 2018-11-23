@@ -76,7 +76,7 @@
                   <el-col 
                     :key="index" 
                     :span="6" 
-                    @click.native="clickIndex(0 ,index)">
+                  >
                     <ProTargetAchievement 
                       :id="`${index}`" 
                       :data="item"/>
@@ -85,11 +85,11 @@
               </el-col>
               <el-col 
                 :span="8" 
-                v-if="fundprogressArr.length > 0" 
+                v-if="fundrankArr.length > 0" 
                 class="border-left">
-                <ProTargetAchievementBig 
+                <Radar 
                   :id="'select'" 
-                  :data="fundprogressArr[index0]"/>
+                  :data="fundrankArr[fundrankArr.length-1]"/>
               </el-col>
             </el-row>
           </Card>
@@ -238,7 +238,7 @@
     import SearchBar from 'components/SearchBarOrg';
     // 目标达成情况总览
     import ProTargetAchievement from '../../components/ProTargetAchievement';
-    import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
+    import Radar from '../../components/radar';
     // 目标-实际-差异趋势分析
     import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend1';
     // 同比环比趋势分析
@@ -271,7 +271,7 @@
             ProportionalStructureAverageComparisonBig,
             IntelligentSelection,
             ProTargetAchievement,
-            ProTargetAchievementBig,
+            Radar,
             ProTargetActualDiffTrend,
         },
         data() {

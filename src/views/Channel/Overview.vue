@@ -76,8 +76,7 @@
                 <template v-for="(item, index) in channelProgressArr">
                   <el-col 
                     :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(0 ,index)">
+                    :span="6" >
                     <ProTargetAchievement 
                       :id="`${index}`" 
                       :data="item"/>

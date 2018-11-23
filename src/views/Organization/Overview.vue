@@ -79,8 +79,7 @@
                 <template v-for="(item, index) in orgprogressArr">
                   <el-col 
                     :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(0 ,index)">
+                    :span="6">
                     <ProTargetAchievement 
                       :id="`${index}`" 
                       :data="item"/>
@@ -88,12 +87,12 @@
                 </template>
               </el-col>
               <el-col 
-                v-if="orgprogressArr.length > 0" 
+                v-if="orgrankArr.length > 0" 
                 :span="8" 
                 class="border-left">
-                <ProTargetAchievementBig 
+                <Radar 
                   :id="'select'" 
-                  :data="orgprogressArr[index0]"/>
+                  :data="orgrankArr[orgrankArr.length-1]"/>
               </el-col>
             </el-row>
           </Card>
@@ -242,7 +241,7 @@
 	import Card from '../../components/Card';
 	// 目标达成情况总览
 	import ProTargetAchievement from '../../components/ProTargetAchievement';
-	import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
+	import Radar from '../../components/radar';
 	// 目标-实际-差异趋势分析
 	import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend1';
 	// import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
@@ -277,7 +276,7 @@
 			ProportionalStructureAverageComparisonBig,
 			IntelligentSelection,
 			ProTargetAchievement,
-			ProTargetAchievementBig,
+			Radar,
 			ProTargetActualDiffTrend,
 			// ProTargetActualDiffTrendBig
 		},

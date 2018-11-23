@@ -80,26 +80,25 @@ export default {
                             value:targetClone[i],
                             hasTarget:hasTarget[i]
                         });
-                        realItem = realClone[i];
-                        targetItem = arr[i].value;
                         }else{
                             realClone[i] = parseInt(realClone[i] / 100);
                             arr.push({
                                 value:parseInt(targetClone[i]/100),
                                 hasTarget:hasTarget[i]
                             });
-                            realItem = realClone[i];
-                            targetItem = arr[i].value;
+                            // realItem = realClone[i];
+                            // targetItem = arr[i].value;
                         }
-                    if (realItem < 0 && targetItem < 0) {
-                    bottom.push(realItem < targetItem ? targetItem : realItem);
-                    diff.push(-Math.abs(realItem - targetItem));
-                    } else if (realItem >= 0 && targetItem >= 0) {
-                        bottom.push(realItem < targetItem ? realItem : targetItem);
-                        diff.push(Math.abs(realItem - targetItem));
-                    }
-
-                    realItem < targetItem && underTarget.push(i);
+                        realItem = realClone[i];
+                        targetItem = arr[i].value;
+                        if (realItem < 0 && targetItem < 0) {
+                        bottom.push(realItem < targetItem ? targetItem : realItem);
+                        diff.push(-Math.abs(realItem - targetItem));
+                        } else if (realItem >= 0 && targetItem >= 0) {
+                            bottom.push(realItem < targetItem ? realItem : targetItem);
+                            diff.push(Math.abs(realItem - targetItem));
+                        }
+                        realItem < targetItem && underTarget.push(i);
 
                  }
             // }else{
