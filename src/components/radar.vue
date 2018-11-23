@@ -64,6 +64,9 @@ export default {
     },
     methods: {
          getRank(score) {
+                if (0 == score) {
+                    return '未知';
+                }
                 if (1 == score) {
                     return '差';
                 }
@@ -121,7 +124,7 @@ export default {
                     },
                     indicator: arr,
                     radius: 100,
-                    center: ['50%','50%'],
+                    center: ['48%','50%'],
                     splitArea: {
                         areaStyle: {
                             color: ['#eee','#a7dcfc', '#70bcde','#23a9cc','#007eb0'],
@@ -158,8 +161,8 @@ export default {
 <style lang="scss" scoped>
 .pie-container {
     .pie {
-        width: 350px;
-        height: 350px;
+        width: 330px;
+        height: 330px;
         margin: 0 auto;
     }
     .detail {

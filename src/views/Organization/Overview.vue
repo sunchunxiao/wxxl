@@ -75,7 +75,7 @@
           <Card>
             <el-row class="card-title">目标达成情况总览</el-row>
             <el-row>
-              <el-col :span="16">
+              <el-col :span="15">
                 <template v-for="(item, index) in orgprogressArr">
                   <el-col 
                     :key="index" 
@@ -88,7 +88,7 @@
               </el-col>
               <el-col 
                 v-if="orgrankArr.length > 0" 
-                :span="8" 
+                :span="9" 
                 class="border-left">
                 <Radar 
                   :id="'select'" 
@@ -243,7 +243,7 @@
 	import ProTargetAchievement from '../../components/ProTargetAchievement';
 	import Radar from '../../components/radar';
 	// 目标-实际-差异趋势分析
-	import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend1';
+	import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
 	// import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
 	// 同比环比趋势分析
 	import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';

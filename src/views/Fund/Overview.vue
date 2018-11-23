@@ -71,7 +71,7 @@
           <Card>
             <el-row class="card-title">目标达成情况总览</el-row>
             <el-row>
-              <el-col :span="16">
+              <el-col :span="15">
                 <template v-for="(item, index) in fundprogressArr">
                   <el-col 
                     :key="index" 
@@ -84,7 +84,7 @@
                 </template>
               </el-col>
               <el-col 
-                :span="8" 
+                :span="9" 
                 v-if="fundrankArr.length > 0" 
                 class="border-left">
                 <Radar 
