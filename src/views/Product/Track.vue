@@ -4,6 +4,7 @@
       <div class="title">策略跟踪和策略应用</div>
       <!-- <el-table :data="strategyArr.slice((currentPage - 1) * 10, currentPage * 10)" stripe> -->
       <el-table
+        @sort-change='sortChange'
         :data="trackList"
         stripe>
         <el-table-column
@@ -39,6 +40,7 @@
           <template 
             slot-scope="scope">
             <el-popover
+              
               @show = 'show(scope.row)'
               trigger="click" 
               placement="top">
@@ -147,7 +149,6 @@
 				total:0,
 				currentPage: 1,
 				trackList1:[],
-
 			};
 		},
 		watch: {
@@ -163,6 +164,9 @@
 			this.getProductStrategy();
 		},
 		methods: {
+			sortChange(){
+				// this.visible2 = false;
+			},
 			show(val){
 				this.trackList1 = [];
 				if(val){
@@ -189,10 +193,13 @@
 					...this.getPeriodByPt(),
 				};
 				API.GetProductStrategy(params).then(res => {
-					// console.log(res.data)
-					this.trackList = res.data;
-					this.total = res.total;
-					this.$store.dispatch('SaveProductStrategy', res.data);
+							// _.forEach(res.data, (v, k) => {
+							// 		res.data[k].visible = false;
+							// });
+							
+							this.trackList = res.data;
+							this.total = res.total;
+							this.$store.dispatch('SaveProductStrategy', res.data);
 				});
 			},
 			getDateObj() {
