@@ -1,10 +1,9 @@
 <template>
-  <el-menu 
-    @select="select"
-    :default-active="activePath" 
-    router 
-    :collapse="isCollapse">
-    <!-- <el-menu-item
+    <el-menu @select="select"
+             :default-active="activePath"
+             router
+             :collapse="isCollapse">
+        <!-- <el-menu-item
       :class="{homeBac:home_bac}"
       index="/home">
       <img 
@@ -16,37 +15,33 @@
         style="color:#fff" 
         slot="title">首页</span>
     </el-menu-item> -->
-    <!-- <template >
+        <!-- <template >
       <div 
         :class="{homeBac:home_bac}"
         class="home"
         @click="home">首页</div>
     </template> -->
-    <template v-for="item in menuData">
-      <el-submenu 
-        :index="item.path" 
-        :key="item.path">
-        <template slot="title">
-          <img 
-            class="menu_icon" 
-            :src="require(`../assets/${item.icon}`)" 
-            :alt="item.icon">
-          <span slot="title">{{ item.title }}</span>
+        <template v-for="item in menuData">
+            <el-submenu :index="item.path"
+                        :key="item.path">
+                <template slot="title">
+                    <img class="menu_icon"
+                         :src="require(`../assets/${item.icon}`)"
+                         :alt="item.icon">
+                    <span slot="title">{{ item.title }}</span>
+                </template>
+                <template v-for="itm in item.children">
+                    <el-menu-item :index="`${item.path}${itm.path}`"
+                                  :key="`${item.path}${itm.path}`">
+                        <span class="sub-text">
+                            <span class="dot" /> {{ itm.title }}
+                        </span>
+                    </el-menu-item>
+                </template>
+            </el-submenu>
         </template>
-        <template v-for="itm in item.children">
-          <el-menu-item 
-            :index="`${item.path}${itm.path}`" 
-            :key="`${item.path}${itm.path}`">
-            <span class="sub-text">
-              <span class="dot"/>
-              {{ itm.title }}
-            </span>
-          </el-menu-item>
-        </template>
-      </el-submenu>
-    </template>
-    
-  </el-menu>
+
+    </el-menu>
 </template>
 
 <script>
@@ -145,22 +140,22 @@ export default {
         return {
             menuData: MENUDATA,
             activePath: '/home',
-            path:'/home',
-            home_bac:false,
-            val:''
+            path: '/home',
+            home_bac: false,
+            val: ''
         };
     },
-    mounted() {
+    mounted () {
         this.activePath = this.$route.fullPath;
         // this.select();
     },
-   
-    methods:{
-        select(val){
+
+    methods: {
+        select (val) {
             this.val = val;
             // return this.val;
         },
-        
+
     },
 };
 </script>
@@ -190,23 +185,26 @@ $scale: 1.8;
 //         margin-right: 10px;
 //     }
 // }
-.el-menu-item:focus, .el-menu-item{
-    background-color: rgba(64,158,255,0.2);
+.el-menu-item:focus,
+.el-menu-item {
+    background-color: rgba(64, 158, 255, 0.2);
 }
-.el-menu-item:focus, .el-menu-item:hover{
-    background-color: rgba(38,53,76,0.2);
+.el-menu-item:focus,
+.el-menu-item:hover {
+    background-color: rgba(38, 53, 76, 0.2);
     color: $white;
 }
-.el-menu-item:focus,.el-menu-item.is-active{
-        color: $white;
-        background-color: $bg-color-active; 
+.el-menu-item:focus,
+.el-menu-item.is-active {
+    color: $white;
+    background-color: $bg-color-active;
 }
 
 .menu_icon {
     margin: 0 10px 0 0;
 }
 
-.el-menu-item{
+.el-menu-item {
     border-left: 5px solid $bgcolor;
     color: $white;
 }
@@ -228,7 +226,7 @@ ul.el-menu {
         .el-submenu__title {
             border-left: 5px solid $bgcolor;
             i {
-                margin-left: 15px;
+                margin-right: 15px;
             }
         }
     }
@@ -245,7 +243,7 @@ ul.el-menu {
         line-height: $menu-item-height;
         background-color: $bgcolor;
         color: $white;
-        padding: 0 0 0 50px!important;
+        padding: 0 0 0 50px !important;
         border-left: 5px solid $bgcolor;
         .sub-text {
             padding: 2px 30px;
@@ -272,12 +270,11 @@ ul.el-menu {
     // arrow
     .el-submenu__icon-arrow {
         color: $white;
-        transform: scale($scale)
+        transform: scale($scale);
     }
-    .el-submenu.is-opened>.el-submenu__title .el-submenu__icon-arrow {
+    .el-submenu.is-opened > .el-submenu__title .el-submenu__icon-arrow {
         transform: rotateZ(180deg) scale($scale);
     }
-
 }
 </style>
 
