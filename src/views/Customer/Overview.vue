@@ -211,7 +211,7 @@
     import ProTargetAchievement from '../../components/ProTargetAchievement';
     import Radar from '../../components/radar';
     // 目标-实际-差异趋势分析
-    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend1';
+    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
     
     // 同比环比趋势分析
     import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';

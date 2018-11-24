@@ -328,7 +328,6 @@ export default {
             }
             // console.log(this.stragetyCheckList, this.idArr);
         },
-
         submit () {
             let data1 = JSON.parse(localStorage.data);
             this.$confirm('确认?', {

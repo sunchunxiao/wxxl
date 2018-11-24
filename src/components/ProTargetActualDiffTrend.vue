@@ -64,7 +64,7 @@ export default {
             // console.log(data.hasTarget);
             var _this = this;
             // console.log(111);
-            const { real, target, timeLabels,subject_name,hasTarget } = data;
+            const { real, target, timeLabels,subject,hasTarget } = data;
             // console.log(timeLabels);
             var arr = [];
             const diff = [];
@@ -75,11 +75,12 @@ export default {
             const targetClone = _.cloneDeep(target);
             // if(data.hasTarget){
                  for(let i=0;i<hasTarget.length;i++){
-                     if (subject_name == '投入产出比' || subject_name == '库存周转率') {
-                         arr.push({
-                            value:targetClone[i],
-                            hasTarget:hasTarget[i]
-                        });
+                     //POR人员冗余
+                     if (subject == 'ROI' || subject == 'ITO'||subject == 'POR') {
+                            arr.push({
+                                    value:targetClone[i],
+                                    hasTarget:hasTarget[i]
+                                });
                         }else{
                             realClone[i] = parseInt(realClone[i] / 100);
                             arr.push({
