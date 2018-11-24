@@ -147,7 +147,6 @@
 				total:0,
 				currentPage: 1,
 				trackList1:[],
-				// visible2:false
 
 			};
 		},

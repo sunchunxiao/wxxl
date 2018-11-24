@@ -74,12 +74,11 @@
           <Card>
             <el-row class="card-title">目标达成情况总览</el-row>
             <el-row>
-              <el-col :span="16">
+              <el-col :span="15">
                 <template v-for="(item, index) in cusprogressArr">
                   <el-col 
                     :key="index" 
-                    :span="6" 
-                    @click.native="clickIndex(0 ,index)">
+                    :span="6" >
                     <ProTargetAchievement 
                       :id="`${index}`" 
                       :data="item"/>
@@ -88,11 +87,11 @@
               </el-col>
               <el-col 
                 :span="8" 
-                v-if="cusprogressArr.length > 0" 
+                v-if="cusrankArr.length > 0" 
                 class="border-left">
-                <ProTargetAchievementBig 
+                <Radar 
                   :id="'select'" 
-                  :data="cusprogressArr[index0]"/>
+                  :data="cusrankArr[cusrankArr.length-1]"/>
               </el-col>
             </el-row>
           </Card>
@@ -210,9 +209,9 @@
     import SearchBar from 'components/SearchBarOrg';
     // 目标达成情况总览
     import ProTargetAchievement from '../../components/ProTargetAchievement';
-    import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
+    import Radar from '../../components/radar';
     // 目标-实际-差异趋势分析
-    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend1';
+    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
     
     // 同比环比趋势分析
     import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
@@ -246,7 +245,7 @@
             ProportionalStructureAverageComparisonBig,
             IntelligentSelection,
             ProTargetAchievement,
-            ProTargetAchievementBig,
+            Radar,
             ProTargetActualDiffTrend,
         },
         data() {
