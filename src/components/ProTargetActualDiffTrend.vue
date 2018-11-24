@@ -64,7 +64,7 @@ export default {
             // console.log(data.hasTarget);
             var _this = this;
             // console.log(111);
-            const { real, target, timeLabels,subject_name,hasTarget } = data;
+            const { real, target, timeLabels,subject,hasTarget } = data;
             // console.log(timeLabels);
             var arr = [];
             const diff = [];
@@ -75,31 +75,31 @@ export default {
             const targetClone = _.cloneDeep(target);
             // if(data.hasTarget){
                  for(let i=0;i<hasTarget.length;i++){
-                     if (subject_name == '投入产出比' || subject_name == '库存周转率') {
-                         arr.push({
-                            value:targetClone[i],
-                            hasTarget:hasTarget[i]
-                        });
-                        realItem = realClone[i];
-                        targetItem = arr[i].value;
+                     //POR人员冗余
+                     if (subject == 'ROI' || subject == 'ITO'||subject == 'POR') {
+                            arr.push({
+                                    value:targetClone[i],
+                                    hasTarget:hasTarget[i]
+                                });
                         }else{
                             realClone[i] = parseInt(realClone[i] / 100);
                             arr.push({
                                 value:parseInt(targetClone[i]/100),
                                 hasTarget:hasTarget[i]
                             });
-                            realItem = realClone[i];
-                            targetItem = arr[i].value;
+                            // realItem = realClone[i];
+                            // targetItem = arr[i].value;
                         }
-                    if (realItem < 0 && targetItem < 0) {
-                    bottom.push(realItem < targetItem ? targetItem : realItem);
-                    diff.push(-Math.abs(realItem - targetItem));
-                    } else if (realItem >= 0 && targetItem >= 0) {
-                        bottom.push(realItem < targetItem ? realItem : targetItem);
-                        diff.push(Math.abs(realItem - targetItem));
-                    }
-
-                    realItem < targetItem && underTarget.push(i);
+                        realItem = realClone[i];
+                        targetItem = arr[i].value;
+                        if (realItem < 0 && targetItem < 0) {
+                        bottom.push(realItem < targetItem ? targetItem : realItem);
+                        diff.push(-Math.abs(realItem - targetItem));
+                        } else if (realItem >= 0 && targetItem >= 0) {
+                            bottom.push(realItem < targetItem ? realItem : targetItem);
+                            diff.push(Math.abs(realItem - targetItem));
+                        }
+                        realItem < targetItem && underTarget.push(i);
 
                  }
             // }else{

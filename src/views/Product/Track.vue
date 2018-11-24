@@ -39,7 +39,6 @@
           <template 
             slot-scope="scope">
             <el-popover
-              
               @show = 'show(scope.row)'
               trigger="click" 
               placement="top">
@@ -148,7 +147,6 @@
 				total:0,
 				currentPage: 1,
 				trackList1:[],
-				// visible2:false
 
 			};
 		},
