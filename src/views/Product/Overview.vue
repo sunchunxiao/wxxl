@@ -92,7 +92,7 @@
                 v-if="rankArr.length > 0"
                 :span="9"
                 class="border-left">
-                <ProTargetAchievementBig 
+                <Radar 
                   :id="'select'"
                   :data="rankArr[rankArr.length-1]" />
               </el-col>
@@ -212,7 +212,7 @@ import SearchBar from 'components/SearchBar';
 import moment from 'moment';
 // 目标达成情况总览
 import ProTargetAchievement from 'components/ProTargetAchievement';
-import ProTargetAchievementBig from 'components/radar';
+import Radar from 'components/radar';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 // 同比环比趋势分析
@@ -238,7 +238,7 @@ export default {
         ProportionalStructureAverageComparisonBig,
         IntelligentSelection,
         ProTargetAchievement,
-        ProTargetAchievementBig,
+        Radar,
         ProTargetActualDiffTrend,
     },
     data () {
@@ -328,7 +328,6 @@ export default {
             }
             // console.log(this.stragetyCheckList, this.idArr);
         },
-
         submit () {
             let data1 = JSON.parse(localStorage.data);
             this.$confirm('确认?', {

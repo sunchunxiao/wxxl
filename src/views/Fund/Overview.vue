@@ -71,12 +71,12 @@
           <Card>
             <el-row class="card-title">目标达成情况总览</el-row>
             <el-row>
-              <el-col :span="16">
+              <el-col :span="15">
                 <template v-for="(item, index) in fundprogressArr">
                   <el-col 
                     :key="index" 
                     :span="6" 
-                    @click.native="clickIndex(0 ,index)">
+                  >
                     <ProTargetAchievement 
                       :id="`${index}`" 
                       :data="item"/>
@@ -84,12 +84,12 @@
                 </template>
               </el-col>
               <el-col 
-                :span="8" 
-                v-if="fundprogressArr.length > 0" 
+                :span="9" 
+                v-if="fundrankArr.length > 0" 
                 class="border-left">
-                <ProTargetAchievementBig 
+                <Radar 
                   :id="'select'" 
-                  :data="fundprogressArr[index0]"/>
+                  :data="fundrankArr[fundrankArr.length-1]"/>
               </el-col>
             </el-row>
           </Card>
@@ -238,9 +238,9 @@
     import SearchBar from 'components/SearchBarOrg';
     // 目标达成情况总览
     import ProTargetAchievement from '../../components/ProTargetAchievement';
-    import ProTargetAchievementBig from '../../components/ProTargetAchievementBig';
+    import Radar from '../../components/radar';
     // 目标-实际-差异趋势分析
-    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend1';
+    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
     // 同比环比趋势分析
     import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
     // import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
@@ -271,7 +271,7 @@
             ProportionalStructureAverageComparisonBig,
             IntelligentSelection,
             ProTargetAchievement,
-            ProTargetAchievementBig,
+            Radar,
             ProTargetActualDiffTrend,
         },
         data() {
