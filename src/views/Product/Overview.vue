@@ -275,7 +275,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr','productDateArr']),
+        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr', 'productDateArr']),
         hasTree () {
             return !_.isEmpty(this.productTree);
         }
@@ -298,27 +298,27 @@ export default {
             this.getRank();
         }
     },
-        methods: {
-            input(val){
-                this.form.date = val;
-            },
-            click(){
-                if(this.cid==this.productTree.cid){
-                    return;
-                }else{
-                    this.loading = true;
-                    //点击发送请求清除搜索框
-                    this.$refs.child.clearKw();
-                    this.isbac = true;
-                    this.highlight = false;
-                    this.cid=this.productTree.cid;
-                    setTimeout(() => {		       
-                            this.loading = false;
-                    }, 1000);
-                }
-                
-            },
-        change() {
+    methods: {
+        input (val) {
+            this.form.date = val;
+        },
+        click () {
+            if (this.cid == this.productTree.cid) {
+                return;
+            } else {
+                this.loading = true;
+                //点击发送请求清除搜索框
+                this.$refs.child.clearKw();
+                this.isbac = true;
+                this.highlight = false;
+                this.cid = this.productTree.cid;
+                setTimeout(() => {
+                    this.loading = false;
+                }, 1000);
+            }
+
+        },
+        change () {
             this.idArr = [];
             for (let i of this.stragetyCheckList) {
                 let stragetyObj = this.stragety.find(el => {
@@ -359,7 +359,7 @@ export default {
             });
 
         },
-        initFormDataFromUrl() {
+        initFormDataFromUrl () {
             const {
                 pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
             } = this.$route.query;
@@ -367,30 +367,30 @@ export default {
                 pt: pt,
                 subject: subject,
             };
-            if(moment(sDate).isValid() && moment(eDate).isValid()) {
+            if (moment(sDate).isValid() && moment(eDate).isValid()) {
                 formData.date = [sDate, eDate];
             }
             this.cid = cid;
-            this.form = { ...this.form,
+            this.form = {                ...this.form,
                 ...formData
             };
         },
-        getTree() {
+        getTree () {
             const params = {
                 // pt: this.form.pt,
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
             };
-            
+
             API.GetProductTree(params).then(res => {
                 // console.log(this.productTree.cid);
-                if(this.productTree.cid==undefined){
+                if (this.productTree.cid == undefined) {
                     this.cid = res.tree.cid;
                 }
                 this.$store.dispatch('SaveProductTree', res.tree);
             });
         },
-        getProgress() {
+        getProgress () {
             // console.log(this.val);
             const params = {
                 cid: this.cid,
@@ -448,9 +448,9 @@ export default {
                 };
             } else {
                 return {
-                        pt:date.pt,
-                        sDate: date.sDate ,
-                        eDate: date.eDate ,
+                    pt: date.pt,
+                    sDate: date.sDate,
+                    eDate: date.eDate,
                 };
             }
         },
@@ -477,37 +477,37 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
-                this.highlight = true;
-                // 默认公司的背景色
-                this.isbac = false;
-                this.nodeArr = [];
-                this.loading = true;
-                this.val = val;
-                if(val.cid!=""){
-                    this.nodeArr.push(val.cid);
-                    this.$nextTick(() => {
-                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                    });
-                    this.cid = val.cid;
-                    if(this.cid==this.productTree.cid){
-                        this.isbac = true;
-                        this.highlight = false;
-                    }
-                }else{
-                    if(this.cid==this.productTree.cid){
-                        this.isbac = true;
-                        this.highlight = false;
-                    }
-                    this.getTree();
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
+        handleSearch (val) {
+            this.highlight = true;
+            // 默认公司的背景色
+            this.isbac = false;
+            this.nodeArr = [];
+            this.loading = true;
+            this.val = val;
+            if (val.cid != "") {
+                this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                });
+                this.cid = val.cid;
+                if (this.cid == this.productTree.cid) {
+                    this.isbac = true;
+                    this.highlight = false;
                 }
-                setTimeout(() => {		       
-                    this.loading = false;
-                }, 1000);
-            
+            } else {
+                if (this.cid == this.productTree.cid) {
+                    this.isbac = true;
+                    this.highlight = false;
+                }
+                this.getTree();
+                this.getProgress();
+                this.getStructure();
+                this.getRank();
+            }
+            setTimeout(() => {
+                this.loading = false;
+            }, 1000);
+
         },
         handleNodeClick (data) {
             this.isbac = false;
@@ -581,5 +581,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import './style/overview.scss';
+@import "./style/overview.scss";
 </style>
