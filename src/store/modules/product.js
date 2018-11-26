@@ -2,7 +2,7 @@
 const product = {
     state: {
       tree: {},
-      treePrograss:[],
+      treePrograss:{},
       progressArr: [],
       trendArr: [],
       rankArr: [],
@@ -16,8 +16,8 @@ const product = {
       SAVE_PRODUCT_TREE: (state, tree) => {
         state.tree = tree;
       },
-      SAVE_TREEPRODUCT_TREE: (state, arr) => {
-        state.treePrograss = arr;
+      SAVE_TREEPRODUCT_TREE: (state, treePro) => {
+        state.treePrograss = treePro;
       },
       SAVE_PROGRESS_ARR: (state, arr) => {
         state.progressArr = arr;
@@ -52,54 +52,8 @@ const product = {
       SaveProductTree ({ commit }, tree) {
         commit('SAVE_PRODUCT_TREE', tree);
       },
-      SaveProductTreePrograss ({ commit,state },data) {
-        // console.log(state.tree,data);
-        // const { tree } = state;
-        const treeClone = _.cloneDeep(state.tree);
-                                          
-        // function preOrder(node){
-        //   console.log(node);
-        //   var childs = node,item;      
-        //   for(var i=0; i < childs.length ; i++){
-        //       item = childs[i];
-        //       if(item.cid == i){
-        //       //递归先序遍历子节点
-        //          return preOrder(item);
-        //       }
-        //   }
-        // }
-        
-        for(let i in data){
-          // console.log(i);
-        //   preOrder(treeClone.children);
-          
-        //   _.find(preOrder,o=>{
-        //       if(o.cid==i){
-        //         _.forEach(o.children,(v)=>{
-        //           console.log(v);
-        //           if(v.cid==i){
-        //             v.real_total = data[i].real;
-        //             v.target_total = data[i].target;
-        //           }
-        //         });
-                    
-        //       }
-        //   });
-
-          treeClone.children.find(el => {
-            if(el.cid==i){
-              el.real_total = data[i].real;
-              el.target_total = data[i].target;
-            }
-            // return el.id == i;
-          });
-          if(treeClone.cid==i){
-            treeClone.real_total = data[i].real;
-            treeClone.target_total = data[i].target;
-          }
-        }
-        commit('SAVE_PRODUCT_TREE',treeClone);
-        
+      SaveProductTreePrograss ({ commit },treePro) {
+        commit('SAVE_TREEPRODUCT_TREE', treePro);
       },
       SaveProgressData({ commit }, arr) {
         commit('SAVE_PROGRESS_ARR', arr);

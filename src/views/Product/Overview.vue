@@ -23,13 +23,13 @@
             v-if="productTree.children"
             :class="{bac:isbac}"
             class="company">
-            <span class="left label">{{ productTree.name }}</span>
+            <span class="left label">{{ treeClone.name }}</span>
             <span 
-              :class="{percent: true, red: !calculatePercent(productTree.real_total, productTree.target_total).largerThanOne, blue: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
+              :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+              class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
             <div 
-              :class="{comprogress: true, 'border-radius0': calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '105%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}" />
+              :class="{comprogress: true, 'border-radius0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+              :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
           </div>
         </div>
         <!-- 有多个tree -->
@@ -40,9 +40,9 @@
           :highlight-current="highlight"
           :expand-on-click-node="false"
           :props="defaultProps"
-          :data="productTree.children"
+          :data="treeClone.children"
           :default-expanded-keys="nodeArr"
-          
+          @node-expand="nodeExpand"
           @node-click="handleNodeClick">
           <span 
             class="custom-tree-node"
@@ -271,25 +271,28 @@ export default {
                 pt: '',
                 sDate: '',
                 eDate: ''
-            }
+            },
+            treeClone:{}
             
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr', 'productDateArr']),
+        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr', 'productDateArr','treePrograss']),
         hasTree () {
             return !_.isEmpty(this.productTree);
         }
     },
     mounted () {
-        if (!this.hasTree) {
-            this.$nextTick(() => {
-                this.getTree();
-                // this.getTreePrograss();
-            });
-        } else {
-            this.cid = this.productTree.cid;
-        }
+        // console.log(this.treePrograss);
+        this.getTree();
+        // if (!this.hasTree) {
+        //     this.$nextTick(() => {
+        //         this.getTree();
+        //         // this.getTreePrograss();
+        //     });
+        // } else {
+        //     this.cid = this.productTree.cid;
+        // }
     },
     watch: {
         cid () {
@@ -302,6 +305,18 @@ export default {
         }
     },
     methods: {
+        preOrder(node,cid){
+          for(let i of node){
+              if (i.cid == cid) {
+                  return i;
+              }
+              if(i.children && i.children.length){
+                  if (this.preOrder(i.children, cid)) {
+                      return this.preOrder(i.children,cid);
+                  }
+              }
+          }
+        },
         input (val) {
             this.form.date = val;
         },
@@ -377,6 +392,7 @@ export default {
                 ...formData
             };
         },
+        //树结构
         getTree () {
             const params = {
                 // pt: this.form.pt,
@@ -385,13 +401,16 @@ export default {
             };
             
             API.GetProductTree(params).then(res => {
-                // console.log(this.productTree.cid);
-                if (this.productTree.cid == undefined) {
-                    this.cid = res.tree.cid;
-                }
+                // if (this.productTree.cid == undefined) {
+                //     this.cid = res.tree.cid;
+                // }
+                this.cid = res.tree.cid;
+                this.treeClone = _.cloneDeep(res.tree);            
+
                 this.$store.dispatch('SaveProductTree', res.tree);
             });
         },
+        //获取百分比数据
         getTreePrograss(){
             const params = {
                 subject:this.form.subject,
@@ -399,7 +418,21 @@ export default {
                 nid:this.cid
             };
             API.GetProductTreeProduct(params).then(res=>{
-                // console.log(res.data);
+                let obj = this.preOrder([this.treeClone], this.cid);
+                // console.log(obj,obj.cid,this.cid,res.data);
+                // if(obj.cid == this.cid){
+                //     console.log(res.data[this.cid].real);
+                //     obj.real_total = res.data[this.cid].real;
+                //     obj.target_total = res.data[this.cid].target;
+                // }
+                for(let i of obj.children){
+                    if(res.data.hasOwnProperty(i.cid)){
+                        i.real_total = res.data[i.cid].real;
+                        i.target_total = res.data[i.cid].target;
+                            
+                    }
+                }
+
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
@@ -524,10 +557,10 @@ export default {
                 }, 1000);
 
         },
-        // nodeExpand(data){
-            // console.log(data);
-            // this.cid = data.cid;
-        // },
+
+        nodeExpand(data){
+            this.cid = data.cid;
+        },
         handleNodeClick (data) {
             this.isbac = false;
             this.highlight = true;
