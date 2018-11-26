@@ -6,7 +6,7 @@
       <el-table
         @sort-change='sortChange'
         :data="trackList"
-        stripe>
+      >
         <el-table-column
           type="index"
           label="序号"/>
@@ -40,8 +40,8 @@
           <template 
             slot-scope="scope">
             <el-popover
-              
               @show = 'show(scope.row)'
+              v-model="scope.row.visible"
               trigger="click" 
               placement="top">
               <el-table 
@@ -83,6 +83,7 @@
           <template slot-scope="scope">
             <el-popover
               @show = 'show(scope.row)'
+              v-model="scope.row.visibleRate"
               trigger="click" 
               placement="top">
               <el-table 
@@ -165,7 +166,7 @@
 		},
 		methods: {
 			sortChange(){
-				// this.visible2 = false;
+				this.trackList = this.trackList.map(o=>{o.visible=false;o.visibleRate = false;return o;});
 			},
 			show(val){
 				this.trackList1 = [];
@@ -193,13 +194,10 @@
 					...this.getPeriodByPt(),
 				};
 				API.GetProductStrategy(params).then(res => {
-							// _.forEach(res.data, (v, k) => {
-							// 		res.data[k].visible = false;
-							// });
-							
-							this.trackList = res.data;
+							this.trackList = res.data.map(o=>{o.visible=false;o.visibleRate=false;return o;});
 							this.total = res.total;
-							this.$store.dispatch('SaveProductStrategy', res.data);
+							// this.$store.dispatch('SaveProductStrategy', res.trackList);
+
 				});
 			},
 			getDateObj() {

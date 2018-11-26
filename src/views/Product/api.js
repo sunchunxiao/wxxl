@@ -5,6 +5,9 @@ export default {
     GetProductTree(params) {
         return FetchGet('/product/tree', params);
     },
+    GetProductTreeProduct(params) {
+        return FetchGet('/product/tree/progress', params);
+    },
     GetProductProgress(params) {
         return FetchGet('/product/progress', params);
     },
