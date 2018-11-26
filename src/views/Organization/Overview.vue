@@ -417,7 +417,7 @@
 					if(this.organizationTree.cid==undefined){
 							this.cid = res.tree.cid;
 					}
-					this.cid = res.tree.cid;
+					// this.cid = res.tree.cid;
 					this.type = res.tree.type;
 					this.$store.dispatch('SaveOrgTree', res.tree);
 				});

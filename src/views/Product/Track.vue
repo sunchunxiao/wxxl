@@ -4,8 +4,9 @@
       <div class="title">策略跟踪和策略应用</div>
       <!-- <el-table :data="strategyArr.slice((currentPage - 1) * 10, currentPage * 10)" stripe> -->
       <el-table
+        @sort-change='sortChange'
         :data="trackList"
-        stripe>
+      >
         <el-table-column
           type="index"
           label="序号"/>
@@ -40,6 +41,7 @@
             slot-scope="scope">
             <el-popover
               @show = 'show(scope.row)'
+              v-model="scope.row.visible"
               trigger="click" 
               placement="top">
               <el-table 
@@ -81,6 +83,7 @@
           <template slot-scope="scope">
             <el-popover
               @show = 'show(scope.row)'
+              v-model="scope.row.visibleRate"
               trigger="click" 
               placement="top">
               <el-table 
@@ -147,7 +150,6 @@
 				total:0,
 				currentPage: 1,
 				trackList1:[],
-
 			};
 		},
 		watch: {
@@ -163,6 +165,9 @@
 			this.getProductStrategy();
 		},
 		methods: {
+			sortChange(){
+				this.trackList = this.trackList.map(o=>{o.visible=false;o.visibleRate = false;return o;});
+			},
 			show(val){
 				this.trackList1 = [];
 				if(val){
@@ -189,10 +194,10 @@
 					...this.getPeriodByPt(),
 				};
 				API.GetProductStrategy(params).then(res => {
-					// console.log(res.data)
-					this.trackList = res.data;
-					this.total = res.total;
-					this.$store.dispatch('SaveProductStrategy', res.data);
+							this.trackList = res.data.map(o=>{o.visible=false;o.visibleRate=false;return o;});
+							this.total = res.total;
+							// this.$store.dispatch('SaveProductStrategy', res.trackList);
+
 				});
 			},
 			getDateObj() {

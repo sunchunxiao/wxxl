@@ -3,6 +3,7 @@
     <div class="table_container">
       <div class="title">策略跟踪和策略应用</div>
       <el-table 
+        @sort-change='sortChange'
         :data="trackList" 
         stripe>
         <el-table-column 
@@ -39,6 +40,7 @@
           <template slot-scope="scope">
             <el-popover
               @show = 'show(scope.row)'
+              v-model="scope.row.visible"
               trigger="click" 
               placement="top">
               <el-table 
@@ -79,6 +81,7 @@
           <template slot-scope="scope">
             <el-popover
               @show = 'show(scope.row)'
+              v-model="scope.row.visibleRate"
               trigger="click" 
               placement="top">
               <el-table 
@@ -133,12 +136,12 @@
         data() {
             return {
                 form: {
-					pt: '月',
-					date: [],
-					search: '',
-					subject: 'S', // S: 销售额 P: 利润额
-					version: '0'
-				},
+                  pt: '月',
+                  date: [],
+                  search: '',
+                  subject: 'S', // S: 销售额 P: 利润额
+                  version: '0'
+                },
                 currentPage: 1,
                 trackList:[],
                 total:0,
@@ -146,88 +149,91 @@
             };
         },
         mounted(){
-			this.getProductStrategy();
-		},
+          this.getProductStrategy();
+        },
         methods: {
-            show(val){
-				// console.log(val);
-				this.trackList1 = [];
-				if(val){
-					this.trackList1.push({
-					level:"整体人群A-聚类人群A",
-					time:'2018.1.2',
-					rank1:'差',
-					rank2:'优'
-				},{
-					level:"整体人群A-聚类人群B",
-					time:'2018.1.2',
-					rank1:'中',
-					rank2:'差'
-				});
-				}
-			},
-            getProductStrategy() {
-				const params = {
-					subject: '',
-					page: this.currentPage,
-					limit: 10,
-					package:'供应商',
-					...this.getPeriodByPt(),
-				};
-				API.GetCusStrategiesTrack(params).then(res => {
-					this.trackList = res.data;
-					this.total = res.total;
-				});
+          sortChange(){
+              this.trackList = this.trackList.map(o=>{o.visible=false;o.visibleRate = false;return o;});
             },
-            getDateObj() {
-				const {
-					date
-				} = this.form;
-				return {
-					sDate: date[0] || '',
-					eDate: date[1] || '',
-				};
-			},
-			getPeriodByPt() {
-				const {
-					sDate,
-					eDate
-				} = this.getDateObj();
-				const {
-					pt
-				} = this.form;
-				if (sDate && eDate) { // 计算时间周期
-					if (pt === '日') {
-						return {
-							sDate,
-							eDate
-						};
-					}
-					let unit = TIMEPT[pt];
-					if (unit) {
-						return {
-							sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
-							eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-						};
-					} else {
-						return {
-							sDate: '2018-01-01',
-							eDate: '2018-06-01',
-							// 先写死个时间
-							// sDate: moment().startOf('week').format('YYYY-MM-DD'),
-							// eDate: moment().format('YYYY-MM-DD'),
-						};
-					}
-				} else {
-					return {
-						sDate: '2018-01-01',
-						eDate: '2018-06-01',
-						// 先写死个时间
-						// sDate: moment().startOf('week').format('YYYY-MM-DD'),
-						// eDate: moment().format('YYYY-MM-DD'),
-					};
-				}
-			},
+            show(val){
+              // console.log(val);
+              this.trackList1 = [];
+              if(val){
+                this.trackList1.push({
+                level:"整体人群A-聚类人群A",
+                time:'2018.1.2',
+                rank1:'差',
+                rank2:'优'
+              },{
+                level:"整体人群A-聚类人群B",
+                time:'2018.1.2',
+                rank1:'中',
+                rank2:'差'
+              });
+              }
+            },
+            getProductStrategy() {
+              const params = {
+                subject: '',
+                page: this.currentPage,
+                limit: 10,
+                package:'供应商',
+                ...this.getPeriodByPt(),
+              };
+              API.GetCusStrategiesTrack(params).then(res => {
+                this.trackList = res.data.map(o=>{o.visible=false;o.visibleRate=false;return o;});
+                this.total = res.total;
+              });
+                  },
+                  getDateObj() {
+              const {
+                date
+              } = this.form;
+              return {
+                sDate: date[0] || '',
+                eDate: date[1] || '',
+              };
+            },
+            getPeriodByPt() {
+              const {
+                sDate,
+                eDate
+              } = this.getDateObj();
+              const {
+                pt
+              } = this.form;
+              if (sDate && eDate) { // 计算时间周期
+                if (pt === '日') {
+                  return {
+                    sDate,
+                    eDate
+                  };
+                }
+                let unit = TIMEPT[pt];
+                if (unit) {
+                  return {
+                    sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
+                    eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
+                  };
+                } else {
+                  return {
+                    sDate: '2018-01-01',
+                    eDate: '2018-06-01',
+                    // 先写死个时间
+                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+                    // eDate: moment().format('YYYY-MM-DD'),
+                  };
+                }
+              } else {
+                return {
+                  sDate: '2018-01-01',
+                  eDate: '2018-06-01',
+                  // 先写死个时间
+                  // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+                  // eDate: moment().format('YYYY-MM-DD'),
+                };
+              }
+            },
             filterA(value, row, column) {
                 const property = column['property'];
                 return row[property] === value;

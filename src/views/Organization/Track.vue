@@ -3,6 +3,7 @@
     <div class="table_container">
       <div class="title">策略跟踪和策略应用</div>
       <el-table 
+        @sort-change="sortChange"
         :data="trackList" 
         stripe>
         <el-table-column 
@@ -39,6 +40,7 @@
           <template slot-scope="scope">
             <el-popover
               @show = 'show(scope.row)'
+              v-model="scope.row.visible"
               trigger="click" 
               placement="top">
               <el-table 
@@ -79,6 +81,7 @@
           <template slot-scope="scope">
             <el-popover
               @show = 'show(scope.row)'
+              v-model="scope.row.visibleRate"
               trigger="click" 
               placement="top">
               <el-table 
@@ -158,8 +161,10 @@
 			// console.log(this.strategyArr)
 		},
 		methods: {
+			sortChange(){
+				this.trackList = this.trackList.map(o=>{o.visible=false;o.visibleRate = false;return o;});
+			},
 			show(val){
-				// console.log(val);
 				this.trackList1 = [];
 				if(val){
 					this.trackList1.push({
@@ -184,8 +189,7 @@
 					...this.getPeriodByPt(),
 				};
 				API.GetOrgStrategiesTrack(params).then(res => {
-					// console.log(res.data)
-					this.trackList = res.data;
+					this.trackList = res.data.map(o=>{o.visible=false;o.visibleRate=false;return o;});
 					this.total = res.total;
 					// this.$store.dispatch('SaveProductStrategy', res.data);
 				});

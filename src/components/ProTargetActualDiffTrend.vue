@@ -63,7 +63,6 @@ export default {
         renderChart (data) {
             // console.log(data.hasTarget);
             var _this = this;
-            // console.log(111);
             const { real, target, timeLabels,subject,hasTarget } = data;
             // console.log(timeLabels);
             var arr = [];
@@ -94,6 +93,7 @@ export default {
                         targetItem = arr[i].value;
                         if (realItem < 0 && targetItem < 0) {
                         bottom.push(realItem < targetItem ? targetItem : realItem);
+                        
                         diff.push(-Math.abs(realItem - targetItem));
                         } else if (realItem >= 0 && targetItem >= 0) {
                             bottom.push(realItem < targetItem ? realItem : targetItem);

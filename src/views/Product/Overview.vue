@@ -42,6 +42,7 @@
           :props="defaultProps"
           :data="productTree.children"
           :default-expanded-keys="nodeArr"
+          
           @node-click="handleNodeClick">
           <span 
             class="custom-tree-node"
@@ -63,7 +64,6 @@
                 <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
               </span>
             </el-tooltip>
-
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
@@ -272,6 +272,7 @@ export default {
                 sDate: '',
                 eDate: ''
             }
+            
         };
     },
     computed: {
@@ -284,6 +285,7 @@ export default {
         if (!this.hasTree) {
             this.$nextTick(() => {
                 this.getTree();
+                // this.getTreePrograss();
             });
         } else {
             this.cid = this.productTree.cid;
@@ -293,6 +295,7 @@ export default {
         cid () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
             // 暂时先在这里做
+            this.getTreePrograss();
             this.getProgress();
             this.getStructure();
             this.getRank();
@@ -380,7 +383,7 @@ export default {
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
             };
-
+            
             API.GetProductTree(params).then(res => {
                 // console.log(this.productTree.cid);
                 if (this.productTree.cid == undefined) {
@@ -389,7 +392,18 @@ export default {
                 this.$store.dispatch('SaveProductTree', res.tree);
             });
         },
-        getProgress () {
+        getTreePrograss(){
+            const params = {
+                subject:this.form.subject,
+                ...this.getPeriodByPt(),
+                nid:this.cid
+            };
+            API.GetProductTreeProduct(params).then(res=>{
+                // console.log(res.data);
+                this.$store.dispatch('SaveProductTreePrograss', res.data);
+            });
+        },
+        getProgress() {
             // console.log(this.val);
             const params = {
                 cid: this.cid,
@@ -476,38 +490,44 @@ export default {
                 };
             }
         },
-        handleSearch (val) {
-            this.highlight = true;
-            // 默认公司的背景色
-            this.isbac = false;
-            this.nodeArr = [];
-            this.loading = true;
-            this.val = val;
-            if (val.cid != "") {
-                this.nodeArr.push(val.cid);
-                this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                });
-                this.cid = val.cid;
-                if (this.cid == this.productTree.cid) {
-                    this.isbac = true;
-                    this.highlight = false;
+        handleSearch(val) {
+                this.highlight = true;
+                // 默认公司的背景色
+                this.isbac = false;
+                this.nodeArr = [];
+                this.loading = true;
+                this.val = val;
+                if(val.cid!=""){
+                    this.nodeArr.push(val.cid);
+                    this.$nextTick(() => {
+                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                    });
+                    this.cid = val.cid;
+                    if(this.cid==this.productTree.cid){
+                        this.isbac = true;
+                        this.highlight = false;
+                    }
+                }else{
+                    if(this.cid==this.productTree.cid){
+                        this.isbac = true;
+                        this.highlight = false;
+                    }
+                    // this.getTree();
+                    this.getTreePrograss();
+                    this.getProgress();
+                    this.getStructure();
+                    this.getRank();
                 }
-            } else {
-                if (this.cid == this.productTree.cid) {
-                    this.isbac = true;
-                    this.highlight = false;
-                }
-                this.getTree();
-                this.getProgress();
-                this.getStructure();
-                this.getRank();
-            }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
+            
+                setTimeout(() => {
+                    this.loading = false;
+                }, 1000);
 
         },
+        // nodeExpand(data){
+            // console.log(data);
+            // this.cid = data.cid;
+        // },
         handleNodeClick (data) {
             this.isbac = false;
             this.highlight = true;
