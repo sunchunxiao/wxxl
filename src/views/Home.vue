@@ -57,19 +57,19 @@ export default {
     Menu,
     Header
   },
-  data() {
+  data () {
     return {
       isCollapse: false,
     };
   },
-  mounted(){
+  mounted () {
     // console.log(this.isCollapse);
   },
   methods: {
-    home(){
-          this.$router.push('/home');
-        },
-    handleClick() {
+    home () {
+      this.$router.push('/home');
+    },
+    handleClick () {
       this.isCollapse = !this.isCollapse;
     }
   }
@@ -100,7 +100,7 @@ $width_collapse: 64px;
         transition: all 0.3s;
       }
       .rotate {
-        transform:rotateY(180deg);
+        transform: rotateY(180deg);
       }
     }
     .menu_container {
