@@ -342,13 +342,13 @@
                 
             },
             change() {
-                    this.idArr = [];
-                    for (let i of this.stragetyCheckList) {
-                            let stragetyObj = this.stragety.find(el => {
-                                    return el.id == i;
-                            });
-                            this.idArr.push(stragetyObj.id);
-                    }
+                this.idArr = [];
+                for (let i of this.stragetyCheckList) {
+                        let stragetyObj = this.stragety.find(el => {
+                                return el.id == i;
+                        });
+                        this.idArr.push(stragetyObj.id);
+                }
                     // console.log(this.stragetyCheckList, this.idArr);
             },
             submit() {
