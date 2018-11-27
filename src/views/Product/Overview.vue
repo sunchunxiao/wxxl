@@ -42,6 +42,7 @@
           :props="defaultProps"
           :data="productTree.children"
           :default-expanded-keys="nodeArr"
+          
           @node-click="handleNodeClick">
           <span 
             class="custom-tree-node"
@@ -63,7 +64,6 @@
                 <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
               </span>
             </el-tooltip>
-
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
@@ -272,10 +272,11 @@ export default {
                 sDate: '',
                 eDate: ''
             }
+            
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr','productDateArr']),
+        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr', 'productDateArr']),
         hasTree () {
             return !_.isEmpty(this.productTree);
         }
@@ -284,6 +285,7 @@ export default {
         if (!this.hasTree) {
             this.$nextTick(() => {
                 this.getTree();
+                // this.getTreePrograss();
             });
         } else {
             this.cid = this.productTree.cid;
@@ -293,32 +295,33 @@ export default {
         cid () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
             // 暂时先在这里做
+            this.getTreePrograss();
             this.getProgress();
             this.getStructure();
             this.getRank();
         }
     },
-        methods: {
-            input(val){
-                this.form.date = val;
-            },
-            click(){
-                if(this.cid==this.productTree.cid){
-                    return;
-                }else{
-                    this.loading = true;
-                    //点击发送请求清除搜索框
-                    this.$refs.child.clearKw();
-                    this.isbac = true;
-                    this.highlight = false;
-                    this.cid=this.productTree.cid;
-                    setTimeout(() => {		       
-                            this.loading = false;
-                    }, 1000);
-                }
-                
-            },
-        change() {
+    methods: {
+        input (val) {
+            this.form.date = val;
+        },
+        click () {
+            if (this.cid == this.productTree.cid) {
+                return;
+            } else {
+                this.loading = true;
+                //点击发送请求清除搜索框
+                this.$refs.child.clearKw();
+                this.isbac = true;
+                this.highlight = false;
+                this.cid = this.productTree.cid;
+                setTimeout(() => {
+                    this.loading = false;
+                }, 1000);
+            }
+
+        },
+        change () {
             this.idArr = [];
             for (let i of this.stragetyCheckList) {
                 let stragetyObj = this.stragety.find(el => {
@@ -358,7 +361,7 @@ export default {
             });
 
         },
-        initFormDataFromUrl() {
+        initFormDataFromUrl () {
             const {
                 pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
             } = this.$route.query;
@@ -366,15 +369,15 @@ export default {
                 pt: pt,
                 subject: subject,
             };
-            if(moment(sDate).isValid() && moment(eDate).isValid()) {
+            if (moment(sDate).isValid() && moment(eDate).isValid()) {
                 formData.date = [sDate, eDate];
             }
             this.cid = cid;
-            this.form = { ...this.form,
+            this.form = {                ...this.form,
                 ...formData
             };
         },
-        getTree() {
+        getTree () {
             const params = {
                 // pt: this.form.pt,
                 subject: this.form.subject,
@@ -383,10 +386,21 @@ export default {
             
             API.GetProductTree(params).then(res => {
                 // console.log(this.productTree.cid);
-                if(this.productTree.cid==undefined){
+                if (this.productTree.cid == undefined) {
                     this.cid = res.tree.cid;
                 }
                 this.$store.dispatch('SaveProductTree', res.tree);
+            });
+        },
+        getTreePrograss(){
+            const params = {
+                subject:this.form.subject,
+                ...this.getPeriodByPt(),
+                nid:this.cid
+            };
+            API.GetProductTreeProduct(params).then(res=>{
+                // console.log(res.data);
+                this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
         getProgress() {
@@ -447,9 +461,9 @@ export default {
                 };
             } else {
                 return {
-                        pt:date.pt,
-                        sDate: date.sDate ,
-                        eDate: date.eDate ,
+                    pt: date.pt,
+                    sDate: date.sDate,
+                    eDate: date.eDate,
                 };
             }
         },
@@ -498,16 +512,22 @@ export default {
                         this.isbac = true;
                         this.highlight = false;
                     }
-                    this.getTree();
+                    // this.getTree();
+                    this.getTreePrograss();
                     this.getProgress();
                     this.getStructure();
                     this.getRank();
                 }
-                setTimeout(() => {		       
+            
+                setTimeout(() => {
                     this.loading = false;
                 }, 1000);
-            
+
         },
+        // nodeExpand(data){
+            // console.log(data);
+            // this.cid = data.cid;
+        // },
         handleNodeClick (data) {
             this.isbac = false;
             this.highlight = true;
@@ -580,5 +600,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import './style/overview.scss';
+@import "./style/overview.scss";
 </style>

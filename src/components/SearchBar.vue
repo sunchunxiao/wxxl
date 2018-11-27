@@ -24,7 +24,7 @@
         prop="dayRange">
         <el-date-picker 
           v-model="form.dayRange"
-          type="datetimerange"
+          type="daterange"
           :picker-options="dayRangeOptions"
           range-separator="-"
           start-placeholder="开始日期"
@@ -237,18 +237,18 @@ export default {
     //     }
     // }
     const endTimeSet = process.env.VUE_APP_END_TIME_SET;
-      if (endTimeSet && _.isDate(new Date(endTimeSet))) {
-        this.form.dayRange = [
-          moment(endTimeSet).subtract(1, 'M').format('YYYY-MM-DD'),
-          endTimeSet
-        ];
-      } else {
-        // 前一个月 - 昨天
-        this.form.dayRange = [
-          moment().subtract(1, 'd').subtract(1, 'M').format('YYYY-MM-DD'),
-          moment().subtract(1, 'd').format('YYYY-MM-DD')
-        ];
-      }
+    if (endTimeSet && _.isDate(new Date(endTimeSet))) {
+      this.form.dayRange = [
+        moment(endTimeSet).subtract(1, 'M').format('YYYY-MM-DD'),
+        endTimeSet
+      ];
+    } else {
+      // 前一个月 - 昨天
+      this.form.dayRange = [
+        moment().subtract(1, 'd').subtract(1, 'M').format('YYYY-MM-DD'),
+        moment().subtract(1, 'd').format('YYYY-MM-DD')
+      ];
+    }
     this.handleFormChange(this.form);
   },
   computed: {
@@ -372,6 +372,12 @@ export default {
         this.handleFormChange(val);
       },
       deep: true
+    },
+    kw: function (val, oldVal) {
+      // 搜索框内容修改时 清空 cid
+      if (val !== oldVal) {
+        this.cid = '';
+      }
     }
   },
   methods: {
