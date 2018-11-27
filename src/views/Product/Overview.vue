@@ -285,7 +285,6 @@ export default {
         if (!this.hasTree) {
             this.$nextTick(() => {
                 this.getTree();
-                // this.getTreePrograss();
             });
         } else {
             this.cid = this.productTree.cid;
@@ -295,7 +294,7 @@ export default {
         cid () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
             // 暂时先在这里做
-            this.getTreePrograss();
+            // this.getTreePrograss();
             this.getProgress();
             this.getStructure();
             this.getRank();
@@ -319,7 +318,6 @@ export default {
                     this.loading = false;
                 }, 1000);
             }
-
         },
         change () {
             this.idArr = [];
@@ -513,7 +511,7 @@ export default {
                         this.highlight = false;
                     }
                     // this.getTree();
-                    this.getTreePrograss();
+                    // this.getTreePrograss();
                     this.getProgress();
                     this.getStructure();
                     this.getRank();
