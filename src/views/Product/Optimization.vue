@@ -6,7 +6,8 @@
         @search="handleSearch" 
         placeholder="产品编号/产品名称"
         @input="input"
-        url="/product/search"/>
+        url="/product/search"
+      />
     </el-row>
     <el-row 
       class="content_row" 
@@ -123,270 +124,270 @@
 </template>
 
 <script>
-	import API from './api';
-	import SearchBar from 'components/SearchBar';
-	import Card from '../../components/Card';
-	// 组织对比分析和平均值分析
-	import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
-	import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+import API from './api';
+import SearchBar from 'components/SearchBar';
+import Card from '../../components/Card';
+// 组织对比分析和平均值分析
+import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
+import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 
-	import {
-		mapGetters
-	} from 'vuex';
-	const TREE_PROPS = {
-		children: 'children',
-		label: 'name'
-	};
-	// const TIMEPT = {
-	// 	'周': 'week',
-	// 	'月': 'month',
-	// 	'季': 'quarter',
-	// 	'年': 'year'
-	// };
+import {
+	mapGetters
+} from 'vuex';
+const TREE_PROPS = {
+	children: 'children',
+	label: 'name'
+};
+// const TIMEPT = {
+// 	'周': 'week',
+// 	'月': 'month',
+// 	'季': 'quarter',
+// 	'年': 'year'
+// };
 
-	export default {
-		components: {
-			Card,
-			SearchBar,
-			ConOrgComparisonAverage,
-			ConOrgComparisonAverageBig
+export default {
+	components: {
+		Card,
+		SearchBar,
+		ConOrgComparisonAverage,
+		ConOrgComparisonAverageBig
+	},
+	data () {
+		return {
+			form: {
+				pt: '日',
+				date: [],
+				search: '',
+				subject: 'S', // S: 销售额 P: 利润额
+				version: '0'
+			},
+			cid: 0,
+			loading: false,
+			defaultProps: TREE_PROPS,
+			index0: 0,
+			val: {},
+			post: 1,
+			nodeArr: [],
+			isbac: true,
+			highlight: true,
+		};
+	},
+	computed: {
+		...mapGetters(['productTree', 'historyArr']),
+		hasTree () {
+			return !_.isEmpty(this.productTree);
+		}
+	},
+	watch: {
+		form: {
+			handler: function () { },
+			deep: true
 		},
-		data() {
-			return {
-				form: {
+		cid: function () {
+			// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+			// 暂时先在这里做
+			this.getHistory();
+		}
+	},
+	mounted () {
+		if (!this.hasTree) {
+			this.getTree();
+		} else {
+			this.cid = this.productTree.cid;
+		}
+	},
+	methods: {
+		input (val) {
+			this.form.date = val;
+		},
+		click () {
+			if (this.cid == this.productTree.cid) {
+				return;
+			} else {
+				this.loading = true;
+				//点击发送请求清除搜索框
+				this.$refs.child.clearKw();
+				this.isbac = true;
+				this.highlight = false;
+				this.cid = this.productTree.cid;
+				setTimeout(() => {
+					this.loading = false;
+				}, 1000);
+			}
+
+		},
+		getHistory () {
+			const params = {
+				cid: this.cid,
+				// pt: this.form.pt,
+				subject: this.form.subject,
+				...this.getPeriodByPt(),
+			};
+			API.GetProductHistory(params).then(res => {
+				this.$store.dispatch('SaveProductHistory', res.data);
+			});
+		},
+		getTree () {
+			const params = {
+				subject: this.form.subject,
+				...this.getPeriodByPt(),
+			};
+			API.GetProductTree(params).then(res => {
+				this.cid = res.tree.cid;
+				this.$store.dispatch('SaveProductTree', res.tree);
+			});
+		},
+		getDateObj () {
+			const {
+				date
+			} = this.form;
+			// console.log(this.val.sDate,date);
+			if (this.val.sDate != undefined && this.val.eDate != undefined) {
+				return {
+					pt: this.val.pt,
+					sDate: this.val.sDate,
+					eDate: this.val.eDate,
+				};
+			} else {
+				return {
+					pt: date.pt,
+					sDate: date.sDate,
+					eDate: date.eDate,
+				};
+			}
+		},
+		getPeriodByPt () {
+			const {
+				pt,
+				sDate,
+				eDate
+			} = this.getDateObj();
+
+			// console.log(sDate,eDate);
+			if (sDate && eDate) { // 计算时间周期
+				return {
+					pt: pt,
+					sDate: sDate,
+					eDate: eDate,
+				};
+			} else {
+				return {
 					pt: '日',
-					date: [],
-					search: '',
-					subject: 'S', // S: 销售额 P: 利润额
-					version: '0'
-				},
-				cid:0,
-				loading:false,
-				defaultProps: TREE_PROPS,
-				index0: 0,
-				val:{},
-				post:1,
-				nodeArr:[],
-				isbac:true,
-        highlight:true,
+					sDate: '2018-01-01',
+					eDate: '2018-01-07',
+					// 先写死个时间
+					// sDate: moment().startOf('week').format('YYYY-MM-DD'),
+					// eDate: moment().format('YYYY-MM-DD'),
+				};
+			}
+		},
+		largerThanZero (val) {
+			return val && _.isNumber(parseFloat(val * 100)) && parseFloat(val) > 0;
+		},
+		lessThanZero (val) {
+			return val && _.isNumber(parseFloat(val * 100)) && parseFloat(val) < 0;
+		},
+		arraySpanMethod (strategies) {
+			if (!strategies || strategies.length === 0) {
+				return;
+			}
+			const group = _.groupBy(strategies, o => {
+				return o.subject;
+			});
+			const newStrategies = _.cloneDeep(strategies);
+			for (let i = 1; i < newStrategies.length; i++) {
+				let prev = newStrategies[i - 1];
+				let current = newStrategies[i];
+				if (current.subject === prev.subject) {
+					current.hidden = true;
+				}
+			}
+			return ({
+				row,
+				rowIndex,
+				columnIndex
+			}) => {
+				const rowSpan = group[row.subject].length;
+				if ([0, 3, 4].includes(columnIndex)) {
+					if (!newStrategies[rowIndex].hidden) {
+						return [rowSpan, 1];
+					} else {
+						return [0, 0];
+					}
+				}
 			};
 		},
-		computed: {
-			...mapGetters(['productTree', 'historyArr']),
-			hasTree() {
-				return !_.isEmpty(this.productTree);
-			}
-		},
-		watch: {
-			form: {
-				handler: function() {},
-				deep: true
-			},
-			cid: function() {
-				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-				// 暂时先在这里做
-        this.getHistory();
-			}
-		},
-		mounted() {
-			if(!this.hasTree) {
-                this.getTree();
-			}else{
-					this.cid = this.productTree.cid;
-			}
-		},
-		methods: {
-			input(val){
-            this.form.date = val;
-      },
-			click(){
-						if(this.cid==this.productTree.cid){
-								return;
-						}else{
-								this.loading = true;
-								//点击发送请求清除搜索框
-								this.$refs.child.clearKw();
-								this.isbac = true;
-								this.highlight = false;
-								this.cid=this.productTree.cid;
-								setTimeout(() => {		       
-												this.loading = false;
-								}, 1000);
-						}
-						
-      },
-			getHistory() {
-				const params = {
-					cid:this.cid,
-					// pt: this.form.pt,
-					subject: this.form.subject,
-					...this.getPeriodByPt(),
-				};
-				API.GetProductHistory(params).then(res => {
-					this.$store.dispatch('SaveProductHistory', res.data);
-				});
-			},
-			getTree() {
-				const params = {
-					subject: this.form.subject,
-					...this.getPeriodByPt(),
-				};
-				API.GetProductTree(params).then(res => {
-					this.cid = res.tree.cid;
-					this.$store.dispatch('SaveProductTree', res.tree);
-				});
-			},
-			getDateObj () {
-            const {
-                date
-            } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
-                return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-            } else {
-                return {
-                        pt:date.pt,
-                        sDate: date.sDate ,
-                        eDate: date.eDate ,
-                };
-            }
-        },
-			getPeriodByPt() {
-						const {
-							pt,
-							sDate,
-							eDate
-						} = this.getDateObj();
-						
-						// console.log(sDate,eDate);
-						if(sDate && eDate) { // 计算时间周期
-								return {
-										pt:pt,
-										sDate: sDate,
-										eDate: eDate,
-								};
-						} else {
-								return {
-										pt:'日',
-										sDate: '2018-01-01',
-										eDate: '2018-01-07',
-										// 先写死个时间
-										// sDate: moment().startOf('week').format('YYYY-MM-DD'),
-										// eDate: moment().format('YYYY-MM-DD'),
-								};
-						}
-      },
-			largerThanZero(val) {
-				return val && _.isNumber(parseFloat(val*100)) && parseFloat(val) > 0;
-			},
-			lessThanZero(val) {
-				return val && _.isNumber(parseFloat(val*100)) && parseFloat(val) < 0;
-			},
-			arraySpanMethod(strategies) {
-				if (!strategies || strategies.length === 0) {
-					return;
-				}
-				const group = _.groupBy(strategies, o => {
-					return o.subject;
-				});
-				const newStrategies = _.cloneDeep(strategies);
-				for(let i = 1; i < newStrategies.length; i++) {
-					let prev = newStrategies[i-1];
-					let current = newStrategies[i];
-					if (current.subject === prev.subject) {
-						current.hidden = true;
-					}
-				}
-				return ({
-					row,
-					rowIndex,
-					columnIndex
-				}) => {
-					const rowSpan = group[row.subject].length;
-					if ([0, 3, 4].includes(columnIndex)) {
-						if(!newStrategies[rowIndex].hidden) {
-							return [rowSpan, 1];
-						} else {
-							return [0, 0];
-						}
-					}
-				};
-			},
-			handleSearch(val) {
-					if(val.cid!=this.cid){
-						this.highlight = true;
-					// 默认公司的背景色
-						this.isbac = false;
-						this.nodeArr = [];
-						this.loading = true;
-						this.val = val;
-						if(val.cid!=""){
-								this.nodeArr.push(val.cid);
-								this.$nextTick(() => {
-										this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-								});
-								this.cid = val.cid;
-								if(this.cid==this.productTree.cid){
-										this.isbac = true;
-										this.highlight = false;
-								}
-						}else{
-								if(this.cid==this.productTree.cid){
-										this.isbac = true;
-										this.highlight = false;
-								}
-								this.getTree();
-								this.getHistory();
-						}
-						setTimeout(() => {
-							this.loading = false;
-						}, 1000);
-					}
-      },
-			handleNodeClick(data) {
-				this.isbac = false;
+		handleSearch (val) {
+			if (val.cid != this.cid) {
 				this.highlight = true;
-				this.$refs.child.clearKw();
-				if(this.cid === data.cid){
-						return ;
-				}else{
-					this.cid = data.cid;
-					this.loading = true;
-					setTimeout(() => {
-						this.loading = false;
-					}, 1000);
-				}	
-			},
-			handleCheckChange() {
-			},
-			clickIndex(i, idx) {
-				this[`index${i}`] = idx;
-			},
-			calculatePercent(a, b) {
-				if (b > 0) {
-					const percent = parseInt(a / b * 100);
-					const largerThanOne = (a / b) > 1;
-					return {
-						percent,
-						largerThanOne
-					};
-				}else{
-							const percent = 0;
-							const largerThanOne = false;
-							return {
-									percent,
-									largerThanOne
-							};
+				// 默认公司的背景色
+				this.isbac = false;
+				this.nodeArr = [];
+				this.loading = true;
+				this.val = val;
+				if (val.cid != "") {
+					this.nodeArr.push(val.cid);
+					this.$nextTick(() => {
+						this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+					});
+					this.cid = val.cid;
+					if (this.cid == this.productTree.cid) {
+						this.isbac = true;
+						this.highlight = false;
 					}
-			},
-		}
-	};
+				} else {
+					if (this.cid == this.productTree.cid) {
+						this.isbac = true;
+						this.highlight = false;
+					}
+					this.getTree();
+					this.getHistory();
+				}
+				setTimeout(() => {
+					this.loading = false;
+				}, 1000);
+			}
+		},
+		handleNodeClick (data) {
+			this.isbac = false;
+			this.highlight = true;
+			this.$refs.child.clearKw();
+			if (this.cid === data.cid) {
+				return;
+			} else {
+				this.cid = data.cid;
+				this.loading = true;
+				setTimeout(() => {
+					this.loading = false;
+				}, 1000);
+			}
+		},
+		handleCheckChange () {
+		},
+		clickIndex (i, idx) {
+			this[`index${i}`] = idx;
+		},
+		calculatePercent (a, b) {
+			if (b > 0) {
+				const percent = parseInt(a / b * 100);
+				const largerThanOne = (a / b) > 1;
+				return {
+					percent,
+					largerThanOne
+				};
+			} else {
+				const percent = 0;
+				const largerThanOne = false;
+				return {
+					percent,
+					largerThanOne
+				};
+			}
+		},
+	}
+};
 </script>
 
 <style lang="scss">
-	@import './style/optimization.scss'
+@import './style/optimization.scss';
 </style>

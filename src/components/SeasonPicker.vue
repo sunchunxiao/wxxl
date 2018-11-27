@@ -60,6 +60,18 @@
 const SEASONS = ['第一季度', '第二季度', '第三季度', '第四季度'];
 
 export default {
+  created () {
+    if (_.isDate(this.value)) {
+      const year = moment(this.value).year();
+      const season = moment(this.value).quarter();
+      this.year = year;
+      this.select = {
+        year,
+        season
+      };
+      this.text = `${year} 年${SEASONS[season - 1]}`;
+    }
+  },
   data () {
     return {
       visible: false, // 是否显示下拉菜单
@@ -74,7 +86,8 @@ export default {
   },
   props: {
     placeholder: String,
-    pickerOptions: Object
+    pickerOptions: Object,
+    value: [Date, String]
   },
   computed: {
     isDisabled () {
@@ -136,26 +149,26 @@ export default {
 
 <style lang="scss">
 .season_picker {
-    width: 140px;
+  width: 140px;
+  position: relative;
+  .year_select {
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    margin-bottom: 5px;
+    .year_text {
+      margin: 0 5px;
+    }
+    .cursor_pointer {
+      cursor: pointer;
+      vertical-align: bottom;
+      line-height: 28px;
+    }
+  }
+  .el-icon-arrow-up:before {
     position: relative;
-    .year_select {
-        height: 28px;
-        line-height: 28px;
-        text-align: center;
-        margin-bottom: 5px;
-        .year_text {
-            margin: 0 5px;
-        }
-        .cursor_pointer {
-            cursor: pointer;
-            vertical-align: bottom;
-            line-height: 28px;
-        }
-    }
-    .el-icon-arrow-up:before {
-        position: relative;
-        top: -6px;
-    }
+    top: -6px;
+  }
 }
 </style>
 
