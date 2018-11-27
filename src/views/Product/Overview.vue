@@ -35,12 +35,12 @@
         <!-- 有多个tree -->
         <el-tree 
           ref="tree"
+          :data="treeClone.children"
           empty-text="正在加载"
           node-key="cid"
+          :expand-on-click-node="false" 
           :highlight-current="highlight"
-          :expand-on-click-node="false"
           :props="defaultProps"
-          :data="treeClone.children"
           :default-expanded-keys="nodeArr"
           @node-expand="nodeExpand"
           @node-click="handleNodeClick">
@@ -272,8 +272,7 @@ export default {
                 sDate: '',
                 eDate: ''
             },
-            treeClone:{}
-            
+            treeClone:{},
         };
     },
     computed: {
@@ -283,16 +282,14 @@ export default {
         }
     },
     mounted () {
-        // console.log(this.treePrograss);
-        this.getTree();
-        // if (!this.hasTree) {
-        //     this.$nextTick(() => {
-        //         this.getTree();
-        //         // this.getTreePrograss();
-        //     });
-        // } else {
-        //     this.cid = this.productTree.cid;
-        // }
+        if (!this.hasTree) {
+            this.$nextTick(() => {
+                this.getTree();
+            });
+        } else {
+            this.treeClone = _.cloneDeep(this.productTree); 
+            this.cid = this.productTree.cid;
+        }
     },
     watch: {
         cid () {
@@ -401,12 +398,11 @@ export default {
             };
             
             API.GetProductTree(params).then(res => {
-                // if (this.productTree.cid == undefined) {
-                //     this.cid = res.tree.cid;
-                // }
-                this.cid = res.tree.cid;
+                if (this.productTree.cid == undefined) {
+                    this.cid = res.tree.cid;
+                }
+                // this.cid = res.tree.cid;
                 this.treeClone = _.cloneDeep(res.tree);            
-
                 this.$store.dispatch('SaveProductTree', res.tree);
             });
         },
@@ -420,11 +416,10 @@ export default {
             API.GetProductTreeProduct(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
                 // console.log(obj,obj.cid,this.cid,res.data);
-                // if(obj.cid == this.cid){
-                //     console.log(res.data[this.cid].real);
-                //     obj.real_total = res.data[this.cid].real;
-                //     obj.target_total = res.data[this.cid].target;
-                // }
+                if(obj.cid == this.cid){
+                    obj.real_total = res.data[this.cid].real;
+                    obj.target_total = res.data[this.cid].target;
+                }
                 for(let i of obj.children){
                     if(res.data.hasOwnProperty(i.cid)){
                         i.real_total = res.data[i.cid].real;
@@ -432,12 +427,10 @@ export default {
                             
                     }
                 }
-
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
         getProgress() {
-            // console.log(this.val);
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -524,55 +517,62 @@ export default {
             }
         },
         handleSearch(val) {
-                this.highlight = true;
-                // 默认公司的背景色
+            this.highlight = true;
+            // 默认公司的背景色
+            this.nodeArr = [];
+            this.loading = true;
+            this.val = val;
+            if(val.cid!=""){
                 this.isbac = false;
-                this.nodeArr = [];
-                this.loading = true;
-                this.val = val;
-                if(val.cid!=""){
-                    this.nodeArr.push(val.cid);
-                    this.$nextTick(() => {
-                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                    });
-                    this.cid = val.cid;
-                    if(this.cid==this.productTree.cid){
-                        this.isbac = true;
-                        this.highlight = false;
-                    }
-                }else{
-                    if(this.cid==this.productTree.cid){
-                        this.isbac = true;
-                        this.highlight = false;
-                    }
-                    // this.getTree();
-                    this.getTreePrograss();
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
+                this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                });
+                this.cid = val.cid;
+                if(this.cid==this.productTree.cid){
+                    this.isbac = true;
+                    this.highlight = false;
                 }
-            
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
+            }else{
+                this.isbac = true;
+                this.highlight = false;
+                if(this.cid!=this.productTree.cid){
+                    this.cid = this.productTree.cid;
+                    this.treeClone = _.cloneDeep(this.productTree); 
+                }
+                
+            }
+            setTimeout(() => {
+                this.loading = false;
+            }, 1000);
 
         },
-
         nodeExpand(data){
             this.cid = data.cid;
-        },
-        handleNodeClick (data) {
             this.isbac = false;
             this.highlight = true;
-            this.$refs.child.clearKw();
-            if (this.cid === data.cid) {
-                return;
-            } else if (data.children != undefined) {
-                this.cid = data.cid;
-                this.loading = true;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
+        },
+        handleNodeClick (data) {
+            if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+                this.isbac = false;
+                this.highlight = true;
+                this.$refs.child.clearKw();
+                if (this.cid === data.cid) {
+                    return;
+                } else if (data.children != undefined) {
+                    this.cid = data.cid;
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 1000);
+                }
+            }else{
+                this.highlight = false;
+                this.$message({
+                    type: 'error',
+                    message: '请选择日期',
+                    duration: 2000
+                });
             }
 
         },

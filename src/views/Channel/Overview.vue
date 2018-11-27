@@ -6,6 +6,7 @@
         @input="input"
         placeholder="渠道编号/渠道名称"
         ref="child"
+        v-model="searchBarValue"
         url="/channel/search"/>
     </el-row>
     <el-row 
@@ -20,21 +21,23 @@
           v-if="channelTree.children"
           :class="{bac:isbac}"
           class="company">
-          <span class="left label">{{ channelTree.name }}</span>
+          <span class="left label">{{ treeClone.name }}</span>
           <span
-            :class="{percent: true, red: !calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne, blue: calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne}"
-            class="right" >{{ calculatePercent(channelTree.real_total, channelTree.target_total).percent + '%' }}</span>
+            :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            class="right" >{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
           <div 
-            :class="{comprogress: true, 'border-radius0': calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne ? '105%' : `${calculatePercent(channelTree.real_total, channelTree.target_total).percent + 5}%`}"/>
+            :class="{comprogress: true, 'border-radius0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
-          :data="channelTree.children" 
+          :data="treeClone.children" 
           ref="tree"
           empty-text="正在加载"
           :props="defaultProps" 
+          :expand-on-click-node="false" 
           node-key="nid"
+          @node-expand="nodeExpand"
           :default-expanded-keys="nodeArr"
           :highlight-current="highlight" 
           @node-click="handleNodeClick">
@@ -270,6 +273,12 @@
                 nodeArr:[],
                 isbac:true,
                 highlight:true,
+                searchBarValue: {
+                    pt: '',
+                    sDate: '',
+                    eDate: ''
+                },
+                treeClone:{},
             };
         },
         computed: {
@@ -285,7 +294,7 @@
             },
             cid: function() {
                 // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-                // 暂时先在这里做
+                this.getTreePrograss();
                 this.getProgress();
                 this.getStructure();
                 this.getRank();
@@ -295,11 +304,24 @@
             if(!this.hasTree) {
                 this.getTree();
             }else{
+                this.treeClone = _.cloneDeep(this.channelTree); 
                 this.cid = this.channelTree.nid;
             }
             // this.initFormDataFromUrl();
         },
         methods: {
+            preOrder(node,cid){
+                for(let i of node){
+                    if (i.nid == cid) {
+                        return i;
+                    }
+                    if(i.children && i.children.length){
+                        if (this.preOrder(i.children, cid)) {
+                            return this.preOrder(i.children,cid);
+                        }
+                    }
+                }
+            },
             input(val){
                 this.form.date = val;
             },
@@ -372,8 +394,35 @@
                     version: this.form.version
                 };
                 API.GetChannelTree(params).then(res => {
-                    this.cid  = res.tree.nid;
+                    if (this.channelTree.cid == undefined) {
+                        this.cid = res.tree.nid;
+                    }
+                    this.treeClone = _.cloneDeep(res.tree); 
                     this.$store.dispatch('SaveChannelTree', res.tree);
+                });
+            },
+            //获取百分比数据
+            getTreePrograss(){
+                const params = {
+                    subject:this.form.subject,
+                    ...this.getPeriodByPt(),
+                    nid:this.cid
+                };
+                API.GetChannelTreePrograss(params).then(res=>{
+                    let obj = this.preOrder([this.treeClone], this.cid);
+                    // console.log(obj,this.cid,res.data);
+                    if(obj.nid == this.cid){
+                        obj.real_total = res.data[this.cid].real;
+                        obj.target_total = res.data[this.cid].target;
+                    }
+                    for(let i of obj.children){
+                        if(res.data.hasOwnProperty(i.nid)){
+                            i.real_total = res.data[i.nid].real;
+                            i.target_total = res.data[i.nid].target;
+                                
+                        }
+                    }
+                    this.$store.dispatch('SaveProductTreePrograss', res.data);
                 });
             },
             getProgress() {
@@ -480,13 +529,11 @@
             },
             handleSearch(val) {
                 this.highlight = true;
-                // 默认公司的背景色
-                this.isbac = false;
                 this.nodeArr = [];
-                
                 this.loading = true;
                 this.val = val;
                 if(val.cid!=""){
+                    this.isbac = false;
                     this.nodeArr.push(val.cid);
                     this.$nextTick(() => {
                         this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
@@ -497,31 +544,47 @@
                         this.highlight = false;
                     }
                 }else{
-                    if(this.cid==this.channelTree.nid){
-                        this.isbac = true;
-                        this.highlight = false;
+                    this.isbac = true;
+                    this.highlight = false;
+                    if(this.cid!=this.channelTree.nid){
+                        this.cid = this.channelTree.nid;
+                        this.treeClone = _.cloneDeep(this.channelTree);
                     }
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
+                    // this.getProgress();
+                    // this.getStructure();
+                    // this.getRank();
                 }
                 setTimeout(() => {		       
                     this.loading = false;
                 }, 1000);
                 
             },
-            handleNodeClick(data) {
+            nodeExpand(data){
+                this.cid = data.nid;
                 this.isbac = false;
                 this.highlight = true;
-                this.$refs.child.clearKw();
-                if(this.cid === data.nid){
-                    return ;
-                }else if(data.children != undefined) {
-                    this.cid = data.nid;
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
+            },
+            handleNodeClick(data) {
+                if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+                    this.isbac = false;
+                    this.highlight = true;
+                    this.$refs.child.clearKw();
+                    if(this.cid === data.nid){
+                        return ;
+                    }else if(data.children != undefined) {
+                        this.cid = data.nid;
+                        this.loading = true;
+                        setTimeout(() => {
+                            this.loading = false;
+                        }, 1000);
+                    }
+                }else{
+                    this.highlight = false;
+                    this.$message({
+                        type: 'error',
+                        message: '请选择日期',
+                        duration: 2000
+                    });
                 }
 
 			},

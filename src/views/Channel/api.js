@@ -8,6 +8,9 @@ export default {
     GetChannelTree(params) {
         return FetchGet('/channel/tree', params);
     },
+    GetChannelTreePrograss(params) {
+        return FetchGet('/channel/tree/progress', params);
+    },
     GetChannelProgress(params) {
         return FetchGet('/channel/progress', params);
     },

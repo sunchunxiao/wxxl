@@ -219,23 +219,6 @@ export default {
     ptOptions: Array,
   },
   mounted () {
-    // if(this.productDateArr.pt){
-    //   this.form.dayRange=[this.productDateArr.sDate,this.productDateArr.eDate];
-    // }else{
-    //   const endTimeSet = process.env.VUE_APP_END_TIME_SET;
-    //     if (endTimeSet && _.isDate(new Date(endTimeSet))) {
-    //       this.form.dayRange = [
-    //         moment(endTimeSet).subtract(1, 'M').format('YYYY-MM-DD'),
-    //         endTimeSet
-    //       ];
-    //     } else {
-    //       // 前一个月 - 昨天
-    //       this.form.dayRange = [
-    //         moment().subtract(1, 'd').subtract(1, 'M').format('YYYY-MM-DD'),
-    //         moment().subtract(1, 'd').format('YYYY-MM-DD')
-    //       ];
-    //     }
-    // }
     const endTimeSet = process.env.VUE_APP_END_TIME_SET;
     if (endTimeSet && _.isDate(new Date(endTimeSet))) {
       this.form.dayRange = [
@@ -373,9 +356,9 @@ export default {
       },
       deep: true
     },
-    kw: function (val, oldVal) {
+    kw: function (val) {
       // 搜索框内容修改时 清空 cid
-      if (val !== oldVal) {
+      if (val == '') {
         this.cid = '';
       }
     }
@@ -389,8 +372,7 @@ export default {
       if (!obj.eDate || obj.eDate === 'Invalid date') {
         obj.eDate = '';
       }
-      // console.log(obj);
-      this.$store.dispatch('SaveProductDate', obj);
+      // this.$store.dispatch('SaveProductDate', obj);
       this.$emit('input', obj);
     },
     clearKw () {
