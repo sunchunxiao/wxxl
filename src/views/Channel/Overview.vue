@@ -482,9 +482,9 @@
                     };
                 } else {
                     return {
-                            pt:date.pt,
-                            sDate: date.sDate ,
-                            eDate: date.eDate ,
+                        pt:date.pt,
+                        sDate: date.sDate ,
+                        eDate: date.eDate ,
                     };
                 }
             },
@@ -495,11 +495,11 @@
                     eDate
                 } = this.getDateObj();
                 if(sDate && eDate) { // 计算时间周期
-                        return {
-                            pt:pt,
-                            sDate: sDate,
-                            eDate: eDate,
-                        };
+                    return {
+                        pt:pt,
+                        sDate: sDate,
+                        eDate: eDate,
+                    };
                 } else {
                     return {
                         pt:'日',

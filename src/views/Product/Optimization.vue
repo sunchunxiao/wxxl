@@ -4,6 +4,7 @@
       <search-bar 
         ref="child"
         @search="handleSearch" 
+        v-model="searchBarValue"
         placeholder="产品编号/产品名称"
         @input="input"
         url="/product/search"/>
@@ -20,13 +21,13 @@
           v-if="productTree.children"
           :class="{bac:isbac}"
           class="company">
-          <span class="left label">{{ productTree.name }}</span>
+          <span class="left label">{{ treeClone.name }}</span>
           <span
-            :class="{percent: true, red: !calculatePercent(productTree.real_total, productTree.target_total).largerThanOne, blue: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-            class="right" >{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
+            :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            class="right" >{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
           <div 
-            :class="{comprogress: true, 'border-radius0': calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '105%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}"/>
+            :class="{comprogress: true, 'border-radius0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
@@ -35,11 +36,11 @@
           empty-text="正在加载"
           :expand-on-click-node="false"
           :highlight-current="highlight" 
-          :data="productTree.children" 
+          :data="treeClone.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
-          @node-click="handleNodeClick" 
-          @check-change="handleCheckChange">
+          @node-expand="nodeExpand"
+          @node-click="handleNodeClick" >
           <span 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
@@ -60,8 +61,6 @@
                 <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
               </span>
             </el-tooltip>
-            <!-- <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span> -->
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
@@ -115,7 +114,6 @@
               </el-col>
             </template>
           </el-row>
-
         </Card>
       </el-col>
     </el-row>
@@ -144,62 +142,81 @@
 	// 	'年': 'year'
 	// };
 
-	export default {
+export default {
 		components: {
-			Card,
-			SearchBar,
-			ConOrgComparisonAverage,
-			ConOrgComparisonAverageBig
+				Card,
+				SearchBar,
+				ConOrgComparisonAverage,
+				ConOrgComparisonAverageBig
 		},
 		data() {
 			return {
-				form: {
-					pt: '日',
-					date: [],
-					search: '',
-					subject: 'S', // S: 销售额 P: 利润额
-					version: '0'
-				},
-				cid:0,
-				loading:false,
-				defaultProps: TREE_PROPS,
-				index0: 0,
-				val:{},
-				post:1,
-				nodeArr:[],
-				isbac:true,
-        highlight:true,
-			};
+					form: {
+						pt: '日',
+						date: [],
+						search: '',
+						subject: 'S', // S: 销售额 P: 利润额
+						version: '0'
+					},
+					cid:0,
+					loading:false,
+					defaultProps: TREE_PROPS,
+					index0: 0,
+					val:{},
+					post:1,
+					nodeArr:[],
+					isbac:true,
+					highlight:true,
+					searchBarValue: {
+							pt: '',
+							sDate: '',
+							eDate: ''
+					},
+					treeClone:{},
+				};
 		},
 		computed: {
-			...mapGetters(['productTree', 'historyArr']),
-			hasTree() {
-				return !_.isEmpty(this.productTree);
-			}
+				...mapGetters(['productTree', 'historyArr']),
+				hasTree() {
+					return !_.isEmpty(this.productTree);
+				}
 		},
 		watch: {
-			form: {
-				handler: function() {},
-				deep: true
-			},
-			cid: function() {
-				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-				// 暂时先在这里做
-        this.getHistory();
-			}
+				form: {
+						handler: function() {},
+						deep: true
+				},
+				cid: function() {
+						// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+						this.getTreePrograss();
+						this.getHistory();
+				}
 		},
 		mounted() {
-			if(!this.hasTree) {
-                this.getTree();
-			}else{
-					this.cid = this.productTree.cid;
-			}
+				if(!this.hasTree) {
+						this.getTree();
+				}else{
+						this.treeClone = _.cloneDeep(this.productTree); 
+						this.cid = this.productTree.cid;
+				}
 		},
 		methods: {
-			input(val){
-            this.form.date = val;
-      },
-			click(){
+				preOrder(node,cid){
+						for(let i of node){
+								if (i.cid == cid) {
+										return i;
+								}
+								if(i.children && i.children.length){
+										if (this.preOrder(i.children, cid)) {
+												return this.preOrder(i.children,cid);
+										}
+								}
+						}
+				},
+				input(val){
+						this.form.date = val;
+				},
+				click(){
 						if(this.cid==this.productTree.cid){
 								return;
 						}else{
@@ -212,50 +229,74 @@
 								setTimeout(() => {		       
 												this.loading = false;
 								}, 1000);
+						}	
+				},
+				getHistory() {
+						const params = {
+								cid:this.cid,
+								subject: this.form.subject,
+								...this.getPeriodByPt(),
+						};
+						API.GetProductHistory(params).then(res => {
+								this.$store.dispatch('SaveProductHistory', res.data);
+						});
+				},
+				getTree() {
+						const params = {
+								subject: this.form.subject,
+								...this.getPeriodByPt(),
+						};
+						API.GetProductTree(params).then(res => {
+								if (this.productTree.cid == undefined) {
+										this.cid = res.tree.cid;
+								}
+								this.treeClone = _.cloneDeep(res.tree); 
+								this.$store.dispatch('SaveProductTree', res.tree);
+						});
+				},
+				//获取百分比数据
+				getTreePrograss(){
+						const params = {
+								subject:this.form.subject,
+								...this.getPeriodByPt(),
+								nid:this.cid
+						};
+						API.GetProductTreeProduct(params).then(res=>{
+								let obj = this.preOrder([this.treeClone], this.cid);
+								if(obj.cid == this.cid){
+										obj.real_total = res.data[this.cid].real;
+										obj.target_total = res.data[this.cid].target;
+								}
+								for(let i of obj.children){
+										if(res.data.hasOwnProperty(i.cid)){
+												i.real_total = res.data[i.cid].real;
+												i.target_total = res.data[i.cid].target;
+														
+										}
+								}
+								this.$store.dispatch('SaveProductTreePrograss', res.data);
+						});
+				},
+				getDateObj () {
+						const {
+								date
+						} = this.form;
+						// console.log(this.val.sDate,date);
+						if (this.val.sDate != undefined && this.val.eDate != undefined) {
+								return {
+										pt: this.val.pt,
+										sDate: this.val.sDate,
+										eDate: this.val.eDate,
+								};
+						} else {
+								return {
+										pt:date.pt,
+										sDate: date.sDate ,
+										eDate: date.eDate ,
+								};
 						}
-						
-      },
-			getHistory() {
-				const params = {
-					cid:this.cid,
-					// pt: this.form.pt,
-					subject: this.form.subject,
-					...this.getPeriodByPt(),
-				};
-				API.GetProductHistory(params).then(res => {
-					this.$store.dispatch('SaveProductHistory', res.data);
-				});
-			},
-			getTree() {
-				const params = {
-					subject: this.form.subject,
-					...this.getPeriodByPt(),
-				};
-				API.GetProductTree(params).then(res => {
-					this.cid = res.tree.cid;
-					this.$store.dispatch('SaveProductTree', res.tree);
-				});
-			},
-			getDateObj () {
-            const {
-                date
-            } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
-                return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-            } else {
-                return {
-                        pt:date.pt,
-                        sDate: date.sDate ,
-                        eDate: date.eDate ,
-                };
-            }
-        },
-			getPeriodByPt() {
+				},
+				getPeriodByPt() {
 						const {
 							pt,
 							sDate,
@@ -279,114 +320,124 @@
 										// eDate: moment().format('YYYY-MM-DD'),
 								};
 						}
-      },
-			largerThanZero(val) {
-				return val && _.isNumber(parseFloat(val*100)) && parseFloat(val) > 0;
-			},
-			lessThanZero(val) {
-				return val && _.isNumber(parseFloat(val*100)) && parseFloat(val) < 0;
-			},
-			arraySpanMethod(strategies) {
-				if (!strategies || strategies.length === 0) {
-					return;
-				}
-				const group = _.groupBy(strategies, o => {
-					return o.subject;
-				});
-				const newStrategies = _.cloneDeep(strategies);
-				for(let i = 1; i < newStrategies.length; i++) {
-					let prev = newStrategies[i-1];
-					let current = newStrategies[i];
-					if (current.subject === prev.subject) {
-						current.hidden = true;
-					}
-				}
-				return ({
-					row,
-					rowIndex,
-					columnIndex
-				}) => {
-					const rowSpan = group[row.subject].length;
-					if ([0, 3, 4].includes(columnIndex)) {
-						if(!newStrategies[rowIndex].hidden) {
-							return [rowSpan, 1];
-						} else {
-							return [0, 0];
+				},
+				largerThanZero(val) {
+					return val && _.isNumber(parseFloat(val*100)) && parseFloat(val) > 0;
+				},
+				lessThanZero(val) {
+					return val && _.isNumber(parseFloat(val*100)) && parseFloat(val) < 0;
+				},
+				arraySpanMethod(strategies) {
+						if (!strategies || strategies.length === 0) {
+								return;
 						}
-					}
-				};
-			},
-			handleSearch(val) {
-					if(val.cid!=this.cid){
-						this.highlight = true;
-					// 默认公司的背景色
+						const group = _.groupBy(strategies, o => {
+								return o.subject;
+						});
+						const newStrategies = _.cloneDeep(strategies);
+						for(let i = 1; i < newStrategies.length; i++) {
+								let prev = newStrategies[i-1];
+								let current = newStrategies[i];
+								if (current.subject === prev.subject) {
+									current.hidden = true;
+								}
+						}
+						return ({
+								row,
+								rowIndex,
+								columnIndex
+						}) => {
+								const rowSpan = group[row.subject].length;
+								if ([0, 3, 4].includes(columnIndex)) {
+										if(!newStrategies[rowIndex].hidden) {
+												return [rowSpan, 1];
+										} else {
+												return [0, 0];
+										}
+								}
+						};
+				},
+				handleSearch(val) {
+						if(val.cid!=this.cid){
+							this.highlight = true;
+							this.nodeArr = [];
+							this.loading = true;
+							this.val = val;
+							if(val.cid!=""){
+									this.isbac = false;
+									this.nodeArr.push(val.cid);
+									this.$nextTick(() => {
+											this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+									});
+									this.cid = val.cid;
+									if(this.cid==this.productTree.cid){
+											this.isbac = true;
+											this.highlight = false;
+									}
+							}else{
+									this.isbac = true;
+									this.highlight = false;
+									if(this.cid!=this.productTree.cid){
+											this.cid = this.productTree.cid;
+											this.treeClone = _.cloneDeep(this.productTree); 
+									}
+									
+							}
+							setTimeout(() => {
+								this.loading = false;
+							}, 1000);
+						}
+				},
+				nodeExpand(data){
+						this.cid = data.cid;
 						this.isbac = false;
-						this.nodeArr = [];
+						this.highlight = true;
+				},
+				handleNodeClick(data) {
 						this.loading = true;
-						this.val = val;
-						if(val.cid!=""){
-								this.nodeArr.push(val.cid);
-								this.$nextTick(() => {
-										this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-								});
-								this.cid = val.cid;
-								if(this.cid==this.productTree.cid){
-										this.isbac = true;
-										this.highlight = false;
+						if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+								this.isbac = false;
+								this.highlight = true;
+								this.$refs.child.clearKw();
+								if(this.cid === data.cid){
+										return ;
+								}else{
+										this.cid = data.cid;
+										setTimeout(() => {
+											this.loading = false;
+										}, 1000);
 								}
 						}else{
-								if(this.cid==this.productTree.cid){
-										this.isbac = true;
-										this.highlight = false;
-								}
-								this.getTree();
-								this.getHistory();
+								this.$message({
+										type: 'error',
+										message: '请选择日期',
+										duration: 2000
+								});
 						}
-						setTimeout(() => {
-							this.loading = false;
-						}, 1000);
-					}
-      },
-			handleNodeClick(data) {
-				this.isbac = false;
-				this.highlight = true;
-				this.$refs.child.clearKw();
-				if(this.cid === data.cid){
-						return ;
-				}else{
-					this.cid = data.cid;
-					this.loading = true;
-					setTimeout(() => {
-						this.loading = false;
-					}, 1000);
-				}	
-			},
-			handleCheckChange() {
-			},
-			clickIndex(i, idx) {
-				this[`index${i}`] = idx;
-			},
-			calculatePercent(a, b) {
-				if (b > 0) {
-					const percent = parseInt(a / b * 100);
-					const largerThanOne = (a / b) > 1;
-					return {
-						percent,
-						largerThanOne
-					};
-				}else{
-							const percent = 0;
-							const largerThanOne = false;
-							return {
-									percent,
-									largerThanOne
-							};
-					}
-			},
+				},
+				clickIndex(i, idx) {
+					this[`index${i}`] = idx;
+				},
+				calculatePercent(a, b) {
+						if (b > 0) {
+								const percent = parseInt(a / b * 100);
+								const largerThanOne = (a / b) > 1;
+								return {
+										percent,
+										largerThanOne
+								};
+						}else{
+								const percent = 0;
+								const largerThanOne = false;
+								return {
+										percent,
+										largerThanOne
+								};
+						}
+				},
 		}
-	};
+};
 </script>
-
 <style lang="scss">
 	@import './style/optimization.scss'
 </style>

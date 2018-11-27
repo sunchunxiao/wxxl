@@ -24,7 +24,8 @@
             :class="{bac:isbac}"
             class="company">
             <span class="left label">{{ treeClone.name }}</span>
-            <span 
+            <span
+              v-if="treeClone.real_total"
               :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
               class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
             <div 
@@ -61,7 +62,9 @@
               </div>
               <span class="label">
                 <span class="label_left">{{ data.name }}</span>
-                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+                <span 
+                  v-if="data.real_total"
+                  :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
               </span>
             </el-tooltip>
             <div 
@@ -318,10 +321,10 @@ export default {
             this.form.date = val;
         },
         click () {
+            this.loading = true;
             if (this.cid == this.productTree.cid) {
                 return;
             } else {
-                this.loading = true;
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
@@ -401,7 +404,6 @@ export default {
                 if (this.productTree.cid == undefined) {
                     this.cid = res.tree.cid;
                 }
-                // this.cid = res.tree.cid;
                 this.treeClone = _.cloneDeep(res.tree);            
                 this.$store.dispatch('SaveProductTree', res.tree);
             });
@@ -518,7 +520,6 @@ export default {
         },
         handleSearch(val) {
             this.highlight = true;
-            // 默认公司的背景色
             this.nodeArr = [];
             this.loading = true;
             this.val = val;
@@ -540,7 +541,6 @@ export default {
                     this.cid = this.productTree.cid;
                     this.treeClone = _.cloneDeep(this.productTree); 
                 }
-                
             }
             setTimeout(() => {
                 this.loading = false;
@@ -556,12 +556,12 @@ export default {
             if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
                 this.isbac = false;
                 this.highlight = true;
+                this.loading = true;
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {
                     return;
                 } else if (data.children != undefined) {
                     this.cid = data.cid;
-                    this.loading = true;
                     setTimeout(() => {
                         this.loading = false;
                     }, 1000);

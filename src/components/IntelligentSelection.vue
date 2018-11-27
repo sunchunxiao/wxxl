@@ -9,6 +9,7 @@
 
 <script>
 	import echarts from 'echarts';
+	// import { mapState } from 'vuex';
 
 	const stragetyArr = [
 		"持续优化成本成本结构",
@@ -96,22 +97,15 @@
 				return _.uniq(arr);
 			},
 			getRank(score) {
-				if (1 == score) {
-					return '差';
-				}
-				if (2 == score) {
-					return '中';
-				}
-				if (3 == score) {
-					return '良';
-				}
-				if (4 === score) {
-					return '优';
+				let scoremap = ['未知',"差","中","良","优"];
+				if(scoremap[score]){
+					// console.log(mapState[score]);
+					return scoremap[score];
 				}
 				return '';
+				
 			},
 			renderChart(data) {
-
 				const _this = this;
 				let options = [];
 				let timeLineData = [];

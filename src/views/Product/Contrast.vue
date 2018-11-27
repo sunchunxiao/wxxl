@@ -29,13 +29,13 @@
         </div> -->
         <div class="title">毛利目标达成率</div>
         <div class="company">
-          <span class="left">{{ productTree.name }}</span>
+          <span class="left">{{ treeClone.name }}</span>
           <span 
-            v-if="productTree.children"
-            class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
+            v-if="treeClone.children"
+            class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
         </div>
         <el-tree 
-          :data="productTree.children" 
+          :data="treeClone.children" 
           ref="tree" 
           empty-text="正在加载"
           check-strictly
@@ -44,6 +44,7 @@
           :highlight-current="highlight" 
           :props="defaultProps" 
           show-checkbox 
+          @node-expand="nodeExpand"
           @check-change="handleCheckChange">
           <span 
             class="custom-tree-node" 
@@ -138,7 +139,8 @@
                 form: {
 					date: [],
 					subject: 'S', // S: 销售额 P: 利润额
-				},
+                },
+                cid:'',
                 defaultProps: TREE_PROPS,
                 index0: 0,
                 cidObjArr:[],
@@ -149,6 +151,7 @@
                 post:1,
 				nodeArr:[],
                 highlight:true,
+                treeClone:{},
             };
         },
         computed: {
@@ -164,24 +167,21 @@
                 } else if (val.length === 0) {
                     this.$store.dispatch('ClearCompareArr');
                 }
+            },
+            cid(){
+                this.getTreePrograss();
             }
         },
         created() {
             // 防抖函数 减少发请求次数
-            this.debounce = _.debounce(this.getCompare, 1000);
+            this.debounce = _.debounce(this.getCompare, 500);
         },
         mounted() {
-            if(this.productTree.children){
-                let arr = [];
-                for(let i = 0; i < 3; i++) {
-                    this.productTree.children[i] && arr.push(this.productTree.children[i]);
-                }
-                const checkKeys = arr.map(i => i.cid);
-                this.$refs.tree.setCheckedKeys(checkKeys);
-            }else{
-                Promise.all([this.getTree(), this.getProgress()]).then(res => {
+            Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
+                this.cid = treeData.tree.cid;
+                this.treeClone = _.cloneDeep(treeData.tree);
                 const children = treeData.tree.children;
                 let arr = [];
                 for(let i = 0; i < 3; i++) {
@@ -195,9 +195,20 @@
                 const progressData = res[1];
                 this.$store.dispatch('SaveProgressData', progressData.data);
             });
-            }
         },
         methods: {
+            preOrder(node,cid){
+                for(let i of node){
+                    if (i.cid == cid) {
+                        return i;
+                    }
+                    if(i.children && i.children.length){
+                        if (this.preOrder(i.children, cid)) {
+                            return this.preOrder(i.children,cid);
+                        }
+                    }
+                }
+            },
             input(val){
                 this.form.date = val;
             },
@@ -207,6 +218,29 @@
                     ...this.getPeriodByPt(),
                 };
                 return API.GetProductTree(params);
+            },
+            //获取百分比数据
+            getTreePrograss(){
+                const params = {
+                    subject:this.form.subject,
+                    ...this.getPeriodByPt(),
+                    nid:this.cid
+                };
+                API.GetProductTreeProduct(params).then(res=>{
+                    let obj = this.preOrder([this.treeClone], this.cid);
+                    if(obj.cid == this.cid){
+                        obj.real_total = res.data[this.cid].real;
+                        obj.target_total = res.data[this.cid].target;
+                    }
+                    for(let i of obj.children){
+                        if(res.data.hasOwnProperty(i.cid)){
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
+                                
+                        }
+                    }
+                    this.$store.dispatch('SaveProductTreePrograss', res.data);
+                });
             },
             getProgress() {
                 const params = {
@@ -266,7 +300,6 @@
                     sDate,
                     eDate
                 } = this.getDateObj();
-                
                 // console.log(sDate,eDate);
                 if(sDate && eDate) { // 计算时间周期
                         return {
@@ -304,6 +337,12 @@
                     }, 1000);
                 }
             },
+            nodeExpand(data){
+                this.cid = data.cid;
+                this.isbac = false;
+                this.highlight = true;
+            },
+            
             cleanChecked() {
                 this.cidObjArr = [];
                 this.$refs.tree.setCheckedKeys([]);

@@ -3,6 +3,7 @@
     <el-row>
       <search-bar 
         @search="handleSearch" 
+        v-model="searchBarValue"
         ref="child"
         url="/channel/search"/>
     </el-row>
@@ -34,6 +35,7 @@
           :props="defaultProps" 
           node-key="nid" 
           show-checkbox 
+          @node-expand="nodeExpand"
           @check-change="handleCheckChange">
           <span 
             class="custom-tree-node" 
@@ -148,7 +150,13 @@
                 post:1,
                 nodeArr:[],
                 cidObjArr:[],
-                cancelKey: ''
+                cancelKey: '',
+                searchBarValue: {
+                    pt: '',
+                    sDate: '',
+                    eDate: ''
+                },
+                treeClone:{},
             };
         },
         computed: {
@@ -158,13 +166,15 @@
             }
         },
         watch: {
-            
             cidObjArr(val) {
                 if (val.length > 0) {
                     this.debounce();
                 } else if (val.length === 0) {
                     this.$store.dispatch('ClearChannelCompareArr');
                 }
+            },
+            cid(){
+                this.getTreePrograss();
             }
         },
         created() {
@@ -183,6 +193,7 @@
                 Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
+                this.cid = res[0].tree.cid;
                 const children = treeData.tree.children;
                 let arr = [];
                 for(let i = 0; i < 3; i++) {
@@ -207,6 +218,30 @@
                     // version: this.form.version
                 };
                 return API.GetChannelTree(params);
+            },
+            //获取百分比数据
+            getTreePrograss(){
+                const params = {
+                    subject:this.form.subject,
+                    ...this.getPeriodByPt(),
+                    nid:this.cid
+                };
+                API.GetChannelTreePrograss(params).then(res=>{
+                    let obj = this.preOrder([this.treeClone], this.cid);
+                    // console.log(obj,this.cid,res.data);
+                    if(obj.nid == this.cid){
+                        obj.real_total = res.data[this.cid].real;
+                        obj.target_total = res.data[this.cid].target;
+                    }
+                    for(let i of obj.children){
+                        if(res.data.hasOwnProperty(i.nid)){
+                            i.real_total = res.data[i.nid].real;
+                            i.target_total = res.data[i.nid].target;
+                                
+                        }
+                    }
+                    this.$store.dispatch('SaveProductTreePrograss', res.data);
+                });
             },
             getProgress() {
                 const params = {
@@ -308,6 +343,11 @@
             cleanChecked() {
                 this.cidObjArr = [];
                 this.$refs.tree.setCheckedKeys([]);
+            },
+            nodeExpand(data){
+                this.cid = data.nid;
+                this.isbac = false;
+                this.highlight = true;
             },
             handleCheckChange(data, checked) {
                 // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
