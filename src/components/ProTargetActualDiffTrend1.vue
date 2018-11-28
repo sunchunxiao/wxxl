@@ -2,7 +2,7 @@
   <div class="bar-container">
     <div 
       class="bar" 
-      :id="`bar-${id}`"/>
+      :id="`bar-${id}`" />
     <div class="detail">{{ data.subject_name }}</div>
   </div>
 </template>

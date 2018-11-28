@@ -8,30 +8,30 @@
         stripe>
         <el-table-column 
           type="index" 
-          label="序号"/>
+          label="序号" />
         <el-table-column 
           prop="level" 
           label="产品层级" 
           :filters="[{text: '公司', value: '公司'},{text: '平台', value: '平台'},{text: '店铺', value: '店铺'}]" 
-          :filter-method="filterA"/>
+          :filter-method="filterA" />
         <el-table-column 
           prop="subject" 
           label="指标" 
           :filters="[{text: '销售额', value: '销售额'}, {text: '日销', value: '日销'},{text: '毛利额', value: '毛利额'},{text: '成本', value: '成本'},{text: '投入产出比', value: '投入产出比'},{text: '冗余', value: '冗余'}]" 
-          :filter-method="filterB"/>
+          :filter-method="filterB" />
         <el-table-column 
           prop="rank" 
           label="评选等级" 
           :filters="[{text: '优', value: '优'},{text: '良', value: '良'},{text: '中', value: '中'},{text: '差', value: '差'}]" 
-          :filter-method="filterC"/>
+          :filter-method="filterC" />
         <el-table-column 
           prop="package" 
           label="影响因素" 
           :filters="[{text: '推广', value: '推广'},{text: '活动', value: '活动'},{text: '发货', value: '发货'},{text: '流量', value: '流量'},{text: '转化', value: '转化'},{text: '客单', value: '客单'},{text: '渠道规划', value: '渠道规划'},{text: '渠道运营', value: '渠道运营'}]" 
-          :filter-method="filterD"/>
+          :filter-method="filterD" />
         <el-table-column 
           prop="strategy" 
-          label="策略"/>
+          label="策略" />
         <el-table-column 
           prop="count_use" 
           label="采纳次数" 
@@ -47,7 +47,7 @@
                 :data="trackList1">
                 <el-table-column
                   type="index"
-                  label="序号"/>
+                  label="序号" />
                 <el-table-column
                   prop="level"
                   label="应用产品" />
@@ -72,7 +72,7 @@
         <el-table-column 
           prop="count_eff" 
           label="有效次数" 
-          sortable/>
+          sortable />
         <el-table-column 
           prop="rate"
           label="策略准确度/适用度" 
@@ -88,7 +88,7 @@
                 :data="trackList1">
                 <el-table-column
                   type="index"
-                  label="序号"/>
+                  label="序号" />
                 <el-table-column
                   prop="level"
                   label="应用产品" />
@@ -117,7 +117,7 @@
           :current-page="currentPage" 
           :page-size="10" 
           layout="total, prev, pager, next, jumper" 
-          :total="total"/>
+          :total="total" />
       </div>
     </div>
   </div>

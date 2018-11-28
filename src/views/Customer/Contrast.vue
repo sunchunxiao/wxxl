@@ -5,8 +5,7 @@
         @search="handleSearch" 
         ref="child"
         url="/cus/search"
-        placeholder="客户编号/客户名称"
-      />
+        placeholder="客户编号/客户名称" />
     </el-row>
     <el-row 
       class="content_row" 
@@ -44,7 +43,7 @@
             <el-tooltip 
               class="item" 
               effect="dark" 
-              placement="right" > 
+              placement="right"> 
               <div slot="content">
                 <div class="tooltip_margin bold">品类:{{ data.name }}</div>
                 <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
@@ -61,7 +60,7 @@
             
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
-              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
+              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
           </span>
         </el-tree>
       </el-col>
@@ -81,7 +80,7 @@
                     <ConOrgComparisonAverage 
                       :title="item.subject_name" 
                       :id="`${index}`" 
-                      :data="item"/>
+                      :data="item" />
                   </el-col>
                 </template>
               </el-col>
@@ -91,7 +90,7 @@
                   :title="cuscompareArr[index0].subject_name" 
                   :data="cuscompareArr[index0]" 
                   id="ConOrgComparisonAverage" 
-                  :index="index0"/>
+                  :index="index0" />
               </el-col>
             </el-row>
             <el-row 

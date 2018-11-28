@@ -27,8 +27,7 @@
     </template>
     <el-menu-item 
       v-show="false"
-      index="placeholder" 
-    />
+      index="placeholder" />
   </el-menu>
 </template>
 

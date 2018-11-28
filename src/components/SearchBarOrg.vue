@@ -12,8 +12,7 @@
             <el-option 
               :label="item" 
               :value="item"
-              :key="item"
-            />
+              :key="item" />
           </template>
         </el-select>
       </el-form-item>
@@ -34,7 +33,7 @@
             type="month"
             format="yyyy MM 月"
             :picker-options="monthStartOptions"
-            placeholder="请选择开始月"/>
+            placeholder="请选择开始月" />
         </el-form-item>
         <!-- </el-col> -->
         <el-col 
@@ -50,7 +49,7 @@
               type="month"
               format="yyyy MM 月"
               :picker-options="monthEndOptions"
-              placeholder="请选择结束月"/>
+              placeholder="请选择结束月" />
           </el-form-item>
         </el-col>
       </template>
@@ -66,7 +65,7 @@
             v-model="form.yearStart"
             type="year"
             :picker-options="yearStartOptions"
-            placeholder="请选择开始年"/>
+            placeholder="请选择开始年" />
         </el-form-item>
         <!-- </el-col> -->
         <el-col 
@@ -81,7 +80,7 @@
               v-model="form.yearEnd"
               type="year"
               :picker-options="yearEndOptions"
-              placeholder="请选择结束年"/>
+              placeholder="请选择结束年" />
           </el-form-item>
         </el-col>
       </template>
@@ -98,7 +97,7 @@
           :placeholder="placeholderName()">
           <i 
             slot="prefix" 
-            class="el-input__icon el-icon-search"/>
+            class="el-input__icon el-icon-search" />
         </el-autocomplete>
       </el-form-item>
     </el-col>

@@ -2,7 +2,7 @@
   <div class="ConOrgComparisonAverage-container">
     <div 
       class="ConOrgComparisonAverage" 
-      :id="`ConOrgComparisonAverage-${id}`"/>
+      :id="`ConOrgComparisonAverage-${id}`" />
     <div class="detail">{{ data.subject_name }}</div>
   </div>
 </template>

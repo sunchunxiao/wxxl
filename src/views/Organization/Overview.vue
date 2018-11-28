@@ -5,7 +5,7 @@
         @search="handleSearch"
         ref="child"
         placeholder="产品"
-        url="/org/search"/>
+        url="/org/search" />
     </el-row>
     <el-row 
       class="content_row" 
@@ -22,10 +22,10 @@
           <span class="left label">{{ organizationTree.name }}</span>
           <span
             :class="{percent: true, red: !calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne, blue: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
-            class="right" >{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
+            class="right">{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
           <div 
             :class="{comprogress: true, 'border-radius0': calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne ? '105%' : `${calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + 5}%`}"/>
+            :style="{width: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne ? '105%' : `${calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + 5}%`}" />
           
         </div>
         <!-- 有多个tree -->
@@ -45,7 +45,7 @@
             <el-tooltip 
               class="item" 
               effect="dark" 
-              placement="right" > 
+              placement="right"> 
               <div slot="content">
                 <div class="tooltip_margin bold">品类:{{ data.name }}</div>
                 <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
@@ -62,7 +62,7 @@
   
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
-              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
+              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
           </div>
           
         </el-tree>
@@ -81,7 +81,7 @@
                     :span="6">
                     <ProTargetAchievement 
                       :id="`${index}`" 
-                      :data="item"/>
+                      :data="item" />
                   </el-col>
                 </template>
               </el-col>
@@ -91,7 +91,7 @@
                 class="border-left">
                 <Radar 
                   :id="'select'" 
-                  :data="orgrankArr[orgrankArr.length-1]"/>
+                  :data="orgrankArr[orgrankArr.length-1]" />
               </el-col>
             </el-row>
           </Card>
@@ -109,7 +109,7 @@
                   @click.native="clickIndex(1 ,index)">
                   <ProTargetActualDiffTrend 
                     :id="`${index}`" 
-                    :data="item"/>
+                    :data="item" />
                 </el-col>
               </template>
             </el-row>
@@ -128,7 +128,7 @@
                   @click.native="clickIndex(2 ,index)">
                   <ProYearOnYearTrend 
                     :id="`${index}`" 
-                    :data="item"/>
+                    :data="item" />
                 </el-col>
               </template>
             </el-row>
@@ -149,7 +149,7 @@
                     @click.native="clickIndex(3 ,index)">
                     <ProportionalStructureAverageComparison 
                       :id="`${index}`" 
-                      :data="item"/>
+                      :data="item" />
                   </el-col>
                 </template>
               </el-col>
@@ -159,7 +159,7 @@
                 <ProportionalStructureAverageComparisonBig 
                   id="ProportionalStructureAverageComparisonBig" 
                   v-if="orgstructureArr1.length>0"
-                  :data="orgstructureArr1[index3]"/>
+                  :data="orgstructureArr1[index3]" />
               </el-col>
             </el-row>
           </Card>
@@ -179,7 +179,7 @@
                     @click.native="clickIndex(4 ,index)">
                     <ProportionalStructureAverageComparison 
                       :id="`${index+orgstructureArr1.length}`" 
-                      :data="item1"/>
+                      :data="item1" />
                   </el-col>
                 </template>
               </el-col>
@@ -189,7 +189,7 @@
                 <ProportionalStructureAverageComparisonBig 
                   v-if="orgstructureArr2.length>0" 
                   id="ProportionalStructureAverageComparisonBig1" 
-                  :data="orgstructureArr2[index4]"/>
+                  :data="orgstructureArr2[index4]" />
               </el-col>
             </el-row>
           </Card>
@@ -204,7 +204,7 @@
                 <IntelligentSelection 
                   id="rank" 
                   @showStragety="showStragety" 
-                  :data="orgrankArr"/>
+                  :data="orgrankArr" />
               </el-col>
               <el-col :span="10">
                 <div class="stragety">

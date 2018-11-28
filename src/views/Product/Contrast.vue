@@ -6,8 +6,7 @@
         @search="handleSearch" 
         placeholder="产品编号/产品名称"
         ref="child"
-        url="/product/search"
-      />
+        url="/product/search" />
     </el-row>
     <el-row 
       class="content_row" 
@@ -53,7 +52,7 @@
             <el-tooltip 
               class="item" 
               effect="dark" 
-              placement="right" > 
+              placement="right"> 
               <div slot="content">
                 <div class="tooltip_margin bold">品类:{{ data.name }}</div>
                 <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
@@ -70,7 +69,7 @@
             
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
-              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
+              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
           </span>
         </el-tree>
       </el-col>
@@ -88,7 +87,7 @@
                   @click.native="clickIndex(0 ,index)">
                   <ConOrgComparisonAverage 
                     :id="`${index}`" 
-                    :data="item"/>
+                    :data="item" />
                 </el-col>
               </template>
             </el-col>
@@ -98,7 +97,7 @@
                 :title="compareArr[index0].subject_name" 
                 :data="compareArr[index0]" 
                 id="ConOrgComparisonAverage" 
-                :index="index0"/>
+                :index="index0" />
             </el-col>
           </el-row>
           <el-row 

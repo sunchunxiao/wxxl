@@ -25,6 +25,8 @@
         "maxEOF": 1,
         "maxBOF": 1
       }
-    ]
+    ],
+    "vue/html-closing-bracket-newline": "error",
+    "vue/html-closing-bracket-spacing": "error"
   }
 }

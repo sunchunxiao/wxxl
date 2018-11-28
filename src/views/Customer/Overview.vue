@@ -5,8 +5,7 @@
         @search="handleSearch"
         ref="child"
         url="/cus/search"
-        placeholder="客户编号/客户名称"
-      />
+        placeholder="客户编号/客户名称" />
     </el-row>
     <el-row 
       class="content_row" 
@@ -23,10 +22,10 @@
           <span class="left label">{{ customerTree.name }}</span>
           <span
             :class="{percent: true, red: !calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne, blue: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
-            class="right" >{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
+            class="right">{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
           <div 
             :class="{comprogress: true, 'border-radius0': calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne ? '105%' : `${calculatePercent(customerTree.real_total, customerTree.target_total).percent + 5}%`}"/>
+            :style="{width: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne ? '105%' : `${calculatePercent(customerTree.real_total, customerTree.target_total).percent + 5}%`}" />
         </div>
         <!-- 有多个tree -->
         <el-tree 
@@ -45,7 +44,7 @@
             <el-tooltip 
               class="item" 
               effect="dark" 
-              placement="right" > 
+              placement="right"> 
               <div slot="content">
                 <div class="tooltip_margin bold">品类:{{ data.name }}</div>
                 <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
@@ -63,7 +62,7 @@
             <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span> -->
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
-              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
+              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
           </span>
         </el-tree>
       </el-col>
@@ -78,10 +77,10 @@
                 <template v-for="(item, index) in cusprogressArr">
                   <el-col 
                     :key="index" 
-                    :span="6" >
+                    :span="6">
                     <ProTargetAchievement 
                       :id="`${index}`" 
-                      :data="item"/>
+                      :data="item" />
                   </el-col>
                 </template>
               </el-col>
@@ -91,7 +90,7 @@
                 class="border-left">
                 <Radar 
                   :id="'select'" 
-                  :data="cusrankArr[cusrankArr.length-1]"/>
+                  :data="cusrankArr[cusrankArr.length-1]" />
               </el-col>
             </el-row>
           </Card>
@@ -109,7 +108,7 @@
                   @click.native="clickIndex(1 ,index)">
                   <ProTargetActualDiffTrend 
                     :id="`${index}`" 
-                    :data="item"/>
+                    :data="item" />
                 </el-col>
               </template>
             </el-row>
@@ -128,7 +127,7 @@
                   @click.native="clickIndex(2 ,index)">
                   <ProYearOnYearTrend 
                     :id="`${index}`" 
-                    :data="item"/>
+                    :data="item" />
                 </el-col>
               </template>
             </el-row>
@@ -148,7 +147,7 @@
                     @click.native="clickIndex(3 ,index)">
                     <ProportionalStructureAverageComparison 
                       :id="`${index}`" 
-                      :data="item"/>
+                      :data="item" />
                   </el-col>
                 </template>
               </el-col>
@@ -158,7 +157,7 @@
                 <ProportionalStructureAverageComparisonBig 
                   v-if="cusstructureArr.length>0"
                   id="ProportionalStructureAverageComparisonBig" 
-                  :data="cusstructureArr[index3]"/>
+                  :data="cusstructureArr[index3]" />
               </el-col>
             </el-row>
           </Card>
@@ -173,7 +172,7 @@
                 <IntelligentSelection 
                   id="heatmap" 
                   @showStragety="showStragety" 
-                  :data="cusrankArr"/>
+                  :data="cusrankArr" />
               </el-col>
               <el-col :span="10">
                 <div class="stragety">
