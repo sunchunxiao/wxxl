@@ -319,10 +319,10 @@ export default {
       this.form.date = val;
     },
     click () {
-      this.loading = true;
       if (this.cid == this.productTree.cid) {
         return;
       } else {
+        this.loading = true;
         //点击发送请求清除搜索框
         this.$refs.child.clearKw();
         this.isbac = true;
@@ -536,7 +536,12 @@ export default {
         this.highlight = false;
         if(this.cid!=this.productTree.cid){
           this.cid = this.productTree.cid;
-          this.treeClone = _.cloneDeep(this.productTree); 
+          this.treeClone = _.cloneDeep(this.productTree);
+        }else{
+          this.getTreePrograss();
+          this.getProgress();
+          this.getStructure();
+          this.getRank();
         }
       }
       setTimeout(() => {

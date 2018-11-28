@@ -283,24 +283,21 @@ export default {
     },
     getPeriodByPt () {
       const {
+        pt,
         sDate,
         eDate
       } = this.getDateObj();
-      // const {
-      //     pt
-      // } = this.form;
-      // console.log(sDate,eDate);
       if (sDate && eDate) { // 计算时间周期
         return {
-          pt: this.val.pt,
-          sDate: this.val.sDate,
-          eDate: this.val.eDate,
+          pt: pt,
+          sDate: sDate,
+          eDate: eDate,
         };
       } else {
         return {
           pt: '日',
           sDate: '2018-01-01',
-          eDate: '2018-01-07',
+          eDate: '2018-01-31',
           // 先写死个时间
           // sDate: moment().startOf('week').format('YYYY-MM-DD'),
           // eDate: moment().format('YYYY-MM-DD'),
@@ -311,16 +308,18 @@ export default {
       const {
         date
       } = this.form;
-      // console.log(this.val.eDate);
+      // console.log(this.val.sDate,date);
       if (this.val.sDate != undefined && this.val.eDate != undefined) {
         return {
+          pt: this.val.pt,
           sDate: this.val.sDate,
           eDate: this.val.eDate,
         };
       } else {
         return {
-          sDate: date[0] || '',
-          eDate: date[1] || '',
+          pt: date.pt,
+          sDate: date.sDate,
+          eDate: date.eDate,
         };
       }
     },
@@ -363,23 +362,30 @@ export default {
     handleSearch (val) {
       // 默认公司的背景色
       this.highlight = true;
-      this.isbac = false;
       this.nodeArr = [];
-      this.nodeArr.push(val.cid);
-      this.$nextTick(() => {
-        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-      });
       this.loading = true;
       this.val = val;
       if (val.cid != "") {
+        this.isbac = false;
+        this.nodeArr.push(val.cid);
+        this.$nextTick(() => {
+          this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+        });
         this.cid = val.cid;
-        if (this.cid == this.channelTree.cid) {
+        if (this.cid == this.channelTree.nid) {
           this.isbac = true;
           this.highlight = false;
         }
       } else {
-        this.getTree();
-        this.getHistory();
+        this.isbac = true;
+        this.highlight = false;
+        if (this.cid != this.channelTree.nid) {
+          this.cid = this.channelTree.nid;
+          this.treeClone = _.cloneDeep(this.channelTree);
+        }else{
+          this.getTreePrograss();
+          this.getHistory();
+        }
       }
       setTimeout(() => {
         this.loading = false;
