@@ -20,15 +20,15 @@
 import { getUsername, removeToken } from 'utils/auth';
 
 export default {
-    props: {
-        isCollapse: Boolean
-    },
-    data() {
-        return {
-            username: getUsername()
-        };
-    },
-    methods: {
+  props: {
+    isCollapse: Boolean
+  },
+  data() {
+    return {
+      username: getUsername()
+    };
+  },
+  methods: {
     logout() {
       removeToken();
       this.$router.replace('/login');

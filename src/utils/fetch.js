@@ -21,9 +21,9 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(config => {
   // Do something before request is sent
-//if (getToken()) {
-//  config.headers['Authorization'] = getToken(); // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
-//}
+  //if (getToken()) {
+  //  config.headers['Authorization'] = getToken(); // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
+  //}
   return config;
 }, error => {
   // Do something with request error
@@ -34,33 +34,33 @@ service.interceptors.request.use(config => {
 
 // respone拦截器
 service.interceptors.response.use(response => {
-  const res = response.data;
-  if (res.api_info) {
-    if(res.api_info.error === 0 && res.api_info.message === 'success') {
-      // eslint-disable-next-line no-unused-vars
-      const { api_info, ...data } = res; 
-      return data;
-    } else if (res.api_info.error === AUTH_FAILED) { // token error
-      removeToken();
-      router.replace('/login');
-    } else {
-      Message({ message: res.api_info.message, type: 'warning', duration: MESSAGEDURATION });
-      return Promise.reject(res);
-    }
-  }
-  Message({ message: '接口异常', type: 'warning', duration: MESSAGEDURATION });
-  return Promise.reject(res);
-},
-  error => {
-    // eslint-disable-next-line no-console
-    console.log('AFTER_RESPONSE_RETURN_ERROR', error); // for debug
-    if (error.code === "ECONNABORTED") {
-      Message({ message: '请求超时', type: 'error', duration: MESSAGEDURATION });
-    } else {
-      Message({ message: error.message, type: 'error', duration: MESSAGEDURATION });
-    }
-    return Promise.reject(error);
-  }
+                                    const res = response.data;
+                                    if (res.api_info) {
+                                      if(res.api_info.error === 0 && res.api_info.message === 'success') {
+                                        // eslint-disable-next-line no-unused-vars
+                                        const { api_info, ...data } = res; 
+                                        return data;
+                                      } else if (res.api_info.error === AUTH_FAILED) { // token error
+                                        removeToken();
+                                        router.replace('/login');
+                                      } else {
+                                        Message({ message: res.api_info.message, type: 'warning', duration: MESSAGEDURATION });
+                                        return Promise.reject(res);
+                                      }
+                                    }
+                                    Message({ message: '接口异常', type: 'warning', duration: MESSAGEDURATION });
+                                    return Promise.reject(res);
+                                  },
+                                  error => {
+                                    // eslint-disable-next-line no-console
+                                    console.log('AFTER_RESPONSE_RETURN_ERROR', error); // for debug
+                                    if (error.code === "ECONNABORTED") {
+                                      Message({ message: '请求超时', type: 'error', duration: MESSAGEDURATION });
+                                    } else {
+                                      Message({ message: error.message, type: 'error', duration: MESSAGEDURATION });
+                                    }
+                                    return Promise.reject(error);
+                                  }
 );
 
 const FetchGet = (url, params) => {

@@ -223,8 +223,8 @@ import IntelligentSelection from '../../components/IntelligentSelection';
 
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
-    children: 'children',
-    label: 'name'
+  children: 'children',
+  label: 'name'
 };
 // const TIMEPT = {
 //     '周': 'week',
@@ -234,410 +234,410 @@ const TREE_PROPS = {
 // };
 
 export default {
-    components: {
-        Card,
-        SearchBar,
-        ProYearOnYearTrend,
-        ProportionalStructureAverageComparison,
-        ProportionalStructureAverageComparisonBig,
-        IntelligentSelection,
-        ProTargetAchievement,
-        Radar,
-        ProTargetActualDiffTrend,
-    },
-    data () {
-        return {
-            form: {
-                pt: '日',
-                date: [],
-                search: '',
-                subject: 'S', // S: 销售额 P: 利润额
-                version: '0'
-            },
-            cid: '',
-            loading: false,
-            defaultProps: TREE_PROPS,
-            // index
-            index0: 0,
-            index1: 0,
-            index2: 0,
-            index3: 0,
-            // stragety
-            stragetyCheckList: [],
-            stragetyTitle: '',
-            stragety: [],
-            idArr: [],
-            val: {},
-            post: 1,
-            nodeArr: [],
-            isbac: true,
-            highlight: true,
-            searchBarValue: {
-                pt: '',
-                sDate: '',
-                eDate: ''
-            },
-            treeClone: {},
-        };
-    },
-    computed: {
-        ...mapGetters(['channelTree', 'channelProgressArr', 'channelTrendArr', 'channelRankArr', 'channelStructureArr']),
-        hasTree () {
-            return !_.isEmpty(this.channelTree);
-        }
-    },
-    watch: {
-        form: {
-            handler: function () { },
-            deep: true
-        },
-        cid: function () {
-            // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            this.getTreePrograss();
-            this.getProgress();
-            this.getStructure();
-            this.getRank();
-        }
-    },
-    mounted () {
-        if (!this.hasTree) {
-            this.getTree();
-        } else {
-            this.treeClone = _.cloneDeep(this.channelTree);
-            this.cid = this.channelTree.nid;
-        }
-        // this.initFormDataFromUrl();
-    },
-    methods: {
-        preOrder (node, cid) {
-            for (let i of node) {
-                if (i.nid == cid) {
-                    return i;
-                }
-                if (i.children && i.children.length) {
-                    if (this.preOrder(i.children, cid)) {
-                        return this.preOrder(i.children, cid);
-                    }
-                }
-            }
-        },
-        input (val) {
-            this.form.date = val;
-        },
-        click () {
-            if (this.cid == this.channelTree.nid) {
-                return;
-            } else {
-                this.loading = true;
-                //点击发送请求清除搜索框
-                this.$refs.child.clearKw();
-                this.isbac = true;
-                this.highlight = false;
-                this.cid = this.channelTree.nid;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
-            }
-
-        },
-        change () {
-            this.idArr = [];
-            for (let i of this.stragetyCheckList) {
-                let stragetyObj = this.stragety.find(el => {
-                    return el.id == i;
-                });
-                this.idArr.push(stragetyObj.id);
-            }
-            // console.log(this.stragetyCheckList, this.idArr);
-        },
-        submit () {
-            let data1 = JSON.parse(localStorage.data);
-            this.$confirm('确认?', {
-                confirmButtonText: '保存',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-            }).then(() => {
-                const data = {
-                    nid: data1.cid,
-                    rank: data1.rank,
-                    subject: data1.subject,
-                    time_label: data1.time_label,
-                    strategies: this.idArr.join(',')
-                };
-                API.PostChannelSave(data).then(() => {
-                    this.$message({
-                        type: 'success',
-                        showClose: true,
-                        message: '保存成功'
-                    });
-                }).catch(() => {
-                    this.$message({
-                        type: 'error',
-                        message: '保存失败',
-                        duration: 1500
-                    });
-                });
-            }).catch(() => {
-                this.$message({
-                    type: 'info',
-                    message: '已取消',
-                    duration: 1500
-                });
-            });
-        },
-        getTree () {
-            const params = {
-                subject: this.form.subject,
-                ...this.getPeriodByPt(),
-                version: this.form.version
-            };
-            API.GetChannelTree(params).then(res => {
-                if (this.channelTree.cid == undefined) {
-                    this.cid = res.tree.nid;
-                }
-                this.treeClone = _.cloneDeep(res.tree);
-                this.$store.dispatch('SaveChannelTree', res.tree);
-            });
-        },
-        //获取百分比数据
-        getTreePrograss () {
-            const params = {
-                subject: this.form.subject,
-                ...this.getPeriodByPt(),
-                nid: this.cid
-            };
-            API.GetChannelTreePrograss(params).then(res => {
-                let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,this.cid,res.data);
-                if (obj.nid == this.cid) {
-                    obj.real_total = res.data[this.cid].real;
-                    obj.target_total = res.data[this.cid].target;
-                }
-                for (let i of obj.children) {
-                    if (res.data.hasOwnProperty(i.nid)) {
-                        i.real_total = res.data[i.nid].real;
-                        i.target_total = res.data[i.nid].target;
-
-                    }
-                }
-                this.$store.dispatch('SaveProductTreePrograss', res.data);
-            });
-        },
-        getProgress () {
-            const params = {
-                chId: this.cid,
-                ...this.getPeriodByPt(),
-            };
-            API.GetChannelProgress(params).then(res => {
-                this.$store.dispatch('SaveChannelProgress', res.data);
-                const promises = _.map(res.data, o => this.getTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveChannelTrendArr', resultList);
-                });
-            });
-        },
-        getTrend (subject) {
-            const params = {
-                chId: this.cid,
-                ...this.getPeriodByPt(),
-                subject: subject
-            };
-            return API.GetChannelTrend(params);
-        },
-        getStructure () {
-            const params = {
-                chId: this.cid,
-                subject: this.form.subject,
-                ...this.getPeriodByPt(),
-            };
-            API.GetChannelStructure(params).then(res => {
-                this.$store.dispatch('SaveChannelStructureArr', res.data);
-            });
-        },
-        getRank () {
-            const params = {
-                chId: this.cid,
-                ...this.getPeriodByPt(),
-            };
-            API.GetChannelRank(params).then(res => {
-                this.$store.dispatch('SaveChannelRankArr', res.data);
-            });
-        },
-        getDateObj () {
-            const {
-                date
-            } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
-                return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-            } else {
-                return {
-                    pt: date.pt,
-                    sDate: date.sDate,
-                    eDate: date.eDate,
-                };
-            }
-        },
-        getPeriodByPt () {
-            const {
-                pt,
-                sDate,
-                eDate
-            } = this.getDateObj();
-            if (sDate && eDate) { // 计算时间周期
-                return {
-                    pt: pt,
-                    sDate: sDate,
-                    eDate: eDate,
-                };
-            } else {
-                return {
-                    pt: '日',
-                    sDate: '2018-01-01',
-                    eDate: '2018-01-31',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
-                };
-            }
-        },
-        initFormDataFromUrl () {
-            const {
-                pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-            } = this.$route.query;
-            let formData = {
-                pt: pt,
-                subject: subject,
-            };
-            if (moment(sDate).isValid() && moment(eDate).isValid()) {
-                formData.date = [sDate, eDate];
-            }
-            this.cid = cid;
-            this.form = {                ...this.form,
-                ...formData
-            };
-        },
-        handleSearch (val) {
-            this.highlight = true;
-            this.nodeArr = [];
-            this.loading = true;
-            this.val = val;
-            if (val.cid != "") {
-                this.isbac = false;
-                this.nodeArr.push(val.cid);
-                this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                });
-                this.cid = val.cid;
-                if (this.cid == this.channelTree.nid) {
-                    this.isbac = true;
-                    this.highlight = false;
-                }
-            } else {
-                this.isbac = true;
-                this.highlight = false;
-                if (this.cid != this.channelTree.nid) {
-                    this.cid = this.channelTree.nid;
-                    this.treeClone = _.cloneDeep(this.channelTree);
-                }
-                // this.getProgress();
-                // this.getStructure();
-                // this.getRank();
-            }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
-
-        },
-        nodeExpand (data) {
-            this.cid = data.nid;
-            this.isbac = false;
-            this.highlight = true;
-        },
-        handleNodeClick (data) {
-            if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
-                this.isbac = false;
-                this.highlight = true;
-                this.$refs.child.clearKw();
-                if (this.cid === data.nid) {
-                    return;
-                } else if (data.children != undefined) {
-                    this.cid = data.nid;
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
-                }
-            } else {
-                this.highlight = false;
-                this.$message({
-                    type: 'error',
-                    message: '请选择日期',
-                    duration: 2000
-                });
-            }
-
-        },
-        calculatePercent (a, b) {
-            if (b > 0) {
-                const percent = parseInt(a / b * 100);
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            } else {
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
-        },
-        clickIndex (i, idx) {
-            this[`index${i}`] = idx;
-        },
-        showStragety (data) {
-            localStorage.setItem("data", JSON.stringify(data));
-            const {
-                cid,
-                brand,
-                name,
-                subject,
-                time_label,
-                rank
-            } = data;
-            // console.log(cid, brand, name, rank);
-            this.stragetyTitle = `${brand} - ${name} - ${rank}`;
-            const params = {
-                nid: cid,
-                subject: subject,
-                rank: rank,
-                time_label: time_label,
-            };
-            API.GetChannelMatch(params).then(res => {
-                this.stragetyCheckList = [];
-                this.stragety = res.data;
-                for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].is_selected == 1) {
-                        this.stragetyCheckList.push(res.data[i].id);
-                        // console.log(this.stragetyCheckList)
-                    }
-                }
-            });
-
-        }
+  components: {
+    Card,
+    SearchBar,
+    ProYearOnYearTrend,
+    ProportionalStructureAverageComparison,
+    ProportionalStructureAverageComparisonBig,
+    IntelligentSelection,
+    ProTargetAchievement,
+    Radar,
+    ProTargetActualDiffTrend,
+  },
+  data () {
+    return {
+      form: {
+        pt: '日',
+        date: [],
+        search: '',
+        subject: 'S', // S: 销售额 P: 利润额
+        version: '0'
+      },
+      cid: '',
+      loading: false,
+      defaultProps: TREE_PROPS,
+      // index
+      index0: 0,
+      index1: 0,
+      index2: 0,
+      index3: 0,
+      // stragety
+      stragetyCheckList: [],
+      stragetyTitle: '',
+      stragety: [],
+      idArr: [],
+      val: {},
+      post: 1,
+      nodeArr: [],
+      isbac: true,
+      highlight: true,
+      searchBarValue: {
+        pt: '',
+        sDate: '',
+        eDate: ''
+      },
+      treeClone: {},
+    };
+  },
+  computed: {
+    ...mapGetters(['channelTree', 'channelProgressArr', 'channelTrendArr', 'channelRankArr', 'channelStructureArr']),
+    hasTree () {
+      return !_.isEmpty(this.channelTree);
     }
+  },
+  watch: {
+    form: {
+      handler: function () { },
+      deep: true
+    },
+    cid: function () {
+      // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+      this.getTreePrograss();
+      this.getProgress();
+      this.getStructure();
+      this.getRank();
+    }
+  },
+  mounted () {
+    if (!this.hasTree) {
+      this.getTree();
+    } else {
+      this.treeClone = _.cloneDeep(this.channelTree);
+      this.cid = this.channelTree.nid;
+    }
+    // this.initFormDataFromUrl();
+  },
+  methods: {
+    preOrder (node, cid) {
+      for (let i of node) {
+        if (i.nid == cid) {
+          return i;
+        }
+        if (i.children && i.children.length) {
+          if (this.preOrder(i.children, cid)) {
+            return this.preOrder(i.children, cid);
+          }
+        }
+      }
+    },
+    input (val) {
+      this.form.date = val;
+    },
+    click () {
+      if (this.cid == this.channelTree.nid) {
+        return;
+      } else {
+        this.loading = true;
+        //点击发送请求清除搜索框
+        this.$refs.child.clearKw();
+        this.isbac = true;
+        this.highlight = false;
+        this.cid = this.channelTree.nid;
+        setTimeout(() => {
+          this.loading = false;
+        }, 1000);
+      }
+
+    },
+    change () {
+      this.idArr = [];
+      for (let i of this.stragetyCheckList) {
+        let stragetyObj = this.stragety.find(el => {
+          return el.id == i;
+        });
+        this.idArr.push(stragetyObj.id);
+      }
+      // console.log(this.stragetyCheckList, this.idArr);
+    },
+    submit () {
+      let data1 = JSON.parse(localStorage.data);
+      this.$confirm('确认?', {
+        confirmButtonText: '保存',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        const data = {
+          nid: data1.cid,
+          rank: data1.rank,
+          subject: data1.subject,
+          time_label: data1.time_label,
+          strategies: this.idArr.join(',')
+        };
+        API.PostChannelSave(data).then(() => {
+          this.$message({
+            type: 'success',
+            showClose: true,
+            message: '保存成功'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '保存失败',
+            duration: 1500
+          });
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消',
+          duration: 1500
+        });
+      });
+    },
+    getTree () {
+      const params = {
+        subject: this.form.subject,
+        ...this.getPeriodByPt(),
+        version: this.form.version
+      };
+      API.GetChannelTree(params).then(res => {
+        if (this.channelTree.cid == undefined) {
+          this.cid = res.tree.nid;
+        }
+        this.treeClone = _.cloneDeep(res.tree);
+        this.$store.dispatch('SaveChannelTree', res.tree);
+      });
+    },
+    //获取百分比数据
+    getTreePrograss () {
+      const params = {
+        subject: this.form.subject,
+        ...this.getPeriodByPt(),
+        nid: this.cid
+      };
+      API.GetChannelTreePrograss(params).then(res => {
+        let obj = this.preOrder([this.treeClone], this.cid);
+        // console.log(obj,this.cid,res.data);
+        if (obj.nid == this.cid) {
+          obj.real_total = res.data[this.cid].real;
+          obj.target_total = res.data[this.cid].target;
+        }
+        for (let i of obj.children) {
+          if (res.data.hasOwnProperty(i.nid)) {
+            i.real_total = res.data[i.nid].real;
+            i.target_total = res.data[i.nid].target;
+
+          }
+        }
+        this.$store.dispatch('SaveProductTreePrograss', res.data);
+      });
+    },
+    getProgress () {
+      const params = {
+        chId: this.cid,
+        ...this.getPeriodByPt(),
+      };
+      API.GetChannelProgress(params).then(res => {
+        this.$store.dispatch('SaveChannelProgress', res.data);
+        const promises = _.map(res.data, o => this.getTrend(o.subject));
+        Promise.all(promises).then(resultList => {
+          _.forEach(resultList, (v, k) => {
+            v.subject = res.data[k].subject;
+            v.subject_name = res.data[k].subject_name;
+          });
+          this.$store.dispatch('SaveChannelTrendArr', resultList);
+        });
+      });
+    },
+    getTrend (subject) {
+      const params = {
+        chId: this.cid,
+        ...this.getPeriodByPt(),
+        subject: subject
+      };
+      return API.GetChannelTrend(params);
+    },
+    getStructure () {
+      const params = {
+        chId: this.cid,
+        subject: this.form.subject,
+        ...this.getPeriodByPt(),
+      };
+      API.GetChannelStructure(params).then(res => {
+        this.$store.dispatch('SaveChannelStructureArr', res.data);
+      });
+    },
+    getRank () {
+      const params = {
+        chId: this.cid,
+        ...this.getPeriodByPt(),
+      };
+      API.GetChannelRank(params).then(res => {
+        this.$store.dispatch('SaveChannelRankArr', res.data);
+      });
+    },
+    getDateObj () {
+      const {
+        date
+      } = this.form;
+      // console.log(this.val.sDate,date);
+      if (this.val.sDate != undefined && this.val.eDate != undefined) {
+        return {
+          pt: this.val.pt,
+          sDate: this.val.sDate,
+          eDate: this.val.eDate,
+        };
+      } else {
+        return {
+          pt: date.pt,
+          sDate: date.sDate,
+          eDate: date.eDate,
+        };
+      }
+    },
+    getPeriodByPt () {
+      const {
+        pt,
+        sDate,
+        eDate
+      } = this.getDateObj();
+      if (sDate && eDate) { // 计算时间周期
+        return {
+          pt: pt,
+          sDate: sDate,
+          eDate: eDate,
+        };
+      } else {
+        return {
+          pt: '日',
+          sDate: '2018-01-01',
+          eDate: '2018-01-31',
+          // 先写死个时间
+          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+          // eDate: moment().format('YYYY-MM-DD'),
+        };
+      }
+    },
+    initFormDataFromUrl () {
+      const {
+        pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
+      } = this.$route.query;
+      let formData = {
+        pt: pt,
+        subject: subject,
+      };
+      if (moment(sDate).isValid() && moment(eDate).isValid()) {
+        formData.date = [sDate, eDate];
+      }
+      this.cid = cid;
+      this.form = {                ...this.form,
+                                   ...formData
+      };
+    },
+    handleSearch (val) {
+      this.highlight = true;
+      this.nodeArr = [];
+      this.loading = true;
+      this.val = val;
+      if (val.cid != "") {
+        this.isbac = false;
+        this.nodeArr.push(val.cid);
+        this.$nextTick(() => {
+          this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+        });
+        this.cid = val.cid;
+        if (this.cid == this.channelTree.nid) {
+          this.isbac = true;
+          this.highlight = false;
+        }
+      } else {
+        this.isbac = true;
+        this.highlight = false;
+        if (this.cid != this.channelTree.nid) {
+          this.cid = this.channelTree.nid;
+          this.treeClone = _.cloneDeep(this.channelTree);
+        }
+        // this.getProgress();
+        // this.getStructure();
+        // this.getRank();
+      }
+      setTimeout(() => {
+        this.loading = false;
+      }, 1000);
+
+    },
+    nodeExpand (data) {
+      this.cid = data.nid;
+      this.isbac = false;
+      this.highlight = true;
+    },
+    handleNodeClick (data) {
+      if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
+        this.isbac = false;
+        this.highlight = true;
+        this.$refs.child.clearKw();
+        if (this.cid === data.nid) {
+          return;
+        } else if (data.children != undefined) {
+          this.cid = data.nid;
+          this.loading = true;
+          setTimeout(() => {
+            this.loading = false;
+          }, 1000);
+        }
+      } else {
+        this.highlight = false;
+        this.$message({
+          type: 'error',
+          message: '请选择日期',
+          duration: 2000
+        });
+      }
+
+    },
+    calculatePercent (a, b) {
+      if (b > 0) {
+        const percent = parseInt(a / b * 100);
+        const largerThanOne = (a / b) > 1;
+        return {
+          percent,
+          largerThanOne
+        };
+      } else {
+        const percent = 0;
+        const largerThanOne = false;
+        return {
+          percent,
+          largerThanOne
+        };
+      }
+    },
+    clickIndex (i, idx) {
+      this[`index${i}`] = idx;
+    },
+    showStragety (data) {
+      localStorage.setItem("data", JSON.stringify(data));
+      const {
+        cid,
+        brand,
+        name,
+        subject,
+        time_label,
+        rank
+      } = data;
+      // console.log(cid, brand, name, rank);
+      this.stragetyTitle = `${brand} - ${name} - ${rank}`;
+      const params = {
+        nid: cid,
+        subject: subject,
+        rank: rank,
+        time_label: time_label,
+      };
+      API.GetChannelMatch(params).then(res => {
+        this.stragetyCheckList = [];
+        this.stragety = res.data;
+        for (let i = 0; i < res.data.length; i++) {
+          if (res.data[i].is_selected == 1) {
+            this.stragetyCheckList.push(res.data[i].id);
+            // console.log(this.stragetyCheckList)
+          }
+        }
+      });
+
+    }
+  }
 };
 </script>
 

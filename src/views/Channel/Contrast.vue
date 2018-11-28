@@ -109,327 +109,327 @@
 </template>
 
 <script>
-    import API from './api';
-    import Card from '../../components/Card';
-    import SearchBar from 'components/SearchBar';
-    // 组织对比分析和平均值分析
-    import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
-    import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+import API from './api';
+import Card from '../../components/Card';
+import SearchBar from 'components/SearchBar';
+// 组织对比分析和平均值分析
+import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
+import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 
-    import { mapGetters } from 'vuex';
-    const TREE_PROPS = {
-        children: 'children',
-        label: 'name'
+import { mapGetters } from 'vuex';
+const TREE_PROPS = {
+  children: 'children',
+  label: 'name'
+};
+// const TIMEPT = {
+//     '周': 'week',
+//     '月': 'month',
+//     '季': 'quarter',
+//     '年': 'year'
+// };
+
+export default {
+  components: {
+    Card,
+    SearchBar,
+    ConOrgComparisonAverage,
+    ConOrgComparisonAverageBig
+  },
+  data() {
+    return {
+      form: {
+        pt: '日',
+        date: [],
+        search: '',
+        subject: 'S', // S: 销售额 P: 利润额
+        version: '0'
+      },
+      cid:'',
+      loading:false,
+      defaultProps: TREE_PROPS,
+      index0: 0,
+      val:{},
+      post:1,
+      nodeArr:[],
+      cidObjArr:[],
+      cancelKey: '',
+      searchBarValue: {
+        pt: '',
+        sDate: '',
+        eDate: ''
+      },
+      treeClone:{},
     };
-    // const TIMEPT = {
-    //     '周': 'week',
-    //     '月': 'month',
-    //     '季': 'quarter',
-    //     '年': 'year'
-    // };
-
-    export default {
-        components: {
-            Card,
-            SearchBar,
-            ConOrgComparisonAverage,
-            ConOrgComparisonAverageBig
-        },
-        data() {
-            return {
-                form: {
-                    pt: '日',
-                    date: [],
-                    search: '',
-                    subject: 'S', // S: 销售额 P: 利润额
-                    version: '0'
-                },
-                cid:'',
-                loading:false,
-                defaultProps: TREE_PROPS,
-                index0: 0,
-                val:{},
-                post:1,
-                nodeArr:[],
-                cidObjArr:[],
-                cancelKey: '',
-                searchBarValue: {
-                    pt: '',
-                    sDate: '',
-                    eDate: ''
-                },
-                treeClone:{},
-            };
-        },
-        computed: {
-            ...mapGetters(['channelTree','channelProgressArr','channelCompareArr']),
-            hasTree() {
-                return !_.isEmpty(this.channelTree);
-            }
-        },
-        watch: {
-            cidObjArr(val) {
-                if (val.length > 0) {
-                    this.debounce();
-                } else if (val.length === 0) {
-                    this.$store.dispatch('ClearChannelCompareArr');
-                }
-            },
-            cid(){
-                this.getTreePrograss();
-            }
-        },
-        created() {
-            // 防抖函数 减少发请求次数
-            this.debounce = _.debounce(this.getCompare, 1000);
-        },
-        mounted() {
-            if(this.channelTree.children){
-                this.cid = this.channelTree.nid;
-                this.treeClone = _.cloneDeep(this.channelTree);
-                let arr = [];
-                for(let i = 0; i < 3; i++) {
-                    this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
-                }
-                const checkKeys = arr.map(i => i.nid);
-                this.$store.dispatch('SaveChannelTree', this.channelTree).then(() => {
-                    this.$refs.tree.setCheckedKeys(checkKeys);
-                });
-            }else{
-                this.promise();
-            }
+  },
+  computed: {
+    ...mapGetters(['channelTree','channelProgressArr','channelCompareArr']),
+    hasTree() {
+      return !_.isEmpty(this.channelTree);
+    }
+  },
+  watch: {
+    cidObjArr(val) {
+      if (val.length > 0) {
+        this.debounce();
+      } else if (val.length === 0) {
+        this.$store.dispatch('ClearChannelCompareArr');
+      }
+    },
+    cid(){
+      this.getTreePrograss();
+    }
+  },
+  created() {
+    // 防抖函数 减少发请求次数
+    this.debounce = _.debounce(this.getCompare, 1000);
+  },
+  mounted() {
+    if(this.channelTree.children){
+      this.cid = this.channelTree.nid;
+      this.treeClone = _.cloneDeep(this.channelTree);
+      let arr = [];
+      for(let i = 0; i < 3; i++) {
+        this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
+      }
+      const checkKeys = arr.map(i => i.nid);
+      this.$store.dispatch('SaveChannelTree', this.channelTree).then(() => {
+        this.$refs.tree.setCheckedKeys(checkKeys);
+      });
+    }else{
+      this.promise();
+    }
             
-        },
-        methods: {
-            promise(){
-                Promise.all([this.getTree(), this.getProgress()]).then(res => {
-                    // 树
-                    const treeData = res[0];
-                    this.cid = treeData.tree.nid;
-                    this.treeClone = _.cloneDeep(treeData.tree);
-                    const children = treeData.tree.children;
-                    let arr = [];
-                    for(let i = 0; i < 3; i++) {
-                        children[i] && arr.push(children[i]);
-                    }
-                    const checkKeys = arr.map(i => i.nid);
-                    this.$store.dispatch('SaveChannelTree', treeData.tree).then(() => {
-                        this.$refs.tree.setCheckedKeys(checkKeys);
-                    });
-                    // 指标
-                    const progressData = res[1];
-                    this.$store.dispatch('SaveChannelProgress', progressData.data);
-                });
-            },
-            preOrder(node,cid){
-                for(let i of node){
-                    if (i.nid == cid) {
-                        return i;
-                    }
-                    if(i.children && i.children.length){
-                        if (this.preOrder(i.children, cid)) {
-                            return this.preOrder(i.children,cid);
-                        }
-                    }
-                }
-            },
-            input(val){
-                this.form.date = val;
-            },
-            getTree() {
-                const params = {
-                    subject: this.form.subject,
-                    ...this.getPeriodByPt(),
-                    // version: this.form.version
-                };
-                return API.GetChannelTree(params);
-            },
-            //获取百分比数据
-            getTreePrograss(){
-                const params = {
-                    subject:this.form.subject,
-                    ...this.getPeriodByPt(),
-                    nid:this.cid
-                };
-                API.GetChannelTreePrograss(params).then(res=>{
-                    let obj = this.preOrder([this.treeClone], this.cid);
-                    // console.log(obj,this.cid,res.data);
-                    if(obj.nid == this.cid){
-                        obj.real_total = res.data[this.cid].real;
-                        obj.target_total = res.data[this.cid].target;
-                    }
-                    for(let i of obj.children){
-                        if(res.data.hasOwnProperty(i.nid)){
-                            i.real_total = res.data[i.nid].real;
-                            i.target_total = res.data[i.nid].target;
-                        }
-                    }
-                    this.$store.dispatch('SaveProductTreePrograss', res.data);
-                });
-            },
-            getProgress() {
-                const params = {
-                    chId :1,
-                    ...this.getPeriodByPt(),
-                };
-                return API.GetChannelProgress(params);
-            },
-            getCompare() {
-                if(!this.cidObjArr.length){
-                    return;
-                }
-                const promises = _.map(this.channelProgressArr, o => this.getTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = this.channelProgressArr[k].subject;
-                        v.subject_name = this.channelProgressArr[k].subject_name;
-                    });
-                    const cidName = this.cidObjArr.map(o => o.name);
-                    // console.log(cidName);
-                    // 只有当返回的跟当前选中的一样才更新 store
-                    if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
-                        this.$store.dispatch('SaveChannelCompareArr', resultList);
-                    }
-                });
-            },
-            getTrend(subject) {
-                let params = {
-                    ...this.getPeriodByPt(),
-                    subject: subject
-                };
-                const checkKeys = this.cidObjArr.map(i => i.nid);
-                params.targets = checkKeys.join(',');
-                return API.GetChannelCompare(params);
-            },
-            getPeriodByPt() {
-                const {
-                    sDate,
-                    eDate
-                } = this.getDateObj();
-                // const {
-                //     pt
-                // } = this.form;
-                // console.log(sDate,eDate);
-                if(sDate && eDate) { // 计算时间周期
-                        return {
-                            pt:this.val.pt,
-                            sDate: this.val.sDate,
-                            eDate: this.val.eDate,
-                            
-                        };
-                   
-                } else {
-                    return {
-                        pt:'日',
-                        sDate: '2018-01-01',
-                        eDate: '2018-01-05',
-                        // 先写死个时间
-                        // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                        // eDate: moment().format('YYYY-MM-DD'),
-                    };
-                }
-            },
-            getDateObj() {
-                const {
-                    date
-                } = this.form;
-                if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
-                    return {
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-                }else{
-                    return {
-                    sDate: date[0] || '',
-                    eDate: date[1] || '',
-                };
-                }
-            },
-            handleSearch(val) {
-                this.nodeArr = [];
-                this.loading = true;
-                this.val = val;
-                if(val.cid!=""){
-                    this.nodeArr.push(val.cid);
-                    this.$nextTick(() => {
-                            this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                    });
-                    this.cid = val.cid;
-                }else{
-                    this.getTree();
-                    this.getCompare();
-                }
-                setTimeout(() => {		       
-                    this.loading = false;
-                }, 1000);
-                
-            },
-            cleanChecked() {
-                this.cidObjArr = [];
-                this.$refs.tree.setCheckedKeys([]);
-            },
-            nodeExpand(data){
-                this.cid = data.nid;
-                this.isbac = false;
-                this.highlight = true;
-            },
-            handleCheckChange(data, checked) {
-                // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
-                if(!checked && this.cancelKey && data.nid === this.cancelKey) {
-                    return;
-                }
-                if (checked) { // 如果选中
-                    // 如果有选中的节点 并且此次选择了不同pid的节点
-                    if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
-                        this.warn('请选择相同父级下的进行对比');
-                        this.cancelKey = data.nid;
-                        const checkKeys = this.cidObjArr.map(i => i.nid);
-                        this.$refs.tree.setCheckedKeys(checkKeys);
-                        return;
-                    }
-                    // 如果选中的个数不超过 4
-                    if (this.cidObjArr.length < 4) {
-                        this.cidObjArr.push(data);
-                    } else if (this.cidObjArr.length === 4) {
-                        this.warn('最多对比 4 条');
-                        this.cancelKey = data.nid;
-                        const checkKeys = this.cidObjArr.map(i => i.nid);
-                        this.$refs.tree.setCheckedKeys(checkKeys);
-                    }
-                } else { // 如果取消选择
-                    // 找到取消选择的下标
-                    const index = _.findIndex(this.cidObjArr, item => item.nid === data.nid);
-                    this.cidObjArr.splice(index, 1);
-                }
-            },
-            warn(msg) {
-                this.$message({
-                    message: msg,
-                    type: 'warning'
-                });
-            },
-            clickIndex(i, idx) {
-                this[`index${i}`] = idx;
-            },
-            calculatePercent(a, b) {
-                if(b > 0) {
-                    const percent = parseInt(a / b * 100);
-                    const largerThanOne = (a / b) > 1;
-                    return {
-                        percent,
-                        largerThanOne
-                    };
-                }else{
-                    const percent = 0;
-                    const largerThanOne = false;
-                    return {
-                        percent,
-                        largerThanOne
-                    };
-                }
-            },
+  },
+  methods: {
+    promise(){
+      Promise.all([this.getTree(), this.getProgress()]).then(res => {
+        // 树
+        const treeData = res[0];
+        this.cid = treeData.tree.nid;
+        this.treeClone = _.cloneDeep(treeData.tree);
+        const children = treeData.tree.children;
+        let arr = [];
+        for(let i = 0; i < 3; i++) {
+          children[i] && arr.push(children[i]);
         }
-    };
+        const checkKeys = arr.map(i => i.nid);
+        this.$store.dispatch('SaveChannelTree', treeData.tree).then(() => {
+          this.$refs.tree.setCheckedKeys(checkKeys);
+        });
+        // 指标
+        const progressData = res[1];
+        this.$store.dispatch('SaveChannelProgress', progressData.data);
+      });
+    },
+    preOrder(node,cid){
+      for(let i of node){
+        if (i.nid == cid) {
+          return i;
+        }
+        if(i.children && i.children.length){
+          if (this.preOrder(i.children, cid)) {
+            return this.preOrder(i.children,cid);
+          }
+        }
+      }
+    },
+    input(val){
+      this.form.date = val;
+    },
+    getTree() {
+      const params = {
+        subject: this.form.subject,
+        ...this.getPeriodByPt(),
+        // version: this.form.version
+      };
+      return API.GetChannelTree(params);
+    },
+    //获取百分比数据
+    getTreePrograss(){
+      const params = {
+        subject:this.form.subject,
+        ...this.getPeriodByPt(),
+        nid:this.cid
+      };
+      API.GetChannelTreePrograss(params).then(res=>{
+        let obj = this.preOrder([this.treeClone], this.cid);
+        // console.log(obj,this.cid,res.data);
+        if(obj.nid == this.cid){
+          obj.real_total = res.data[this.cid].real;
+          obj.target_total = res.data[this.cid].target;
+        }
+        for(let i of obj.children){
+          if(res.data.hasOwnProperty(i.nid)){
+            i.real_total = res.data[i.nid].real;
+            i.target_total = res.data[i.nid].target;
+          }
+        }
+        this.$store.dispatch('SaveProductTreePrograss', res.data);
+      });
+    },
+    getProgress() {
+      const params = {
+        chId :1,
+        ...this.getPeriodByPt(),
+      };
+      return API.GetChannelProgress(params);
+    },
+    getCompare() {
+      if(!this.cidObjArr.length){
+        return;
+      }
+      const promises = _.map(this.channelProgressArr, o => this.getTrend(o.subject));
+      Promise.all(promises).then(resultList => {
+        _.forEach(resultList, (v, k) => {
+          v.subject = this.channelProgressArr[k].subject;
+          v.subject_name = this.channelProgressArr[k].subject_name;
+        });
+        const cidName = this.cidObjArr.map(o => o.name);
+        // console.log(cidName);
+        // 只有当返回的跟当前选中的一样才更新 store
+        if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
+          this.$store.dispatch('SaveChannelCompareArr', resultList);
+        }
+      });
+    },
+    getTrend(subject) {
+      let params = {
+        ...this.getPeriodByPt(),
+        subject: subject
+      };
+      const checkKeys = this.cidObjArr.map(i => i.nid);
+      params.targets = checkKeys.join(',');
+      return API.GetChannelCompare(params);
+    },
+    getPeriodByPt() {
+      const {
+        sDate,
+        eDate
+      } = this.getDateObj();
+      // const {
+      //     pt
+      // } = this.form;
+      // console.log(sDate,eDate);
+      if(sDate && eDate) { // 计算时间周期
+        return {
+          pt:this.val.pt,
+          sDate: this.val.sDate,
+          eDate: this.val.eDate,
+                            
+        };
+                   
+      } else {
+        return {
+          pt:'日',
+          sDate: '2018-01-01',
+          eDate: '2018-01-05',
+          // 先写死个时间
+          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+          // eDate: moment().format('YYYY-MM-DD'),
+        };
+      }
+    },
+    getDateObj() {
+      const {
+        date
+      } = this.form;
+      if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+        return {
+          sDate: this.val.sDate,
+          eDate: this.val.eDate,
+        };
+      }else{
+        return {
+          sDate: date[0] || '',
+          eDate: date[1] || '',
+        };
+      }
+    },
+    handleSearch(val) {
+      this.nodeArr = [];
+      this.loading = true;
+      this.val = val;
+      if(val.cid!=""){
+        this.nodeArr.push(val.cid);
+        this.$nextTick(() => {
+          this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+        });
+        this.cid = val.cid;
+      }else{
+        this.getTree();
+        this.getCompare();
+      }
+      setTimeout(() => {		       
+        this.loading = false;
+      }, 1000);
+                
+    },
+    cleanChecked() {
+      this.cidObjArr = [];
+      this.$refs.tree.setCheckedKeys([]);
+    },
+    nodeExpand(data){
+      this.cid = data.nid;
+      this.isbac = false;
+      this.highlight = true;
+    },
+    handleCheckChange(data, checked) {
+      // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
+      if(!checked && this.cancelKey && data.nid === this.cancelKey) {
+        return;
+      }
+      if (checked) { // 如果选中
+        // 如果有选中的节点 并且此次选择了不同pid的节点
+        if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
+          this.warn('请选择相同父级下的进行对比');
+          this.cancelKey = data.nid;
+          const checkKeys = this.cidObjArr.map(i => i.nid);
+          this.$refs.tree.setCheckedKeys(checkKeys);
+          return;
+        }
+        // 如果选中的个数不超过 4
+        if (this.cidObjArr.length < 4) {
+          this.cidObjArr.push(data);
+        } else if (this.cidObjArr.length === 4) {
+          this.warn('最多对比 4 条');
+          this.cancelKey = data.nid;
+          const checkKeys = this.cidObjArr.map(i => i.nid);
+          this.$refs.tree.setCheckedKeys(checkKeys);
+        }
+      } else { // 如果取消选择
+        // 找到取消选择的下标
+        const index = _.findIndex(this.cidObjArr, item => item.nid === data.nid);
+        this.cidObjArr.splice(index, 1);
+      }
+    },
+    warn(msg) {
+      this.$message({
+        message: msg,
+        type: 'warning'
+      });
+    },
+    clickIndex(i, idx) {
+      this[`index${i}`] = idx;
+    },
+    calculatePercent(a, b) {
+      if(b > 0) {
+        const percent = parseInt(a / b * 100);
+        const largerThanOne = (a / b) > 1;
+        return {
+          percent,
+          largerThanOne
+        };
+      }else{
+        const percent = 0;
+        const largerThanOne = false;
+        return {
+          percent,
+          largerThanOne
+        };
+      }
+    },
+  }
+};
 </script>
 
 <style lang="scss">
