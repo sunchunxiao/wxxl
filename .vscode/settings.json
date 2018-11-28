@@ -39,9 +39,9 @@
       "wrap_attributes": "force" //属性强制折行对齐
     }
   },
-  "editor.tabSize": 4,
-  "emmet.includeLanguages": {
-    "vue-html": "html",
-    "javascript": "javascriptreact"
-  }
+  "editor.tabSize": 4
+  // "emmet.includeLanguages": {
+  //   "vue-html": "html",
+  //   "javascript": "javascriptreact"
+  // }
 }

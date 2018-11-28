@@ -7,7 +7,8 @@
         v-model="searchBarValue"
         placeholder="产品编号/产品名称"
         @input="input"
-        url="/product/search"/>
+        url="/product/search"
+      />
     </el-row>
     <el-row 
       class="content_row" 
@@ -121,26 +122,26 @@
 </template>
 
 <script>
-	import API from './api';
-	import SearchBar from 'components/SearchBar';
-	import Card from '../../components/Card';
-	// 组织对比分析和平均值分析
-	import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
-	import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+import API from './api';
+import SearchBar from 'components/SearchBar';
+import Card from '../../components/Card';
+// 组织对比分析和平均值分析
+import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
+import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 
-	import {
-		mapGetters
-	} from 'vuex';
-	const TREE_PROPS = {
-		children: 'children',
-		label: 'name'
-	};
-	// const TIMEPT = {
-	// 	'周': 'week',
-	// 	'月': 'month',
-	// 	'季': 'quarter',
-	// 	'年': 'year'
-	// };
+import {
+	mapGetters
+} from 'vuex';
+const TREE_PROPS = {
+	children: 'children',
+	label: 'name'
+};
+// const TIMEPT = {
+// 	'周': 'week',
+// 	'月': 'month',
+// 	'季': 'quarter',
+// 	'年': 'year'
+// };
 
 export default {
 		components: {
@@ -439,8 +440,9 @@ export default {
 						}
 				},
 		}
+
 };
 </script>
 <style lang="scss">
-	@import './style/optimization.scss'
+@import './style/optimization.scss';
 </style>

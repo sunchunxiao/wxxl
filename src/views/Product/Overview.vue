@@ -5,16 +5,16 @@
         @search="handleSearch"
         @input="input"
         url="/product/search"
-        placeholder="产品编号/产品名称"
+        placeholder="产品编号/产品名称" 
         v-model="searchBarValue"
         ref="child"
         :pt-options="['日', '周', '月', '季', '年']" />
     </el-row>
     <el-row 
-      class="content_row"
+      class="content_row" 
       :gutter="20">
       <el-col 
-        :span="5"
+        :span="5" 
         class="tree_container">
         <div v-if="hasTree">
           <div class="title">毛利目标达成率</div>
@@ -25,7 +25,6 @@
             class="company">
             <span class="left label">{{ treeClone.name }}</span>
             <span
-              v-if="treeClone.real_total"
               :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
               class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
             <div 
@@ -49,7 +48,7 @@
             class="custom-tree-node"
             slot-scope="{ node, data }">
             <el-tooltip 
-              class="item"
+              class="item" 
               effect="dark"
               placement="right">
               <div slot="content">
@@ -122,7 +121,7 @@
           </Card>
         </el-row>
         <el-row 
-          v-loading="loading"
+          v-loading="loading" 
           class="margin-top-10">
           <Card>
             <el-row class="card-title">同比环比趋势分析</el-row>
@@ -297,7 +296,6 @@ export default {
     watch: {
         cid () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            // 暂时先在这里做
             this.getTreePrograss();
             this.getProgress();
             this.getStructure();
@@ -334,7 +332,6 @@ export default {
                     this.loading = false;
                 }, 1000);
             }
-
         },
         change () {
             this.idArr = [];
@@ -633,5 +630,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./style/overview.scss";
+@import './style/overview.scss';
 </style>

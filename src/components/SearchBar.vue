@@ -10,9 +10,9 @@
         <el-select v-model="form.pt">
           <template v-for="item in units">
             <el-option 
-              :label="item"
-              :value="item"
-              :key="item" />
+              :label="item" 
+              :value="item" 
+              :key="item"/>
           </template>
         </el-select>
       </el-form-item>
@@ -216,26 +216,47 @@ export default {
       required: true
     },
     placeholder: String,
-    ptOptions: Array,
+    ptOptions: {
+      type: Array,
+      default: function () { return ['日', '周', '月', '季', '年']; }
+    },
   },
   mounted () {
-    const endTimeSet = process.env.VUE_APP_END_TIME_SET;
-    if (endTimeSet && _.isDate(new Date(endTimeSet))) {
-      this.form.dayRange = [
-        moment(endTimeSet).subtract(1, 'M').format('YYYY-MM-DD'),
-        endTimeSet
-      ];
+    if (!_.isEmpty(this.date)) {
+      if (_.isArray(this.units) && this.units.length) {
+        if (_.includes(this.units, this.date.pt)) {
+          this.form = _.cloneDeep(this.date);
+        } else {
+          let obj = _.cloneDeep(this.date);
+          obj.pt = this.units[0];
+          this.form = obj;
+        }
+      }
+
     } else {
-      // 前一个月 - 昨天
-      this.form.dayRange = [
-        moment().subtract(1, 'd').subtract(1, 'M').format('YYYY-MM-DD'),
-        moment().subtract(1, 'd').format('YYYY-MM-DD')
-      ];
+      if (!_.includes(this.units, this.form.pt)) {
+        this.form.pt = this.units[0];
+      } else {
+        const endTimeSet = process.env.VUE_APP_END_TIME_SET;
+        if (endTimeSet && _.isDate(new Date(endTimeSet))) {
+          this.form.dayRange = [
+            moment(endTimeSet).subtract(1, 'M').format('YYYY-MM-DD'),
+            endTimeSet
+          ];
+        } else {
+          // 前一个月 - 昨天
+          this.form.dayRange = [
+            moment().subtract(1, 'd').subtract(1, 'M').format('YYYY-MM-DD'),
+            moment().subtract(1, 'd').format('YYYY-MM-DD')
+          ];
+        }
+      }
     }
     this.handleFormChange(this.form);
+
   },
   computed: {
-    ...mapGetters(['productDateArr']),
+    ...mapGetters(['productDateArr', 'date']),
     cptPlaceholder () {
       return this.placeholder;
     },
@@ -350,12 +371,17 @@ export default {
     }
   },
   watch: {
-    form: {
+    form: [{
       handler: function (val) {
         this.handleFormChange(val);
       },
       deep: true
-    },
+    }, {
+      handler: function (val) {
+        this.$store.dispatch('SaveDate', _.cloneDeep(val));
+      },
+      deep: true
+    }],
     kw: function (val) {
       // 搜索框内容修改时 清空 cid
       if (val == '') {
@@ -372,7 +398,7 @@ export default {
       if (!obj.eDate || obj.eDate === 'Invalid date') {
         obj.eDate = '';
       }
-      // this.$store.dispatch('SaveProductDate', obj);
+      this.$store.dispatch('SaveProductDate', obj);
       this.$emit('input', obj);
     },
     clearKw () {
@@ -388,8 +414,8 @@ export default {
         obj.sDate = dayRange ? dayRange[0] : '';
         obj.eDate = dayRange ? dayRange[1] : '';
       } else if (pt === '周') {
-        obj.sDate = moment(weekStart).startOf('week').format('YYYY-MM-DD');
-        obj.eDate = moment(weekEnd).endOf('week').format('YYYY-MM-DD');
+        obj.sDate = moment(weekStart).startOf('week').add(1, 'd').format('YYYY-MM-DD');
+        obj.eDate = moment(weekEnd).endOf('week').add(1, 'd').format('YYYY-MM-DD');
       } else if (pt === '月') {
         obj.sDate = moment(monthStart).format('YYYY-MM-DD');
         obj.eDate = moment(monthEnd).endOf('month').format('YYYY-MM-DD');
@@ -454,4 +480,3 @@ export default {
   }
 }
 </style>
-
