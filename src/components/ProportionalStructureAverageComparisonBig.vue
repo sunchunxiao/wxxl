@@ -2,7 +2,7 @@
   <div class="averagebar-container">
     <div 
       class="averagebar" 
-      :id="`averagebar-${id}`"/>
+      :id="`averagebar-${id}`" />
     <div class="detail">{{ data.subject_name }}</div>
   </div>
 </template>

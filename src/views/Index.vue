@@ -17,7 +17,7 @@
           <img 
             class="logo" 
             src="http://img2.58tu.com/sitepublic/images/wuxiangxiaolv/logo.png" 
-            alt="logo" >
+            alt="logo">
         </a>
         <ul class="nav">
           <li>

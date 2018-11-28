@@ -12,7 +12,7 @@
             <el-option 
               :label="item" 
               :value="item" 
-              :key="item"/>
+              :key="item" />
           </template>
         </el-select>
       </el-form-item>

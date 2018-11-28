@@ -4,7 +4,7 @@
       <search-bar 
         @search="handleSearch"
         ref="child"
-        url="/product/search"/>
+        url="/product/search" />
     </el-row>
     <el-row 
       class="content_row padding_top " 
@@ -14,7 +14,7 @@
         class="tree_container1">
         <div class="homeSlider">
           <div class="slider_header">首页</div>
-          <div class="slider_menu" >
+          <div class="slider_menu">
             <div class="menu_company"><span class="company_before" /> 公司关键经营指标</div>
             <template v-for="(item,index) in menuData">
               <a 
@@ -50,7 +50,7 @@
                         :key="index">
                         <ProTargetAchievement 
                           :id="`${index}`" 
-                          :data="item"/>
+                          :data="item" />
                       </el-col>
                     </template>
                   </el-col>
@@ -64,7 +64,7 @@
                     @click.native="clickIndex(1 ,index)">
                     <ProTargetActualDiffTrend 
                       :id="`${index}`" 
-                      :data="item"/>
+                      :data="item" />
                   </el-col>
                 </template>
               </div>
@@ -87,10 +87,10 @@
                     <template v-for="(item, index) in pieDataProduce">
                       <el-col 
                         v-if="progressArr.length>0"
-                        :key="index" >
+                        :key="index">
                         <ProTargetAchievement 
                           :id="`${index+progressArr.length}`" 
-                          :data="item"/>
+                          :data="item" />
                       </el-col>
                     </template>
                   </el-col>
@@ -105,7 +105,7 @@
                     @click.native="clickIndex(1 ,index)">
                     <ProTargetActualDiffTrend 
                       :id="`${index+trendArr.length}`" 
-                      :data="item"/>
+                      :data="item" />
                   </el-col>
                 </template>
               </div>
@@ -128,10 +128,10 @@
                     <template v-for="(item, index) in pieData1">
                       <el-col 
                         v-if="progressArr.length>0"
-                        :key="index" >
+                        :key="index">
                         <ProTargetAchievement 
                           :id="`${index+progressArr.length*2}`" 
-                          :data="item"/>
+                          :data="item" />
                       </el-col>
                     </template>
                   </el-col>
@@ -146,7 +146,7 @@
                     @click.native="clickIndex(1 ,index)">
                     <ProTargetActualDiffTrend 
                       :id="`${index+trendArr.length*2}`" 
-                      :data="item"/>
+                      :data="item" />
                   </el-col>
                 </template>
               </div>
@@ -173,7 +173,7 @@
                         @click.native="clickIndex(0 ,index)">
                         <ProTargetAchievement 
                           :id="`${index+progressArr.length*3}`" 
-                          :data="item"/>
+                          :data="item" />
                       </el-col>
                     </template>
                   </el-col>
@@ -188,7 +188,7 @@
                     @click.native="clickIndex(1 ,index)">
                     <ProTargetActualDiffTrend 
                       :id="`${index+trendArr.length*3}`" 
-                      :data="item"/>
+                      :data="item" />
                   </el-col>
                 </template>
               </div>
@@ -215,7 +215,7 @@
                         @click.native="clickIndex(0 ,index)">
                         <ProTargetAchievement 
                           :id="`${index+progressArr.length*4}`" 
-                          :data="item"/>
+                          :data="item" />
                       </el-col>
                     </template>
                   </el-col>
@@ -230,7 +230,7 @@
                     @click.native="clickIndex(1 ,index)">
                     <ProTargetActualDiffTrend 
                       :id="`${index+trendArr.length*4}`" 
-                      :data="item"/>
+                      :data="item" />
                   </el-col>
                 </template>
               </div>
@@ -257,7 +257,7 @@
                         @click.native="clickIndex(0 ,index)">
                         <ProTargetAchievement 
                           :id="`${index+progressArr.length*5}`" 
-                          :data="item"/>
+                          :data="item" />
                       </el-col>
                     </template>
                   </el-col>
@@ -272,7 +272,7 @@
                     @click.native="clickIndex(1 ,index)">
                     <ProTargetActualDiffTrend 
                       :id="`${index+trendArr.length*5}`" 
-                      :data="item"/>
+                      :data="item" />
                   </el-col>
                 </template>
               </div>

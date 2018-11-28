@@ -5,13 +5,13 @@
         :model="form" 
         :rules="rules" 
         ref="form" 
-        label-width="100px" >
+        label-width="100px">
         <el-form-item 
           label="用户名" 
           prop="username">
           <el-input 
             v-model="form.username" 
-            ref="username"/>
+            ref="username" />
         </el-form-item>
         <el-form-item 
           label="密码" 
@@ -19,7 +19,7 @@
           <el-input 
             type="password" 
             v-model="form.password" 
-            @keyup.enter.native="submitForm('form')"/>
+            @keyup.enter.native="submitForm('form')" />
         </el-form-item>
         <el-form-item>
           <el-button 

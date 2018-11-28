@@ -5,8 +5,7 @@
         @search="handleSearch" 
         ref="child"
         url="/cus/search"
-        placeholder="客户编号/客户名称"
-      />
+        placeholder="客户编号/客户名称" />
     </el-row>
     <el-row 
       class="content_row" 
@@ -23,10 +22,10 @@
           <span class="left label">{{ customerTree.name }}</span>
           <span
             :class="{percent: true, red: !calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne, blue: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
-            class="right" >{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
+            class="right">{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
           <div 
             :class="{comprogress: true, 'border-radius0': calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne ? '105%' : `${calculatePercent(customerTree.real_total, customerTree.target_total).percent + 5}%`}"/>
+            :style="{width: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne ? '105%' : `${calculatePercent(customerTree.real_total, customerTree.target_total).percent + 5}%`}" />
         </div>
         <!-- 有多个tree -->
         <el-tree 
@@ -45,7 +44,7 @@
             <el-tooltip 
               class="item" 
               effect="dark" 
-              placement="right" > 
+              placement="right"> 
               <div slot="content">
                 <div class="tooltip_margin bold">品类:{{ data.name }}</div>
                 <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
@@ -63,7 +62,7 @@
             <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span> -->
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
-              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}"/>
+              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
           </span>
         </el-tree>
       </el-col>
@@ -84,16 +83,16 @@
                   <el-table-column :label="`${item.start_date} - ${item.end_date}`">
                     <el-table-column 
                       prop="subject_name" 
-                      label="指标"/>
+                      label="指标" />
                     <el-table-column 
                       prop="inf_name" 
-                      label="影响因素"/>
+                      label="影响因素" />
                     <el-table-column 
                       prop="strategy" 
-                      label="应用策略"/>
+                      label="应用策略" />
                     <el-table-column 
                       prop="rank_name" 
-                      label="评选结果"/>
+                      label="评选结果" />
                     <el-table-column 
                       prop="ring_rate" 
                       label="环比增长率">

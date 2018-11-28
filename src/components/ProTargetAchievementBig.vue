@@ -2,7 +2,7 @@
   <div class="pie-container">
     <div 
       class="pie" 
-      :id="`pie-${id}`"/>
+      :id="`pie-${id}`" />
     <div class="detail">
       <span class="text">目标: </span>
       <span class="value">{{ target }}</span>

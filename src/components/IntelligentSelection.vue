@@ -2,7 +2,7 @@
   <div class="heatmap-container">
     <div
       class="heatmap"
-      :id="`heatmap-${id}`"/>
+      :id="`heatmap-${id}`" />
       <!-- <div class="detail">{{title}}</div> -->
   </div>
 </template>

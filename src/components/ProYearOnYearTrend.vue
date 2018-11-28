@@ -2,7 +2,7 @@
   <div class="trendline-container">
     <div 
       class="trendline" 
-      :id="`trendline-${id}`"/>
+      :id="`trendline-${id}`" />
     <div class="detail">{{ data.subject_name }}</div>
   </div>
 </template>
