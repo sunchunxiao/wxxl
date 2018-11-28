@@ -301,47 +301,44 @@ export default {
       params.targets = checkKeys.join(',');
       return API.GetChannelCompare(params);
     },
-    getPeriodByPt() {
+    getPeriodByPt () {
       const {
+        pt,
         sDate,
         eDate
       } = this.getDateObj();
-      // const {
-      //     pt
-      // } = this.form;
+
       // console.log(sDate,eDate);
-      if(sDate && eDate) { // 计算时间周期
+      if (sDate && eDate) { // 计算时间周期
         return {
-          pt:this.val.pt,
-          sDate: this.val.sDate,
-          eDate: this.val.eDate,
-                            
+          pt: pt,
+          sDate: sDate,
+          eDate: eDate,
         };
-                   
       } else {
         return {
-          pt:'日',
+          pt: '日',
           sDate: '2018-01-01',
-          eDate: '2018-01-05',
-          // 先写死个时间
-          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-          // eDate: moment().format('YYYY-MM-DD'),
+          eDate: '2018-01-07',
         };
       }
     },
-    getDateObj() {
+    getDateObj () {
       const {
         date
       } = this.form;
-      if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+      // console.log(this.val.sDate,date);
+      if (this.val.sDate != undefined && this.val.eDate != undefined) {
         return {
+          pt: this.val.pt,
           sDate: this.val.sDate,
           eDate: this.val.eDate,
         };
-      }else{
+      } else {
         return {
-          sDate: date[0] || '',
-          eDate: date[1] || '',
+          pt: date.pt,
+          sDate: date.sDate,
+          eDate: date.eDate,
         };
       }
     },

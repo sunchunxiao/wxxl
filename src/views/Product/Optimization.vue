@@ -382,6 +382,9 @@ export default {
           if (this.cid != this.productTree.cid) {
             this.cid = this.productTree.cid;
             this.treeClone = _.cloneDeep(this.productTree);
+          }else{
+            this.getTreePrograss();
+            this.getHistory();
           }
 
         }

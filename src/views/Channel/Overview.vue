@@ -522,9 +522,7 @@ export default {
         formData.date = [sDate, eDate];
       }
       this.cid = cid;
-      this.form = {                ...this.form,
-                                   ...formData
-      };
+      this.form = { ...this.form,...formData };
     },
     handleSearch (val) {
       this.highlight = true;
@@ -548,10 +546,13 @@ export default {
         if (this.cid != this.channelTree.nid) {
           this.cid = this.channelTree.nid;
           this.treeClone = _.cloneDeep(this.channelTree);
+        }else{
+          this.getTreePrograss();
+          this.getProgress();
+          this.getStructure();
+          this.getRank();
         }
-        // this.getProgress();
-        // this.getStructure();
-        // this.getRank();
+        
       }
       setTimeout(() => {
         this.loading = false;
