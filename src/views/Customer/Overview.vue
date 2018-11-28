@@ -202,383 +202,383 @@
 </template>
 
 <script>
-    import API from './api';
-	import moment from 'moment';
-    import Card from '../../components/Card';
-    import SearchBar from 'components/SearchBarOrg';
-    // 目标达成情况总览
-    import ProTargetAchievement from '../../components/ProTargetAchievement';
-    import Radar from '../../components/radar';
-    // 目标-实际-差异趋势分析
-    import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
+import API from './api';
+import moment from 'moment';
+import Card from '../../components/Card';
+import SearchBar from 'components/SearchBarOrg';
+// 目标达成情况总览
+import ProTargetAchievement from '../../components/ProTargetAchievement';
+import Radar from '../../components/radar';
+// 目标-实际-差异趋势分析
+import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
     
-    // 同比环比趋势分析
-    import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
-    // import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
-    // 比例结构与平均值对比分析
-    import ProportionalStructureAverageComparison from '../../components/ProportionalStructureAverageComparison';
-    import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
-    // 智能评选和智能策略
-    import IntelligentSelection from '../../components/IntelligentSelection';
-    //vuex
-    import { mapGetters } from 'vuex';
+// 同比环比趋势分析
+import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
+// import ProYearOnYearTrendBig from '../../components/ProYearOnYearTrendBig';
+// 比例结构与平均值对比分析
+import ProportionalStructureAverageComparison from '../../components/ProportionalStructureAverageComparison';
+import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
+// 智能评选和智能策略
+import IntelligentSelection from '../../components/IntelligentSelection';
+//vuex
+import { mapGetters } from 'vuex';
 
-    const TREE_PROPS = {
-        children: 'children',
-        label: 'name'
+const TREE_PROPS = {
+  children: 'children',
+  label: 'name'
+};
+// const TIMEPT = {
+//     '周': 'week',
+//     '月': 'month',
+//     '季': 'quarter',
+//     '年': 'year'
+// };
+
+export default {
+  components: {
+    Card,
+    SearchBar,
+    ProYearOnYearTrend,
+    // ProYearOnYearTrendBig,
+    ProportionalStructureAverageComparison,
+    ProportionalStructureAverageComparisonBig,
+    IntelligentSelection,
+    ProTargetAchievement,
+    Radar,
+    ProTargetActualDiffTrend,
+  },
+  data() {
+    return {
+      form: {
+        pt: '月',
+        date: [],
+        search: '',
+        subject: 'S', // S: 销售额 P: 利润额
+        version: '0'
+      },
+      cid:'',
+      loading: false,
+      defaultProps: TREE_PROPS,
+      // index
+      index0: 0,
+      index1: 0,
+      index2: 0,
+      index3: 0,
+      // stragety
+      stragetyCheckList: [],
+      stragetyTitle: '',
+      stragety: [],
+      idArr:[],
+      val:{},
+      post:1,
+      nodeArr:[],
+      isbac:true,
+      highlight:true,
     };
-    // const TIMEPT = {
-    //     '周': 'week',
-    //     '月': 'month',
-    //     '季': 'quarter',
-    //     '年': 'year'
-    // };
-
-    export default {
-        components: {
-            Card,
-            SearchBar,
-            ProYearOnYearTrend,
-            // ProYearOnYearTrendBig,
-            ProportionalStructureAverageComparison,
-            ProportionalStructureAverageComparisonBig,
-            IntelligentSelection,
-            ProTargetAchievement,
-            Radar,
-            ProTargetActualDiffTrend,
-        },
-        data() {
-            return {
-                form: {
-                    pt: '月',
-                    date: [],
-                    search: '',
-                    subject: 'S', // S: 销售额 P: 利润额
-                    version: '0'
-                },
-                cid:'',
-                loading: false,
-                defaultProps: TREE_PROPS,
-                // index
-                index0: 0,
-                index1: 0,
-                index2: 0,
-                index3: 0,
-                // stragety
-                stragetyCheckList: [],
-                stragetyTitle: '',
-                stragety: [],
-                idArr:[],
-                val:{},
-				post:1,
-                nodeArr:[],
-                isbac:true,
-                highlight:true,
-            };
-        },
-        computed: {
-            ...mapGetters(['customerTree','cusprogressArr','custrendArr','cusstructureArr','cusrankArr']),
-            hasTree() {
-                return !_.isEmpty(this.customerTree);
-            }
-        },
-        mounted() {
-            if(!this.hasTree) {
-                this.getTree();
-            }else{
-                this.cid = this.customerTree.cid;
-            }
-            // this.initFormDataFromUrl();
-        },
-        watch: {
-            form: {
-                handler: function() {},
-                deep: true
-            },
-            cid: function() {
-				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-				// 暂时先在这里做
-                this.getProgress();
-				this.getStructure();
-				this.getRank();
-			}
-        },
-        methods: {
-            click(){
-              if(this.cid==this.customerTree.cid){
-					return;
-              }else{
-                  this.loading = true;
-                //点击发送请求清除搜索框
-                this.$refs.child.clearKw();
-                this.isbac = true;
-                this.highlight = false;
-                this.cid=this.customerTree.cid;
-                setTimeout(() => {		       
-                        this.loading = false;
-                }, 1000);
-              }
+  },
+  computed: {
+    ...mapGetters(['customerTree','cusprogressArr','custrendArr','cusstructureArr','cusrankArr']),
+    hasTree() {
+      return !_.isEmpty(this.customerTree);
+    }
+  },
+  mounted() {
+    if(!this.hasTree) {
+      this.getTree();
+    }else{
+      this.cid = this.customerTree.cid;
+    }
+    // this.initFormDataFromUrl();
+  },
+  watch: {
+    form: {
+      handler: function() {},
+      deep: true
+    },
+    cid: function() {
+      // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+      // 暂时先在这里做
+      this.getProgress();
+      this.getStructure();
+      this.getRank();
+    }
+  },
+  methods: {
+    click(){
+      if(this.cid==this.customerTree.cid){
+        return;
+      }else{
+        this.loading = true;
+        //点击发送请求清除搜索框
+        this.$refs.child.clearKw();
+        this.isbac = true;
+        this.highlight = false;
+        this.cid=this.customerTree.cid;
+        setTimeout(() => {		       
+          this.loading = false;
+        }, 1000);
+      }
                 
-            },
-            change() {
-                this.idArr = [];
-                for (let i of this.stragetyCheckList) {
-                        let stragetyObj = this.stragety.find(el => {
-                                return el.id == i;
-                        });
-                        this.idArr.push(stragetyObj.id);
-                }
-                // console.log(this.stragetyCheckList, this.idArr);
-            },
-			submit() {
-				let data1 = JSON.parse(localStorage.data);
-				this.$confirm('确认?', {
-					confirmButtonText: '保存',
-					cancelButtonText: '取消',
-					type: 'warning',
-					center: true
-				}).then(() => {
-					const data = {
-						cid: data1.cid,
-						subject: data1.subject,
-						time_label: data1.time_label,
-						strategies: this.idArr.join(',')
-					};
-					API.PostCusStrategyLog(data).then(() => {
-						this.$message({
-							showClose: true,
-							message: '保存成功'
-						});
-						// console.log(res.api_info)
-					});
-				}).catch(() => {
-					this.$message({
-						type: 'info',
-						message: '已取消',
-						duration: 1500
-					});
-				});
+    },
+    change() {
+      this.idArr = [];
+      for (let i of this.stragetyCheckList) {
+        let stragetyObj = this.stragety.find(el => {
+          return el.id == i;
+        });
+        this.idArr.push(stragetyObj.id);
+      }
+      // console.log(this.stragetyCheckList, this.idArr);
+    },
+    submit() {
+      let data1 = JSON.parse(localStorage.data);
+      this.$confirm('确认?', {
+        confirmButtonText: '保存',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        const data = {
+          cid: data1.cid,
+          subject: data1.subject,
+          time_label: data1.time_label,
+          strategies: this.idArr.join(',')
+        };
+        API.PostCusStrategyLog(data).then(() => {
+          this.$message({
+            showClose: true,
+            message: '保存成功'
+          });
+          // console.log(res.api_info)
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消',
+          duration: 1500
+        });
+      });
 
-			},
-            getTree() {
-                const params = {
-                    subject: this.form.subject,
-                    ...this.getPeriodByPt(),
-                };
-                API.GetCusTree(params).then(res => {
-                    this.cid = res.tree.cid;
-                    this.$store.dispatch('SaveCusTree', res.tree);
-                });
-            },
-            getProgress() {
-				const params = {
-					cid: this.cid,
-					...this.getPeriodByPt(),
-				};
-				API.GetCusProgress(params).then(res => {
-					this.$store.dispatch('SaveCusProgressData', res.data);
-					const promises = _.map(res.data, o => this.getTrend(o.subject));
-					Promise.all(promises).then(resultList => {
-						_.forEach(resultList, (v, k) => {
-							v.subject = res.data[k].subject;
-							v.subject_name = res.data[k].subject_name;
-						});
-						this.$store.dispatch('SaveCusTrendArr', resultList);
-					});
-				});
-            },
-			getTrend(subject) {
-				const params = {
-					cid: this.cid,
-					...this.getPeriodByPt(),
-					subject: subject,
-				};
-				return API.GetCusTrend(params);
-			},
-            getStructure() {
-				const params = {
-					cid: this.cid,
-					...this.getPeriodByPt(),
-				};
-				API.GetCusStructure(params).then(res => {
-					this.$store.dispatch('SaveCusStructureArr', res.data);
-				});
-            },
-            getRank() {
-				const params = {
-					cid: this.cid,
-					...this.getPeriodByPt(),
-				};
-				API.GetCusRank(params).then(res => {
-					// console.log(res.data);
-					this.$store.dispatch('SaveCusRankArr', res.data);
-				});
-			},
-            getPeriodByPt() {
-                const {
-                    sDate,
-                    eDate
-                } = this.getDateObj();
-                // const {
-                //     pt
-                // } = this.form;
-                // console.log(sDate,eDate);
-                if(sDate && eDate) { // 计算时间周期
-                        return {
-                            pt:this.val.pt,
-                            sDate: this.val.sDate,
-                            eDate: this.val.eDate,
-                        };
-                } else {
-                    return {
-                        pt:'月',
-                        sDate: '2018-01-01',
-                        eDate: '2018-06-01',
-                        // 先写死个时间
-                        // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                        // eDate: moment().format('YYYY-MM-DD'),
-                    };
-                }
-            },
-            getDateObj() {
-                const {
-                    date
-                } = this.form;
-                if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
-                    return {
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-                }else{
-                    return {
-                    sDate: date[0] || '',
-                    eDate: date[1] || '',
-                };
-                }
-            },
-            initFormDataFromUrl() {
-				const {
-					pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-				} = this.$route.query;
-				let formData = {
-					pt: pt,
-					subject: subject,
-				};
-				if (moment(sDate).isValid() && moment(eDate).isValid()) {
-					formData.date = [sDate, eDate];
-				}
-				this.cid = cid;
-				this.form = { ...this.form,
-					...formData
-				};
-            },
-            handleSearch(val) {
-                // 默认公司的背景色
-                this.isbac = false;
-                this.nodeArr = [];
-                this.nodeArr.push(val.cid);
-                this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref
-                });
-                this.loading = true;
-                this.val = val;
-                if(val.cid!=""){
-                    this.cid = val.cid;
-                }else{
-                    this.getTree();
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
-                }
-                setTimeout(() => {		       
-                    this.loading = false;
-                }, 1000);
+    },
+    getTree() {
+      const params = {
+        subject: this.form.subject,
+        ...this.getPeriodByPt(),
+      };
+      API.GetCusTree(params).then(res => {
+        this.cid = res.tree.cid;
+        this.$store.dispatch('SaveCusTree', res.tree);
+      });
+    },
+    getProgress() {
+      const params = {
+        cid: this.cid,
+        ...this.getPeriodByPt(),
+      };
+      API.GetCusProgress(params).then(res => {
+        this.$store.dispatch('SaveCusProgressData', res.data);
+        const promises = _.map(res.data, o => this.getTrend(o.subject));
+        Promise.all(promises).then(resultList => {
+          _.forEach(resultList, (v, k) => {
+            v.subject = res.data[k].subject;
+            v.subject_name = res.data[k].subject_name;
+          });
+          this.$store.dispatch('SaveCusTrendArr', resultList);
+        });
+      });
+    },
+    getTrend(subject) {
+      const params = {
+        cid: this.cid,
+        ...this.getPeriodByPt(),
+        subject: subject,
+      };
+      return API.GetCusTrend(params);
+    },
+    getStructure() {
+      const params = {
+        cid: this.cid,
+        ...this.getPeriodByPt(),
+      };
+      API.GetCusStructure(params).then(res => {
+        this.$store.dispatch('SaveCusStructureArr', res.data);
+      });
+    },
+    getRank() {
+      const params = {
+        cid: this.cid,
+        ...this.getPeriodByPt(),
+      };
+      API.GetCusRank(params).then(res => {
+        // console.log(res.data);
+        this.$store.dispatch('SaveCusRankArr', res.data);
+      });
+    },
+    getPeriodByPt() {
+      const {
+        sDate,
+        eDate
+      } = this.getDateObj();
+      // const {
+      //     pt
+      // } = this.form;
+      // console.log(sDate,eDate);
+      if(sDate && eDate) { // 计算时间周期
+        return {
+          pt:this.val.pt,
+          sDate: this.val.sDate,
+          eDate: this.val.eDate,
+        };
+      } else {
+        return {
+          pt:'月',
+          sDate: '2018-01-01',
+          eDate: '2018-06-01',
+          // 先写死个时间
+          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+          // eDate: moment().format('YYYY-MM-DD'),
+        };
+      }
+    },
+    getDateObj() {
+      const {
+        date
+      } = this.form;
+      if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+        return {
+          sDate: this.val.sDate,
+          eDate: this.val.eDate,
+        };
+      }else{
+        return {
+          sDate: date[0] || '',
+          eDate: date[1] || '',
+        };
+      }
+    },
+    initFormDataFromUrl() {
+      const {
+        pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
+      } = this.$route.query;
+      let formData = {
+        pt: pt,
+        subject: subject,
+      };
+      if (moment(sDate).isValid() && moment(eDate).isValid()) {
+        formData.date = [sDate, eDate];
+      }
+      this.cid = cid;
+      this.form = { ...this.form,
+                    ...formData
+      };
+    },
+    handleSearch(val) {
+      // 默认公司的背景色
+      this.isbac = false;
+      this.nodeArr = [];
+      this.nodeArr.push(val.cid);
+      this.$nextTick(() => {
+        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref
+      });
+      this.loading = true;
+      this.val = val;
+      if(val.cid!=""){
+        this.cid = val.cid;
+      }else{
+        this.getTree();
+        this.getProgress();
+        this.getStructure();
+        this.getRank();
+      }
+      setTimeout(() => {		       
+        this.loading = false;
+      }, 1000);
                 
-            },
-            handleNodeClick(data) {
-                this.isbac = false;
-                this.highlight = true;
-                this.$refs.child.clearKw();
-                if(this.cid === data.cid){
-                    return ;
-                }else if(data.children != undefined) {
-                    this.cid = data.cid;
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
-                }
+    },
+    handleNodeClick(data) {
+      this.isbac = false;
+      this.highlight = true;
+      this.$refs.child.clearKw();
+      if(this.cid === data.cid){
+        return ;
+      }else if(data.children != undefined) {
+        this.cid = data.cid;
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+        }, 1000);
+      }
 
-			},
-            calculatePercent(a, b) {
-                if(b > 0) {
-                    const percent = parseInt(a / b * 100);
-                    const largerThanOne = (a / b) > 1;
-                    return {
-                        percent,
-                        largerThanOne
-                    };
-                }else{
-                    const percent = 0;
-                    const largerThanOne = false;
-                    return {
-                        percent,
-                        largerThanOne
-                    };
-                }
-            },
-            clickIndex(i, idx) {
-                this[`index${i}`] = idx;
-            },
-            Rank(score) {
-				if (score =='差') {
-					return 4;
-				}
-				if (score == '中') {
-					return 3;
-				}
-				if (score =='良') {
-					return 2;
-				}
-				if (score =='优') {
-					return 1;
-				}
-				return 4;
-			},
-			showStragety(data) {
-				// console.log(data)
-				localStorage.setItem("data", JSON.stringify(data));
-				const {
-					cid,
-					brand,
-					name,
-					subject,
-					time_label,
-					rank
-				} = data;
-				// console.log(cid, brand, name, rank);
-				this.stragetyTitle = `${brand} - ${name} - ${rank}`;
-				const params = {
-					cid: cid,
-					subject: subject,
-					time_label: time_label,
-				};
+    },
+    calculatePercent(a, b) {
+      if(b > 0) {
+        const percent = parseInt(a / b * 100);
+        const largerThanOne = (a / b) > 1;
+        return {
+          percent,
+          largerThanOne
+        };
+      }else{
+        const percent = 0;
+        const largerThanOne = false;
+        return {
+          percent,
+          largerThanOne
+        };
+      }
+    },
+    clickIndex(i, idx) {
+      this[`index${i}`] = idx;
+    },
+    Rank(score) {
+      if (score =='差') {
+        return 4;
+      }
+      if (score == '中') {
+        return 3;
+      }
+      if (score =='良') {
+        return 2;
+      }
+      if (score =='优') {
+        return 1;
+      }
+      return 4;
+    },
+    showStragety(data) {
+      // console.log(data)
+      localStorage.setItem("data", JSON.stringify(data));
+      const {
+        cid,
+        brand,
+        name,
+        subject,
+        time_label,
+        rank
+      } = data;
+      // console.log(cid, brand, name, rank);
+      this.stragetyTitle = `${brand} - ${name} - ${rank}`;
+      const params = {
+        cid: cid,
+        subject: subject,
+        time_label: time_label,
+      };
 
-				API.GetCusStrategy(params).then(res => {
-					// console.log(res.data)
-					this.stragetyCheckList = [];
-					this.stragety = res.data;
-					for (let i = 0; i < res.data.length; i++) {
-						if (res.data[i].status == 1) {
-							this.stragetyCheckList.push(res.data[i].id);
-							// console.log(this.stragetyCheckList)
-						}
-					}
-				});
-
-			}
+      API.GetCusStrategy(params).then(res => {
+        // console.log(res.data)
+        this.stragetyCheckList = [];
+        this.stragety = res.data;
+        for (let i = 0; i < res.data.length; i++) {
+          if (res.data[i].status == 1) {
+            this.stragetyCheckList.push(res.data[i].id);
+            // console.log(this.stragetyCheckList)
+          }
         }
-    };
+      });
+
+    }
+  }
+};
 </script>
 
 <style lang="scss">

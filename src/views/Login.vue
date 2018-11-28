@@ -37,63 +37,63 @@ import API from './api';
 import { setToken, setUsername } from 'utils/auth';
 
 export default {
-    data() {
-        const validateUsername = (rule, value, callback) => {
-            if (!value) {
-                callback(new Error('请输入用户名'));
-            }
-            callback();
-        };
-        const validatePassword = (rule, value, callback) => {
-            if (!value) {
-                callback(new Error('请输入密码'));
-            }
-            if (value.length < 6 || value.length > 18) {
-                callback(new Error('密码长度为6-18位'));
-            }
-            callback();
-        };
-        return {
-            rules: {
-                username: [
-                    { validator: validateUsername, trigger: 'blur' }
-                ],
-                password: [
-                    { validator: validatePassword, trigger: 'blur' }
-                ],
-            },
-            form: {
-                username: '',
-                password: '',
-            },
-            submitLoading: false,
-        };
-    },
-    mounted() {
-        this.$refs['username'].focus();
-    },
-    methods: {
-        submitForm(formName) {
-            this.$refs[formName].validate(valid => {
-                if (valid) {
-                    this.submitLoading = true;
-                    API.Login(this.form).then(res => {
-                        setToken(res.token);
-                        setUsername(this.form.username);
-                        this.$router.replace('/home');
-                    }).catch(e => {
-                        this.form.password = '';
-                        // eslint-disable-next-line
+  data() {
+    const validateUsername = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入用户名'));
+      }
+      callback();
+    };
+    const validatePassword = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入密码'));
+      }
+      if (value.length < 6 || value.length > 18) {
+        callback(new Error('密码长度为6-18位'));
+      }
+      callback();
+    };
+    return {
+      rules: {
+        username: [
+          { validator: validateUsername, trigger: 'blur' }
+        ],
+        password: [
+          { validator: validatePassword, trigger: 'blur' }
+        ],
+      },
+      form: {
+        username: '',
+        password: '',
+      },
+      submitLoading: false,
+    };
+  },
+  mounted() {
+    this.$refs['username'].focus();
+  },
+  methods: {
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.submitLoading = true;
+          API.Login(this.form).then(res => {
+            setToken(res.token);
+            setUsername(this.form.username);
+            this.$router.replace('/home');
+          }).catch(e => {
+            this.form.password = '';
+            // eslint-disable-next-line
                         console.log('catch err', e);
-                    }).finally(() => {
-                        this.submitLoading = false;
-                    });
-                } else {
-                    return false;
-                }
-            });
+          }).finally(() => {
+            this.submitLoading = false;
+          });
+        } else {
+          return false;
         }
+      });
     }
+  }
 };
 </script>
 

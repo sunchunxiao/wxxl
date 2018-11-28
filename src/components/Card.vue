@@ -1,10 +1,10 @@
 <script>
 import Vue from 'vue';
 export default Vue.component('Card', {
-    functional: true,
-    render: function(createElement, context){
-        return createElement('div', { class: { 'card': true, ...context.data.class } }, context.children);
-    }
+  functional: true,
+  render: function(createElement, context){
+    return createElement('div', { class: { 'card': true, ...context.data.class } }, context.children);
+  }
 });
 </script>
 

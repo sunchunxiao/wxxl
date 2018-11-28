@@ -119,140 +119,140 @@ import { FetchGet } from 'utils/fetch';
 // TODO: 季
 const UNITS = ['月','年'];
 export default {
-    data() {
-        return {
-            units: UNITS,
-            pickerBaseOptions: { firstDayOfWeek: 1 },
-            form: {
-                pt: '月',
+  data() {
+    return {
+      units: UNITS,
+      pickerBaseOptions: { firstDayOfWeek: 1 },
+      form: {
+        pt: '月',
 
-                monthStart: '',
-                monthEnd: '',
+        monthStart: '',
+        monthEnd: '',
 
-                yearStart: '',
-                yearEnd: '',
+        yearStart: '',
+        yearEnd: '',
 
-                kw: '',
-                cid: '',
-            }
-        };
+        kw: '',
+        cid: '',
+      }
+    };
+  },
+  props: {
+    url: {
+      type: String,
+      required: true
     },
-    props: {
-      url: {
-        type: String,
-        required: true
-      },
-    },
-    computed: {
-        monthStartOptions() {
-            const { monthEnd } = this.form;
-            return {
-                disabledDate(time) {
-                    if (monthEnd) {
-                        return time.getTime() > _.toNumber(moment(monthEnd).format('x'));
-                    }
-                }
-            };
-        },
-        monthEndOptions() {
-            const { monthStart } = this.form;
-            return {
-                disabledDate(time) {
-                    if (monthStart) {
-                        return time.getTime() < _.toNumber(moment(monthStart).format('x'));
-                    }
-                }
-            };
-        },
-        yearStartOptions() {
-            const { yearEnd } = this.form;
-            return {
-                disabledDate(time) {
-                    if (yearEnd) {
-                        return time.getTime() > _.toNumber(moment(yearEnd).format('x'));
-                    }
-                }
-            };
-        },
-        yearEndOptions() {
-            const { yearStart } = this.form;
-            return {
-                disabledDate(time) {
-                    if (yearStart) {
-                        return time.getTime() < _.toNumber(moment(yearStart).format('x'));
-                    }
-                }
-            };
-        }
-    },
-    mounted() {
-      // todo: 设置初始值
-    //   console.log(this.url);
-    },
-    methods: {
-        placeholderName(){
-            if(this.url=='/org/search'){
-                return "组织编号/组织名称";
-            }else if(this.url=='/fund/search'){
-                return "资金编号/资金名称";
-            }else if(this.url=='/cus/search'){
-                return "客户编号/客户名称";
-            }
-            
-        },
-        clearKw: function () {
-            //在点击左侧节点的时候 搜素框值为空
-            if(this.form.kw){
-                this.form.kw = '';
-            }
-        },
-        handleClick() {
-          // todo: 暂时去掉表单验证 觉得交互不太好
-            // this.$refs['form'].validate(valid => {
-            //     if (valid) {
-                    
-                    const { pt,  monthStart, monthEnd, yearStart, yearEnd, cid } = this.form;
-                    let obj = { pt, sDate: '', eDate: '', cid,name };
-                    if (pt === '月') {
-                        obj.sDate = moment(monthStart).format('YYYY-MM-DD');
-                        obj.eDate = moment(monthEnd).endOf('month').format('YYYY-MM-DD');
-                    } else if (pt === '年') {
-                        obj.sDate = moment(yearStart).format('YYYY-MM-DD');
-                        obj.eDate = moment(yearEnd).endOf('year').format('YYYY-MM-DD');
-                    }
-                    if (obj.sDate === 'Invalid date' || obj.eDate === 'Invalid date' || !obj.sDate || !obj.eDate) {
-                        // console.log(cid);
-                        this.$message({
-                            type:'error',
-                            message:'请选择日期',
-                            duration:2000
-                        });
-                        // return;
-                    } 
-                    
-                    else{
-                        this.$emit('search', obj);
-                    }
-
-        },
-        searchKw(kw, cb) {
-            // console.log(kw,cb);
-            // this.url = '/product/search';
-          if (this.url) {
-              let params = {
-                text:kw
-              };
-            FetchGet(this.url, params).then(res => {
-              cb(res.data || []);
-            });
-          } else {
-            cb([]);
+  },
+  computed: {
+    monthStartOptions() {
+      const { monthEnd } = this.form;
+      return {
+        disabledDate(time) {
+          if (monthEnd) {
+            return time.getTime() > _.toNumber(moment(monthEnd).format('x'));
           }
-        },
-        handleKwSelect(obj) {
-          this.form.cid = obj.id;
         }
+      };
+    },
+    monthEndOptions() {
+      const { monthStart } = this.form;
+      return {
+        disabledDate(time) {
+          if (monthStart) {
+            return time.getTime() < _.toNumber(moment(monthStart).format('x'));
+          }
+        }
+      };
+    },
+    yearStartOptions() {
+      const { yearEnd } = this.form;
+      return {
+        disabledDate(time) {
+          if (yearEnd) {
+            return time.getTime() > _.toNumber(moment(yearEnd).format('x'));
+          }
+        }
+      };
+    },
+    yearEndOptions() {
+      const { yearStart } = this.form;
+      return {
+        disabledDate(time) {
+          if (yearStart) {
+            return time.getTime() < _.toNumber(moment(yearStart).format('x'));
+          }
+        }
+      };
     }
+  },
+  mounted() {
+    // todo: 设置初始值
+    //   console.log(this.url);
+  },
+  methods: {
+    placeholderName(){
+      if(this.url=='/org/search'){
+        return "组织编号/组织名称";
+      }else if(this.url=='/fund/search'){
+        return "资金编号/资金名称";
+      }else if(this.url=='/cus/search'){
+        return "客户编号/客户名称";
+      }
+            
+    },
+    clearKw: function () {
+      //在点击左侧节点的时候 搜素框值为空
+      if(this.form.kw){
+        this.form.kw = '';
+      }
+    },
+    handleClick() {
+      // todo: 暂时去掉表单验证 觉得交互不太好
+      // this.$refs['form'].validate(valid => {
+      //     if (valid) {
+                    
+      const { pt,  monthStart, monthEnd, yearStart, yearEnd, cid } = this.form;
+      let obj = { pt, sDate: '', eDate: '', cid,name };
+      if (pt === '月') {
+        obj.sDate = moment(monthStart).format('YYYY-MM-DD');
+        obj.eDate = moment(monthEnd).endOf('month').format('YYYY-MM-DD');
+      } else if (pt === '年') {
+        obj.sDate = moment(yearStart).format('YYYY-MM-DD');
+        obj.eDate = moment(yearEnd).endOf('year').format('YYYY-MM-DD');
+      }
+      if (obj.sDate === 'Invalid date' || obj.eDate === 'Invalid date' || !obj.sDate || !obj.eDate) {
+        // console.log(cid);
+        this.$message({
+          type:'error',
+          message:'请选择日期',
+          duration:2000
+        });
+        // return;
+      } 
+                    
+      else{
+        this.$emit('search', obj);
+      }
+
+    },
+    searchKw(kw, cb) {
+      // console.log(kw,cb);
+      // this.url = '/product/search';
+      if (this.url) {
+        let params = {
+          text:kw
+        };
+        FetchGet(this.url, params).then(res => {
+          cb(res.data || []);
+        });
+      } else {
+        cb([]);
+      }
+    },
+    handleKwSelect(obj) {
+      this.form.cid = obj.id;
+    }
+  }
 };
 </script>
 
