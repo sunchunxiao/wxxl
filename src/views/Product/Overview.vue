@@ -527,6 +527,7 @@ export default {
           this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
         });
         this.cid = val.cid;
+        //如果是根节点
         if(this.cid==this.productTree.cid){
           this.isbac = true;
           this.highlight = false;

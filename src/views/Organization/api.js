@@ -9,6 +9,9 @@ export default {
   GetOrgTree(params) {
     return FetchGet('/org/tree', params);
   },
+  GetOrgTreePrograss(params) {
+    return FetchGet('/org/tree/progress', params);
+  },
   GetOrgProgress(params) {
     return FetchGet('/org/progress', params);
   },

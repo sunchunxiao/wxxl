@@ -8,6 +8,9 @@ export default {
   GetFundTree(params) {
     return FetchGet('/fund/tree', params);
   },
+  GetFundTreePrograss(params) {
+    return FetchGet('/fund/tree/progress', params);
+  },
   GetFundProgress(params) {
     return FetchGet('/fund/progress', params);
   },

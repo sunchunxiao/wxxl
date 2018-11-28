@@ -3,7 +3,11 @@
     <el-row>
       <search-bar 
         @search="handleSearch"
+        placeholder="客户编号/客户名称"
+        @input="input"
+        v-model="searchBarValue"
         ref="child"
+        :pt-options="['日', '周', '月', '季', '年']"
         url="/fund/search" />
     </el-row>
     <el-row 
@@ -18,13 +22,13 @@
           v-if="fundTree.children"
           :class="{bac:isbac}"
           class="company">
-          <span class="left label">{{ fundTree.name }}</span>
+          <span class="left label">{{ treeClone.name }}</span>
           <span
-            :class="{percent: true, red: !calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne, blue: calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne}"
-            class="right">{{ calculatePercent(fundTree.real_total, fundTree.target_total).percent + '%' }}</span>
+            :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
           <div 
-            :class="{comprogress: true, 'border-radius0': calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne ? '105%' : `${calculatePercent(fundTree.real_total, fundTree.target_total).percent + 5}%`}" />
+            :class="{comprogress: true, 'border-radius0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
         </div>
         <!-- 有多个tree -->
         <el-tree 
@@ -34,8 +38,9 @@
           node-key="cid"
           :highlight-current="highlight" 
           :expand-on-click-node="false"
-          :data="fundTree.children" 
+          :data="treeClone.children" 
           :default-expanded-keys="nodeArr"
+          @node-expand="nodeExpand"
           @node-click="handleNodeClick">
           <span 
             class="custom-tree-node" 
@@ -57,7 +62,6 @@
                 <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
               </span>
             </el-tooltip>
-            <!-- <span class="label">{{ data.name }}</span> -->
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
@@ -234,7 +238,7 @@
 import API from './api';
 import moment from 'moment';
 import Card from '../../components/Card';
-import SearchBar from 'components/SearchBarOrg';
+import SearchBar from 'components/SearchBar';
 // 目标达成情况总览
 import ProTargetAchievement from '../../components/ProTargetAchievement';
 import Radar from '../../components/radar';
@@ -301,7 +305,13 @@ export default {
       isbac:true,
       highlight:true,
       post:1,
-      nodeArr:[]
+      nodeArr:[],
+      searchBarValue: {
+        pt: '',
+        sDate: '',
+        eDate: ''
+      },
+      treeClone:{},
     };
   },
   computed: {
@@ -317,7 +327,7 @@ export default {
     },
     cid: function() {
       // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-      // 暂时先在这里做
+      this.getTreePrograss();
       this.getProgress();
       this.getStructure1();
       this.getStructure2();
@@ -328,10 +338,26 @@ export default {
     if(!this.hasTree) {
       this.getTree();
     }else{
+      this.treeClone = _.cloneDeep(this.fundTree); 
       this.cid = this.fundTree.cid;
     }
   },
   methods: {
+    preOrder(node,cid){
+      for(let i of node){
+        if (i.cid == cid) {
+          return i;
+        }
+        if(i.children && i.children.length){
+          if (this.preOrder(i.children, cid)) {
+            return this.preOrder(i.children,cid);
+          }
+        }
+      }
+    },
+    input (val) {
+      this.form.date = val;
+    },
     click(){
       if(this.cid==this.fundTree.cid){
         return;
@@ -396,8 +422,35 @@ export default {
         version: this.form.version
       };
       API.GetFundTree(params).then(res => {
-        this.cid = res.tree.cid;
+        if (this.fundTree.cid == undefined) {
+          this.cid = res.tree.cid;
+        }
+        this.treeClone = _.cloneDeep(res.tree);  
         this.$store.dispatch('SaveFundTree', res.tree);
+      });
+    },
+    //获取百分比数据
+    getTreePrograss(){
+      const params = {
+        subject:this.form.subject,
+        ...this.getPeriodByPt(),
+        nid:this.cid,
+        version:this.form.version
+      };
+      API.GetFundTreePrograss(params).then(res=>{
+        let obj = this.preOrder([this.treeClone], this.cid);
+        // console.log(obj,obj.cid,this.cid,res.data);
+        if(obj.cid == this.cid){
+          obj.real_total = res.data[this.cid].real;
+          obj.target_total = res.data[this.cid].target;
+        }
+        for(let i of obj.children){
+          if(res.data.hasOwnProperty(i.cid)){
+            i.real_total = res.data[i.cid].real;
+            i.target_total = res.data[i.cid].target;
+                            
+          }
+        }
       });
     },
     getProgress() {
@@ -461,46 +514,45 @@ export default {
         this.$store.dispatch('SaveFundRankArr', res.data);
       });
     },
-    getPeriodByPt() {
+    getDateObj () {
       const {
-        sDate,
-        eDate
-      } = this.getDateObj();
-      // const {
-      //     pt
-      // } = this.form;
-      // console.log(sDate,eDate);
-      if(sDate && eDate) { // 计算时间周期
+        date
+      } = this.form;
+      // console.log(this.val.sDate,date);
+      if (this.val.sDate != undefined && this.val.eDate != undefined) {
         return {
-          pt:this.val.pt,
+          pt: this.val.pt,
           sDate: this.val.sDate,
           eDate: this.val.eDate,
         };
       } else {
         return {
-          pt:'月',
-          sDate: '2018-01-01',
-          eDate: '2018-05-01',
-          // 先写死个时间
-          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-          // eDate: moment().format('YYYY-MM-DD'),
+          pt: date.pt,
+          sDate: date.sDate,
+          eDate: date.eDate,
         };
       }
     },
-    getDateObj() {
+    getPeriodByPt () {
       const {
-        date
-      } = this.form;
-      // console.log(this.val.eDate);
-      if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+        pt,
+        sDate,
+        eDate
+      } = this.getDateObj();
+      if (sDate && eDate) { // 计算时间周期
         return {
-          sDate: this.val.sDate,
-          eDate: this.val.eDate,
+          pt: pt,
+          sDate: sDate,
+          eDate: eDate,
         };
-      }else{
+      } else {
         return {
-          sDate: date[0] || '',
-          eDate: date[1] || '',
+          pt: '月',
+          sDate: '2018-03-01',
+          eDate: '2018-06-30',
+          // 先写死个时间
+          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+          // eDate: moment().format('YYYY-MM-DD'),
         };
       }
     },
@@ -545,6 +597,11 @@ export default {
       }, 1000);
 						
     },
+    nodeExpand(data){
+      this.cid = data.cid;
+      this.isbac = false;
+      this.highlight = true;
+    },
     handleNodeClick(data) {
       this.isbac = false;
       this.highlight = true;
@@ -580,21 +637,6 @@ export default {
     },
     clickIndex(i, idx) {
       this[`index${i}`] = idx;
-    },
-    Rank(score) {
-      if (score =='差') {
-        return 4;
-      }
-      if (score == '中') {
-        return 3;
-      }
-      if (score =='良') {
-        return 2;
-      }
-      if (score =='优') {
-        return 1;
-      }
-      return 4;
     },
     showStragety(data) {
       // console.log(data)

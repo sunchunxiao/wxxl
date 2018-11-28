@@ -264,7 +264,6 @@ export default {
             i.target_total = res.data[i.nid].target;
           }
         }
-        this.$store.dispatch('SaveProductTreePrograss', res.data);
       });
     },
     getProgress() {

@@ -8,6 +8,9 @@ export default {
   GetCusTree(params) {
     return FetchGet('/cus/tree', params);
   },
+  GetCusTreePrograss(params) {
+    return FetchGet('/cus/tree/progress', params);
+  },
   GetCusSubject(params) {
     return FetchGet('/cus/subject', params);
   },

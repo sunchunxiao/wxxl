@@ -17,7 +17,9 @@
         </el-select>
       </el-form-item>
     </el-col>
-    <el-col :span="9">
+    <el-col 
+      class="special_month" 
+      :span="9">
       <el-form-item 
         v-if="form.pt === '日'"
         label="时间段选择"
@@ -35,44 +37,44 @@
           align="right" />
       </el-form-item>
       <template v-if="form.pt === '周'">
-        <el-col :span="14">
-          <el-form-item 
-            label="时间段选择"
-            prop="weekStart">
-            <el-date-picker 
-              v-model="form.weekStart"
-              type="week"
-              format="yyyy 第 WW 周"
-              :picker-options="weekStartOptions"
-              placeholder="请选择开始周" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="9">
-          <el-form-item 
-            class="endFormItem"
-            prop="weekEnd">
-            <el-date-picker 
-              v-model="form.weekEnd"
-              type="week"
-              format="yyyy 第 WW 周"
-              :picker-options="weekEndOptions"
-              placeholder="请选择结束周" />
-          </el-form-item>
-        </el-col>
+        <!-- <el-col :span="14"> -->
+        <el-form-item 
+          label="时间段选择"
+          prop="weekStart">
+          <el-date-picker 
+            v-model="form.weekStart"
+            type="week"
+            format="yyyy 第 WW 周"
+            :picker-options="weekStartOptions"
+            placeholder="请选择开始周" />
+        </el-form-item>
+        <!-- </el-col> -->
+        <!-- <el-col :span="9"> -->
+        <el-form-item 
+          class="endFormItem"
+          prop="weekEnd">
+          <el-date-picker 
+            v-model="form.weekEnd"
+            type="week"
+            format="yyyy 第 WW 周"
+            :picker-options="weekEndOptions"
+            placeholder="请选择结束周" />
+        </el-form-item>
+        <!-- </el-col> -->
       </template>
       <template v-if="form.pt === '月'">
-        <el-col :span="14">
-          <el-form-item 
-            label="时间段选择"
-            prop="monthStart">
-            <el-date-picker 
-              v-model="form.monthStart"
-              type="month"
-              format="yyyy MM 月"
-              :picker-options="monthStartOptions"
-              placeholder="请选择开始月" />
-          </el-form-item>
-        </el-col>
+        <!-- <el-col :span="14"> -->
+        <el-form-item 
+          label="时间段选择"
+          prop="monthStart">
+          <el-date-picker 
+            v-model="form.monthStart"
+            type="month"
+            format="yyyy MM 月"
+            :picker-options="monthStartOptions"
+            placeholder="请选择开始月" />
+        </el-form-item>
+        <!-- </el-col> -->
         <el-col :span="9">
           <el-form-item 
             class="endFormItem"
@@ -87,16 +89,16 @@
         </el-col>
       </template>
       <template v-if="form.pt === '季'">
-        <el-col :span="14">
-          <el-form-item 
-            label="时间段选择"
-            prop="seasonStart">
-            <SeasonPicker 
-              v-model="form.seasonStart"
-              placeholder="请选择开始季度"
-              :picker-options="seasonStartOptions" />
-          </el-form-item>
-        </el-col>
+        <!-- <el-col :span="14"> -->
+        <el-form-item 
+          label="时间段选择"
+          prop="seasonStart">
+          <SeasonPicker 
+            v-model="form.seasonStart"
+            placeholder="请选择开始季度"
+            :picker-options="seasonStartOptions" />
+        </el-form-item>
+        <!-- </el-col> -->
         <el-col :span="9">
           <el-form-item 
             class="endFormItem"
@@ -109,17 +111,17 @@
         </el-col>
       </template>
       <template v-if="form.pt === '年'">
-        <el-col :span="14">
-          <el-form-item 
-            label="时间段选择"
-            prop="yearStart">
-            <el-date-picker 
-              v-model="form.yearStart"
-              type="year"
-              :picker-options="yearStartOptions"
-              placeholder="请选择开始年" />
-          </el-form-item>
-        </el-col>
+        <!-- <el-col :span="10"> -->
+        <el-form-item 
+          label="时间段选择"
+          prop="yearStart">
+          <el-date-picker 
+            v-model="form.yearStart"
+            type="year"
+            :picker-options="yearStartOptions"
+            placeholder="请选择开始年" />
+        </el-form-item>
+        <!-- </el-col> -->
         <el-col :span="9">
           <el-form-item 
             class="endFormItem"
@@ -222,6 +224,7 @@ export default {
     },
   },
   mounted () {
+    // console.log(this.date,!_.isEmpty(this.date));
     if (!_.isEmpty(this.date)) {
       if (_.isArray(this.units) && this.units.length) {
         if (_.includes(this.units, this.date.pt)) {
@@ -462,7 +465,7 @@ export default {
 .search_bar {
   .el-date-editor.el-input,
   .el-date-editor.el-input__inner {
-    width: 140px;
+    width: 175px;
   }
   .endFormItem {
     .el-form-item__content {
@@ -470,7 +473,21 @@ export default {
     }
   }
 }
-
+.special_month {
+    .el-form-item{
+        float: left;
+    }
+    .align_center{
+        float: left;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner{
+        width: 165px;
+    }
+}
+.special_month .el-form-item__content{
+    margin-left: 28px!important;
+    overflow: hidden;
+}
 .time_submit .el-form-item__content {
   margin-left: 40px !important;
   button {

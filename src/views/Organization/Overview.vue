@@ -4,7 +4,10 @@
       <search-bar 
         @search="handleSearch"
         ref="child"
-        placeholder="产品"
+        @input="input"
+        placeholder="组织编号/组织名称"
+        v-model="searchBarValue"
+        :pt-options="['月', '季', '年']"
         url="/org/search" />
     </el-row>
     <el-row 
@@ -19,25 +22,26 @@
           v-if="organizationTree.children"
           :class="{bac:isbac}"
           class="company">
-          <span class="left label">{{ organizationTree.name }}</span>
+          <span class="left label">{{ treeClone.name }}</span>
           <span
-            :class="{percent: true, red: !calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne, blue: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
-            class="right">{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
+            :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
           <div 
-            :class="{comprogress: true, 'border-radius0': calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(organizationTree.real_total, organizationTree.target_total).largerThanOne ? '105%' : `${calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + 5}%`}" />
+            :class="{comprogress: true, 'border-radius0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
           
         </div>
         <!-- 有多个tree -->
         <el-tree 
           ref="tree"
           empty-text="正在加载"
-          :data="organizationTree.children" 
+          :data="treeClone.children" 
           :props="defaultProps" 
           node-key="cid"
           :expand-on-click-node="false" 
           :default-expanded-keys="nodeArr"
           :highlight-current="highlight" 
+          @node-expand="nodeExpand"
           @node-click="handleNodeClick">
           <div 
             class="custom-tree-node" 
@@ -236,7 +240,7 @@
 <script>
 import API from './api';
 import moment from 'moment';
-import SearchBar from 'components/SearchBarOrg';
+import SearchBar from 'components/SearchBar';
 import Card from '../../components/Card';
 // 目标达成情况总览
 import ProTargetAchievement from '../../components/ProTargetAchievement';
@@ -282,7 +286,7 @@ export default {
   data() {
     return {
       form: {
-        pt: '月',
+        pt: '',
         date: [],
         search: '',
         subject: 'S', // S: 销售额 P: 利润额
@@ -308,12 +312,12 @@ export default {
       nodeArr:[],
       isbac:true,
       highlight:true,
-      a:false,
-      name:[{
-        name:'aa'
-      },{
-        name:'bb'
-      }]
+      searchBarValue: {
+        pt: '',
+        sDate: '',
+        eDate: ''
+      },
+      treeClone:{},
     };
   },
   computed: {
@@ -329,6 +333,7 @@ export default {
     if(!this.hasTree) {
       this.getTree();
     }else{
+      this.treeClone = _.cloneDeep(this.organizationTree); 
       this.cid = this.organizationTree.cid;
     }
     // this.initFormDataFromUrl();
@@ -340,7 +345,7 @@ export default {
     },
     cid: function() {
       // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-      // 暂时先在这里做
+      this.getTreePrograss();
       this.getProgress();
       this.getStructure1();
       this.getStructure2();
@@ -348,6 +353,21 @@ export default {
     }
   },
   methods: {
+    preOrder(node,cid){
+      for(let i of node){
+        if (i.cid == cid) {
+          return i;
+        }
+        if(i.children && i.children.length){
+          if (this.preOrder(i.children, cid)) {
+            return this.preOrder(i.children,cid);
+          }
+        }
+      }
+    },
+    input (val) {
+      this.form.date = val;
+    },
     click(){
       this.$refs.child.clearKw();
       if(this.cid==this.organizationTree.cid){
@@ -416,9 +436,33 @@ export default {
         if(this.organizationTree.cid==undefined){
           this.cid = res.tree.cid;
         }
-        // this.cid = res.tree.cid;
         this.type = res.tree.type;
+        this.treeClone = _.cloneDeep(res.tree); 
         this.$store.dispatch('SaveOrgTree', res.tree);
+      });
+    },
+    //获取百分比数据
+    getTreePrograss(){
+      const params = {
+        subject:this.form.subject,
+        ...this.getPeriodByPt(),
+        nid:this.cid,
+        version:this.form.version
+      };
+      API.GetOrgTreePrograss(params).then(res=>{
+        let obj = this.preOrder([this.treeClone], this.cid);
+        // console.log(obj,obj.cid,this.cid,res.data);
+        if(obj.cid == this.cid){
+          obj.real_total = res.data[this.cid].real;
+          obj.target_total = res.data[this.cid].target;
+        }
+        for(let i of obj.children){
+          if(res.data.hasOwnProperty(i.cid)){
+            i.real_total = res.data[i.cid].real;
+            i.target_total = res.data[i.cid].target;
+                            
+          }
+        }
       });
     },
     getProgress() {
@@ -493,46 +537,45 @@ export default {
         this.$store.dispatch('SaveOrgRankArr', res.data);
       });
     },
-    getPeriodByPt() {
+    getDateObj () {
       const {
-        sDate,
-        eDate
-      } = this.getDateObj();
-      // const {
-      //     pt
-      // } = this.form;
-      // console.log(sDate,eDate);
-      if(sDate && eDate) { // 计算时间周期
+        date
+      } = this.form;
+      // console.log(this.val.sDate,date);
+      if (this.val.sDate != undefined && this.val.eDate != undefined) {
         return {
-          pt:this.val.pt,
+          pt: this.val.pt,
           sDate: this.val.sDate,
           eDate: this.val.eDate,
         };
       } else {
         return {
-          pt:'月',
-          sDate: '2018-01-01',
-          eDate: '2018-05-01',
-          // 先写死个时间
-          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-          // eDate: moment().format('YYYY-MM-DD'),
+          pt: date.pt,
+          sDate: date.sDate,
+          eDate: date.eDate,
         };
       }
     },
-    getDateObj() {
+    getPeriodByPt () {
       const {
-        date
-      } = this.form;
-      // console.log(this.val.eDate);
-      if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+        pt,
+        sDate,
+        eDate
+      } = this.getDateObj();
+      if (sDate && eDate) { // 计算时间周期
         return {
-          sDate: this.val.sDate,
-          eDate: this.val.eDate,
+          pt: pt,
+          sDate: sDate,
+          eDate: eDate,
         };
-      }else{
+      } else {
         return {
-          sDate: date[0] || '',
-          eDate: date[1] || '',
+          pt: '月',
+          sDate: '2018-03-01',
+          eDate: '2018-06-30',
+          // 先写死个时间
+          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+          // eDate: moment().format('YYYY-MM-DD'),
         };
       }
     },
@@ -556,13 +599,11 @@ export default {
       // 默认公司的背景色
       this.isbac = false;
       this.nodeArr = [];
-				
       this.loading = true;
       this.val = val;
       if(val.cid!=""){
         this.cid = val.cid;
-        this.nodeArr.push(val.cid);
-				
+        this.nodeArr.push(val.cid);	
         this.$nextTick(() => {
           this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
         });
@@ -571,33 +612,52 @@ export default {
           this.highlight = false;
         }
       }else{
-        if(this.cid==this.organizationTree.cid){
-          this.isbac = true;
-          this.highlight = false;
-        }
-        this.getProgress();
-        this.getStructure1();
-        this.getStructure2();
-        this.getRank();
+        this.isbac = true;
+        this.highlight = false;
+        if(this.cid!=this.organizationTree.cid){
+          this.cid = this.organizationTree.cid;
+          this.treeClone = _.cloneDeep(this.organizationTree);
+        }else{
+          this.getTreePrograss();
+          this.getProgress();
+          this.getStructure1();
+          this.getStructure2();
+          this.getRank();
+        }        
       }
       setTimeout(() => {		       
         this.loading = false;
       }, 1000);
 						
     },
-    handleNodeClick(data) {
+    nodeExpand(data){
+      this.cid = data.cid;
       this.isbac = false;
       this.highlight = true;
-      this.loading = true;
-      this.$refs.child.clearKw();
-      this.type = data.type;
-      if(this.cid === data.cid){
-        return ;
-      }else if (data.children != undefined) {
-        this.cid = data.cid;
-        setTimeout(() => {
-          this.loading = false;
-        }, 1000);
+    },
+    handleNodeClick(data) {
+      if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+        this.isbac = false;
+        this.highlight = true;
+            
+        this.$refs.child.clearKw();
+        this.type = data.type;
+        if(this.cid === data.cid){
+          return ;
+        }else if (data.children != undefined) {
+          this.loading = true;
+          this.cid = data.cid;
+          setTimeout(() => {
+            this.loading = false;
+          }, 1000);
+        }
+      }else{
+        this.highlight = false;
+        this.$message({
+          type: 'error',
+          message: '请选择日期',
+          duration: 2000
+        });
       }
 
     },
