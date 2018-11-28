@@ -9,7 +9,6 @@
     </el-row>
     <el-row 
       class="content_row" 
-			
       :gutter="20">
       <el-col 
         :span="5" 
@@ -588,14 +587,14 @@
 				},
 			handleNodeClick(data) {
 				this.isbac = false;
-        this.highlight = true;
+				this.highlight = true;
+				this.loading = true;
 				this.$refs.child.clearKw();
 				this.type = data.type;
 				if(this.cid === data.cid){
             return ;
         }else if (data.children != undefined) {
 					this.cid = data.cid;
-					this.loading = true;
 					setTimeout(() => {
 						this.loading = false;
 					}, 1000);

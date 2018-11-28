@@ -232,6 +232,7 @@ export default {
           this.form = obj;
         }
       }
+
     } else {
       if (!_.includes(this.units, this.form.pt)) {
         this.form.pt = this.units[0];
@@ -381,9 +382,9 @@ export default {
       },
       deep: true
     }],
-    kw: function (val, oldVal) {
+    kw: function (val) {
       // 搜索框内容修改时 清空 cid
-      if (val !== oldVal) {
+      if (val == '') {
         this.cid = '';
       }
     }
@@ -479,4 +480,3 @@ export default {
   }
 }
 </style>
-

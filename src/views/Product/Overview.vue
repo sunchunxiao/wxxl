@@ -23,26 +23,26 @@
             v-if="productTree.children"
             :class="{bac:isbac}"
             class="company">
-            <span class="left label">{{ productTree.name }}</span>
-            <span 
-              :class="{percent: true, red: !calculatePercent(productTree.real_total, productTree.target_total).largerThanOne, blue: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
+            <span class="left label">{{ treeClone.name }}</span>
+            <span
+              :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+              class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
             <div 
-              :class="{comprogress: true, 'border-radius0': calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '105%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}" />
+              :class="{comprogress: true, 'border-radius0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+              :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
           </div>
         </div>
         <!-- 有多个tree -->
         <el-tree 
           ref="tree"
+          :data="treeClone.children"
           empty-text="正在加载"
           node-key="cid"
+          :expand-on-click-node="false" 
           :highlight-current="highlight"
-          :expand-on-click-node="false"
           :props="defaultProps"
-          :data="productTree.children"
           :default-expanded-keys="nodeArr"
-          
+          @node-expand="nodeExpand"
           @node-click="handleNodeClick">
           <span 
             class="custom-tree-node"
@@ -61,7 +61,9 @@
               </div>
               <span class="label">
                 <span class="label_left">{{ data.name }}</span>
-                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+                <span 
+                  v-if="data.real_total"
+                  :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
               </span>
             </el-tooltip>
             <div 
@@ -271,12 +273,12 @@ export default {
                 pt: '',
                 sDate: '',
                 eDate: ''
-            }
-            
+            },
+            treeClone:{},
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr', 'productDateArr']),
+        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr', 'productDateArr','treePrograss']),
         hasTree () {
             return !_.isEmpty(this.productTree);
         }
@@ -287,28 +289,40 @@ export default {
                 this.getTree();
             });
         } else {
+            this.treeClone = _.cloneDeep(this.productTree); 
             this.cid = this.productTree.cid;
         }
     },
     watch: {
         cid () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            // 暂时先在这里做
-            // this.getTreePrograss();
+            this.getTreePrograss();
             this.getProgress();
             this.getStructure();
             this.getRank();
         }
     },
     methods: {
+        preOrder(node,cid){
+          for(let i of node){
+              if (i.cid == cid) {
+                  return i;
+              }
+              if(i.children && i.children.length){
+                  if (this.preOrder(i.children, cid)) {
+                      return this.preOrder(i.children,cid);
+                  }
+              }
+          }
+        },
         input (val) {
             this.form.date = val;
         },
         click () {
+            this.loading = true;
             if (this.cid == this.productTree.cid) {
                 return;
             } else {
-                this.loading = true;
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
@@ -375,6 +389,7 @@ export default {
                 ...formData
             };
         },
+        //树结构
         getTree () {
             const params = {
                 // pt: this.form.pt,
@@ -383,13 +398,14 @@ export default {
             };
             
             API.GetProductTree(params).then(res => {
-                // console.log(this.productTree.cid);
                 if (this.productTree.cid == undefined) {
                     this.cid = res.tree.cid;
                 }
+                this.treeClone = _.cloneDeep(res.tree);            
                 this.$store.dispatch('SaveProductTree', res.tree);
             });
         },
+        //获取百分比数据
         getTreePrograss(){
             const params = {
                 subject:this.form.subject,
@@ -397,12 +413,23 @@ export default {
                 nid:this.cid
             };
             API.GetProductTreeProduct(params).then(res=>{
-                // console.log(res.data);
+                let obj = this.preOrder([this.treeClone], this.cid);
+                // console.log(obj,obj.cid,this.cid,res.data);
+                if(obj.cid == this.cid){
+                    obj.real_total = res.data[this.cid].real;
+                    obj.target_total = res.data[this.cid].target;
+                }
+                for(let i of obj.children){
+                    if(res.data.hasOwnProperty(i.cid)){
+                        i.real_total = res.data[i.cid].real;
+                        i.target_total = res.data[i.cid].target;
+                            
+                    }
+                }
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
         getProgress() {
-            // console.log(this.val);
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -489,55 +516,60 @@ export default {
             }
         },
         handleSearch(val) {
-                this.highlight = true;
-                // 默认公司的背景色
+            this.highlight = true;
+            this.nodeArr = [];
+            this.loading = true;
+            this.val = val;
+            if(val.cid!=""){
                 this.isbac = false;
-                this.nodeArr = [];
-                this.loading = true;
-                this.val = val;
-                if(val.cid!=""){
-                    this.nodeArr.push(val.cid);
-                    this.$nextTick(() => {
-                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                    });
-                    this.cid = val.cid;
-                    if(this.cid==this.productTree.cid){
-                        this.isbac = true;
-                        this.highlight = false;
-                    }
-                }else{
-                    if(this.cid==this.productTree.cid){
-                        this.isbac = true;
-                        this.highlight = false;
-                    }
-                    // this.getTree();
-                    // this.getTreePrograss();
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
+                this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                });
+                this.cid = val.cid;
+                if(this.cid==this.productTree.cid){
+                    this.isbac = true;
+                    this.highlight = false;
                 }
-            
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
+            }else{
+                this.isbac = true;
+                this.highlight = false;
+                if(this.cid!=this.productTree.cid){
+                    this.cid = this.productTree.cid;
+                    this.treeClone = _.cloneDeep(this.productTree); 
+                }
+            }
+            setTimeout(() => {
+                this.loading = false;
+            }, 1000);
 
         },
-        // nodeExpand(data){
-            // console.log(data);
-            // this.cid = data.cid;
-        // },
-        handleNodeClick (data) {
+        nodeExpand(data){
+            this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;
-            this.$refs.child.clearKw();
-            if (this.cid === data.cid) {
-                return;
-            } else if (data.children != undefined) {
-                this.cid = data.cid;
-                this.loading = true;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
+        },
+        handleNodeClick (data) {
+            if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+                this.isbac = false;
+                this.highlight = true;
+                this.$refs.child.clearKw();
+                if (this.cid === data.cid) {
+                    return;
+                } else if (data.children != undefined) {
+                    this.cid = data.cid;
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 1000);
+                }
+            }else{
+                this.highlight = false;
+                this.$message({
+                    type: 'error',
+                    message: '请选择日期',
+                    duration: 2000
+                });
             }
 
         },

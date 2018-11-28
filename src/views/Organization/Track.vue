@@ -191,7 +191,7 @@
 				API.GetOrgStrategiesTrack(params).then(res => {
 					this.trackList = res.data.map(o=>{o.visible=false;o.visibleRate=false;return o;});
 					this.total = res.total;
-					// this.$store.dispatch('SaveProductStrategy', res.data);
+					
 				});
 			},
 			getDateObj() {

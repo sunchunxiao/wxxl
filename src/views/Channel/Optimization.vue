@@ -3,7 +3,10 @@
     <el-row>
       <search-bar 
         ref="child"
+        @input="input"
+        placeholder="渠道编号/渠道名称"
         @search="handleSearch" 
+        v-model="searchBarValue"
         url="/channel/search"/>
     </el-row>
     <el-row 
@@ -18,23 +21,25 @@
           v-if="channelTree.children"
           :class="{bac:isbac}"
           class="company">
-          <span class="left label">{{ channelTree.name }}</span>
+          <span class="left label">{{ treeClone.name }}</span>
           <span
-            :class="{percent: true, red: !calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne, blue: calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne}"
-            class="right" >{{ calculatePercent(channelTree.real_total, channelTree.target_total).percent + '%' }}</span>
+            :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            class="right" >{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
           <div 
-            :class="{comprogress: true, 'border-radius0': calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(channelTree.real_total, channelTree.target_total).largerThanOne ? '105%' : `${calculatePercent(channelTree.real_total, channelTree.target_total).percent + 5}%`}"/>
+            :class="{comprogress: true, 'border-radius0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}"/>
         </div>
         <!-- 有多个tree -->
         <el-tree 
           ref="tree"
           node-key="cid"
           empty-text="正在加载"
+          :expand-on-click-node="false"
           :highlight-current="highlight" 
-          :data="channelTree.children" 
+          :data="treeClone.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
+          @node-expand="nodeExpand"
           @node-click="handleNodeClick" 
           @check-change="handleCheckChange">
           <span 
@@ -163,6 +168,12 @@
                 nodeArr:[],
                 isbac:true,
                 highlight:true,
+                searchBarValue: {
+                    pt: '',
+                    sDate: '',
+                    eDate: ''
+                },
+                treeClone:{},
             };
         },
         computed: {
@@ -178,7 +189,7 @@
             },
             cid: function() {
 				// 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-				// 暂时先在这里做
+				this.getTreePrograss();
                 this.getHistory();
 			}
         },
@@ -186,10 +197,26 @@
             if(!this.hasTree) {
                 this.getTree();
             }else{
+                this.treeClone = _.cloneDeep(this.channelTree); 
                 this.cid = this.channelTree.nid;
             }
         },
         methods: {
+            input(val){
+                this.form.date = val;
+            },
+            preOrder(node,cid){
+                for(let i of node){
+                    if (i.nid == cid) {
+                        return i;
+                    }
+                    if(i.children && i.children.length){
+                        if (this.preOrder(i.children, cid)) {
+                            return this.preOrder(i.children,cid);
+                        }
+                    }
+                }
+            },
             click(){
                 if(this.cid==this.channelTree.nid){
 						return;
@@ -224,35 +251,62 @@
                     version: this.form.version
                 };
                 API.GetChannelTree(params).then(res => {
-                    this.cid = res.tree.nid;
+                    if (this.channelTree.cid == undefined) {
+                        this.cid = res.tree.nid;
+                    }
+                    this.treeClone = _.cloneDeep(res.tree); 
                     this.$store.dispatch('SaveChannelTree', res.tree);
                 });
             },
+            //获取百分比数据
+            getTreePrograss(){
+                const params = {
+                    subject:this.form.subject,
+                    ...this.getPeriodByPt(),
+                    nid:this.cid
+                };
+                API.GetChannelTreePrograss(params).then(res=>{
+                    let obj = this.preOrder([this.treeClone], this.cid);
+                    // console.log(obj,this.cid,res.data);
+                    if(obj.nid == this.cid){
+                        obj.real_total = res.data[this.cid].real;
+                        obj.target_total = res.data[this.cid].target;
+                    }
+                    for(let i of obj.children){
+                        if(res.data.hasOwnProperty(i.nid)){
+                            i.real_total = res.data[i.nid].real;
+                            i.target_total = res.data[i.nid].target;
+                                
+                        }
+                    }
+                    this.$store.dispatch('SaveProductTreePrograss', res.data);
+                });
+            },
             getPeriodByPt() {
-						const {
-								sDate,
-								eDate
-						} = this.getDateObj();
-						// const {
-						//     pt
-						// } = this.form;
-						// console.log(sDate,eDate);
-						if(sDate && eDate) { // 计算时间周期
-										return {
-												pt:this.val.pt,
-												sDate: this.val.sDate,
-												eDate: this.val.eDate,
-										};
-						} else {
-								return {
-										pt:'日',
-										sDate: '2018-01-01',
-										eDate: '2018-01-07',
-										// 先写死个时间
-										// sDate: moment().startOf('week').format('YYYY-MM-DD'),
-										// eDate: moment().format('YYYY-MM-DD'),
-								};
-						}
+                const {
+                    sDate,
+                    eDate
+                } = this.getDateObj();
+                // const {
+                //     pt
+                // } = this.form;
+                // console.log(sDate,eDate);
+                if(sDate && eDate) { // 计算时间周期
+                    return {
+                        pt:this.val.pt,
+                        sDate: this.val.sDate,
+                        eDate: this.val.eDate,
+                    };
+                } else {
+                    return {
+                        pt:'日',
+                        sDate: '2018-01-01',
+                        eDate: '2018-01-07',
+                        // 先写死个时间
+                        // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+                        // eDate: moment().format('YYYY-MM-DD'),
+                    };
+                }
             },
             getDateObj() {
                 const {
@@ -332,18 +386,31 @@
                         this.loading = false;
                     }, 1000);
             },
-            handleNodeClick(data) {
+            nodeExpand(data){
+                this.cid = data.nid;
                 this.isbac = false;
                 this.highlight = true;
-                this.$refs.child.clearKw();
-                if(this.cid === data.nid){
-                    return ;
+            },
+            handleNodeClick(data) {
+                if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+                    this.isbac = false;
+                    this.highlight = true;
+                    this.$refs.child.clearKw();
+                    if(this.cid != data.nid){
+                        this.cid = data.nid;
+                        this.loading = true;
+                        setTimeout(() => {
+                            this.loading = false;
+                        }, 1000);
+                    }else{
+                        return ;
+                    }
                 }else{
-                    this.cid = data.nid;
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
+                    this.$message({
+                        type: 'error',
+                        message: '请选择日期',
+                        duration: 2000
+                    });
                 }
 			},
             handleCheckChange() {

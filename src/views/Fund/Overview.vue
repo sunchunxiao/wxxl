@@ -301,8 +301,8 @@
                 val:{},
                 isbac:true,
                 highlight:true,
-				post:1,
-				nodeArr:[]
+                post:1,
+                nodeArr:[]
             };
         },
         computed: {

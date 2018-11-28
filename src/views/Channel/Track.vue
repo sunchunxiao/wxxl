@@ -704,7 +704,11 @@
 					sort:''
 				};
 				API.GetChannelStrategy(params).then(res => {
-					this.trackList = res.data.map(o=>{o.visible=false;o.visibleRate=false;return o;});
+					this.trackList = res.data.map(o => {
+                        o.visible=false;
+                        o.visibleRate=false;
+                        return o;
+                    });
 					this.total = res.total;
 				});
             },

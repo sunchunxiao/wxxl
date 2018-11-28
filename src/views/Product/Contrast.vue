@@ -30,13 +30,13 @@
         </div> -->
         <div class="title">毛利目标达成率</div>
         <div class="company">
-          <span class="left">{{ productTree.name }}</span>
+          <span class="left">{{ treeClone.name }}</span>
           <span 
-            v-if="productTree.children"
-            class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
+            v-if="treeClone.children"
+            class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
         </div>
         <el-tree 
-          :data="productTree.children" 
+          :data="treeClone.children" 
           ref="tree" 
           empty-text="正在加载"
           check-strictly
@@ -45,6 +45,7 @@
           :highlight-current="highlight" 
           :props="defaultProps" 
           show-checkbox 
+          @node-expand="nodeExpand"
           @check-change="handleCheckChange">
           <span 
             class="custom-tree-node" 
@@ -134,58 +135,75 @@ export default {
         ConOrgComparisonAverage,
         ConOrgComparisonAverageBig
     },
-    data () {
+    data() {
         return {
             form: {
                 date: [],
                 subject: 'S', // S: 销售额 P: 利润额
             },
+            cid:'',
             defaultProps: TREE_PROPS,
             index0: 0,
-            cidObjArr: [],
+            cidObjArr:[],
             cancelKey: '',
             debounce: null,
-            isFirstLoad: true,
-            val: {},
-            post: 1,
-            nodeArr: [],
-            highlight: true,
+            isFirstLoad:true,
+            val:{},
+            post:1,
+            nodeArr:[],
+            highlight:true,
+            treeClone:{},
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'compareArr']),
-        hasTree () {
+        ...mapGetters(['productTree', 'progressArr', 'compareArr' ]),
+        hasTree() {
             return !_.isEmpty(this.productTree);
         }
     },
     watch: {
-        cidObjArr (val) {
+        cidObjArr(val) {
             if (val.length > 0) {
                 this.debounce();
             } else if (val.length === 0) {
                 this.$store.dispatch('ClearCompareArr');
             }
+        },
+        cid(){
+            this.getTreePrograss();
         }
     },
-    created () {
+    created() {
         // 防抖函数 减少发请求次数
-        this.debounce = _.debounce(this.getCompare, 1000);
+        this.debounce = _.debounce(this.getCompare, 500);
     },
-    mounted () {
-        if (this.productTree.children) {
+    mounted() {
+        if(this.productTree.children){
+            this.cid = this.productTree.cid;
+            this.treeClone = _.cloneDeep(this.productTree);
             let arr = [];
-            for (let i = 0; i < 3; i++) {
-                this.productTree.children[i] && arr.push(this.productTree.children[i]);
+            for(let i = 0; i < 3; i++) {
+                this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
             }
             const checkKeys = arr.map(i => i.cid);
-            this.$refs.tree.setCheckedKeys(checkKeys);
-        } else {
+            this.$store.dispatch('SaveProductTree', this.productTree).then(() => {
+                this.$refs.tree.setCheckedKeys(checkKeys);
+            });
+
+        }else{
+            this.promise();
+        }
+    },
+    methods: {
+        promise(){
             Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
+                this.cid = treeData.tree.cid;
+                this.treeClone = _.cloneDeep(treeData.tree);
                 const children = treeData.tree.children;
                 let arr = [];
-                for (let i = 0; i < 3; i++) {
+                for(let i = 0; i < 3; i++) {
                     children[i] && arr.push(children[i]);
                 }
                 const checkKeys = arr.map(i => i.cid);
@@ -196,9 +214,19 @@ export default {
                 const progressData = res[1];
                 this.$store.dispatch('SaveProgressData', progressData.data);
             });
-        }
-    },
-    methods: {
+        },
+        preOrder(node,cid){
+            for(let i of node){
+                if (i.cid == cid) {
+                    return i;
+                }
+                if(i.children && i.children.length){
+                    if (this.preOrder(i.children, cid)) {
+                        return this.preOrder(i.children,cid);
+                    }
+                }
+            }
+        },
         input (val) {
             this.form.date = val;
         },
@@ -208,6 +236,29 @@ export default {
                 ...this.getPeriodByPt(),
             };
             return API.GetProductTree(params);
+        },
+        //获取百分比数据
+        getTreePrograss(){
+            const params = {
+                subject:this.form.subject,
+                ...this.getPeriodByPt(),
+                nid:this.cid
+            };
+            API.GetProductTreeProduct(params).then(res=>{
+                let obj = this.preOrder([this.treeClone], this.cid);
+                if(obj.cid == this.cid){
+                    obj.real_total = res.data[this.cid].real;
+                    obj.target_total = res.data[this.cid].target;
+                }
+                for(let i of obj.children){
+                    if(res.data.hasOwnProperty(i.cid)){
+                        i.real_total = res.data[i.cid].real;
+                        i.target_total = res.data[i.cid].target;
+                            
+                    }
+                }
+                this.$store.dispatch('SaveProductTreePrograss', res.data);
+            });
         },
         getProgress () {
             const params = {
@@ -233,6 +284,7 @@ export default {
                 }
             });
         },
+
         getTrend (subject) {
             let params = {
                 ...this.getPeriodByPt(),
@@ -283,20 +335,20 @@ export default {
                 };
             }
         },
-        handleSearch (val) {
-            if (val.cid != this.cid) {
+        handleSearch(val) {
+            if(val.cid!=this.cid){
                 // 默认公司的背景色
                 this.nodeArr = [];
                 this.loading = true;
                 this.val = val;
-                if (val.cid != "") {
+                if(val.cid!=""){
                     this.nodeArr.push(val.cid);
                     this.$nextTick(() => {
-                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                            this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                     });
                     this.cid = val.cid;
-
-                } else {
+                    
+                }else{
                     this.getTree();
                     this.getCompare();
                 }
@@ -305,6 +357,12 @@ export default {
                 }, 1000);
             }
         },
+        nodeExpand(data){
+            this.cid = data.cid;
+            this.isbac = false;
+            this.highlight = true;
+        },
+            
         cleanChecked () {
             this.cidObjArr = [];
             this.$refs.tree.setCheckedKeys([]);
