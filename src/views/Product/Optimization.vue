@@ -263,16 +263,19 @@ export default {
 						};
 						API.GetProductTreeProduct(params).then(res=>{
 								let obj = this.preOrder([this.treeClone], this.cid);
+								// console.log(obj,obj.cid,this.cid,res.data);
 								if(obj.cid == this.cid){
 										obj.real_total = res.data[this.cid].real;
 										obj.target_total = res.data[this.cid].target;
 								}
-								for(let i of obj.children){
-										if(res.data.hasOwnProperty(i.cid)){
-												i.real_total = res.data[i.cid].real;
-												i.target_total = res.data[i.cid].target;
-														
-										}
+								if(obj.children){
+									for(let i of obj.children){
+											if(res.data.hasOwnProperty(i.cid)){
+													i.real_total = res.data[i.cid].real;
+													i.target_total = res.data[i.cid].target;
+															
+											}
+									}
 								}
 								this.$store.dispatch('SaveProductTreePrograss', res.data);
 						});
@@ -394,7 +397,6 @@ export default {
 						this.highlight = true;
 				},
 				handleNodeClick(data) {
-						this.loading = true;
 						if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
 								this.isbac = false;
 								this.highlight = true;
@@ -403,6 +405,7 @@ export default {
 										return ;
 								}else{
 										this.cid = data.cid;
+										this.loading = true;
 										setTimeout(() => {
 											this.loading = false;
 										}, 1000);

@@ -556,12 +556,12 @@ export default {
             if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
                 this.isbac = false;
                 this.highlight = true;
-                this.loading = true;
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {
                     return;
                 } else if (data.children != undefined) {
                     this.cid = data.cid;
+                    this.loading = true;
                     setTimeout(() => {
                         this.loading = false;
                     }, 1000);

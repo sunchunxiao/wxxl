@@ -2,7 +2,9 @@
   <div class="contrast">
     <el-row>
       <search-bar 
-        @search="handleSearch" 
+        @input="input"
+        @search="handleSearch"
+        placeholder="渠道编号/渠道名称" 
         v-model="searchBarValue"
         ref="child"
         url="/channel/search"/>
@@ -21,17 +23,17 @@
         </div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
-          <span class="left">{{ channelTree.name }}</span>
+          <span class="left">{{ treeClone.name }}</span>
           <span
-            v-if="channelTree.children"
-            class="right">{{ calculatePercent(channelTree.real_total, channelTree.target_total).percent + '%' }}</span>
+            v-if="treeClone.children"
+            class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
         </div>
         <!-- 有多个tree -->
         <el-tree 
           empty-text="正在加载"
           check-strictly
           ref="tree" 
-          :data="channelTree.children" 
+          :data="treeClone.children" 
           :props="defaultProps" 
           node-key="nid" 
           show-checkbox 
@@ -142,7 +144,7 @@
                     subject: 'S', // S: 销售额 P: 利润额
                     version: '0'
                 },
-                cid:1,
+                cid:'',
                 loading:false,
                 defaultProps: TREE_PROPS,
                 index0: 0,
@@ -183,34 +185,57 @@
         },
         mounted() {
             if(this.channelTree.children){
+                this.cid = this.channelTree.nid;
+                this.treeClone = _.cloneDeep(this.channelTree);
                 let arr = [];
                 for(let i = 0; i < 3; i++) {
-                    this.channelTree.children[i] && arr.push(this.channelTree.children[i]);
+                    this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
                 }
                 const checkKeys = arr.map(i => i.nid);
-                this.$refs.tree.setCheckedKeys(checkKeys);
-            }else{
-                Promise.all([this.getTree(), this.getProgress()]).then(res => {
-                // 树
-                const treeData = res[0];
-                this.cid = res[0].tree.cid;
-                const children = treeData.tree.children;
-                let arr = [];
-                for(let i = 0; i < 3; i++) {
-                    children[i] && arr.push(children[i]);
-                }
-                const checkKeys = arr.map(i => i.nid);
-                this.$store.dispatch('SaveChannelTree', treeData.tree).then(() => {
+                this.$store.dispatch('SaveChannelTree', this.channelTree).then(() => {
                     this.$refs.tree.setCheckedKeys(checkKeys);
                 });
-                // 指标
-                const progressData = res[1];
-                this.$store.dispatch('SaveChannelProgress', progressData.data);
-            });
+            }else{
+                this.promise();
             }
             
         },
         methods: {
+            promise(){
+                Promise.all([this.getTree(), this.getProgress()]).then(res => {
+                    // 树
+                    const treeData = res[0];
+                    this.cid = treeData.tree.nid;
+                    this.treeClone = _.cloneDeep(treeData.tree);
+                    const children = treeData.tree.children;
+                    let arr = [];
+                    for(let i = 0; i < 3; i++) {
+                        children[i] && arr.push(children[i]);
+                    }
+                    const checkKeys = arr.map(i => i.nid);
+                    this.$store.dispatch('SaveChannelTree', treeData.tree).then(() => {
+                        this.$refs.tree.setCheckedKeys(checkKeys);
+                    });
+                    // 指标
+                    const progressData = res[1];
+                    this.$store.dispatch('SaveChannelProgress', progressData.data);
+                });
+            },
+            preOrder(node,cid){
+                for(let i of node){
+                    if (i.nid == cid) {
+                        return i;
+                    }
+                    if(i.children && i.children.length){
+                        if (this.preOrder(i.children, cid)) {
+                            return this.preOrder(i.children,cid);
+                        }
+                    }
+                }
+            },
+            input(val){
+                this.form.date = val;
+            },
             getTree() {
                 const params = {
                     subject: this.form.subject,
@@ -237,7 +262,6 @@
                         if(res.data.hasOwnProperty(i.nid)){
                             i.real_total = res.data[i.nid].real;
                             i.target_total = res.data[i.nid].target;
-                                
                         }
                     }
                     this.$store.dispatch('SaveProductTreePrograss', res.data);
@@ -351,7 +375,7 @@
             },
             handleCheckChange(data, checked) {
                 // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
-                if(!checked && this.cancelKey && data.cid === this.cancelKey) {
+                if(!checked && this.cancelKey && data.nid === this.cancelKey) {
                     return;
                 }
                 if (checked) { // 如果选中
@@ -368,7 +392,7 @@
                         this.cidObjArr.push(data);
                     } else if (this.cidObjArr.length === 4) {
                         this.warn('最多对比 4 条');
-                        this.cancelKey = data.cid;
+                        this.cancelKey = data.nid;
                         const checkKeys = this.cidObjArr.map(i => i.nid);
                         this.$refs.tree.setCheckedKeys(checkKeys);
                     }

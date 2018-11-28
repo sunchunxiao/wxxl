@@ -177,26 +177,42 @@
             this.debounce = _.debounce(this.getCompare, 500);
         },
         mounted() {
-            Promise.all([this.getTree(), this.getProgress()]).then(res => {
-                // 树
-                const treeData = res[0];
-                this.cid = treeData.tree.cid;
-                this.treeClone = _.cloneDeep(treeData.tree);
-                const children = treeData.tree.children;
+            if(this.productTree.children){
+                this.cid = this.productTree.cid;
+                this.treeClone = _.cloneDeep(this.productTree);
                 let arr = [];
                 for(let i = 0; i < 3; i++) {
-                    children[i] && arr.push(children[i]);
+                    this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
                 }
                 const checkKeys = arr.map(i => i.cid);
-                this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
+                this.$store.dispatch('SaveProductTree', this.productTree).then(() => {
                     this.$refs.tree.setCheckedKeys(checkKeys);
                 });
-                // 指标
-                const progressData = res[1];
-                this.$store.dispatch('SaveProgressData', progressData.data);
-            });
+            }else{
+                this.promise();
+            }
         },
         methods: {
+            promise(){
+                Promise.all([this.getTree(), this.getProgress()]).then(res => {
+                    // 树
+                    const treeData = res[0];
+                    this.cid = treeData.tree.cid;
+                    this.treeClone = _.cloneDeep(treeData.tree);
+                    const children = treeData.tree.children;
+                    let arr = [];
+                    for(let i = 0; i < 3; i++) {
+                        children[i] && arr.push(children[i]);
+                    }
+                    const checkKeys = arr.map(i => i.cid);
+                    this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
+                        this.$refs.tree.setCheckedKeys(checkKeys);
+                    });
+                    // 指标
+                    const progressData = res[1];
+                    this.$store.dispatch('SaveProgressData', progressData.data);
+                });
+            },
             preOrder(node,cid){
                 for(let i of node){
                     if (i.cid == cid) {
