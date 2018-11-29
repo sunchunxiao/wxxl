@@ -2,13 +2,13 @@
   <div class="overview">
     <el-row>
       <search-bar 
-        @search="handleSearch"
         ref="child"
         @input="input"
-        placeholder="组织编号/组织名称"
+        url="/org/search"
+        @search="handleSearch"
         v-model="searchBarValue"
-        :pt-options="['月', '季', '年']"
-        url="/org/search" />
+        placeholder="组织编号/组织名称"
+        :pt-options="['月', '季', '年']" />
     </el-row>
     <el-row 
       class="content_row" 
@@ -329,7 +329,6 @@ export default {
     }
   },
   mounted() {
-			
     if(!this.hasTree) {
       this.getTree();
     }else{
@@ -395,7 +394,6 @@ export default {
     },
     submit() {
       let data1 = JSON.parse(localStorage.data);
-
       this.$confirm('确认?', {
         confirmButtonText: '保存',
         cancelButtonText: '取消',
@@ -427,7 +425,6 @@ export default {
     },
     getTree() {
       const params = {
-        // pt: this.form.pt,
         subject: this.form.subject,
         ...this.getPeriodByPt(),
         version: this.form.version
@@ -467,7 +464,6 @@ export default {
     },
     getProgress() {
       const params = {
-        // pt: this.form.pt,
         cid: this.cid,
         ...this.getPeriodByPt(),
         version: this.form.version
@@ -488,7 +484,6 @@ export default {
     getTrend(subject) {
       const params = {
         cid: this.cid,
-        // pt: this.form.pt,
         ...this.getPeriodByPt(),
         subject: subject,
         version: this.form.version
@@ -497,9 +492,7 @@ export default {
     },
     //前端
     getStructure1() {
-      // console.log(this.type)
       const params = {
-        // pt: this.form.pt,
         cid: this.cid,
         ...this.getPeriodByPt(),
         version: this.form.version,
@@ -514,7 +507,6 @@ export default {
     getStructure2() {
       // console.log(this.type)
       const params = {
-        // pt: this.form.pt,
         cid: this.cid,
         ...this.getPeriodByPt(),
         version: this.form.version,
@@ -528,7 +520,6 @@ export default {
     getRank() {
       const params = {
         cid: this.cid,
-        // pt: this.form.pt,
         version: this.form.version,
         ...this.getPeriodByPt(),
       };
@@ -596,12 +587,14 @@ export default {
       };
     },
     handleSearch(val) {
+      this.highlight = true;
       // 默认公司的背景色
-      this.isbac = false;
+      
       this.nodeArr = [];
       this.loading = true;
       this.val = val;
       if(val.cid!=""){
+        this.isbac = false;
         this.cid = val.cid;
         this.nodeArr.push(val.cid);	
         this.$nextTick(() => {

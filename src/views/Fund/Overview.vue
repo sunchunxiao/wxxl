@@ -575,27 +575,34 @@ export default {
     },
     handleSearch(val) {
       // 默认公司的背景色
-      this.isbac = false;
+      this.highlight = true;
       this.nodeArr = [];
-      this.nodeArr.push(val.cid);
-      this.$nextTick(() => {
-        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref   绑定的node-key
-      });
       this.loading = true;
       this.val = val;
       if(val.cid!=""){
         this.cid = val.cid;
+        this.isbac = false;
+        this.nodeArr.push(val.cid);
+        this.$nextTick(() => {
+          this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref   绑定的node-key
+        });
       }else{
-        this.getTree();
-        this.getProgress();
-        this.getStructure1();
-        this.getStructure2();
-        this.getRank();
+        this.isbac = true;
+        this.highlight = false;
+        if(this.cid!=this.fundTree.cid){
+          this.cid = this.fundTree.cid;
+          this.treeClone = _.cloneDeep(this.fundTree);
+        }else{
+          this.getTreePrograss();
+          this.getProgress();
+          this.getStructure1();
+          this.getStructure2();
+          this.getRank();
+        } 
       }
       setTimeout(() => {		       
         this.loading = false;
-      }, 1000);
-						
+      }, 1000);			
     },
     nodeExpand(data){
       this.cid = data.cid;
@@ -604,7 +611,7 @@ export default {
     },
     handleNodeClick(data) {
       this.isbac = false;
-      this.highlight = true;
+      //   this.highlight = true;
       this.$refs.child.clearKw();
       this.type = data.type;
       if(this.cid === data.cid){

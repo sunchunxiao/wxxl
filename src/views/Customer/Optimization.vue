@@ -2,10 +2,13 @@
   <div class="optimization">
     <el-row>
       <search-bar 
-        @search="handleSearch" 
         ref="child"
+        @input="input"
         url="/cus/search"
-        placeholder="客户编号/客户名称" />
+        @search="handleSearch" 
+        v-model="searchBarValue"
+        placeholder="客户编号/客户名称" 
+        :pt-options="['日', '周', '月', '季', '年']" />
     </el-row>
     <el-row 
       class="content_row" 
@@ -19,24 +22,26 @@
           :class="{bac:isbac}"
           v-if="customerTree.children"
           class="company">
-          <span class="left label">{{ customerTree.name }}</span>
+          <span class="left label">{{ treeClone.name }}</span>
           <span
-            :class="{percent: true, red: !calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne, blue: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
-            class="right">{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
+            :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
           <div 
-            :class="{comprogress: true, 'border-radius0': calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(customerTree.real_total, customerTree.target_total).largerThanOne ? '105%' : `${calculatePercent(customerTree.real_total, customerTree.target_total).percent + 5}%`}" />
+            :class="{comprogress: true, 'border-radius0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
         </div>
         <!-- 有多个tree -->
         <el-tree 
           ref="tree"
-          empty-text="正在加载"
-          :data="customerTree.children" 
-          :props="defaultProps" 
           node-key="cid"
+          empty-text="正在加载"
+          :data="treeClone.children" 
+          :props="defaultProps" 
+          :expand-on-click-node="false"
           :default-expanded-keys="nodeArr"
           @node-click="handleNodeClick" 
           :highlight-current="highlight" 
+          @node-expand="nodeExpand"
           @check-change="handleCheckChange">
           <span 
             class="custom-tree-node" 
@@ -58,8 +63,6 @@
                 <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
               </span>
             </el-tooltip>
-            <!-- <span class="label">{{ data.name }}</span>
-            <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span> -->
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
@@ -165,6 +168,12 @@ export default {
       nodeArr:[],
       isbac:true,
       highlight:true,
+      searchBarValue: {
+        pt: '',
+        sDate: '',
+        eDate: ''
+      },
+      treeClone:{},
     };
   },
   computed: {
@@ -180,19 +189,34 @@ export default {
     },
     cid: function() {
       // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-      // 暂时先在这里做
-      this.getHistory();
-				
+      this.getTreePrograss();
+      this.getHistory();	
     }
   },
   mounted() {
     if(!this.hasTree) {
       this.getTree();
     }else{
+      this.treeClone = _.cloneDeep(this.customerTree); 
       this.cid = this.customerTree.cid;
     }
   },
   methods: {
+    preOrder(node,cid){
+      for(let i of node){
+        if (i.cid == cid) {
+          return i;
+        }
+        if(i.children && i.children.length){
+          if (this.preOrder(i.children, cid)) {
+            return this.preOrder(i.children,cid);
+          }
+        }
+      }
+    },
+    input (val) {
+      this.form.date = val;
+    },
     click(){
       if(this.cid==this.customerTree.cid){
         return;
@@ -226,49 +250,77 @@ export default {
         ...this.getPeriodByPt(),
       };
       API.GetCusTree(params).then(res => {
-        this.cid = res.tree.cid;
+        if(this.customerTree.cid==undefined){
+          this.cid = res.tree.cid;
+        }
+        this.treeClone = _.cloneDeep(res.tree);
         this.$store.dispatch('SaveCusTree', res.tree);
       });
     },
-    getPeriodByPt() {
+    //获取百分比数据
+    getTreePrograss(){
+      const params = {
+        subject:this.form.subject,
+        ...this.getPeriodByPt(),
+        nid:this.cid,
+        version:this.form.version
+      };
+      API.GetCusTreePrograss(params).then(res=>{
+        let obj = this.preOrder([this.treeClone], this.cid);
+        // console.log(obj,obj.cid,this.cid,res.data);
+        if(obj.cid == this.cid){
+          obj.real_total = res.data[this.cid].real;
+          obj.target_total = res.data[this.cid].target;
+        }
+        if (obj.children) {
+          for(let i of obj.children){
+            if(res.data.hasOwnProperty(i.cid)){
+              i.real_total = res.data[i.cid].real;
+              i.target_total = res.data[i.cid].target;            
+            }
+          }
+        }
+      });
+    },
+    getPeriodByPt () {
       const {
+        pt,
         sDate,
         eDate
       } = this.getDateObj();
-      // const {
-      //     pt
-      // } = this.form;
-      // console.log(sDate,eDate);
-      if(sDate && eDate) { // 计算时间周期
+      if (sDate && eDate) { // 计算时间周期
         return {
-          pt:this.val.pt,
-          sDate: this.val.sDate,
-          eDate: this.val.eDate,
+          pt: pt,
+          sDate: sDate,
+          eDate: eDate,
         };
       } else {
         return {
-          pt:'日',
-          sDate: '2018-10-28',
-          eDate: '2018-11-02',
+          pt: '日',
+          sDate: '2018-05-30',
+          eDate: '2018-06-30',
           // 先写死个时间
           // sDate: moment().startOf('week').format('YYYY-MM-DD'),
           // eDate: moment().format('YYYY-MM-DD'),
         };
       }
     },
-    getDateObj() {
+    getDateObj () {
       const {
         date
       } = this.form;
-      if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+      // console.log(this.val.sDate,date);
+      if (this.val.sDate != undefined && this.val.eDate != undefined) {
         return {
+          pt: this.val.pt,
           sDate: this.val.sDate,
           eDate: this.val.eDate,
         };
-      }else{
+      } else {
         return {
-          sDate: date[0] || '',
-          eDate: date[1] || '',
+          pt: date.pt,
+          sDate: date.sDate,
+          eDate: date.eDate,
         };
       }
     },
@@ -312,22 +364,39 @@ export default {
       // 默认公司的背景色
       this.isbac = false;
       this.nodeArr = [];
-      this.nodeArr.push(val.cid);
-      this.$nextTick(() => {
-        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref
-      });
       this.loading = true;
       this.val = val;
       if(val.cid!=""){
         this.cid = val.cid;
+        this.nodeArr.push(val.cid);
+        this.$nextTick(() => {
+          this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref
+        });
+        //根节点添加样式
+        if(this.cid==this.customerTree.cid){
+          this.isbac = true;
+          this.highlight = false;
+        }
       }else{
-        this.getTree();
-        this.getHistory();
+        this.isbac = true;
+        this.highlight = false;
+        if(this.cid!=this.customerTree.cid){
+          this.cid = this.customerTree.cid;
+          this.treeClone = _.cloneDeep(this.customerTree);
+        }else{
+          this.getTreePrograss();
+          this.getHistory();
+        }
       }
       setTimeout(() => {		       
         this.loading = false;
       }, 1000);
                 
+    },
+    nodeExpand(data){
+      this.cid = data.cid;
+      this.isbac = false;
+      this.highlight = true;
     },
     handleNodeClick(data) {
       this.isbac = false;

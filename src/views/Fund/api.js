@@ -1,6 +1,6 @@
 // Created by sunchunxiao on 2018/10/22.
 
-import { FetchGet,FetchPostNew } from 'utils/fetch';
+import { FetchGet, FetchPostNew } from 'utils/fetch';
 // import store from 'store';
 
 export default {
@@ -41,5 +41,5 @@ export default {
   GetFundStrategiesTrack(params) {
     return FetchGet('/fund/strategiesTrack', params);
   },
-   
+
 };

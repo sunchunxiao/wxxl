@@ -2,13 +2,13 @@
   <div class="overview">
     <el-row>
       <search-bar 
-        @search="handleSearch"
         ref="child"
         @input="input"
-        v-model="searchBarValue"
         url="/cus/search"
-        :pt-options="['月', '季', '年']"
-        placeholder="客户编号/客户名称" />
+        @search="handleSearch"
+        v-model="searchBarValue"
+        placeholder="客户编号/客户名称" 
+        :pt-options="['日', '周', '月', '季', '年']" />
     </el-row>
     <el-row 
       class="content_row" 
@@ -497,7 +497,7 @@ export default {
       } else {
         return {
           pt: '日',
-          sDate: '2018-03-01',
+          sDate: '2018-05-01',
           eDate: '2018-06-30',
           // 先写死个时间
           // sDate: moment().startOf('week').format('YYYY-MM-DD'),
@@ -547,7 +547,6 @@ export default {
           this.getStructure();
           this.getRank();
         }
-        
       }
       setTimeout(() => {		       
         this.loading = false;

@@ -2,9 +2,13 @@
   <div class="contrast">
     <el-row>
       <search-bar 
-        @search="handleSearch"
         ref="child"
-        url="/fund/search" />
+        @input="input"
+        url="/fund/search"
+        @search="handleSearch"
+        v-model="searchBarValue"
+        placeholder="组织编号/组织名称"
+        :pt-options="['月', '季', '年']" />
     </el-row>
     <el-row 
       class="content_row" 
@@ -20,21 +24,22 @@
         </div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
-          <span class="left">{{ fundTree.name }}</span>
+          <span class="left">{{ treeClone.name }}</span>
           <span
-            v-if="fundTree.children"
-            class="right">{{ calculatePercent(fundTree.real_total, fundTree.target_total).percent + '%' }}</span>
+            v-if="treeClone.children"
+            class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
         </div>
         <!-- 有多个tree -->
         <el-tree 
           ref="tree"
           node-key="cid"
           check-strictly
-          :data="fundTree.children" 
+          show-checkbox 
           empty-text="正在加载"
+          :data="treeClone.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
-          show-checkbox 
+          @node-expand="nodeExpand"
           @check-change="handleCheckChange">
           <span 
             class="custom-tree-node" 
@@ -56,8 +61,6 @@
                 <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
               </span>
             </el-tooltip>
-            <!-- <span class="label">{{ data.name }}</span> -->
-            
             <div 
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}" 
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
@@ -173,7 +176,7 @@ export default {
         version: '0'
       },
       loading: false,
-      cid:1,
+      cid:'',
       defaultProps: TREE_PROPS,
       index0: 0,
       index1: 0,
@@ -186,7 +189,13 @@ export default {
       cancelKey: '',
       isFirstLoad: true,
       debounce: null,
-      debounceBack:null
+      debounceBack:null,
+      searchBarValue: {
+        pt: '',
+        sDate: '',
+        eDate: ''
+      },
+      treeClone:{},
     };
   },
   computed: {
@@ -209,7 +218,10 @@ export default {
       } else if (val.length === 0) {
         this.$store.dispatch('ClearFundBackCompareArr');
       }
-    },				
+    },
+    cid(){
+      this.getTreePrograss();
+    }				
   },
   created() {
     // 防抖函数 减少发请求次数
@@ -218,24 +230,35 @@ export default {
   },
   mounted() {
     if(this.fundTree.children){
+      this.cid = this.fundTree.cid;
+      this.treeClone = _.cloneDeep(this.fundTree);
       let arr = [];
       let arrback = [];
-      for(let i = 0; i < this.fundTree.children.length; i++) {
-        if(this.fundTree.children[i].type==1){
-          this.fundTree.children[i] && arr.push(this.fundTree.children[i]);
-        }else if(this.fundTree.children[i].type==2){
-          this.fundTree.children[i] && arrback.push(this.fundTree.children[i]);
+      for(let i = 0; i < this.treeClone.children.length; i++) {
+        if(this.treeClone.children[i].type==1){
+          this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
+        }else if(this.treeClone.children[i].type==2){
+          this.treeClone.children[i] && arrback.push(this.treeClone.children[i]);
         } 
       }
       const checkKeys = arr.map(i => i.cid);
       const checkBackKeys = arrback.map(i => i.cid);
       const cc=[...checkKeys,...checkBackKeys];
-      this.$refs.tree.setCheckedKeys(cc);
+      this.$store.dispatch('SaveFundTree', this.fundTree).then(() => {
+        this.$refs.tree.setCheckedKeys(cc);
+      });
     }else{
+      this.promise();
+    }
+  },
+  methods: {
+    promise(){
       Promise.all([this.getTree(), this.getProgressbefore(),this.getProgressback()]).then(res => {
         // 树
         const treeData = res[0];
-        const children = treeData.tree.children;
+        this.cid = treeData.tree.cid;
+        this.treeClone = _.cloneDeep(treeData.tree);
+        const children = this.treeClone.children;
         let arr = [];
         let arrback = [];
         for(let i = 0; i < children.length; i++) {
@@ -245,8 +268,6 @@ export default {
             children[i] && arrback.push(children[i]);
           } 
         }
-        // this.cidObjArr = arr;
-        // this.cidObjBackArr = arrback;
         const checkKeys = arr.map(i => i.cid);
         const checkBackKeys = arrback.map(i => i.cid);
         const cc=[...checkKeys,...checkBackKeys];
@@ -262,10 +283,22 @@ export default {
         this.$store.dispatch('SaveFundBackData', progressbackData.data);
 								
       });
-    }
-
-  },
-  methods: {
+    },
+    preOrder(node,cid){
+      for(let i of node){
+        if (i.cid == cid) {
+          return i;
+        }
+        if(i.children && i.children.length){
+          if (this.preOrder(i.children, cid)) {
+            return this.preOrder(i.children,cid);
+          }
+        }
+      }
+    },
+    input (val) {
+      this.form.date = val;
+    },
     getTree() {
       const params = {
         subject: this.form.subject,
@@ -273,6 +306,30 @@ export default {
         version: this.form.version
       };
       return API.GetFundTree(params);
+    },
+    //获取百分比数据
+    getTreePrograss(){
+      const params = {
+        subject:this.form.subject,
+        ...this.getPeriodByPt(),
+        nid:this.cid,
+        version:this.form.version
+      };
+      API.GetFundTreePrograss(params).then(res=>{
+        let obj = this.preOrder([this.treeClone], this.cid);
+        if(obj.cid == this.cid){
+          obj.real_total = res.data[this.cid].real;
+          obj.target_total = res.data[this.cid].target;
+        }
+        for(let i of obj.children){
+          if(res.data.hasOwnProperty(i.cid)){
+            i.real_total = res.data[i.cid].real;
+            i.target_total = res.data[i.cid].target;
+                                
+          }
+        }
+        this.$store.dispatch('SaveProductTreePrograss', res.data);
+      });
     },
     getProgressbefore() {
       const params = {
@@ -340,43 +397,40 @@ export default {
       params.targets = checkKeys.join(',');
       return API.GetFundCompare(params);
     },
-    getPeriodByPt() {
+    getPeriodByPt () {
       const {
+        pt,
         sDate,
         eDate
       } = this.getDateObj();
-      // const {
-      //     pt
-      // } = this.form;
-      // console.log(sDate,eDate);
-      if(sDate && eDate) { // 计算时间周期
+      if (sDate && eDate) { // 计算时间周期
         return {
-          pt:this.val.pt,
-          sDate: this.val.sDate,
-          eDate: this.val.eDate,
+          pt: pt,
+          sDate: sDate,
+          eDate: eDate,
         };
       } else {
         return {
-          pt:'月',
-          sDate: '2018-01-01',
-          eDate: '2018-05-01',
+          pt: '月',
+          sDate: '2018-03-01',
+          eDate: '2018-06-30',
           // 先写死个时间
           // sDate: moment().startOf('week').format('YYYY-MM-DD'),
           // eDate: moment().format('YYYY-MM-DD'),
         };
       }
     },
-    getDateObj() {
+    getDateObj () {
       const {
         date
       } = this.form;
       // console.log(this.val.eDate);
-      if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+      if (this.val.sDate != undefined && this.val.eDate != undefined) {
         return {
           sDate: this.val.sDate,
           eDate: this.val.eDate,
         };
-      }else{
+      } else {
         return {
           sDate: date[0] || '',
           eDate: date[1] || '',
@@ -404,6 +458,11 @@ export default {
       this.cidObjArr = [];
       this.cidObjBackArr = [];
       this.$refs.tree.setCheckedKeys([]);
+    },
+    nodeExpand(data){
+      this.cid = data.cid;
+      this.isbac = false;
+      this.highlight = true;
     },
     handleCheckChange(data, checked) {
       // this.type = data.type;
