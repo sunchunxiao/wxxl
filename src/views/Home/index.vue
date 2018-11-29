@@ -318,12 +318,6 @@ const MENUDATA = [
         path:'#fund',
     },
 ];
-// const TIMEPT = {
-//     '周': 'week',
-//     '月': 'month',
-//     '季': 'quarter',
-//     '年': 'year'
-// };
 
 export default {
     components: {
