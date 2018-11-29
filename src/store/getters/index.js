@@ -4,6 +4,7 @@ import fund from './fund';
 import channel from './channel';
 import customer from './customer';
 import date from './date';
+import home from './home';
 
 const getters = {
   ...product,
@@ -11,7 +12,8 @@ const getters = {
   ...fund,
   ...channel,
   ...customer,
-  ...date
+  ...date,
+  ...home
 };
 
 export default getters;

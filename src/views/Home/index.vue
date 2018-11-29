@@ -2,9 +2,11 @@
   <div class="overview">
     <el-row>
       <search-bar 
+        @input="input"
         @search="handleSearch"
         ref="child"
-        url="/product/search" />
+        url="/home/search"
+        :pt-options="['月', '季', '年']" />
     </el-row>
     <el-row 
       class="content_row padding_top " 
@@ -45,7 +47,7 @@
                 <el-row class="card-title">目标达成情况总览</el-row>
                 <el-row>
                   <el-col>
-                    <template v-for="(item, index) in progressArr">
+                    <template v-for="(item, index) in productArr">
                       <el-col 
                         :key="index">
                         <ProTargetAchievement 
@@ -58,10 +60,9 @@
               </div>
               <div class="card_company_target">
                 <el-row class="card-title">目标-实际-差异趋势分析</el-row>
-                <template v-for="(item, index) in trendArr">
+                <template v-for="(item, index) in productTrendArr">
                   <el-col 
-                    :key="index" 
-                    @click.native="clickIndex(1 ,index)">
+                    :key="index">
                     <ProTargetActualDiffTrend 
                       :id="`${index}`" 
                       :data="item" />
@@ -84,12 +85,12 @@
                 <el-row class="card-title">目标达成情况总览</el-row>
                 <el-row>
                   <el-col>
-                    <template v-for="(item, index) in pieDataProduce">
+                    <template v-for="(item, index) in productArr">
                       <el-col 
-                        v-if="progressArr.length>0"
+                        v-if="productArr.length>0"
                         :key="index">
                         <ProTargetAchievement 
-                          :id="`${index+progressArr.length}`" 
+                          :id="`${index+productArr.length}`" 
                           :data="item" />
                       </el-col>
                     </template>
@@ -98,13 +99,12 @@
               </div>
               <div class="card_company_target">
                 <el-row class="card-title">目标-实际-差异趋势分析</el-row>
-                <template v-for="(item, index) in trend">
+                <template v-for="(item, index) in productTrendArr">
                   <el-col 
-                    v-if="trendArr.length>0"
-                    :key="index" 
-                    @click.native="clickIndex(1 ,index)">
+                    v-if="productTrendArr.length>0"
+                    :key="index">
                     <ProTargetActualDiffTrend 
-                      :id="`${index+trendArr.length}`" 
+                      :id="`${index+productTrendArr.length}`" 
                       :data="item" />
                   </el-col>
                 </template>
@@ -125,12 +125,12 @@
                 <el-row class="card-title">目标达成情况总览</el-row>
                 <el-row>
                   <el-col>
-                    <template v-for="(item, index) in pieData1">
+                    <template v-for="(item, index) in channelArr">
                       <el-col 
-                        v-if="progressArr.length>0"
+                        v-if="productArr.length>0"
                         :key="index">
                         <ProTargetAchievement 
-                          :id="`${index+progressArr.length*2}`" 
+                          :id="`${index+productArr.length*2}`" 
                           :data="item" />
                       </el-col>
                     </template>
@@ -139,13 +139,12 @@
               </div>
               <div class="card_company_target">
                 <el-row class="card-title">目标-实际-差异趋势分析</el-row>
-                <template v-for="(item, index) in dataChannel">
+                <template v-for="(item, index) in channelTrendArr">
                   <el-col 
-                    v-if="trendArr.length>0"
-                    :key="index" 
-                    @click.native="clickIndex(1 ,index)">
+                    v-if="productTrendArr.length>0"
+                    :key="index">
                     <ProTargetActualDiffTrend 
-                      :id="`${index+trendArr.length*2}`" 
+                      :id="`${index+productTrendArr.length*2}`" 
                       :data="item" />
                   </el-col>
                 </template>
@@ -168,11 +167,10 @@
                   <el-col>
                     <template v-for="(item, index) in pieCustomer">
                       <el-col 
-                        v-if="progressArr.length>0"
-                        :key="index" 
-                        @click.native="clickIndex(0 ,index)">
+                        v-if="productArr.length>0"
+                        :key="index">
                         <ProTargetAchievement 
-                          :id="`${index+progressArr.length*3}`" 
+                          :id="`${index+productArr.length*3}`" 
                           :data="item" />
                       </el-col>
                     </template>
@@ -183,11 +181,10 @@
                 <el-row class="card-title">目标-实际-差异趋势分析</el-row>
                 <template v-for="(item, index) in dataCustomer">
                   <el-col 
-                    v-if="trendArr.length>0"
-                    :key="index" 
-                    @click.native="clickIndex(1 ,index)">
+                    v-if="productTrendArr.length>0"
+                    :key="index">
                     <ProTargetActualDiffTrend 
-                      :id="`${index+trendArr.length*3}`" 
+                      :id="`${index+productTrendArr.length*3}`" 
                       :data="item" />
                   </el-col>
                 </template>
@@ -210,11 +207,10 @@
                   <el-col>
                     <template v-for="(item, index) in pieOrganization">
                       <el-col 
-                        v-if="progressArr.length>0"
-                        :key="index" 
-                        @click.native="clickIndex(0 ,index)">
+                        v-if="productArr.length>0"
+                        :key="index">
                         <ProTargetAchievement 
-                          :id="`${index+progressArr.length*4}`" 
+                          :id="`${index+productArr.length*4}`" 
                           :data="item" />
                       </el-col>
                     </template>
@@ -225,11 +221,10 @@
                 <el-row class="card-title">目标-实际-差异趋势分析</el-row>
                 <template v-for="(item, index) in dataOrganization">
                   <el-col 
-                    v-if="trendArr.length>0"
-                    :key="index" 
-                    @click.native="clickIndex(1 ,index)">
+                    v-if="productTrendArr.length>0"
+                    :key="index">
                     <ProTargetActualDiffTrend 
-                      :id="`${index+trendArr.length*4}`" 
+                      :id="`${index+productTrendArr.length*4}`" 
                       :data="item" />
                   </el-col>
                 </template>
@@ -252,11 +247,10 @@
                   <el-col>
                     <template v-for="(item, index) in pieFund">
                       <el-col 
-                        v-if="progressArr.length>0"
-                        :key="index" 
-                        @click.native="clickIndex(0 ,index)">
+                        v-if="productArr.length>0"
+                        :key="index">
                         <ProTargetAchievement 
-                          :id="`${index+progressArr.length*5}`" 
+                          :id="`${index+productArr.length*5}`" 
                           :data="item" />
                       </el-col>
                     </template>
@@ -267,11 +261,10 @@
                 <el-row class="card-title">目标-实际-差异趋势分析</el-row>
                 <template v-for="(item, index) in dataFund">
                   <el-col 
-                    v-if="trendArr.length>0"
-                    :key="index" 
-                    @click.native="clickIndex(1 ,index)">
+                    v-if="productTrendArr.length>0"
+                    :key="index">
                     <ProTargetActualDiffTrend 
-                      :id="`${index+trendArr.length*5}`" 
+                      :id="`${index+productTrendArr.length*5}`" 
                       :data="item" />
                   </el-col>
                 </template>
@@ -288,19 +281,11 @@
 import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
-import moment from 'moment';
 // 目标达成情况总览
 import ProTargetAchievement from 'components/ProTargetAchievement';
 import ProTargetAchievementBig from 'components/ProTargetAchievementBig';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-// 同比环比趋势分析
-import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
-// 比例结构与平均值对比分析
-import ProportionalStructureAverageComparison from 'components/ProportionalStructureAverageComparison';
-import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
-// 智能评选和智能策略
-import IntelligentSelection from 'components/IntelligentSelection';
 		
 // mock
 import { dataProduce,dataChannel,dataCustomer,dataOrganization,dataFund } from './mock/trendData.js';
@@ -311,26 +296,27 @@ const TREE_PROPS = {
   children: 'children',
   label: 'name'
 };
-const MENUDATA = [{
-                    title:'产品效率',
-                    path:'#produce',
-                  },
-                  {
-                    title:'渠道效率',
-                    path:'#channel',
-                  },
-                  {
-                    title:'客户效率',
-                    path:'#customer',
-                  },
-                  {
-                    title:'组织效率',
-                    path:'#organization',
-                  },
-                  {
-                    title:'资金效率',
-                    path:'#fund',
-                  },
+const MENUDATA = [
+  {
+    title:'产品效率',
+    path:'#produce',
+  },
+  {
+    title:'渠道效率',
+    path:'#channel',
+  },
+  {
+    title:'客户效率',
+    path:'#customer',
+  },
+  {
+    title:'组织效率',
+    path:'#organization',
+  },
+  {
+    title:'资金效率',
+    path:'#fund',
+  },
 ];
 // const TIMEPT = {
 //     '周': 'week',
@@ -343,10 +329,6 @@ export default {
   components: {
     Card,
     SearchBar,
-    ProYearOnYearTrend,
-    ProportionalStructureAverageComparison,
-    ProportionalStructureAverageComparisonBig,
-    IntelligentSelection,
     ProTargetAchievement,
     ProTargetAchievementBig,
     ProTargetActualDiffTrend,
@@ -372,7 +354,7 @@ export default {
       dataFund:dataFund(),
       // mockData
       // pieData: mockPieData(),
-      cid: 1,
+      cid: '',
       defaultProps: TREE_PROPS,
       loading: false,
       // index
@@ -389,143 +371,42 @@ export default {
       val:{},
       post:1,
       nodeArr:[],
-      isbac:true,
       highlight:true,
       style:undefined
     };
   },
   computed: {
-    ...mapGetters(['productTree','trendArr','rankArr','structureArr','progressArr', 'channelProgressArr','channelTrendArr'])
+    ...mapGetters(['productArr','productTrendArr','channelArr','channelTrendArr'])
     // hasTree() {
     //     return !_.isEmpty(this.productTree);
     // }
   },
   mounted() {
-    this.getProgress();
-    this.getStructure();
-    this.getRank();
+    this.getProductProgress();
+    this.getChannelProgress();
   },
   watch: {
-    // form: [
-    //     {
-    //         handler: function() {
-    //             this.getTree();
-    //         },
-    //         deep: true,
-    //     },
-    //     {
-    //         handler: function(val, oldVal) {
-    //             console.log(val, oldVal);
-    //             this.getProgress();
-    //         },
-    //         deep: true,
-    //     }
-    // ],
     cid: function() {
       // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
       // 暂时先在这里做
-      this.getProgress();
-      this.getStructure();
-      this.getRank();
+      //   this.getProductProgress();
     }
   },
   methods: {
+    input (val) {
+      this.form.date = val;
+    },
     select(index){
       this.style = index;
     },
-    click(){
-      if(this.cid==this.productTree.cid){
-        return;
-      }else{
-        this.loading = true;
-        //点击发送请求清除搜索框
-        this.$refs.child.clearKw();
-        this.isbac = true;
-        this.highlight = false;
-        this.cid=this.productTree.cid;
-        setTimeout(() => {		       
-          this.loading = false;
-        }, 1000);
-      }
-                
-    },
-    change() {
-      this.idArr = [];
-      for (let i of this.stragetyCheckList) {
-        let stragetyObj = this.stragety.find(el => {
-          return el.id == i;
-        });
-        this.idArr.push(stragetyObj.id);
-      }
-      // console.log(this.stragetyCheckList, this.idArr);
-    },
-    submit() {
-      let data1 = JSON.parse(localStorage.data);
-
-      this.$confirm('确认?', {
-        confirmButtonText: '保存',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true
-      }).then(() => {
-        const data = {
-          cid: data1.cid,
-          rank: data1.rank,
-          subject: data1.subject,
-          time_label: data1.time_label,
-          strategies: this.idArr.join(',')
-        };
-        API.PostProductSave(data).then(() => {
-          this.$message({
-            showClose: true,
-            message: '保存成功'
-          });
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消',
-          duration: 1500
-        });
-      });
-
-    },
-
-    initFormDataFromUrl() {
-      const {
-        pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-      } = this.$route.query;
-      let formData = {
-        pt: pt,
-        subject: subject,
-      };
-      if(moment(sDate).isValid() && moment(eDate).isValid()) {
-        formData.date = [sDate, eDate];
-      }
-      this.cid = cid;
-      this.form = { ...this.form,
-                    ...formData
-      };
-    },
-    getTree() {
+    
+    getProductProgress() {
       const params = {
-        // pt: this.form.pt,
-        subject: this.form.subject,
-        ...this.getPeriodByPt(),
-      };
-      API.GetProductTree(params).then(res => {
-        this.$store.dispatch('SaveProductTree', res.tree);
-      });
-    },
-    getProgress() {
-      // console.log(this.val);
-      const params = {
-        cid: this.cid,
         ...this.getPeriodByPt(),
       };
       API.GetProductProgress(params).then(res => {
-        this.$store.dispatch('SaveProgressData', res.data);
-        const promises = _.map(res.data, o => this.getTrend(o.subject));
+        this.$store.dispatch('SaveProductProgressData', res.data);
+        const promises = _.map(res.data, o => this.getProductTrend(o.subject));
         Promise.all(promises).then(resultList => {
           _.forEach(resultList, (v, k) => {
             v.subject = res.data[k].subject;
@@ -535,90 +416,72 @@ export default {
         });
       });
     },
-    getTrend(subject) {
+    getProductTrend(subject) {
       const params = {
-        cid: this.cid,
-        // pt: this.form.pt,
         ...this.getPeriodByPt(),
         subject: subject
       };
       return API.GetProductTrend(params);
     },
-    getStructure() {
+    getChannelProgress(){
       const params = {
-        cid: this.cid,
         ...this.getPeriodByPt(),
       };
-      API.GetProductStructure(params).then(res => {
-        //              console.log(res.data);
-        this.$store.dispatch('SaveStructureArr', res.data);
+      API.GetChannelProgress(params).then(res=>{
+        this.$store.dispatch('SaveChannelProgressData', res.data);
+        const promises = _.map(res.data, o => this.getChannelTrend(o.subject));
+        Promise.all(promises).then(resultList => {
+          _.forEach(resultList, (v, k) => {
+            v.subject = res.data[k].subject;
+            v.subject_name = res.data[k].subject_name;
+          });
+          this.$store.dispatch('SaveChannelTrendArr', resultList);
+        });
       });
     },
-    getRank() {
+    getChannelTrend(subject) {
       const params = {
-        cid: this.cid,
-        // pt: this.form.pt,
         ...this.getPeriodByPt(),
+        subject: subject
       };
-      API.GetProductRank(params).then(res => {
-        //              console.log(res.data);
-        this.$store.dispatch('SaveRankArr', res.data);
-      });
+      return API.GetChannelTrend(params);
     },
-    getDateObj() {
+    getDateObj () {
       const {
         date
       } = this.form;
-      // console.log(this.val.eDate);
-      if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+      // console.log(this.val.sDate,date);
+      if (this.val.sDate != undefined && this.val.eDate != undefined) {
         return {
+          pt: this.val.pt,
           sDate: this.val.sDate,
           eDate: this.val.eDate,
         };
-      }else{
+      } else {
         return {
-          sDate: date[0] || '',
-          eDate: date[1] || '',
+          pt: date.pt,
+          sDate: date.sDate,
+          eDate: date.eDate,
         };
       }
     },
-    getPeriodByPt() {
+    getPeriodByPt () {
       const {
+        pt,
         sDate,
         eDate
       } = this.getDateObj();
-      // const {
-      //     pt
-      // } = this.form;
-      // console.log(sDate,eDate);
-      if(sDate && eDate) { // 计算时间周期
-        // if(pt === '日') {
-        //     return {
-        //         sDate,
-        //         eDate
-        //     };
-        // }
-        // let unit = TIMEPT[pt];
-        // if(unit) {
-        //     return {
-        //         sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
-        //         eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-        //     };
-        // } else {
+      if (sDate && eDate) { // 计算时间周期
         return {
-          pt:this.val.pt,
-          sDate: this.val.sDate,
-          eDate: this.val.eDate,
-          // 先写死个时间
-          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-          // eDate: moment().format('YYYY-MM-DD'),
+          pt: pt,
+          sDate: sDate,
+          eDate: eDate,
         };
-        // }
       } else {
         return {
-          pt:'日',
+          pt: '月',
           sDate: '2018-01-01',
-          eDate: '2018-01-31',
+          eDate: '2018-06-01',
           // 先写死个时间
           // sDate: moment().startOf('week').format('YYYY-MM-DD'),
           // eDate: moment().format('YYYY-MM-DD'),
@@ -627,93 +490,21 @@ export default {
     },
     handleSearch(val) {
       // 默认公司的背景色
-      this.isbac = false;
       this.nodeArr = [];
       this.nodeArr.push(val.cid);
-      this.$nextTick(() => {
-        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-      });
       this.loading = true;
       this.val = val;
       if(val.cid!=""){
         this.cid = val.cid;
       }else{
-        this.getTree();
-        this.getProgress();
-        this.getStructure();
-        this.getRank();
+        this.getProductProgress();
       }
       setTimeout(() => {		       
         this.loading = false;
       }, 1000);
                 
     },
-    handleNodeClick(data) {
-      this.isbac = false;
-      this.highlight = true;
-      this.$refs.child.clearKw();
-      if(this.cid === data.cid){
-        return ;
-      }else if(data.children != undefined) {
-        this.cid = data.cid;
-        this.loading = true;
-        //                  setTimeout(() => {
-        //                      this.getProgress();
-        //                      this.getStructure();
-        //                      this.getRank();
-        //                  }, 300);
-        setTimeout(() => {
-          this.loading = false;
-        }, 1000);
-      }
 
-    },
-    calculatePercent(a, b) {
-      if (b > 0) {
-        const percent = parseInt(a / b * 100);
-        const largerThanOne = (a / b) > 1;
-        return {
-          percent,
-          largerThanOne
-        };
-      }
-      return {};
-    },
-    clickIndex(i, idx) {
-      this[`index${i}`] = idx;
-    },
-    showStragety(data) {
-      localStorage.setItem("data", JSON.stringify(data));
-      const {
-        cid,
-        brand,
-        name,
-        subject,
-        time_label,
-        rank
-      } = data;
-      // console.log(cid, brand, name, rank);
-      this.stragetyTitle = `${brand} - ${name} - ${rank}`;
-      const params = {
-        cid: cid,
-        subject: subject,
-        rank: rank,
-        time_label: time_label,
-      };
-
-      API.GetProductMatch(params).then(res => {
-        this.stragetyCheckList = [];
-        this.stragety = res.data;
-        for (let i = 0; i < res.data.length; i++) {
-          if (res.data[i].is_selected == 1) {
-            this.stragetyCheckList.push(res.data[i].id);
-            // console.log(this.stragetyCheckList)
-          }
-        }
-        // this.$store.dispatch('SaveRankArr', res.data);
-      });
-
-    }
   }
 };
 </script>

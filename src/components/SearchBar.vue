@@ -37,7 +37,6 @@
           align="right" />
       </el-form-item>
       <template v-if="form.pt === '周'">
-        <!-- <el-col :span="14"> -->
         <el-form-item 
           label="时间段选择"
           prop="weekStart">
@@ -48,8 +47,6 @@
             :picker-options="weekStartOptions"
             placeholder="请选择开始周" />
         </el-form-item>
-        <!-- </el-col> -->
-        <!-- <el-col :span="9"> -->
         <el-form-item 
           class="endFormItem"
           prop="weekEnd">
@@ -60,10 +57,8 @@
             :picker-options="weekEndOptions"
             placeholder="请选择结束周" />
         </el-form-item>
-        <!-- </el-col> -->
       </template>
       <template v-if="form.pt === '月'">
-        <!-- <el-col :span="14"> -->
         <el-form-item 
           label="时间段选择"
           prop="monthStart">
@@ -74,7 +69,6 @@
             :picker-options="monthStartOptions"
             placeholder="请选择开始月" />
         </el-form-item>
-        <!-- </el-col> -->
         <el-col :span="9">
           <el-form-item 
             class="endFormItem"
@@ -89,7 +83,6 @@
         </el-col>
       </template>
       <template v-if="form.pt === '季'">
-        <!-- <el-col :span="14"> -->
         <el-form-item 
           label="时间段选择"
           prop="seasonStart">
@@ -98,7 +91,6 @@
             placeholder="请选择开始季度"
             :picker-options="seasonStartOptions" />
         </el-form-item>
-        <!-- </el-col> -->
         <el-col :span="9">
           <el-form-item 
             class="endFormItem"
@@ -111,7 +103,6 @@
         </el-col>
       </template>
       <template v-if="form.pt === '年'">
-        <!-- <el-col :span="10"> -->
         <el-form-item 
           label="时间段选择"
           prop="yearStart">
@@ -121,7 +112,6 @@
             :picker-options="yearStartOptions"
             placeholder="请选择开始年" />
         </el-form-item>
-        <!-- </el-col> -->
         <el-col :span="9">
           <el-form-item 
             class="endFormItem"
@@ -135,7 +125,10 @@
         </el-col>
       </template>
     </el-col>
-    <el-col :span="6">
+    <el-col 
+      :span="6"
+      class="accurate"
+      v-if="url!='/home/search'">
       <el-form-item label="精确搜索">
         <el-autocomplete 
           v-model="kw"
@@ -224,7 +217,6 @@ export default {
     },
   },
   mounted () {
-    // console.log(this.date,!_.isEmpty(this.date));
     if (!_.isEmpty(this.date)) {
       if (_.isArray(this.units) && this.units.length) {
         if (_.includes(this.units, this.date.pt)) {
@@ -474,26 +466,29 @@ export default {
   }
 }
 .special_month {
-    .el-form-item{
-        float: left;
-    }
-    .align_center{
-        float: left;
-    }
-    .el-date-editor.el-input, .el-date-editor.el-input__inner{
-        width: 165px;
-    }
+  .el-form-item{
+    float: left;
+  }
+  .align_center{
+    float: left;
+  }
+  .el-date-editor.el-input, .el-date-editor.el-input__inner{
+    width: 165px;
+  }
 }
 .special_month .el-form-item__content{
     margin-left: 28px!important;
     overflow: hidden;
 }
-.time_submit .el-form-item__content {
-  margin-left: 40px !important;
-  button {
-    width: 140px;
-    background-color: #3090c0;
-    box-shadow: 0 3px 5px 0 rgba(204, 204, 204, 0.8);
-  }
+.time_submit {
+    float: right;
+    .el-form-item__content {
+    margin-left: 40px !important;
+        button {
+            width: 140px;
+            background-color: #3090c0;
+            box-shadow: 0 3px 5px 0 rgba(204, 204, 204, 0.8);
+        }
+    }
 }
 </style>

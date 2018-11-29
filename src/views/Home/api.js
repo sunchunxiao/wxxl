@@ -1,39 +1,21 @@
-import { FetchGet, FetchPostNew } from 'utils/fetch';
+import { FetchGet } from 'utils/fetch';
 // import store from 'store';
 
 export default {
-  GetProductTree(params) {
-    return FetchGet('/product/tree', params);
-  },
   GetProductProgress(params) {
-    return FetchGet('/product/progress', params);
+    return FetchGet('/product/avg/progress', params);
   },
   GetProductTrend(params) {
-    return FetchGet('/product/trend', params);
+    return FetchGet('/product/avg/trend', params);
   },
-  GetProductStructure(params) {
-    return FetchGet('/product/structure', params);
+  GetChannelProgress(params) {
+    return FetchGet('/channel/avg/progress', params);
   },
-  GetProductRank(params) {
-    return FetchGet('/product/rank', params);
+  GetChannelTrend(params) {
+    return FetchGet('/channel/avg/trend', params);
   },
-  GetProductCompare(params) {
-    return FetchGet('/product/compare', params);
-  },
-  GetProductHistory(params) {
-    return FetchGet('/product/strategy/history', params);
-  },
-  GetProductStrategy(params) {
-    return FetchGet('/product/strategy', params);
-  },
-  GetProductMatch(params) {
-    return FetchGet('/product/strategy/match', params);
-  },
-  PostProductSave(params) {
-    return FetchPostNew('/product/strategy/save', params);
-  },
+
   GetProductSearch(params) {
     return FetchGet('/product/search', params);
   },
-
 };
