@@ -1,21 +1,21 @@
 <template>
-  <el-menu 
+  <el-menu
     :default-active="activePath"
     router
     :collapse="isCollapse">
     <template v-for="item in menuData">
-      <el-submenu 
+      <el-submenu
         :index="item.path"
         :key="item.path">
         <template slot="title">
-          <img 
+          <img
             class="menu_icon"
             :src="require(`../assets/${item.icon}`)"
             :alt="item.icon">
           <span slot="title">{{ item.title }}</span>
         </template>
         <template v-for="itm in item.children">
-          <el-menu-item 
+          <el-menu-item
             :index="`${item.path}${itm.path}`"
             :key="`${item.path}${itm.path}`">
             <span class="sub-text">
@@ -25,7 +25,7 @@
         </template>
       </el-submenu>
     </template>
-    <el-menu-item 
+    <el-menu-item
       v-show="false"
       index="placeholder" />
   </el-menu>
@@ -33,144 +33,144 @@
 
 <script>
 const MENUDATA = [
-  {
-    title: "产品效率",
-    path: "/product",
-    icon: "4.png",
-    children: [
-      {
-        title: "全景分析",
-        path: "/overview"
-      },
-      {
-        title: "产品对比",
-        path: "/contrast"
-      },
-      {
-        title: "策略优化",
-        path: "/optimization"
-      },
-      {
-        title: "策略跟踪",
-        path: "/track"
-      }
-    ]
-  },
-  {
-    title: "组织效率",
-    path: "/organization",
-    icon: "5.png",
-    children: [
-      {
-        title: "全景分析",
-        path: "/overview"
-      },
-      {
-        title: "组织对比",
-        path: "/contrast"
-      },
-      {
-        title: "策略优化",
-        path: "/optimization"
-      },
-      {
-        title: "策略跟踪",
-        path: "/track"
-      }
-    ]
-  },
-  {
-    title: "客户效率",
-    path: "/customer",
-    icon: "6.png",
-    children: [
-      {
-        title: "全景分析",
-        path: "/overview"
-      },
-      {
-        title: "客户对比",
-        path: "/contrast"
-      },
-      {
-        title: "策略优化",
-        path: "/optimization"
-      },
-      {
-        title: "策略跟踪",
-        path: "/track"
-      }
-    ]
-  },
-  {
-    title: "资金效率",
-    path: "/fund",
-    icon: "7.png",
-    children: [
-      {
-        title: "全景分析",
-        path: "/overview"
-      },
-      {
-        title: "资金对比",
-        path: "/contrast"
-      },
-      {
-        title: "策略优化",
-        path: "/optimization"
-      },
-      {
-        title: "策略跟踪",
-        path: "/track"
-      }
-    ]
-  },
-  {
-    title: "渠道效率",
-    path: "/channel",
-    icon: "8.png",
-    children: [
-      {
-        title: "全景分析",
-        path: "/overview"
-      },
-      {
-        title: "渠道对比",
-        path: "/contrast"
-      },
-      {
-        title: "策略优化",
-        path: "/optimization"
-      },
-      {
-        title: "策略跟踪",
-        path: "/track"
-      }
-    ]
-  }
+    {
+        title: "产品效率",
+        path: "/product",
+        icon: "4.png",
+        children: [
+            {
+                title: "全景分析",
+                path: "/overview"
+            },
+            {
+                title: "产品对比",
+                path: "/contrast"
+            },
+            {
+                title: "策略优化",
+                path: "/optimization"
+            },
+            {
+                title: "策略跟踪",
+                path: "/track"
+            }
+        ]
+    },
+    {
+        title: "组织效率",
+        path: "/organization",
+        icon: "5.png",
+        children: [
+            {
+                title: "全景分析",
+                path: "/overview"
+            },
+            {
+                title: "组织对比",
+                path: "/contrast"
+            },
+            {
+                title: "策略优化",
+                path: "/optimization"
+            },
+            {
+                title: "策略跟踪",
+                path: "/track"
+            }
+        ]
+    },
+    {
+        title: "客户效率",
+        path: "/customer",
+        icon: "6.png",
+        children: [
+            {
+                title: "全景分析",
+                path: "/overview"
+            },
+            {
+                title: "客户对比",
+                path: "/contrast"
+            },
+            {
+                title: "策略优化",
+                path: "/optimization"
+            },
+            {
+                title: "策略跟踪",
+                path: "/track"
+            }
+        ]
+    },
+    {
+        title: "资金效率",
+        path: "/fund",
+        icon: "7.png",
+        children: [
+            {
+                title: "全景分析",
+                path: "/overview"
+            },
+            {
+                title: "资金对比",
+                path: "/contrast"
+            },
+            {
+                title: "策略优化",
+                path: "/optimization"
+            },
+            {
+                title: "策略跟踪",
+                path: "/track"
+            }
+        ]
+    },
+    {
+        title: "渠道效率",
+        path: "/channel",
+        icon: "8.png",
+        children: [
+            {
+                title: "全景分析",
+                path: "/overview"
+            },
+            {
+                title: "渠道对比",
+                path: "/contrast"
+            },
+            {
+                title: "策略优化",
+                path: "/optimization"
+            },
+            {
+                title: "策略跟踪",
+                path: "/track"
+            }
+        ]
+    }
 ];
 export default {
-  props: {
-    isCollapse: Boolean
-  },
-  data () {
-    return {
-      menuData: MENUDATA,
-      activePath: "/home",
-    };
-  },
-  watch: {
-    ['$route.fullPath']: function (val) {
-      if (val === '/home') {
-        this.activePath = 'placeholder';
-        return;
-      }
-      this.activePath = val;
+    props: {
+        isCollapse: Boolean
+    },
+    data () {
+        return {
+            menuData: MENUDATA,
+            activePath: "/home",
+        };
+    },
+    watch: {
+        ['$route.fullPath']: function (val) {
+            if (val === '/home') {
+                this.activePath = 'placeholder';
+                return;
+            }
+            this.activePath = val;
+        }
+    },
+    mounted () {
+        this.activePath = this.$route.fullPath;
     }
-  },
-  mounted () {
-    this.activePath = this.$route.fullPath;
-  }
 };
 </script>
 

@@ -7,11 +7,11 @@ import date from './date';
 import home from './home';
 
 export default {
-  product,
-  organization,
-  fund,
-  channel,
-  customer,
-  date,
-  home
+    product,
+    organization,
+    fund,
+    channel,
+    customer,
+    date,
+    home
 };

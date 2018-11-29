@@ -36,14 +36,14 @@
           prop="count_use"
           label="采纳次数"
           sortable>
-          <template 
+          <template
             slot-scope="scope">
             <el-popover
               @show='show(scope.row)'
-              trigger="click" 
+              trigger="click"
               v-model="scope.row.visible"
               placement="top">
-              <el-table 
+              <el-table
                 :data="trackList1">
                 <el-table-column
                   type="index"
@@ -61,8 +61,8 @@
                   prop=rank2
                   label="策略应用前" />
               </el-table>
-              <div 
-                slot="reference" 
+              <div
+                slot="reference"
                 class="name-wrapper cell_count_use">
                 {{ scope.row.rate }}
               </div>
@@ -82,9 +82,9 @@
             <el-popover
               @show = 'show(scope.row)'
               v-model="scope.row.visibleRate"
-              trigger="click" 
+              trigger="click"
               placement="top">
-              <el-table 
+              <el-table
                 :data="trackList1">
                 <el-table-column
                   type="index"
@@ -103,8 +103,8 @@
                   label="策略应用前" />
                   <!-- 姓名: {{ item.level }} -->
               </el-table>
-              <div 
-                slot="reference" 
+              <div
+                slot="reference"
                 class="name-wrapper cell_count_use">
                 {{ scope.row.rate }}
               </div>
@@ -128,172 +128,172 @@
 import API from './api';
 import { mapGetters } from 'vuex';
 const TIMEPT = {
-  '周': 'week',
-  '月': 'month',
-  '季': 'quarter',
-  '年': 'year'
+    '周': 'week',
+    '月': 'month',
+    '季': 'quarter',
+    '年': 'year'
 };
 
 export default {
-  components: {},
-  data() {
-    return {
-      form: {
-        pt: '日', // 周期类型
-        date: [], // date
-        search: '', // 暂时没有接口 先这样
-        subject: 'S', // S: 销售额 P: 利润额
-      },
-      trackList:[],
-      total:0,
-      currentPage: 1,
-      trackList1:[],
-    };
-  },
-		
-  computed: {
-    ...mapGetters(['strategyArr']),
-    hasTree() {
-      return !_.isEmpty(this.strategyArr);
-    }
-  },
-  mounted(){
-    this.getProductStrategy();
-  },
-  methods: {
-    sortChange(){
-      this.trackList = this.trackList.map(o=>{o.visible=false;o.visibleRate = false;return o;});
-    },
-    show(val){
-      this.trackList1 = [];
-      if(val){
-        this.trackList1.push({
-          level:"品牌A-品类AA",
-          time:'2018.1.2',
-          rank1:'差',
-          rank2:'优'
-        },{
-          level:"品牌A-品类AC",
-          time:'2018.1.2',
-          rank1:'中',
-          rank2:'差'
-        });
-      }
-    },
-    getProductStrategy() {
-      const params = {
-        page: this.currentPage,
-        per_page: 10,
-        level: "",
-        package:'供应商',
-        subject: this.form.subject,
-        ...this.getPeriodByPt(),
-      };
-      API.GetProductStrategy(params).then(res => {
-        this.trackList = res.data.map(o => {
-          o.visible=false;
-          o.visibleRate=false;
-          return o;
-        });
-        this.total = res.total;
-        // this.$store.dispatch('SaveProductStrategy', res.trackList);
-      });
-    },
-    getDateObj() {
-      const {
-        date
-      } = this.form;
-      return {
-        sDate: date[0] || '',
-        eDate: date[1] || '',
-      };
-    },
-    getPeriodByPt() {
-      const {
-        sDate,
-        eDate
-      } = this.getDateObj();
-      const {
-        pt
-      } = this.form;
-      if (sDate && eDate) { // 计算时间周期
-        if (pt === '日') {
-          return {
-            sDate,
-            eDate
-          };
-        }
-        let unit = TIMEPT[pt];
-        if (unit) {
-          return {
-            sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
-            eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-          };
-        } else {
-          return {
-            sDate: '2018-01-01',
-            eDate: '2018-06-01',
-            // 先写死个时间
-            // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-            // eDate: moment().format('YYYY-MM-DD'),
-          };
-        }
-      } else {
+    components: {},
+    data() {
         return {
-          sDate: '2018-01-01',
-          eDate: '2018-06-01',
-          // 先写死个时间
-          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-          // eDate: moment().format('YYYY-MM-DD'),
+            form: {
+                pt: '日', // 周期类型
+                date: [], // date
+                search: '', // 暂时没有接口 先这样
+                subject: 'S', // S: 销售额 P: 利润额
+            },
+            trackList:[],
+            total:0,
+            currentPage: 1,
+            trackList1:[],
         };
-      }
     },
-    filterA(value, row, column) {
-      const property = column['property'];
-      return row[property] === value;
+
+    computed: {
+        ...mapGetters(['strategyArr']),
+        hasTree() {
+            return !_.isEmpty(this.strategyArr);
+        }
     },
-    filterB(value, row, column) {
-      const property = column['property'];
-      return row[property] === value;
+    mounted(){
+        this.getProductStrategy();
     },
-    filterC(value, row, column) {
-      const property = column['property'];
-      return row[property] === value;
-    },
-    filterD(value, row, column) {
-      const property = column['property'];
-      return row[property] === value;
-    },
-    filterF(value, row, column) {
-      const property = column['property'];
-      return row[property] === value;
-    },
-    filterG(value, row, column) {
-      const property = column['property'];
-      return row[property] === value;
-    },
-    filterH(value, row, column) {
-      const property = column['property'];
-      return row[property] === value;
-    },
-    handleCurrentChange(val) {
-      // console.log(`当前页: ${val}`);
-      // console.log(val)
-      this.currentPage = val;
-      const params = {
-        page: this.currentPage,
-        per_page: 10,
-        level: 1,
-        package:'供应商',
-        subject: this.form.subject,
-        ...this.getPeriodByPt(),
-      };
-      API.GetProductStrategy(params).then(res => {
-        this.trackList = res.data;
-        // this.$store.dispatch('SaveProductStrategy', res.data);
-      });
+    methods: {
+        sortChange(){
+            this.trackList = this.trackList.map(o=>{o.visible=false;o.visibleRate = false;return o;});
+        },
+        show(val){
+            this.trackList1 = [];
+            if(val){
+                this.trackList1.push({
+                    level:"品牌A-品类AA",
+                    time:'2018.1.2',
+                    rank1:'差',
+                    rank2:'优'
+                },{
+                    level:"品牌A-品类AC",
+                    time:'2018.1.2',
+                    rank1:'中',
+                    rank2:'差'
+                });
+            }
+        },
+        getProductStrategy() {
+            const params = {
+                page: this.currentPage,
+                per_page: 10,
+                level: "",
+                package:'供应商',
+                subject: this.form.subject,
+                ...this.getPeriodByPt(),
+            };
+            API.GetProductStrategy(params).then(res => {
+                this.trackList = res.data.map(o => {
+                    o.visible=false;
+                    o.visibleRate=false;
+                    return o;
+                });
+                this.total = res.total;
+                // this.$store.dispatch('SaveProductStrategy', res.trackList);
+            });
+        },
+        getDateObj() {
+            const {
+                date
+            } = this.form;
+            return {
+                sDate: date[0] || '',
+                eDate: date[1] || '',
+            };
+        },
+        getPeriodByPt() {
+            const {
+                sDate,
+                eDate
+            } = this.getDateObj();
+            const {
+                pt
+            } = this.form;
+            if (sDate && eDate) { // 计算时间周期
+                if (pt === '日') {
+                    return {
+                        sDate,
+                        eDate
+                    };
+                }
+                let unit = TIMEPT[pt];
+                if (unit) {
+                    return {
+                        sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
+                        eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
+                    };
+                } else {
+                    return {
+                        sDate: '2018-01-01',
+                        eDate: '2018-06-01',
+                        // 先写死个时间
+                        // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+                        // eDate: moment().format('YYYY-MM-DD'),
+                    };
+                }
+            } else {
+                return {
+                    sDate: '2018-01-01',
+                    eDate: '2018-06-01',
+                    // 先写死个时间
+                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+                    // eDate: moment().format('YYYY-MM-DD'),
+                };
+            }
+        },
+        filterA(value, row, column) {
+            const property = column['property'];
+            return row[property] === value;
+        },
+        filterB(value, row, column) {
+            const property = column['property'];
+            return row[property] === value;
+        },
+        filterC(value, row, column) {
+            const property = column['property'];
+            return row[property] === value;
+        },
+        filterD(value, row, column) {
+            const property = column['property'];
+            return row[property] === value;
+        },
+        filterF(value, row, column) {
+            const property = column['property'];
+            return row[property] === value;
+        },
+        filterG(value, row, column) {
+            const property = column['property'];
+            return row[property] === value;
+        },
+        filterH(value, row, column) {
+            const property = column['property'];
+            return row[property] === value;
+        },
+        handleCurrentChange(val) {
+            // console.log(`当前页: ${val}`);
+            // console.log(val)
+            this.currentPage = val;
+            const params = {
+                page: this.currentPage,
+                per_page: 10,
+                level: 1,
+                package:'供应商',
+                subject: this.form.subject,
+                ...this.getPeriodByPt(),
+            };
+            API.GetProductStrategy(params).then(res => {
+                this.trackList = res.data;
+                // this.$store.dispatch('SaveProductStrategy', res.data);
+            });
+        }
     }
-  }
 };
 </script>
 

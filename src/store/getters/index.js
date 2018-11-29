@@ -7,13 +7,13 @@ import date from './date';
 import home from './home';
 
 const getters = {
-  ...product,
-  ...organization,
-  ...fund,
-  ...channel,
-  ...customer,
-  ...date,
-  ...home
+    ...product,
+    ...organization,
+    ...fund,
+    ...channel,
+    ...customer,
+    ...date,
+    ...home
 };
 
 export default getters;
