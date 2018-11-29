@@ -38,5 +38,4 @@ export default {
   GetProductSearch(params) {
     return FetchGet('/product/search', params);
   },
-
 };

@@ -2,9 +2,13 @@
   <div class="optimization">
     <el-row>
       <search-bar 
-        @search="handleSearch"
         ref="child"
-        url="/org/search" />
+        @input="input"
+        url="/org/search"
+        @search="handleSearch"
+        v-model="searchBarValue"
+        placeholder="组织编号/组织名称"
+        :pt-options="['月', '季', '年']" />
     </el-row>
     <el-row 
       class="content_row" 
@@ -18,26 +22,26 @@
           v-if="fundTree.children"
           :class="{bac:isbac}"
           class="company">
-          <span class="left label">{{ fundTree.name }}</span>
+          <span class="left label">{{ treeClone.name }}</span>
           <span
-            :class="{percent: true, red: !calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne, blue: calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne}"
-            class="right">{{ calculatePercent(fundTree.real_total, fundTree.target_total).percent + '%' }}</span>
+            :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
           <div 
-            :class="{comprogress: true, 'border-radius0': calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne}"
-            :style="{width: calculatePercent(fundTree.real_total, fundTree.target_total).largerThanOne ? '105%' : `${calculatePercent(fundTree.real_total, fundTree.target_total).percent + 5}%`}" />
+            :class="{comprogress: true, 'border-radius0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
         </div>
         <!-- 有多个tree -->
         <el-tree 
           ref="tree"
+          node-key="cid"
           empty-text="正在加载"
           :props="defaultProps" 
-          node-key="cid"
+          :data="treeClone.children"
           :highlight-current="highlight" 
           :expand-on-click-node="false"
-          :data="fundTree.children" 
           :default-expanded-keys="nodeArr"
-          @node-click="handleNodeClick" 
-          @check-change="handleCheckChange">
+          @node-expand="nodeExpand"
+          @node-click="handleNodeClick">
           <span 
             class="custom-tree-node" 
             slot-scope="{ node, data }">
@@ -165,6 +169,12 @@ export default {
       nodeArr:[],
       isbac:true,
       highlight:true,
+      searchBarValue: {
+        pt: '',
+        sDate: '',
+        eDate: ''
+      },
+      treeClone:{},
     };
   },
   computed: {
@@ -180,19 +190,34 @@ export default {
     },
     cid: function() {
       // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-      // 暂时先在这里做
-      this.getHistory();
-				
+      this.getTreePrograss();
+      this.getHistory();		
     }
   },
   mounted() {
     if(!this.hasTree) {
       this.getTree();
     }else{
+      this.treeClone = _.cloneDeep(this.fundTree); 
       this.cid = this.fundTree.cid;
     }
   },
   methods: {
+    preOrder(node,cid){
+      for(let i of node){
+        if (i.cid == cid) {
+          return i;
+        }
+        if(i.children && i.children.length){
+          if (this.preOrder(i.children, cid)) {
+            return this.preOrder(i.children,cid);
+          }
+        }
+      }
+    },
+    input (val) {
+      this.form.date = val;
+    },
     click(){
       if(this.cid==this.fundTree.cid){
         return;
@@ -206,8 +231,7 @@ export default {
         setTimeout(() => {		       
           this.loading = false;
         }, 1000);
-      }
-                
+      }         
     },
     getHistory() {
       const params = {
@@ -226,50 +250,78 @@ export default {
         version: this.form.version
       };
       API.GetFundTree(params).then(res => {
-        this.cid = res.tree.cid;
+        if (this.fundTree.cid == undefined) {
+          this.cid = res.tree.cid;
+        }
+        this.treeClone = _.cloneDeep(res.tree); 
         this.$store.dispatch('SaveFundTree', res.tree);
       });
     },
-    getPeriodByPt() {
+    //获取百分比数据
+    getTreePrograss(){
+      const params = {
+        subject:this.form.subject,
+        ...this.getPeriodByPt(),
+        nid:this.cid,
+        version:this.form.version
+      };
+      API.GetFundTreePrograss(params).then(res=>{
+        let obj = this.preOrder([this.treeClone], this.cid);
+        // console.log(obj,obj.cid,this.cid,res.data);
+        if(obj.cid == this.cid){
+          obj.real_total = res.data[this.cid].real;
+          obj.target_total = res.data[this.cid].target;
+        }
+        if (obj.children) {
+          for(let i of obj.children){
+            if(res.data.hasOwnProperty(i.cid)){
+              i.real_total = res.data[i.cid].real;
+              i.target_total = res.data[i.cid].target;
+                            
+            }
+          }
+        }
+      });
+    },
+    getDateObj () {
       const {
-        sDate,
-        eDate
-      } = this.getDateObj();
-      // const {
-      //     pt
-      // } = this.form;
-      // console.log(sDate,eDate);
-      if(sDate && eDate) { // 计算时间周期
+        date
+      } = this.form;
+      // console.log(this.val.sDate,date);
+      if (this.val.sDate != undefined && this.val.eDate != undefined) {
         return {
-          pt:this.val.pt,
+          pt: this.val.pt,
           sDate: this.val.sDate,
           eDate: this.val.eDate,
         };
       } else {
         return {
-          pt:'月',
-          sDate: '2018-01-01',
-          eDate: '2018-05-01',
-          // 先写死个时间
-          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-          // eDate: moment().format('YYYY-MM-DD'),
+          pt: date.pt,
+          sDate: date.sDate,
+          eDate: date.eDate,
         };
       }
     },
-    getDateObj() {
+    getPeriodByPt () {
       const {
-        date
-      } = this.form;
-      // console.log(this.val.eDate);
-      if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
+        pt,
+        sDate,
+        eDate
+      } = this.getDateObj();
+      if (sDate && eDate) { // 计算时间周期
         return {
-          sDate: this.val.sDate,
-          eDate: this.val.eDate,
+          pt: pt,
+          sDate: sDate,
+          eDate: eDate,
         };
-      }else{
+      } else {
         return {
-          sDate: date[0] || '',
-          eDate: date[1] || '',
+          pt: '月',
+          sDate: '2018-03-01',
+          eDate: '2018-06-30',
+          // 先写死个时间
+          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+          // eDate: moment().format('YYYY-MM-DD'),
         };
       }
     },
@@ -313,23 +365,38 @@ export default {
       // 默认公司的背景色
       this.isbac = false;
       this.nodeArr = [];
-      this.nodeArr.push(val.cid);
-      this.$nextTick(() => {
-        this.$refs.tree.setCurrentKey(val.cid); // tree 元素的ref  绑定的node-key
-      });
       this.loading = true;
       this.val = val;
       if(val.cid!=""){
         this.cid = val.cid;
+        this.nodeArr.push(val.cid);
+        this.$nextTick(() => {
+          this.$refs.tree.setCurrentKey(val.cid); // tree 元素的ref  绑定的node-key
+        });
+        if(this.cid==this.fundTree.cid){
+          this.isbac = true;
+          this.highlight = false;
+        }
       }else{
-        this.getTree();
-        this.getHistory();
-				
+        this.isbac = true;
+        this.highlight = false;
+        if(this.cid!=this.fundTree.cid){
+          this.cid = this.fundTree.cid;
+          this.treeClone = _.cloneDeep(this.fundTree);
+        }else{
+          this.getTreePrograss();
+          this.getHistory();
+        } 	
       }
       setTimeout(() => {		       
         this.loading = false;
       }, 1000);
 						
+    },
+    nodeExpand(data){
+      this.cid = data.cid;
+      this.isbac = false;
+      this.highlight = true;
     },
     handleNodeClick(data) {
       this.isbac = false;
@@ -345,8 +412,6 @@ export default {
           this.loading = false;
         }, 1000);
       }
-    },
-    handleCheckChange() {
     },
     clickIndex(i, idx) {
       this[`index${i}`] = idx;

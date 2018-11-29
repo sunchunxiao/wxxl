@@ -2,10 +2,12 @@
   <div class="contrast">
     <el-row>
       <search-bar 
-        @search="handleSearch" 
         ref="child"
+        @input="input"
+        @search="handleSearch" 
         url="/cus/search"
-        placeholder="客户编号/客户名称" />
+        placeholder="客户编号/客户名称" 
+        :pt-options="['日', '周', '月', '季', '年']" />
     </el-row>
     <el-row 
       class="content_row" 
@@ -21,21 +23,22 @@
         </div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
-          <span class="left">{{ customerTree.name }}</span>
+          <span class="left">{{ treeClone.name }}</span>
           <span
-            v-if="customerTree.children"
-            class="right">{{ calculatePercent(customerTree.real_total, customerTree.target_total).percent + '%' }}</span>
+            v-if="treeClone.children"
+            class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
         </div>
         <!-- 有多个tree -->
         <el-tree 
           ref="tree" 
           node-key="cid" 
           check-strictly
+          show-checkbox 
           empty-text="正在加载"
-          :data="customerTree.children" 
+          :data="treeClone.children" 
           :props="defaultProps" 
           :default-expanded-keys="nodeArr"
-          show-checkbox 
+          @node-expand="nodeExpand"
           @check-change="handleCheckChange">
           <span 
             class="custom-tree-node" 
@@ -141,7 +144,7 @@ export default {
         subject: 'S', // S: 销售额 P: 利润额
         version: '0'
       },
-      cid:1,
+      cid:'',
       defaultProps: TREE_PROPS,
       index0: 0,
       val:{},
@@ -151,6 +154,7 @@ export default {
       cidObjArr:[],
       cancelKey: '',
       debounce: null,
+      treeClone:{},
     };
   },
   computed: {
@@ -166,6 +170,9 @@ export default {
       } else if (val.length === 0) {
         this.$store.dispatch('ClearCusCompare');
       }
+    },
+    cid(){
+      this.getTreePrograss();
     }
   },
   created() {
@@ -174,17 +181,28 @@ export default {
   },
   mounted() {
     if(this.customerTree.children){
+      this.cid = this.customerTree.cid;
+      this.treeClone = _.cloneDeep(this.customerTree);
       let arr = [];
       for(let i = 0; i < 3; i++) {
         this.customerTree.children[i] && arr.push(this.customerTree.children[i]);
       }
       const checkKeys = arr.map(i => i.cid);
-      this.$refs.tree.setCheckedKeys(checkKeys);
+      this.$store.dispatch('SaveCusTree', this.customerTree).then(() => {
+        this.$refs.tree.setCheckedKeys(checkKeys);
+      });
     }else{
+      this.promise();
+    }
+  },
+  methods: {
+    promise(){
       Promise.all([this.getTree(), this.getProgress()]).then(res => {
         // 树
         const treeData = res[0];
-        const children = treeData.tree.children;
+        this.cid = treeData.tree.cid;
+        this.treeClone = _.cloneDeep(treeData.tree);
+        const children = this.treeClone.children;
         let arr = [];
         for(let i = 0; i < 3; i++) {
           children[i] && arr.push(children[i]);
@@ -197,15 +215,50 @@ export default {
         const progressData = res[1];
         this.$store.dispatch('SaveCusProgressData', progressData.data);
       }); 
-    }
-  },
-  methods: {
+    },
+    preOrder(node,cid){
+      for(let i of node){
+        if (i.cid == cid) {
+          return i;
+        }
+        if(i.children && i.children.length){
+          if (this.preOrder(i.children, cid)) {
+            return this.preOrder(i.children,cid);
+          }
+        }
+      }
+    },
+    input (val) {
+      this.form.date = val;
+    },
     getTree() {
       const params = {
         subject: this.form.subject,
         ...this.getPeriodByPt(),
       };
       return API.GetCusTree(params);
+    },
+    getTreePrograss(){
+      const params = {
+        subject:this.form.subject,
+        ...this.getPeriodByPt(),
+        nid:this.cid,
+        version:this.form.version
+      };
+      API.GetCusTreePrograss(params).then(res=>{
+        let obj = this.preOrder([this.treeClone], this.cid);
+        if(obj.cid == this.cid){
+          obj.real_total = res.data[this.cid].real;
+          obj.target_total = res.data[this.cid].target;
+        }
+        for(let i of obj.children){
+          if(res.data.hasOwnProperty(i.cid)){
+            i.real_total = res.data[i.cid].real;
+            i.target_total = res.data[i.cid].target;
+                            
+          }
+        }
+      });
     },
     getProgress() {
       const params = {
@@ -241,45 +294,42 @@ export default {
       params.targets = checkKeys.join(',');
       return API.GetCusCompare(params);
     },
-    getPeriodByPt() {
+    getPeriodByPt () {
       const {
+        pt,
         sDate,
         eDate
       } = this.getDateObj();
-      // const {
-      //     pt
-      // } = this.form;
-      // console.log(sDate,eDate);
-      if(sDate && eDate) { // 计算时间周期
+      if (sDate && eDate) { // 计算时间周期
         return {
-          pt:this.val.pt,
+          pt: pt,
+          sDate: sDate,
+          eDate: eDate,
+        };
+      } else {
+        return {
+          pt: '日',
+          sDate: '2018-05-01',
+          eDate: '2018-06-30',
+        };
+      }
+    },
+    getDateObj () {
+      const {
+        date
+      } = this.form;
+      // console.log(this.val.sDate,date);
+      if (this.val.sDate != undefined && this.val.eDate != undefined) {
+        return {
+          pt: this.val.pt,
           sDate: this.val.sDate,
           eDate: this.val.eDate,
         };
       } else {
         return {
-          pt:'月',
-          sDate: '2018-01-01',
-          eDate: '2018-06-01',
-          // 先写死个时间
-          // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-          // eDate: moment().format('YYYY-MM-DD'),
-        };
-      }
-    },
-    getDateObj() {
-      const {
-        date
-      } = this.form;
-      if(this.val.sDate!=undefined&&this.val.eDate!=undefined){
-        return {
-          sDate: this.val.sDate,
-          eDate: this.val.eDate,
-        };
-      }else{
-        return {
-          sDate: date[0] || '',
-          eDate: date[1] || '',
+          pt: date.pt,
+          sDate: date.sDate,
+          eDate: date.eDate,
         };
       }
     },
@@ -302,6 +352,11 @@ export default {
     cleanChecked() {
       this.cidObjArr = [];
       this.$refs.tree.setCheckedKeys([]);
+    },
+    nodeExpand(data){
+      this.cid = data.cid;
+      this.isbac = false;
+      this.highlight = true;
     },
     handleCheckChange(data, checked) {
       // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择

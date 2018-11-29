@@ -1,10 +1,14 @@
 <template>
   <div class="contrast">
     <el-row>
-      <search-bar 
-        @search="handleSearch"
+      <search-bar
         ref="child"
-        url="/org/search" />
+        @input="input"
+        url="/org/search"
+        @search="handleSearch"
+        v-model="searchBarValue"
+        placeholder="组织编号/组织名称"
+        :pt-options="['月', '季', '年']" />
     </el-row>
     <el-row 
       class="content_row" 
@@ -14,27 +18,28 @@
         class="tree_container">
         <div class="padding_top">
           <el-button 
-            @click="cleanChecked"
+            @click="cleanChecked" 
             size="mini" 
             class="clean_btn">清空选择</el-button>
         </div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
-          <span class="left">{{ organizationTree.name }}</span>
+          <span class="left">{{ treeClone.name }}</span>
           <span
-            v-if="organizationTree.children"
-            class="right">{{ calculatePercent(organizationTree.real_total, organizationTree.target_total).percent + '%' }}</span>
+            v-if="treeClone.children"
+            class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
         </div>
         <!-- 有多个tree -->
-        <el-tree 
+        <el-tree
           empty-text="正在加载"
           ref="tree"
           node-key="cid"
           check-strictly
-          :data="organizationTree.children" 
-          :props="defaultProps" 
+          :data="treeClone.children"
+          :props="defaultProps"
           :default-expanded-keys="nodeArr"
           show-checkbox
+          @node-expand="nodeExpand"
           @check-change="handleCheckChange">
           <span 
             class="custom-tree-node" 
@@ -42,23 +47,23 @@
             <el-tooltip 
               class="item" 
               effect="dark" 
-              placement="right"> 
+              placement="right">
               <div slot="content">
                 <div class="tooltip_margin bold">品类:{{ data.name }}</div>
-                <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                <div
+                  class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                 <div 
-                  v-if="data.children"
+                  v-if="data.children" 
                   class="tooltip_margin">子项目数 : {{ data.children.length }}</div>
                 <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
               </div>
               <span class="label">
                 <span class="label_left">{{ data.name }}</span>
-                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+                <span
+                  :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
               </span>
             </el-tooltip>
-            <!-- <span class="label">{{ data.name }}</span> -->
-            
-            <div 
+            <div
               :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
           </span>
@@ -77,9 +82,9 @@
                     :key="index" 
                     :span="12" 
                     @click.native="clickIndex(0 ,index)">
-                    <ConOrgComparisonAverage 
-                      :title="item.subject_name" 
-                      :id="`${index}`" 
+                    <ConOrgComparisonAverage
+                      :title="item.subject_name"
+                      :id="`${index}`"
                       :data="item" />
                   </el-col>
                 </template>
@@ -87,18 +92,16 @@
               <el-col 
                 :span="18" 
                 v-if="orgcompareArr.length > 0">
-                <ConOrgComparisonAverageBig 
-                  :title="orgcompareArr[index0].subject_name" 
-                  :data="orgcompareArr[index0]" 
+                <ConOrgComparisonAverageBig
+                  :title="orgcompareArr[index0].subject_name"
+                  :data="orgcompareArr[index0]"
                   id="ConOrgComparisonAverage"
                   :index="index0" />
               </el-col>
             </el-row>
             <el-row 
               v-else 
-              class="please_select">
-              请选择要对比的项目
-            </el-row>
+              class="please_select">请选择要对比的项目</el-row>
           </Card>
           <Card v-if="type==2||type==3">
             <el-row class="card-title">组织对比分析和平均值分析后端</el-row>
@@ -109,9 +112,9 @@
                     :key="index" 
                     :span="12" 
                     @click.native="clickIndex(1 ,index)">
-                    <ConOrgComparisonAverage 
-                      :title="item.subject_name" 
-                      :id="`${index+orgcompareArr.length}`" 
+                    <ConOrgComparisonAverage
+                      :title="item.subject_name"
+                      :id="`${index+orgcompareArr.length}`"
                       :data="item" />
                   </el-col>
                 </template>
@@ -119,18 +122,16 @@
               <el-col 
                 :span="18" 
                 v-if="orgcompareArrback.length > 0">
-                <ConOrgComparisonAverageBig 
-                  :title="orgcompareArrback[index1].subject_name" 
-                  :data="orgcompareArrback[index1]" 
+                <ConOrgComparisonAverageBig
+                  :title="orgcompareArrback[index1].subject_name"
+                  :data="orgcompareArrback[index1]"
                   id="ConOrgComparisonAverage1"
                   :index="index0" />
               </el-col>
             </el-row>
             <el-row 
               v-else 
-              class="please_select">
-              请选择要对比的项目
-            </el-row>
+              class="please_select">请选择要对比的项目</el-row>
           </Card>
         </el-row>
       </el-col>
@@ -175,7 +176,7 @@ export default {
         version: '0'
       },
       loading: false,
-      cid: 1,
+      cid: '',
       defaultProps: TREE_PROPS,
       index0: 0,
       index1: 0,
@@ -190,6 +191,12 @@ export default {
       isFirstLoad: true,
       debounce: null,
       debounceBack: null,
+      searchBarValue: {
+        pt: '',
+        sDate: '',
+        eDate: ''
+      },
+      treeClone: {},
     };
   },
   computed: {
@@ -213,7 +220,9 @@ export default {
         this.$store.dispatch('ClearOrgBackCompareArr');
       }
     },
-
+    cid(){
+      this.getTreePrograss();
+    }
   },
   created () {
     // 防抖函数 减少发请求次数
@@ -222,27 +231,39 @@ export default {
   },
   mounted () {
     if (this.organizationTree.children) {
+      this.cid = this.organizationTree.cid;
+      this.treeClone = _.cloneDeep(this.organizationTree);
       let arr = [];
       let arrback = [];
-      for (let i = 0; i < this.organizationTree.children.length; i++) {
-        if (this.organizationTree.children[i].type == 1) {
-          this.organizationTree.children[i] && arr.push(this.organizationTree.children[i]);
-        } else if (this.organizationTree.children[i].type == 2) {
-          this.organizationTree.children[i] && arrback.push(this.organizationTree.children[i]);
+      for (let i = 0; i < this.treeClone.children.length; i++) {
+        if (this.treeClone.children[i].type == 1) {
+          this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
+        } else if (this.treeClone.children[i].type == 2) {
+          this.treeClone.children[i] && arrback.push(this.treeClone.children[i]);
         }
       }
       const checkKeys = arr.map(i => i.cid);
       const checkBackKeys = arrback.map(i => i.cid);
       const cc = [...checkKeys, ...checkBackKeys];
-      this.$refs.tree.setCheckedKeys(cc);
+      this.$store.dispatch('SaveOrgTree', this.organizationTree).then(() => {
+        this.$refs.tree.setCheckedKeys(cc);
+      });
+     
     } else {
+      this.promise();
+    }
+
+  },
+  methods: {
+    promise(){
       Promise.all([this.getTree(), this.getProgressbefore(), this.getProgressback()]).then(res => {
         // 树
         const treeData = res[0];
-        const children = treeData.tree.children;
+        this.cid = treeData.tree.cid;
+        this.treeClone = _.cloneDeep(treeData.tree);
+        const children = this.treeClone.children;
         let arr = [];
         let arrback = [];
-
         for (let i = 0; i < children.length; i++) {
           if (children[i].type == 1) {
             children[i] && arr.push(children[i]);
@@ -250,8 +271,6 @@ export default {
             children[i] && arrback.push(children[i]);
           }
         }
-        // this.cidObjArr = arr;
-        // this.cidObjBackArr = arrback;
         const checkKeys = arr.map(i => i.cid);
         const checkBackKeys = arrback.map(i => i.cid);
         const cc = [...checkKeys, ...checkBackKeys];
@@ -259,19 +278,28 @@ export default {
         this.$store.dispatch('SaveOrgTree', treeData.tree).then(() => {
           this.$refs.tree.setCheckedKeys(cc);
         });
-
         const progressData = res[1];
         this.$store.dispatch('SaveOrgProgressData', progressData.data);
         // 后端指标
         const progressbackData = res[2];
         this.$store.dispatch('SaveOrgBackData', progressbackData.data);
       });
-    }
-
-  },
-
-  methods: {
-
+    },
+    preOrder(node,cid){
+      for(let i of node){
+        if (i.cid == cid) {
+          return i;
+        }
+        if(i.children && i.children.length){
+          if (this.preOrder(i.children, cid)) {
+            return this.preOrder(i.children,cid);
+          }
+        }
+      }
+    },
+    input (val) {
+      this.form.date = val;
+    },
     getTree () {
       const params = {
         subject: this.form.subject,
@@ -279,6 +307,30 @@ export default {
         version: this.form.version
       };
       return API.GetOrgTree(params);
+    },
+    //获取百分比数据
+    getTreePrograss(){
+      const params = {
+        subject:this.form.subject,
+        ...this.getPeriodByPt(),
+        nid:this.cid,
+        version:this.form.version
+      };
+      API.GetOrgTreePrograss(params).then(res=>{
+        let obj = this.preOrder([this.treeClone], this.cid);
+        if(obj.cid == this.cid){
+          obj.real_total = res.data[this.cid].real;
+          obj.target_total = res.data[this.cid].target;
+        }
+        for(let i of obj.children){
+          if(res.data.hasOwnProperty(i.cid)){
+            i.real_total = res.data[i.cid].real;
+            i.target_total = res.data[i.cid].target;
+                                
+          }
+        }
+        this.$store.dispatch('SaveProductTreePrograss', res.data);
+      });
     },
     getProgressbefore () {
       const params = {
@@ -348,15 +400,30 @@ export default {
       params.targets = checkKeys.join(',');
       return API.GetOrgCompare(params);
     },
+    getDateObj () {
+      const {
+        date
+      } = this.form;
+      // console.log(this.val.sDate,date);
+      if (this.val.sDate != undefined && this.val.eDate != undefined) {
+        return {
+          pt: this.val.pt,
+          sDate: this.val.sDate,
+          eDate: this.val.eDate,
+        };
+      } else {
+        return {
+          pt: date.pt,
+          sDate: date.sDate,
+          eDate: date.eDate,
+        };
+      }
+    },
     getPeriodByPt () {
       const {
         sDate,
         eDate
       } = this.getDateObj();
-      // const {
-      //     pt
-      // } = this.form;
-      // console.log(sDate,eDate);
       if (sDate && eDate) { // 计算时间周期
         return {
           pt: this.val.pt,
@@ -366,28 +433,11 @@ export default {
       } else {
         return {
           pt: '月',
-          sDate: '2018-01-01',
-          eDate: '2018-05-01',
+          sDate: '2018-03-01',
+          eDate: '2018-06-01',
           // 先写死个时间
           // sDate: moment().startOf('week').format('YYYY-MM-DD'),
           // eDate: moment().format('YYYY-MM-DD'),
-        };
-      }
-    },
-    getDateObj () {
-      const {
-        date
-      } = this.form;
-      // console.log(this.val.eDate);
-      if (this.val.sDate != undefined && this.val.eDate != undefined) {
-        return {
-          sDate: this.val.sDate,
-          eDate: this.val.eDate,
-        };
-      } else {
-        return {
-          sDate: date[0] || '',
-          eDate: date[1] || '',
         };
       }
     },
@@ -408,6 +458,11 @@ export default {
       }, 1000);
 
     },
+    nodeExpand(data){
+      this.cid = data.cid;
+      this.isbac = false;
+      this.highlight = true;
+    },
     cleanChecked () {
       this.cidObjArr = [];
       this.cidObjBackArr = [];
@@ -426,7 +481,6 @@ export default {
           if (this.cidObjBackArr[0] && data.parent_id !== this.cidObjBackArr[0].parent_id) {
             this.warn('请选择相同父级下的进行对比');
             this.cancelKey = data.cid;
-
             const checkKeys = this.cidObjArr.map(i => i.cid);
             const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
             const cc = [...checkKeys, ...checkBackKeys];
@@ -453,14 +507,14 @@ export default {
           }
           this.cidObjArr.push(data);
           // 如果选中的个数不超过 4
-          // if (this.cidObjArr.length < 4) {
-          // 		this.cidObjArr.push(data);
-          // } else if (this.cidObjArr.length === 4) {
-          // 		this.warn('最多对比 4 条');
-          // 		this.cancelKey = data.cid;
-          // 		const checkKeys = this.cidObjArr.map(i => i.cid);
-          // 		this.$refs.tree.setCheckedKeys(checkKeys);
-          // }
+          //   if (this.cidObjArr.length < 4) {
+          //     this.cidObjArr.push(data);
+          //   } else if (this.cidObjArr.length === 4) {
+          //     this.warn('最多对比 4 条');
+          //     this.cancelKey = data.cid;
+          //     const checkKeys = this.cidObjArr.map(i => i.cid);
+          //     this.$refs.tree.setCheckedKeys(checkKeys);
+          //   }
         }
       } else { // 如果取消选择
         // 找到取消选择的下标
@@ -507,5 +561,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../Product/style/contrast.scss';
+@import "../Product/style/contrast.scss";
 </style>

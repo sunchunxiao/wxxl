@@ -1,6 +1,6 @@
 // Created by sunchunxiao on 2018/10/16.
 
-import { FetchPostNew,FetchGet } from 'utils/fetch';
+import { FetchPostNew, FetchGet } from 'utils/fetch';
 
 // import store from 'store';
 
@@ -8,6 +8,9 @@ export default {
   //查询组织结构
   GetOrgTree(params) {
     return FetchGet('/org/tree', params);
+  },
+  GetOrgTreePrograss(params) {
+    return FetchGet('/org/tree/progress', params);
   },
   GetOrgProgress(params) {
     return FetchGet('/org/progress', params);
@@ -38,5 +41,5 @@ export default {
   },
   GetOrgStrategiesTrack(params) {
     return FetchGet('/org/strategiesTrack', params);
-  },
+  }
 };

@@ -2,10 +2,10 @@
   <div class="contrast">
     <el-row>
       <search-bar 
+        ref="child"
         @input="input"
         @search="handleSearch" 
         placeholder="产品编号/产品名称"
-        ref="child"
         url="/product/search" />
     </el-row>
     <el-row 
@@ -253,7 +253,7 @@ export default {
           if(res.data.hasOwnProperty(i.cid)){
             i.real_total = res.data[i.cid].real;
             i.target_total = res.data[i.cid].target;
-                            
+                                
           }
         }
         this.$store.dispatch('SaveProductTreePrograss', res.data);
@@ -283,7 +283,6 @@ export default {
         }
       });
     },
-
     getTrend (subject) {
       let params = {
         ...this.getPeriodByPt(),
@@ -346,7 +345,7 @@ export default {
             this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
           });
           this.cid = val.cid;
-                    
+                        
         }else{
           this.getTree();
           this.getCompare();
@@ -357,11 +356,11 @@ export default {
       }
     },
     nodeExpand(data){
+
       this.cid = data.cid;
       this.isbac = false;
       this.highlight = true;
     },
-            
     cleanChecked () {
       this.cidObjArr = [];
       this.$refs.tree.setCheckedKeys([]);

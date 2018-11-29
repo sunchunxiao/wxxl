@@ -421,7 +421,6 @@ export default {
 
           }
         }
-        this.$store.dispatch('SaveProductTreePrograss', res.data);
       });
     },
     getProgress () {

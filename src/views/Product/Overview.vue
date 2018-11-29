@@ -2,12 +2,12 @@
   <div class="overview">
     <el-row>
       <search-bar 
-        @search="handleSearch"
+        ref="child"
         @input="input"
+        @search="handleSearch"
         url="/product/search"
         placeholder="产品编号/产品名称" 
         v-model="searchBarValue"
-        ref="child"
         :pt-options="['日', '周', '月', '季', '年']" />
     </el-row>
     <el-row 
@@ -527,6 +527,7 @@ export default {
           this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
         });
         this.cid = val.cid;
+        //如果是根节点
         if(this.cid==this.productTree.cid){
           this.isbac = true;
           this.highlight = false;
