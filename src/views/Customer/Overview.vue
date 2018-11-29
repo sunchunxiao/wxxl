@@ -256,7 +256,6 @@ export default {
         date: [],
         search: '',
         subject: 'S', // S: 销售额 P: 利润额
-        version: '0'
       },
       cid:'',
       loading: false,
@@ -402,7 +401,6 @@ export default {
         subject:this.form.subject,
         ...this.getPeriodByPt(),
         nid:this.cid,
-        version:this.form.version
       };
       API.GetCusTreePrograss(params).then(res=>{
         let obj = this.preOrder([this.treeClone], this.cid);

@@ -140,7 +140,6 @@ export default {
         date: [],
         search: '',
         subject: 'S', // S: 销售额 P: 利润额
-        version: '0'
       },
       currentPage: 1,
       trackList:[],

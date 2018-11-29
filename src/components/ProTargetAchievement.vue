@@ -76,7 +76,7 @@ export default {
       if(val==null){
         return "未设定";
       }else{
-        if (subject === 'ITO'||subject === 'ROI') { // 库存周转率不需要单位
+        if (subject === 'ITO'||subject === 'ROI'||subject === 'SKU') { // 库存周转率不需要单位
           return val;
         }else if (subject === 'POR') { // 库存周转率不需要单位
           return parseInt(val);
@@ -100,7 +100,6 @@ export default {
         valuePercent = parseInt(progress * 100);
                 
       }
-    
       let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
       // 反向指标 颜色需要相反
       if (_.includes(REVERSE_TARGET, subject)) {
