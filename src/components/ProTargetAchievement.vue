@@ -1,7 +1,7 @@
 <template>
   <div class="pie-container">
-    <div 
-      class="pie" 
+    <div
+      class="pie"
       :id="`pie-${id}`" />
     <div class="detail">
       <span class="text">目标: </span>
@@ -10,8 +10,8 @@
     </div>
     <div class="detail">
       <span class="text">实际: </span>
-      <span 
-        class="value" 
+      <span
+        class="value"
         :style="{color: color}">{{ real }}</span>
       &nbsp;<span>{{ unit }}</span>
     </div>
@@ -29,188 +29,188 @@ const FONTSIZE2 = 15;
 const FONTWEIGHT = 600;
 
 export default {
-  props: {
-    id: String,
-    data: Object,
-  },
-  data() {
-    return {
-      color: '#000'
-    };
-  },
-  computed: {
-    unit() {
-      const { subject } = this.data;
-      if (subject== 'NIR'||subject== 'CTR') { // 投入产出比 %
-        return '%';
-      } else if (subject === 'ITO') { // 库存周转率不需要单位
-        return '';
-      }
-            
-      // return 'w';
+    props: {
+        id: String,
+        data: Object,
     },
-    real() {
-      const { real } = this.data;
-      return this.calculateToShow(real);
+    data() {
+        return {
+            color: '#000'
+        };
     },
-    target() {
-      const { target } = this.data;
-      return this.calculateToShow(target);
-    }
-  },
-  mounted() {
-    this.chart = echarts.init(document.getElementById(`pie-${this.id}`));
-    this.renderChart(this.data);
-  },
-  watch: {
-    data: {
-      handler: function (val) {
-        this.renderChart(val);
-      },
-      deep: true
-    },
-  },
-  methods: {
-    calculateToShow(val) {
-      const { subject } = this.data;
-      if(val==null){
-        return "未设定";
-      }else{
-        if (subject === 'ITO'||subject === 'ROI'||subject === 'SKU') { // 库存周转率不需要单位
-          return val;
-        }else if (subject === 'POR') { // 库存周转率不需要单位
-          return parseInt(val);
+    computed: {
+        unit() {
+            const { subject } = this.data;
+            if (subject== 'NIR'||subject== 'CTR') { // 投入产出比 %
+                return '%';
+            } else if (subject === 'ITO') { // 库存周转率不需要单位
+                return '';
+            }
+
+            // return 'w';
+        },
+        real() {
+            const { real } = this.data;
+            return this.calculateToShow(real);
+        },
+        target() {
+            const { target } = this.data;
+            return this.calculateToShow(target);
         }
-        let Tenthousand = parseInt(val / 10000 / 100);
-        if(Tenthousand>=1){
-          return parseInt(val / 10000 / 100)+'w';
-        }else{
-          return parseInt(val/100);
-        }
-        // return parseInt(val / 10000 / 100); // 金额从分转换为万
-      }
-            
     },
-    renderChart(data) {
-      const { subject, subject_name, progress ,real } = data;
-      var valuePercent;
-      if(progress==null){
-        valuePercent = this.calculateToShow(real);
-      }else{
-        valuePercent = parseInt(progress * 100);
-                
-      }
-      let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
-      // 反向指标 颜色需要相反
-      if (_.includes(REVERSE_TARGET, subject)) {
-        color = valuePercent >= 100 ? COLORMAP.over : COLORMAP.below;
-      }
-      this.color = color;
-      const valueLeft = valuePercent >= 100 ? 0 : 100 - valuePercent;
-      const options = {
-        backgroundColor: '#fff',
-        tooltip: {
-          trigger: 'item',
-          formatter: function(params){
-            var result = [];
-            if(progress==null){
-              result += params.marker + " " + params.name + " : " + params.value + "</br>";
+    mounted() {
+        this.chart = echarts.init(document.getElementById(`pie-${this.id}`));
+        this.renderChart(this.data);
+    },
+    watch: {
+        data: {
+            handler: function (val) {
+                this.renderChart(val);
+            },
+            deep: true
+        },
+    },
+    methods: {
+        calculateToShow(val) {
+            const { subject } = this.data;
+            if(val==null){
+                return "未设定";
             }else{
-              result += params.marker + " " + params.name + " : " + params.value+
+                if (subject === 'ITO'||subject === 'ROI'||subject === 'SKU') { // 库存周转率不需要单位
+                    return val;
+                }else if (subject === 'POR') { // 库存周转率不需要单位
+                    return parseInt(val);
+                }
+                let Tenthousand = parseInt(val / 10000 / 100);
+                if(Tenthousand>=1){
+                    return parseInt(val / 10000 / 100)+'w';
+                }else{
+                    return parseInt(val/100);
+                }
+                // return parseInt(val / 10000 / 100); // 金额从分转换为万
+            }
+
+        },
+        renderChart(data) {
+            const { subject, subject_name, progress ,real } = data;
+            var valuePercent;
+            if(progress==null){
+                valuePercent = this.calculateToShow(real);
+            }else{
+                valuePercent = parseInt(progress * 100);
+
+            }
+            let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
+            // 反向指标 颜色需要相反
+            if (_.includes(REVERSE_TARGET, subject)) {
+                color = valuePercent >= 100 ? COLORMAP.over : COLORMAP.below;
+            }
+            this.color = color;
+            const valueLeft = valuePercent >= 100 ? 0 : 100 - valuePercent;
+            const options = {
+                backgroundColor: '#fff',
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params){
+                        var result = [];
+                        if(progress==null){
+                            result += params.marker + " " + params.name + " : " + params.value + "</br>";
+                        }else{
+                            result += params.marker + " " + params.name + " : " + params.value+
                 '%' + "</br>";
-            }
-            return result;
-          }
-        },
-        grid: {
-          left: 0,
-          right: 0,
-          bottom: 0,
-          top: 0,
-          containLabel: true
-        },
-        series: [{
-          type: 'pie',
-          name:'目标达成情况',
-          radius: ['56', '60'],
-          hoverAnimation: false,
-          label: {
-            normal: {
-              position: 'center'
-            }
-          },
-          data: [{
-                   value: valuePercent,
-                   name: subject_name,
-                   itemStyle: {
-                     normal: {
-                       color: color,
-                     }
-                   },
-                   label: {
-                     normal: {
-                       formatter: function(data){
-                         if(progress==null){
-                           return data.value;
-                         }else{
-                           return data.value+"%";
-                         }
-                                            
-                       },
-                       textStyle: {
-                         fontSize: FONTSIZE1,
-                         color: color,
-                       }
-                     },
-                   }
-                 },
-                 {
-                   value: valueLeft,
-                   name: subject_name,
-                   tooltip: {
-                     show: false
-                   },
-                   itemStyle: {
-                     normal: {
-                       color: colorLeft,
-                     }
-                   },
-                   label: {
-                     normal: {
-                       textStyle: {
-                         fontSize: FONTSIZE2,
-                         fontWeight: FONTWEIGHT,
-                         color: '#5e5e5e'
-                       }
-                     }
-                   }
-                 }, {
-                   value: 0,
-                   name: '',
-                   tooltip: {
-                     show: false
-                   },
-                   itemStyle: {
-                     normal: {
-                       color: colorLeft,
-                     }
-                   },
-                   label: {
-                     normal: {
-                       textStyle: {
-                         fontSize: FONTSIZE2,
-                         fontWeight: FONTWEIGHT,
-                         color: color,
-                       }
-                     }
-                   }
-                 }, 
-          ]
-        }]
-      };
-      this.chart.setOption(options);
+                        }
+                        return result;
+                    }
+                },
+                grid: {
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    top: 0,
+                    containLabel: true
+                },
+                series: [{
+                    type: 'pie',
+                    name:'目标达成情况',
+                    radius: ['56', '60'],
+                    hoverAnimation: false,
+                    label: {
+                        normal: {
+                            position: 'center'
+                        }
+                    },
+                    data: [{
+                        value: valuePercent,
+                        name: subject_name,
+                        itemStyle: {
+                            normal: {
+                                color: color,
+                            }
+                        },
+                        label: {
+                            normal: {
+                                formatter: function(data){
+                                    if(progress==null){
+                                        return data.value;
+                                    }else{
+                                        return data.value+"%";
+                                    }
+
+                                },
+                                textStyle: {
+                                    fontSize: FONTSIZE1,
+                                    color: color,
+                                }
+                            },
+                        }
+                    },
+                    {
+                        value: valueLeft,
+                        name: subject_name,
+                        tooltip: {
+                            show: false
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: colorLeft,
+                            }
+                        },
+                        label: {
+                            normal: {
+                                textStyle: {
+                                    fontSize: FONTSIZE2,
+                                    fontWeight: FONTWEIGHT,
+                                    color: '#5e5e5e'
+                                }
+                            }
+                        }
+                    }, {
+                        value: 0,
+                        name: '',
+                        tooltip: {
+                            show: false
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: colorLeft,
+                            }
+                        },
+                        label: {
+                            normal: {
+                                textStyle: {
+                                    fontSize: FONTSIZE2,
+                                    fontWeight: FONTWEIGHT,
+                                    color: color,
+                                }
+                            }
+                        }
+                    },
+                    ]
+                }]
+            };
+            this.chart.setOption(options);
+        }
     }
-  }
 };
 </script>
 

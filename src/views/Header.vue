@@ -7,8 +7,8 @@
           菜单<i class="el-icon-arrow-down el-icon--right" />
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item><el-button 
-            @click="logout" 
+          <el-dropdown-item><el-button
+            @click="logout"
             type="text">退出登录</el-button></el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -20,20 +20,20 @@
 import { getUsername, removeToken } from 'utils/auth';
 
 export default {
-  props: {
-    isCollapse: Boolean
-  },
-  data() {
-    return {
-      username: getUsername()
-    };
-  },
-  methods: {
-    logout() {
-      removeToken();
-      this.$router.replace('/login');
+    props: {
+        isCollapse: Boolean
+    },
+    data() {
+        return {
+            username: getUsername()
+        };
+    },
+    methods: {
+        logout() {
+            removeToken();
+            this.$router.replace('/login');
+        }
     }
-  }
 };
 </script>
 

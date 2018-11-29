@@ -1,36 +1,36 @@
 <template>
   <div class="container">
     <div :class="['left', {'left_collapse': isCollapse} ]">
-      <div 
+      <div
         style="cursor: pointer"
         @click="home">
         <div :class="{logo1: !isCollapse,logo1_collapse: isCollapse}">
-          <img 
-            v-if="!isCollapse" 
-            src="../assets/logo1.png" 
+          <img
+            v-if="!isCollapse"
+            src="../assets/logo1.png"
             alt="五项效率">
-          <img 
-            v-else 
-            src="../assets/logo2.png" 
+          <img
+            v-else
+            src="../assets/logo2.png"
             alt="五">
         </div>
         <div class="logo2">
-          <img 
-            v-if="!isCollapse" 
-            src="../assets/logo3.png" 
+          <img
+            v-if="!isCollapse"
+            src="../assets/logo3.png"
             alt="gyxr">
-          <img 
-            v-else 
-            src="../assets/logo4.png" 
+          <img
+            v-else
+            src="../assets/logo4.png"
             alt="g">
         </div>
       </div>
-      <div 
-        class="collapse_btn" 
+      <div
+        class="collapse_btn"
         @click="handleClick">
-        <img 
-          :class="{'rotate': isCollapse}" 
-          src="../assets/collapse.png" 
+        <img
+          :class="{'rotate': isCollapse}"
+          src="../assets/collapse.png"
           alt="">
       </div>
       <div class="menu_container">
@@ -52,27 +52,27 @@ import Menu from './Menu';
 import Header from './Header';
 
 export default {
-  name: 'Home',
-  components: {
-    Menu,
-    Header
-  },
-  data () {
-    return {
-      isCollapse: false,
-    };
-  },
-  mounted () {
-    // console.log(this.isCollapse);
-  },
-  methods: {
-    home () {
-      this.$router.push('/home');
+    name: 'Home',
+    components: {
+        Menu,
+        Header
     },
-    handleClick () {
-      this.isCollapse = !this.isCollapse;
+    data () {
+        return {
+            isCollapse: false,
+        };
+    },
+    mounted () {
+    // console.log(this.isCollapse);
+    },
+    methods: {
+        home () {
+            this.$router.push('/home');
+        },
+        handleClick () {
+            this.isCollapse = !this.isCollapse;
+        }
     }
-  }
 
 };
 </script>
