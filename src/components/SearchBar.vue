@@ -184,7 +184,7 @@ export default {
             units: this.ptOptions || UNITS,
             pickerBaseOptions: { firstDayOfWeek: 1 },
             form: {
-                pt: '日',
+                pt: '',
 
                 dayRange: [],
 
@@ -216,9 +216,12 @@ export default {
             default: function () { return ['日', '周', '月', '季', '年']; }
         },
     },
-    mounted () {
+    created () {
+        // store 中有日期
         if (!_.isEmpty(this.date)) {
+            // units 为非空数组
             if (_.isArray(this.units) && this.units.length) {
+                // store 中的单位在 units 中 直接设置
                 if (_.includes(this.units, this.date.pt)) {
                     this.form = _.cloneDeep(this.date);
                 } else {
@@ -227,28 +230,35 @@ export default {
                     this.form = obj;
                 }
             }
-
         } else {
-            if (!_.includes(this.units, this.form.pt)) {
-                this.form.pt = this.units[0];
+            // store 中没有日期
+            if (_.includes(this.units, '日')) {
+                this.form.pt = '日';
             } else {
-                const endTimeSet = process.env.VUE_APP_END_TIME_SET;
-                if (endTimeSet && _.isDate(new Date(endTimeSet))) {
-                    this.form.dayRange = [
-                        moment(endTimeSet).subtract(1, 'M').format('YYYY-MM-DD'),
-                        endTimeSet
-                    ];
-                } else {
-                    // 前一个月 - 昨天
-                    this.form.dayRange = [
-                        moment().subtract(1, 'd').subtract(1, 'M').format('YYYY-MM-DD'),
-                        moment().subtract(1, 'd').format('YYYY-MM-DD')
-                    ];
-                }
+                this.form.pt = '月';
+            }
+            // 如果有环境变量设置的截止时间
+            const endTimeSet = process.env.VUE_APP_END_TIME_SET;
+            if (endTimeSet && _.isDate(new Date(endTimeSet))) {
+                this.form.dayRange = [
+                    moment(endTimeSet).subtract(1, 'M').format('YYYY-MM-DD'),
+                    moment(endTimeSet).format('YYYY-MM-DD')
+                ];
+                this.form.monthStart = new Date(moment(endTimeSet).startOf('month').subtract(4, 'M').format('YYYY-MM'));
+                this.form.monthEnd = new Date(moment(endTimeSet).startOf('month').subtract(1, 'M').format('YYYY-MM'));
+            } else {
+                // 如果没有设置环境变量
+                // 日: 前一个月 - 昨天
+                // 月: 前四个月 - 上个月
+                this.form.dayRange = [
+                    moment().subtract(1, 'd').subtract(1, 'M').format('YYYY-MM-DD'),
+                    moment().subtract(1, 'd').format('YYYY-MM-DD')
+                ];
+                this.form.monthStart = new Date(moment().startOf('month').subtract(4, 'M').format('YYYY-MM'));
+                this.form.monthEnd = new Date(moment().startOf('month').subtract(1, 'M').format('YYYY-MM'));
             }
         }
         this.handleFormChange(this.form);
-
     },
     computed: {
         ...mapGetters(['productDateArr', 'date']),
