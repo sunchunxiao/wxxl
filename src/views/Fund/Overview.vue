@@ -7,7 +7,7 @@
         @input="input"
         v-model="searchBarValue"
         ref="child"
-        :pt-options="['日', '周', '月', '季', '年']"
+        :pt-options="['月', '季', '年']"
         url="/fund/search" />
     </el-row>
     <el-row 

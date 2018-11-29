@@ -589,7 +589,6 @@ export default {
     handleSearch(val) {
       this.highlight = true;
       // 默认公司的背景色
-      
       this.nodeArr = [];
       this.loading = true;
       this.val = val;
@@ -629,29 +628,28 @@ export default {
       this.highlight = true;
     },
     handleNodeClick(data) {
-      if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
-        this.isbac = false;
-        this.highlight = true;
-            
-        this.$refs.child.clearKw();
-        this.type = data.type;
-        if(this.cid === data.cid){
-          return ;
-        }else if (data.children != undefined) {
-          this.loading = true;
-          this.cid = data.cid;
-          setTimeout(() => {
-            this.loading = false;
-          }, 1000);
-        }
-      }else{
-        this.highlight = false;
-        this.$message({
-          type: 'error',
-          message: '请选择日期',
-          duration: 2000
-        });
+      //   if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+      this.isbac = false;
+      this.highlight = true;
+      this.$refs.child.clearKw();
+      this.type = data.type;
+      if(this.cid === data.cid){
+        return ;
+      }else if (data.children != undefined) {
+        this.loading = true;
+        this.cid = data.cid;
+        setTimeout(() => {
+          this.loading = false;
+        }, 1000);
       }
+    //   }else{
+    //     this.highlight = false;
+    //     this.$message({
+    //       type: 'error',
+    //       message: '请选择日期',
+    //       duration: 2000
+    //     });
+    //   }
 
     },
     calculatePercent(a, b) {
