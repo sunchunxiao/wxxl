@@ -23,7 +23,7 @@ const home = {
         SaveProductProgressData({ commit }, arr) {
             commit('SAVE_HOMEPRODUCT_ARR', arr);
         },
-        SaveTrendArr({ commit }, arr) {
+        SaveProductTrendArr({ commit }, arr) {
             commit('SAVE_PRODUCTTREND_ARR', arr);
         },
         SaveChannelProgressData({ commit }, arr) {
