@@ -1,11 +1,9 @@
 const path = require('path');
 const isProduction = process.env.NODE_ENV === 'production';
-const ProvidePluginOptions = [
-    {
-        _: 'lodash',
-        moment: 'moment'
-    }
-];
+const ProvidePluginOptions = [{
+    _: 'lodash',
+    moment: 'moment'
+}];
 
 module.exports = {
     css: {
@@ -39,15 +37,15 @@ module.exports = {
     // 同时需要把 .env.development 文件中的环境变量 修改为 /api
     devServer: {
         historyApiFallback: true
-    //  proxy: {
-    //    '/api': {
-    //      target: 'http://wxxldev.gyxr.cn/eff/v1/',
-    //      changeOrigin: true,
-    //      ws: true,
-    //      pathRewrite: {
-    //        '^/api': ''
-    //      }
-    //    }
-    //  }
+        //  proxy: {
+        //    '/api': {
+        //      target: 'http://wxxldev.gyxr.cn/eff/v1/',
+        //      changeOrigin: true,
+        //      ws: true,
+        //      pathRewrite: {
+        //        '^/api': ''
+        //      }
+        //    }
+        //  }
     }
 };
