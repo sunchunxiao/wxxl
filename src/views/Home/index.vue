@@ -393,7 +393,7 @@ export default {
         select(index){
             this.style = index;
         },
-
+        //产品
         getProductProgress() {
             const params = {
                 ...this.getPeriodByPt(),
@@ -417,6 +417,7 @@ export default {
             };
             return API.GetProductTrend(params);
         },
+        //渠道
         getChannelProgress(){
             const params = {
                 ...this.getPeriodByPt(),

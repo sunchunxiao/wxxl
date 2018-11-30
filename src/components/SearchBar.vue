@@ -483,12 +483,13 @@ export default {
     float: left;
   }
   .el-date-editor.el-input, .el-date-editor.el-input__inner{
-    width: 165px;
+    width: 160px;
   }
 }
 .special_month .el-form-item__content{
-    margin-left: 28px!important;
-    overflow: hidden;
+    float: left;
+    margin-left: 0px!important;
+    // overflow: hidden;
 }
 .time_submit {
     float: right;
