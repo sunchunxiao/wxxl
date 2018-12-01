@@ -4,12 +4,12 @@ const fund = {
         fundprogressArr: [],
         fundprogressbackArr: [],
         fundtrendArr: [],
-        fundstructureArr1:[],
-        fundstructureArr2:[],
+        fundstructureArr1: [],
+        fundstructureArr2: [],
         fundrankArr: [],
         fundcompareArr: [],
         fundcompareArrback: [],
-        fundhistoryArr:[],
+        fundhistoryArr: [],
     },
     mutations: {
         SAVE_FUND_TREE: (state, tree) => {

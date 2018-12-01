@@ -374,10 +374,10 @@ export default {
         }
     },
     mounted() {
-        if (!this.hasTree) {
-            this.getProductProgress();
-            this.getChannelProgress();
-        }
+        this.getProductProgress();
+        this.getChannelProgress();
+        // 组织
+        // this.getOrgProgress();
     },
     watch: {
         cid: function() {
@@ -441,6 +441,8 @@ export default {
             };
             return API.GetChannelTrend(params);
         },
+        //组织
+
         getDateObj () {
             const {
                 date

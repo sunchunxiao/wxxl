@@ -24,7 +24,7 @@ export default {
     mounted() {
         this.chart = echarts.init(document.getElementById(`trendline-${this.id}`));
         this.renderChart(this.data);
-        this.debounce = _.debounce(this.chart.resize,1000);
+        this.debounce = _.debounce(this.chart.resize, 1000);
         window.addEventListener("resize",this.debounce);
     },
     beforeDestroy () {

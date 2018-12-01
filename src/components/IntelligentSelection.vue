@@ -11,24 +11,6 @@
 import echarts from 'echarts';
 // import { mapState } from 'vuex';
 
-const stragetyArr = [
-    "持续优化成本成本结构",
-    "梳理现有供应商结构，对供应商报价进行综合评估和管理",
-    "持续优化采购渠道",
-    "持续优化成本成本结构",
-    "梳理现有供应商结构，对供应商报价进行综合评估和管理",
-    "持续优化采购渠道",
-    "梳理现有整体成本结构",
-    "加强各环节成本预算管控",
-    "查验包装成本中高成本环节，对其进行评估、调整或删除",
-    "按预算整体控制品牌包装成本",
-    "寻找新的高性价比供应商资源",
-    "建立供应商管理体系",
-    "对高成本采购渠道环节进行查验",
-    "寻找新的高性价比采购渠道",
-    "查验摄影环节中高成本环节，对其进行评估调整"
-];
-
 export default {
     props: {
         id: String,
@@ -40,12 +22,15 @@ export default {
             timeLineData: [],
             cid: 0,
             name: '',
-            brand: ''
+            brand: '',
+            debounce:null
         };
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`heatmap-${this.id}`));
         this.renderChart(this.data);
+        this.debounce = _.debounce(this.chart.resize, 1000);
+        window.addEventListener("resize",this.debounce);
         let _this = this;
         this.chart.on('click', function(params) {
             let time = params.seriesId;
@@ -77,7 +62,9 @@ export default {
                 });
             }
         });
-
+    },
+    beforeDestroy () {
+        window.removeEventListener('resize', this.debounce);
     },
     watch: {
         data: {
@@ -88,14 +75,6 @@ export default {
         },
     },
     methods: {
-        getstragetyArr() {
-            let length = _.random(3, 5);
-            let arr = [];
-            for (let i = 0; i < length; i++) {
-                arr.push(stragetyArr[_.random(0, 14)]);
-            }
-            return _.uniq(arr);
-        },
         getRank(score) {
             let scoremap = ['未知',"差","中","良","优"];
             if(scoremap[score]){
