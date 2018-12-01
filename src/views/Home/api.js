@@ -2,6 +2,12 @@ import { FetchGet } from 'utils/fetch';
 // import store from 'store';
 
 export default {
+    GetOverviewProgress(params) {
+        return FetchGet('/overview/progress', params);
+    },
+    GetOverviewTrend(params) {
+        return FetchGet('/overview/trend', params);
+    },
     GetProductProgress(params) {
         return FetchGet('/product/avg/progress', params);
     },
