@@ -4,6 +4,9 @@ const ProvidePluginOptions = [{
     _: 'lodash',
     moment: 'moment'
 }];
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+let plugins = [];
+!isProduction && plugins.push(new BundleAnalyzerPlugin());
 
 module.exports = {
     css: {
@@ -13,7 +16,6 @@ module.exports = {
     // 部署应用时的基本 URL
     baseUrl: isProduction ? '/' : '/',
     outputDir: 'dist',
-
     // assetsDir: '/',
     runtimeCompiler: true,
     productionSourceMap: false,
@@ -25,9 +27,11 @@ module.exports = {
                 views: path.resolve(__dirname, './src/views'),
                 components: path.resolve(__dirname, './src/components'),
                 utils: path.resolve(__dirname, './src/utils'),
-                store: path.resolve(__dirname, './src/store')
+                store: path.resolve(__dirname, './src/store'),
+                plugins: path.resolve(__dirname, './src/plugins'),
             }
-        }
+        },
+        plugins: plugins
     },
     chainWebpack: config => {
         config

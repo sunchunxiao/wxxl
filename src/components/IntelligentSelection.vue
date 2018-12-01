@@ -3,19 +3,16 @@
     <div
       class="heatmap"
       :id="`heatmap-${id}`" />
-      <!-- <div class="detail">{{title}}</div> -->
   </div>
 </template>
 
 <script>
-import echarts from 'echarts';
-// import { mapState } from 'vuex';
+import echarts from 'plugins/echarts';
 
 export default {
     props: {
         id: String,
         data: Array,
-    // title: String
     },
     data() {
         return {
@@ -78,7 +75,6 @@ export default {
         getRank(score) {
             let scoremap = ['未知',"差","中","良","优"];
             if(scoremap[score]){
-                // console.log(mapState[score]);
                 return scoremap[score];
             }
             return '';
@@ -88,16 +84,11 @@ export default {
             const _this = this;
             let options = [];
             let timeLineData = [];
-
             for (let i = 0; i < data.length; i++) {
-
                 let item = data[i];
-                // console.log(item)
                 let seriesData = item.data.map(function(v) {
                     return [v[1], v[0], v[2]];
-                    // return [v[1], v[0], v[2] || '-'];
                 });
-
                 let option = {
                     title: {
                         text: '智能评选',
@@ -123,16 +114,12 @@ export default {
                     xAxis: {
                         type: 'category',
                         data: item.transSubjects,
-                        // splitArea: {
-                        //     show: true
-                        // },
                         axisTick: {
                             show: false,
                         },
                         axisLabel: {
                             interval: 0
                         }
-
                     },
                     yAxis: {
                         type: 'category',
@@ -178,24 +165,15 @@ export default {
                         }
                     }]
                 };
-
                 options.push(option);
                 timeLineData.push(item.timeLabel);
-
             }
             let heatMapOption = {
                 baseOption: {
                     timeline: {
-                        // y: 0,
                         axisType: 'category',
-                        // realtime: false,
-                        // loop: false,
                         autoPlay: false,
-                        // currentIndex: 2,
                         playInterval: 2000,
-                        // controlStyle: {
-                        //     position: 'left'
-                        // },
                         data: timeLineData,
                         checkpointStyle: {
                             color: '#258cb9',
@@ -219,13 +197,6 @@ export default {
 			height: 400px;
 			margin: 0 auto;
 		}
-
-		// .detail {
-		//     text-align: center;
-		//     color: #5e5e5e;
-		//     font-size: 15px;
-		//     padding: 20px;
-		// }
 		canvas{
 			width: 100%;
 		}

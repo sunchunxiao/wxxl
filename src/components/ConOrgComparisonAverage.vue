@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import echarts from 'echarts';
+import echarts from 'plugins/echarts';
 
 export default {
     props: {
@@ -18,15 +18,13 @@ export default {
     },
     data(){
         return{
-            time:"",
-            timestr:""
+            time: "",
+            timestr: ""
         };
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`ConOrgComparisonAverage-${this.id}`));
         this.renderChart(this.data);
-    //      console.log(this.data,this.id)
-
     },
     watch: {
         data: {
@@ -55,7 +53,6 @@ export default {
             let _this = this;
             const { series,timeLabels,subject } = data;
             const seriesClone = _.cloneDeep(series);
-
             for(let i = 0;i < seriesClone.length; i++) {
                 if(subject=='ROI'||subject=='ITO'){
                     _.forEach(seriesClone[i], (v,k) => {
@@ -66,9 +63,7 @@ export default {
                         seriesClone[i][k] = parseInt(v/100);
                     });
                 }
-
             }
-
             const options = {
                 grid: {
                     left: 0,
@@ -77,22 +72,9 @@ export default {
                     top: 10,
                     containLabel: true
                 },
-                // color: ['#D53A35', '#E98F6F', '#6AB0B8', '#334B5C'],
-                //title: {
-                //    text: '报警次数'
-                //},
                 tooltip: {
                     trigger: 'axis',
-                    //formatter: "{b} <br> 合格率: {c}%"
                 },
-                // legend: {
-                //     data: ['旅游运输', '班线运输', '危险品', '普货']
-                // },
-                // toolbox: {
-                //     feature: {
-                //         saveAsImage: {}
-                //     }
-                // },
                 xAxis: {
                     type: 'category',
                     name: '日期',
@@ -106,7 +88,6 @@ export default {
                             return _this.calculateToShow(val);
                         }
                     }
-
                 },
                 series: []
             };
@@ -118,9 +99,7 @@ export default {
                     data: seriesClone[i]
                 });
             }
-
             this.chart.setOption(options,true);
-
         }
     }
 };
