@@ -36,28 +36,32 @@
           :default-value="defaultValue"
           align="right" />
       </el-form-item>
-      <template v-if="form.pt === '周'">
-        <el-form-item
-          label="时间段选择"
-          prop="weekStart">
-          <el-date-picker
-            v-model="form.weekStart"
-            type="week"
-            format="yyyy 第 WW 周"
-            :picker-options="weekStartOptions"
-            placeholder="请选择开始周" />
-        </el-form-item>
-        <el-form-item
-          class="endFormItem"
-          prop="weekEnd">
-          <el-date-picker
-            v-model="form.weekEnd"
-            type="week"
-            format="yyyy 第 WW 周"
-            :picker-options="weekEndOptions"
-            placeholder="请选择结束周" />
-        </el-form-item>
-      </template>
+      <el-col>
+        <template v-if="form.pt === '周'">
+          <el-form-item
+            label="时间段选择"
+            prop="weekStart">
+            <el-date-picker
+              v-model="form.weekStart"
+              type="week"
+              format="yyyy 第 WW 周"
+              :picker-options="weekStartOptions"
+              placeholder="请选择开始周" />
+          </el-form-item>
+          <el-col :span="9">
+            <el-form-item
+              class="endFormItem"
+              prop="weekEnd">
+              <el-date-picker
+                v-model="form.weekEnd"
+                type="week"
+                format="yyyy 第 WW 周"
+                :picker-options="weekEndOptions"
+                placeholder="请选择结束周" />
+            </el-form-item>
+          </el-col>
+        </template>
+      </el-col>
       <template v-if="form.pt === '月'">
         <el-form-item
           label="时间段选择"

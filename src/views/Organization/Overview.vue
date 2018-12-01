@@ -367,18 +367,14 @@ export default {
             this.form.date = val;
         },
         click(){
+            //点击发送请求清除搜索框
             this.$refs.child.clearKw();
             if(this.cid==this.organizationTree.cid){
                 return;
             }else{
-                //点击发送请求清除搜索框
-                this.loading = true;
                 this.isbac = true;
                 this.highlight = false;
                 this.cid=this.organizationTree.cid;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
         },
         change() {
@@ -411,7 +407,6 @@ export default {
                         showClose: true,
                         message: '保存成功'
                     });
-                    // console.log(res.api_info)
                 });
             }).catch(() => {
                 this.$message({
@@ -462,6 +457,7 @@ export default {
             });
         },
         getProgress() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -478,6 +474,8 @@ export default {
 
                     this.$store.dispatch('SaveOrgTrendArr', resultList);
                 });
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTrend(subject) {
@@ -504,7 +502,7 @@ export default {
         },
         //后端
         getStructure2() {
-            // console.log(this.type)
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -512,19 +510,22 @@ export default {
                 rType: 2
             };
             API.GetOrgStructure(params).then(res => {
-                // console.log(res.data);
                 this.$store.dispatch('SaveOrgStructureArr2', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getRank() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 version: this.form.version,
                 ...this.getPeriodByPt(),
             };
             API.GetOrgRank(params).then(res => {
-                // console.log(res.data);
                 this.$store.dispatch('SaveOrgRankArr', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getDateObj () {
@@ -589,9 +590,21 @@ export default {
             this.highlight = true;
             // 默认公司的背景色
             this.nodeArr = [];
-            this.loading = true;
             this.val = val;
-            if(val.cid!=""){
+            if(!val.cid){
+                this.isbac = true;
+                this.highlight = false;
+                if(this.cid!=this.organizationTree.cid){
+                    this.cid = this.organizationTree.cid;
+                    this.treeClone = _.cloneDeep(this.organizationTree);
+                } else {
+                    this.getTreePrograss();
+                    this.getProgress();
+                    this.getStructure1();
+                    this.getStructure2();
+                    this.getRank();
+                }
+            } else {
                 this.isbac = false;
                 this.cid = val.cid;
                 this.nodeArr.push(val.cid);
@@ -602,24 +615,7 @@ export default {
                     this.isbac = true;
                     this.highlight = false;
                 }
-            }else{
-                this.isbac = true;
-                this.highlight = false;
-                if(this.cid!=this.organizationTree.cid){
-                    this.cid = this.organizationTree.cid;
-                    this.treeClone = _.cloneDeep(this.organizationTree);
-                }else{
-                    this.getTreePrograss();
-                    this.getProgress();
-                    this.getStructure1();
-                    this.getStructure2();
-                    this.getRank();
-                }
             }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
-
         },
         nodeExpand(data){
             this.cid = data.cid;
@@ -627,28 +623,25 @@ export default {
             this.highlight = true;
         },
         handleNodeClick(data) {
-            //   if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
-            this.isbac = false;
-            this.highlight = true;
-            this.$refs.child.clearKw();
-            this.type = data.type;
-            if(this.cid === data.cid){
-                return ;
-            }else if (data.children != undefined) {
-                this.loading = true;
-                this.cid = data.cid;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
+            if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+                this.val = this.searchBarValue;
+                this.isbac = false;
+                this.highlight = true;
+                this.$refs.child.clearKw();
+                this.type = data.type;
+                if(this.cid === data.cid){
+                    return ;
+                }else if (data.children != undefined) {
+                    this.cid = data.cid;
+                }
+            } else {
+                this.highlight = false;
+                this.$message({
+                    type: 'error',
+                    message: '请选择日期',
+                    duration: 2000
+                });
             }
-            //   }else{
-            //     this.highlight = false;
-            //     this.$message({
-            //       type: 'error',
-            //       message: '请选择日期',
-            //       duration: 2000
-            //     });
-            //   }
 
         },
         calculatePercent(a, b) {

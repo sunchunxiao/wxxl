@@ -328,15 +328,11 @@ export default {
             if (this.cid == this.channelTree.nid) {
                 return;
             } else {
-                this.loading = true;
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
                 this.highlight = false;
                 this.cid = this.channelTree.nid;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
 
         },
@@ -424,6 +420,7 @@ export default {
             });
         },
         getProgress () {
+            this.loading = true;
             const params = {
                 chId: this.cid,
                 ...this.getPeriodByPt(),
@@ -438,6 +435,8 @@ export default {
                     });
                     this.$store.dispatch('SaveChannelTrendArr', resultList);
                 });
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTrend (subject) {
@@ -449,6 +448,7 @@ export default {
             return API.GetChannelTrend(params);
         },
         getStructure () {
+            this.loading = true;
             const params = {
                 chId: this.cid,
                 subject: this.form.subject,
@@ -456,15 +456,20 @@ export default {
             };
             API.GetChannelStructure(params).then(res => {
                 this.$store.dispatch('SaveChannelStructureArr', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getRank () {
+            this.loading = true;
             const params = {
                 chId: this.cid,
                 ...this.getPeriodByPt(),
             };
             API.GetChannelRank(params).then(res => {
                 this.$store.dispatch('SaveChannelRankArr', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getDateObj () {
@@ -503,9 +508,6 @@ export default {
                     pt: '日',
                     sDate: '2018-01-01',
                     eDate: '2018-01-31',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
                 };
             }
         },
@@ -526,20 +528,8 @@ export default {
         handleSearch (val) {
             this.highlight = true;
             this.nodeArr = [];
-            this.loading = true;
             this.val = val;
-            if (val.cid != "") {
-                this.isbac = false;
-                this.nodeArr.push(val.cid);
-                this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                });
-                this.cid = val.cid;
-                if (this.cid == this.channelTree.nid) {
-                    this.isbac = true;
-                    this.highlight = false;
-                }
-            } else {
+            if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
                 if (this.cid != this.channelTree.nid) {
@@ -551,12 +541,18 @@ export default {
                     this.getStructure();
                     this.getRank();
                 }
-
+            } else {
+                this.isbac = false;
+                this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                });
+                this.cid = val.cid;
+                if (this.cid == this.channelTree.nid) {
+                    this.isbac = true;
+                    this.highlight = false;
+                }
             }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
-
         },
         nodeExpand (data) {
             this.cid = data.nid;
@@ -565,6 +561,7 @@ export default {
         },
         handleNodeClick (data) {
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
+                this.val = this.searchBarValue;
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
@@ -572,10 +569,6 @@ export default {
                     return;
                 } else if (data.children != undefined) {
                     this.cid = data.nid;
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
                 }
             } else {
                 this.highlight = false;

@@ -395,6 +395,7 @@ export default {
         },
         //产品
         getProductProgress() {
+            this.loading = true;
             const params = {
                 ...this.getPeriodByPt(),
             };
@@ -408,6 +409,8 @@ export default {
                     });
                     this.$store.dispatch('SaveProductTrendArr', resultList);
                 });
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getProductTrend(subject) {
@@ -487,14 +490,9 @@ export default {
         },
         handleSearch(val) {
             // 默认公司的背景色
-            this.loading = true;
             this.val = val;
-
             this.getProductProgress();
             this.getChannelProgress();
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
         },
 
     }
