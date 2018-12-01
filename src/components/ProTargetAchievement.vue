@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import echarts from 'echarts';
+import echarts from 'plugins/echarts';
 
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
 const COLORMAP = { over: '#b12725', below: '#308db9' };
@@ -46,8 +46,6 @@ export default {
             } else if (subject === 'ITO') { // 库存周转率不需要单位
                 return '';
             }
-
-            // return 'w';
         },
         real() {
             const { real } = this.data;
@@ -87,9 +85,7 @@ export default {
                 }else{
                     return parseInt(val/100);
                 }
-                // return parseInt(val / 10000 / 100); // 金额从分转换为万
             }
-
         },
         renderChart(data) {
             const { subject, subject_name, progress ,real } = data;
@@ -98,7 +94,6 @@ export default {
                 valuePercent = this.calculateToShow(real);
             }else{
                 valuePercent = parseInt(progress * 100);
-
             }
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
             // 反向指标 颜色需要相反
@@ -155,7 +150,6 @@ export default {
                                     }else{
                                         return data.value+"%";
                                     }
-
                                 },
                                 textStyle: {
                                     fontSize: FONTSIZE1,

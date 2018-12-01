@@ -397,7 +397,6 @@ export default {
             }).then(() => {
                 const data = {
                     cid: data1.cid,
-                    // rank:this.Rank(data1.rank),
                     subject: data1.subject,
                     time_label: data1.time_label,
                     strategies: this.idArr.join(',')
@@ -663,21 +662,6 @@ export default {
         },
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
-        },
-        Rank(score) {
-            if (score =='差') {
-                return 4;
-            }
-            if (score == '中') {
-                return 3;
-            }
-            if (score =='良') {
-                return 2;
-            }
-            if (score =='优') {
-                return 1;
-            }
-            return 4;
         },
         showStragety(data) {
             // console.log(data)

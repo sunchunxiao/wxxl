@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import echarts from 'echarts';
+import echarts from 'plugins/echarts';
 
 export default {
     props: {
@@ -41,7 +41,6 @@ export default {
     methods: {
         renderChart(data) {
             const { timeLabels, ring, yoy } = data;
-
             const options = {
                 tooltip: {
                     show: true,
@@ -58,7 +57,6 @@ export default {
                     data: ['同比增长率', '环比增长率'],
                     left:'right',
                     show:true,
-
                 },
                 color:['#b12725','#338cb6'],
                 xAxis: {
@@ -68,17 +66,6 @@ export default {
                 yAxis: {
                     type: 'value'
                 },
-                // toolbox: {
-                //     show: true,
-                //     feature: {
-                //         dataZoom: {},
-                //         dataView: {},
-                //         restore: {},
-                //         saveAsImage: {}
-                //     },
-                //     top: 0,
-                //     right: 0
-                // },
                 series: [
                     {
                         data: ring,
