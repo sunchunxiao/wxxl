@@ -337,15 +337,11 @@ export default {
             if (this.cid == this.productTree.cid) {
                 return;
             } else {
-                this.loading = true;
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
                 this.highlight = false;
                 this.cid = this.productTree.cid;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
         },
         change () {
@@ -572,10 +568,6 @@ export default {
                     return;
                 } else if (data.children != undefined) {
                     this.cid = data.cid;
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
                 }
             }else{
                 this.highlight = false;
