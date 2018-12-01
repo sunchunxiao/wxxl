@@ -27,11 +27,10 @@
             :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
             class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
           <div
-            :class="{comprogress: true, 'border-radius0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+            :class="{comprogress: true, 'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
             :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
 
         </div>
-        <!-- 有多个tree -->
         <el-tree
           ref="tree"
           empty-text="正在加载"
@@ -51,11 +50,11 @@
               effect="dark"
               placement="right">
               <div slot="content">
-                <div class="tooltip_margin bold">品类:{{ data.name }}</div>
-                <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
+                <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                 <div
                   v-if="data.children"
-                  class="tooltip_margin">子项目数 : {{ data.children.length }}</div>
+                  class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
                 <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
               </div>
               <span class="label">
@@ -65,7 +64,7 @@
             </el-tooltip>
 
             <div
-              :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+              :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
           </div>
 
@@ -76,7 +75,7 @@
         class="overflow">
         <el-row v-loading="loading">
           <Card>
-            <el-row class="card-title">目标达成情况总览</el-row>
+            <el-row class="margin-bottom-20">目标达成情况总览</el-row>
             <el-row>
               <el-col :span="15">
                 <template v-for="(item, index) in orgprogressArr">
@@ -92,7 +91,7 @@
               <el-col
                 v-if="orgrankArr.length > 0"
                 :span="9"
-                class="border-left">
+                class="border-left-2-gray">
                 <Radar
                   :id="'select'"
                   :data="orgrankArr[orgrankArr.length-1]" />
@@ -104,7 +103,7 @@
           v-loading="loading"
           class="margin-top-10">
           <Card>
-            <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+            <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
             <el-row>
               <template v-for="(item, index) in orgtrendArr">
                 <el-col
@@ -123,7 +122,7 @@
           v-loading="loading"
           class="margin-top-10">
           <Card>
-            <el-row class="card-title">同比环比趋势分析</el-row>
+            <el-row class="margin-bottom-20">同比环比趋势分析</el-row>
             <el-row>
               <template v-for="(item, index) in orgtrendArr">
                 <el-col
@@ -143,7 +142,7 @@
           v-loading="loading"
           class="margin-top-10">
           <Card>
-            <el-row class="card-title">比例结构与平均值对比分析前端</el-row>
+            <el-row class="margin-bottom-20">比例结构与平均值对比分析前端</el-row>
             <el-row>
               <el-col :span="16">
                 <template v-for="(item, index) in orgstructureArr1">
@@ -159,7 +158,7 @@
               </el-col>
               <el-col
                 :span="8"
-                class="border-left">
+                class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
                   id="ProportionalStructureAverageComparisonBig"
                   v-if="orgstructureArr1.length>0"
@@ -173,7 +172,7 @@
           v-loading="loading"
           class="margin-top-10">
           <Card>
-            <el-row class="card-title">比例结构与平均值对比分析后端</el-row>
+            <el-row class="margin-bottom-20">比例结构与平均值对比分析后端</el-row>
             <el-row>
               <el-col :span="16">
                 <template v-for="(item1, index) in orgstructureArr2">
@@ -189,7 +188,7 @@
               </el-col>
               <el-col
                 :span="8"
-                class="border-left">
+                class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
                   v-if="orgstructureArr2.length>0"
                   id="ProportionalStructureAverageComparisonBig1"
@@ -202,7 +201,7 @@
           v-loading="loading"
           class="margin-top-10">
           <Card>
-            <el-row class="card-title">智能评选和智能策略</el-row>
+            <el-row class="margin-bottom-20">智能评选和智能策略</el-row>
             <el-row>
               <el-col :span="14">
                 <IntelligentSelection
@@ -214,7 +213,7 @@
                 <div class="stragety">
                   <div class="stragety-title">智能策略</div>
                   <div class="stragety-box">
-                    <div class="stragety-selected-title">{{ stragetyTitle }}</div>
+                    <div class="margin-bottom-10">{{ stragetyTitle }}</div>
                     <el-checkbox-group v-model="stragetyCheckList">
                       <el-checkbox
                         v-for="(item,index) in stragety"

@@ -44,7 +44,7 @@
           <el-row v-loading="loading">
             <Card>
               <div class="card_company">
-                <el-row class="card-title">目标达成情况总览</el-row>
+                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
                 <el-row>
                   <el-col>
                     <template v-for="(item, index) in productArr">
@@ -59,7 +59,7 @@
                 </el-row>
               </div>
               <div class="card_company_target">
-                <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
                 <template v-for="(item, index) in productTrendArr">
                   <el-col
                     :key="index">
@@ -82,7 +82,7 @@
           <el-row v-loading="loading">
             <Card>
               <div class="card_company">
-                <el-row class="card-title">目标达成情况总览</el-row>
+                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
                 <el-row>
                   <el-col>
                     <template v-for="(item, index) in productArr">
@@ -98,7 +98,7 @@
                 </el-row>
               </div>
               <div class="card_company_target">
-                <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
                 <template v-for="(item, index) in productTrendArr">
                   <el-col
                     v-if="productTrendArr.length>0"
@@ -122,7 +122,7 @@
           <el-row v-loading="loading">
             <Card>
               <div class="card_company">
-                <el-row class="card-title">目标达成情况总览</el-row>
+                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
                 <el-row>
                   <el-col>
                     <template v-for="(item, index) in channelArr">
@@ -138,7 +138,7 @@
                 </el-row>
               </div>
               <div class="card_company_target">
-                <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
                 <template v-for="(item, index) in channelTrendArr">
                   <el-col
                     v-if="productTrendArr.length>0"
@@ -162,7 +162,7 @@
           <el-row v-loading="loading">
             <Card>
               <div class="card_company">
-                <el-row class="card-title">目标达成情况总览</el-row>
+                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
                 <el-row>
                   <el-col>
                     <template v-for="(item, index) in pieCustomer">
@@ -178,7 +178,7 @@
                 </el-row>
               </div>
               <div class="card_company_target">
-                <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
                 <template v-for="(item, index) in dataCustomer">
                   <el-col
                     v-if="productTrendArr.length>0"
@@ -202,7 +202,7 @@
           <el-row v-loading="loading">
             <Card>
               <div class="card_company">
-                <el-row class="card-title">目标达成情况总览</el-row>
+                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
                 <el-row>
                   <el-col>
                     <template v-for="(item, index) in pieOrganization">
@@ -218,7 +218,7 @@
                 </el-row>
               </div>
               <div class="card_company_target">
-                <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
                 <template v-for="(item, index) in dataOrganization">
                   <el-col
                     v-if="productTrendArr.length>0"
@@ -242,7 +242,7 @@
           <el-row v-loading="loading">
             <Card>
               <div class="card_company">
-                <el-row class="card-title">目标达成情况总览</el-row>
+                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
                 <el-row>
                   <el-col>
                     <template v-for="(item, index) in pieFund">
@@ -258,7 +258,7 @@
                 </el-row>
               </div>
               <div class="card_company_target">
-                <el-row class="card-title">目标-实际-差异趋势分析</el-row>
+                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
                 <template v-for="(item, index) in dataFund">
                   <el-col
                     v-if="productTrendArr.length>0"

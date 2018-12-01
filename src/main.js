@@ -4,9 +4,9 @@ import router from './router/index';
 import store from './store/index';
 import { getToken } from 'utils/auth';
 
-import './plugins/element.js';
+import './plugins';
 
-import './style/index.css';
+import './style/index.scss';
 
 import 'utils/finally';
 

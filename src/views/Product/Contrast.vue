@@ -54,11 +54,11 @@
               effect="dark"
               placement="right">
               <div slot="content">
-                <div class="tooltip_margin bold">品类:{{ data.name }}</div>
-                <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
+                <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                 <div
                   v-if="data.children"
-                  class="tooltip_margin">子项目数 : {{ data.children.length }}</div>
+                  class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
                 <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
               </div>
               <span class="label">
@@ -68,7 +68,7 @@
             </el-tooltip>
 
             <div
-              :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+              :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
           </span>
         </el-tree>
@@ -77,7 +77,7 @@
         :span="19"
         class="overflow">
         <Card>
-          <el-row class="card-title">产品对比分析和平均值分析</el-row>
+          <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
           <el-row v-if="compareArr.length > 0">
             <el-col :span="6">
               <template v-for="(item, index) in compareArr">
