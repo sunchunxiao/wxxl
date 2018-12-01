@@ -14,7 +14,12 @@ export default {
     GetChannelTrend(params) {
         return FetchGet('/channel/avg/trend', params);
     },
-
+    GetOrgProgress(params) {
+        return FetchGet('/org/avg/progress', params);
+    },
+    GetOrgTrend(params) {
+        return FetchGet('/org/avg/trend', params);
+    },
     GetProductSearch(params) {
         return FetchGet('/product/search', params);
     },

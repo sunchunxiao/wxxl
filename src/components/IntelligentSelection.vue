@@ -29,7 +29,7 @@ export default {
     mounted() {
         this.chart = echarts.init(document.getElementById(`heatmap-${this.id}`));
         this.renderChart(this.data);
-        this.debounce = _.debounce(this.chart.resize,1000);
+        this.debounce = _.debounce(this.chart.resize, 1000);
         window.addEventListener("resize",this.debounce);
         let _this = this;
         this.chart.on('click', function(params) {
