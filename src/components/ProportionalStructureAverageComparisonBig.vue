@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import echarts from 'echarts';
+import echarts from 'plugins/echarts';
 
 export default {
     props: {
@@ -65,7 +65,6 @@ export default {
             } = nodes;
             const percentArr = [];
             this.color = nodes["28nodes"];
-
             const average = nodes.avg;
             for(let i in pData) {
                 percentArr.push(nodes.values[i]);
@@ -94,7 +93,6 @@ export default {
                                 result += item.marker + " " + item.name  + " : " + parseInt(item.value/100 )+"</br>";
                             });
                         }
-
                         return result;
                     },
                     position: ['50%', '50%']
@@ -130,7 +128,6 @@ export default {
                         normal: {
                             color: function(params) {
                                 return _this.color[`${params.dataIndex}`] === params.dataIndex ? '#318cb8' : '#b0afad';
-                                // return params.data < average ? '#b0afad' : '#318cb8';
                             },
                             barBorderRadius: [0, 20, 20, 0],
                         },
@@ -142,17 +139,14 @@ export default {
                             color: "#000",
                             formatter: function(params) {
                                 if(nodes.display_rate == 0) {
-                                    // _this.calculateToShow(params.data);
                                     return `${pData[params.dataIndex]} : ${ _this.calculateToShow(params.data)}`;
                                 }else{
                                     if(nodes.total==0){
-
                                         return `${pData[params.dataIndex]} : ${params.data}`;
                                     }else{
                                         return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
                                     }
                                 }
-
                             },
                         }
                     },
@@ -169,10 +163,8 @@ export default {
                                     }else{
                                         return `平均值${(average/nodes.total*100).toFixed(2)}%`;
                                     }
-
                                 }
                             }
-
                         },
                         data: [{
                             xAxis: average,
@@ -185,7 +177,6 @@ export default {
                     },
                 }]
             };
-
             this.chart.setOption(options);
         }
     }

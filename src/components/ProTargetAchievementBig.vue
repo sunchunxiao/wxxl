@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import echarts from 'echarts';
+import echarts from 'plugins/echarts';
 
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
 const COLORMAP = { over: '#b12725', below: '#308db9' };
@@ -97,7 +97,6 @@ export default {
                 valuePercent = this.calculateToShow(real);
             }else{
                 valuePercent = parseInt(progress * 100);
-
             }
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
             // 反向指标 颜色需要相反
@@ -106,7 +105,6 @@ export default {
             }
             this.color = color;
             const valueLeft = valuePercent >= 100 ? 0 : 100 - valuePercent;
-
             const options = {
                 backgroundColor: '#fff',
                 tooltip: {
@@ -155,7 +153,6 @@ export default {
                                     }else{
                                         return data.value+"%";
                                     }
-
                                 },
                                 textStyle: {
                                     fontSize: FONTSIZE1,

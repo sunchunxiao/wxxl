@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import echarts from 'echarts';
+import echarts from 'plugins/echarts';
 
 export default {
     props: {
@@ -39,11 +39,6 @@ export default {
         },
     },
     methods: {
-    // resize () {
-    //     return _.debounce(() => {
-    //         this.chart.resize();
-    //     }, 500);
-    // },
         calculateToShow (val) {
             const { subject } = this.data;
             // console.log(val);
@@ -57,14 +52,10 @@ export default {
                     return parseInt(val);
                 }
             }
-
-            // return parseInt(val / 10000 / 100); // 金额从分转换为万
         },
         renderChart (data) {
-            // console.log(data.hasTarget);
             var _this = this;
             const { real, target, timeLabels,subject,hasTarget } = data;
-            // console.log(timeLabels);
             var arr = [];
             const diff = [];
             var realItem, targetItem;
@@ -72,7 +63,6 @@ export default {
             const underTarget = [];
             const realClone = _.cloneDeep(real);
             const targetClone = _.cloneDeep(target);
-            // if(data.hasTarget){
             for(let i=0;i<hasTarget.length;i++){
                 //POR人员冗余
                 if (subject == 'ROI' || subject == 'ITO'||subject == 'POR'||subject === 'SKU') {
@@ -86,8 +76,6 @@ export default {
                         value:parseInt(targetClone[i]/100),
                         hasTarget:hasTarget[i]
                     });
-                    // realItem = realClone[i];
-                    // targetItem = arr[i].value;
                 }
                 realItem = realClone[i];
                 targetItem = arr[i].value;
@@ -100,9 +88,7 @@ export default {
                     diff.push(Math.abs(realItem - targetItem));
                 }
                 realItem < targetItem && underTarget.push(i);
-
             }
-
             const options = {
                 grid: {
                     left: 0,
@@ -139,7 +125,6 @@ export default {
                         });
                         return result;
                     },
-
                 },
                 color: ['#318cb8', '#fcb448', '#b12725'],
                 legend: {
@@ -147,24 +132,11 @@ export default {
                     left: 'right',
                     show: true,
                 },
-                // toolbox: {
-                //     show: true,
-                //     feature: {
-                //         dataZoom: {},
-                //         dataView: {},
-                //         restore: {},
-                //         saveAsImage: {}
-                //     },
-                //     top: -5,
-                //     right: 150
-                // },
                 xAxis: {
                     type: 'category',
                     data: timeLabels
                 },
                 yAxis: {
-                    // type: 'value',
-                    // data: value
                     axisLabel: {
                         formatter: function (val) {
                             return _this.calculateToShow(val);
