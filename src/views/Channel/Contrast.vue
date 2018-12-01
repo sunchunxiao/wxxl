@@ -345,15 +345,18 @@ export default {
         handleSearch(val) {
             this.nodeArr = [];
             this.val = val;
-            if(val.cid!=""){
+            if(!val.cid){
+                if(this.cid!=this.channelTree.nid){
+                    this.cid = this.channelTree.nid;
+                    this.treeClone = _.cloneDeep(this.channelTree);
+                }
+                this.getCompare();
+            }else{
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
                 this.cid = val.cid;
-            }else{
-                this.getTree();
-                this.getCompare();
             }
         },
         cleanChecked() {
