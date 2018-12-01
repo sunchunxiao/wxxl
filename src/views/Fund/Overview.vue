@@ -361,17 +361,12 @@ export default {
             if(this.cid==this.fundTree.cid){
                 return;
             }else{
-                this.loading = true;
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
                 this.highlight = false;
                 this.cid=this.fundTree.cid;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
-
         },
         change() {
             this.idArr = [];
@@ -453,6 +448,7 @@ export default {
             });
         },
         getProgress() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -468,6 +464,8 @@ export default {
                     });
                     this.$store.dispatch('SaveFundTrendArr', resultList);
                 });
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTrend(subject) {
@@ -481,6 +479,7 @@ export default {
         },
         //前端
         getStructure1() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -489,10 +488,13 @@ export default {
             };
             API.GetFundStructure(params).then(res => {
                 this.$store.dispatch('SaveFundStructureArr1', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         //后端
         getStructure2() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -501,9 +503,12 @@ export default {
             };
             API.GetFundStructure(params).then(res => {
                 this.$store.dispatch('SaveFundStructureArr2', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getRank() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 version: this.form.version,
@@ -511,6 +516,8 @@ export default {
             };
             API.GetFundRank(params).then(res => {
                 this.$store.dispatch('SaveFundRankArr', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getDateObj () {
@@ -567,25 +574,14 @@ export default {
                 formData.date = [sDate, eDate];
             }
             this.cid = cid;
-            this.form = { ...this.form,
-                ...formData
-            };
-
+            this.form = { ...this.form,...formData };
         },
         handleSearch(val) {
             // 默认公司的背景色
             this.highlight = true;
             this.nodeArr = [];
-            this.loading = true;
             this.val = val;
-            if(val.cid!=""){
-                this.cid = val.cid;
-                this.isbac = false;
-                this.nodeArr.push(val.cid);
-                this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref   绑定的node-key
-                });
-            }else{
+            if(!val.cid){
                 this.isbac = true;
                 this.highlight = false;
                 if(this.cid!=this.fundTree.cid){
@@ -598,10 +594,14 @@ export default {
                     this.getStructure2();
                     this.getRank();
                 }
+            }else{
+                this.cid = val.cid;
+                this.isbac = false;
+                this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref   绑定的node-key
+                });
             }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
         },
         nodeExpand(data){
             this.cid = data.cid;
@@ -617,10 +617,6 @@ export default {
                 return ;
             }else if (data.children != undefined) {
                 this.cid = data.cid;
-                this.loading = true;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
         },
         calculatePercent(a, b) {

@@ -125,7 +125,7 @@
 <script>
 import API from './api';
 import Card from '../../components/Card';
-import SearchBar from 'components/SearchBarOrg';
+import SearchBar from 'components/SearchBar';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
@@ -224,16 +224,13 @@ export default {
             if(this.cid==this.organizationTree.cid){
                 return;
             }else{
-                this.loading = true;
                 this.isbac = true;
                 this.highlight = false;
                 this.cid=this.organizationTree.cid;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
         },
         getHistory() {
+            this.loading = true;
             const params = {
                 cid:this.cid,
                 version: this.form.version,
@@ -241,6 +238,8 @@ export default {
             };
             API.GetOrgStrategiesOpt(params).then(res => {
                 this.$store.dispatch('SaveOrgtHistory', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTree() {
@@ -366,9 +365,18 @@ export default {
             // 默认公司的背景色
             this.highlight = true;
             this.nodeArr = [];
-            this.loading = true;
             this.val = val;
-            if(val.cid!=""){
+            if(!val.cid){
+                this.isbac = true;
+                this.highlight = false;
+                if(this.cid!=this.organizationTree.cid){
+                    this.cid = this.organizationTree.cid;
+                    this.treeClone = _.cloneDeep(this.organizationTree);
+                }else{
+                    this.getTreePrograss();
+                    this.getHistory();
+                }
+            }else{
                 this.isbac = false;
                 this.cid = val.cid;
                 this.nodeArr.push(val.cid);
@@ -379,20 +387,7 @@ export default {
                     this.isbac = true;
                     this.highlight = false;
                 }
-            }else{
-                this.isbac = true;
-                this.highlight = false;
-                if(this.cid!=this.organizationTree.cid){
-                    this.cid = this.organizationTree.cid;
-                    this.treeClone = _.cloneDeep(this.organizationTree);
-                }else{
-                    this.getTreePrograss();
-                    this.getHistory();
-                }
             }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
         },
         nodeExpand(data){
             this.cid = data.cid;
@@ -409,10 +404,6 @@ export default {
             }else{
                 this.type = data.type;
                 this.cid = data.cid;
-                this.loading = true;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
         },
         clickIndex(i, idx) {

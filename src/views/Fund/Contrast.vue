@@ -141,7 +141,7 @@
 <script>
 import API from './api';
 import Card from '../../components/Card';
-import SearchBar from 'components/SearchBarOrg';
+import SearchBar from 'components/SearchBar';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
@@ -169,7 +169,7 @@ export default {
         return {
             form: {
                 pt: '月',
-                date: [],
+                date: {},
                 search: '',
                 subject: 'S', // S: 销售额 P: 利润额
                 version: '0'
@@ -228,7 +228,7 @@ export default {
         this.debounceBack = _.debounce(this.getCompareBack, 1000);
     },
     mounted() {
-        if(this.fundTree.children){
+        if(this.fundcompareArr.length){
             this.cid = this.fundTree.cid;
             this.treeClone = _.cloneDeep(this.fundTree);
             let arr = [];
@@ -343,6 +343,7 @@ export default {
             return API.GetFundSubject(params);
         },
         getCompare() {
+            this.loading = true;
             if(!this.cidObjArr.length){
                 return;
             }
@@ -357,6 +358,8 @@ export default {
                 if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveFundCompareArr', resultList);
                 }
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTrend(subject) {
@@ -370,6 +373,7 @@ export default {
             return API.GetFundCompare(params);
         },
         getCompareBack() {
+            this.loading = true;
             if(!this.cidObjBackArr.length){
                 return;
             }
@@ -384,6 +388,8 @@ export default {
                 if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveFundCompareArrback', resultList);
                 }
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTrendback(subject) {
@@ -395,6 +401,25 @@ export default {
             const checkKeys = this.cidObjBackArr.map(i => i.cid);
             params.targets = checkKeys.join(',');
             return API.GetFundCompare(params);
+        },
+        getDateObj () {
+            const {
+                date
+            } = this.form;
+            // console.log(date,this.val.sDate);
+            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+                return {
+                    pt: this.val.pt,
+                    sDate: this.val.sDate,
+                    eDate: this.val.eDate,
+                };
+            } else {
+                return {
+                    pt: date.pt,
+                    sDate: date.sDate,
+                    eDate: date.eDate,
+                };
+            }
         },
         getPeriodByPt () {
             const {
@@ -413,33 +438,12 @@ export default {
                     pt: '月',
                     sDate: '2018-03-01',
                     eDate: '2018-06-30',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
-                };
-            }
-        },
-        getDateObj () {
-            const {
-                date
-            } = this.form;
-            // console.log(this.val.eDate);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
-                return {
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-            } else {
-                return {
-                    sDate: date[0] || '',
-                    eDate: date[1] || '',
                 };
             }
         },
         handleSearch(val) {
             this.nodeArr = [];
             this.nodeArr.push(val.cid);
-            this.loading = true;
             this.val = val;
             if(val.cid!=""){
                 this.cid = val.cid;
@@ -448,10 +452,6 @@ export default {
                 this.getProgressbefore();
                 this.getProgressback();
             }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
-
         },
         cleanChecked() {
             this.cidObjArr = [];

@@ -141,7 +141,7 @@
 <script>
 import API from './api';
 import Card from '../../components/Card';
-import SearchBar from 'components/SearchBarOrg';
+import SearchBar from 'components/SearchBar';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
@@ -309,6 +309,7 @@ export default {
         },
         //获取百分比数据
         getTreePrograss(){
+
             const params = {
                 subject:this.form.subject,
                 ...this.getPeriodByPt(),
@@ -344,6 +345,7 @@ export default {
             return API.GetOrgSubject(params);
         },
         getCompare () {
+            this.loading = true;
             if (!this.cidObjArr.length) {
                 return;
             }
@@ -358,9 +360,12 @@ export default {
                 if (resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveOrgCompareArr', resultList);
                 }
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getCompareBack () {
+            this.loading = true;
             if (!this.cidObjBackArr.length) {
                 return;
             }
@@ -375,6 +380,8 @@ export default {
                 if (resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveOrgCompareArrback', resultList);
                 }
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTrend (subject) {
@@ -420,30 +427,27 @@ export default {
         },
         getPeriodByPt () {
             const {
+                pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
+                    pt: pt,
+                    sDate: sDate,
+                    eDate: eDate,
                 };
             } else {
                 return {
                     pt: '月',
                     sDate: '2018-03-01',
-                    eDate: '2018-06-01',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
+                    eDate: '2018-06-30',
                 };
             }
         },
         handleSearch (val) {
             this.nodeArr = [];
             this.nodeArr.push(val.cid);
-            this.loading = true;
             this.val = val;
             if (val.cid != "") {
                 this.cid = val.cid;
@@ -452,9 +456,6 @@ export default {
                 this.getProgressbefore();
                 this.getProgressback();
             }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
 
         },
         nodeExpand(data){

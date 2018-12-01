@@ -220,19 +220,16 @@ export default {
             if (this.cid == this.channelTree.nid) {
                 return;
             } else {
-                this.loading = true;
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
                 this.highlight = false;
                 this.cid = this.channelTree.nid;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
 
         },
         getHistory () {
+            this.loading = true;
             const params = {
                 nid: this.cid,
                 pt: this.form.pt,
@@ -240,6 +237,8 @@ export default {
             };
             API.GetChannelHistory(params).then(res => {
                 this.$store.dispatch('SaveChannelHistory', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTree () {
@@ -362,9 +361,18 @@ export default {
             // 默认公司的背景色
             this.highlight = true;
             this.nodeArr = [];
-            this.loading = true;
             this.val = val;
-            if (val.cid != "") {
+            if (!val.cid) {
+                this.isbac = true;
+                this.highlight = false;
+                if (this.cid != this.channelTree.nid) {
+                    this.cid = this.channelTree.nid;
+                    this.treeClone = _.cloneDeep(this.channelTree);
+                }else{
+                    this.getTreePrograss();
+                    this.getHistory();
+                }
+            } else {
                 this.isbac = false;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
@@ -375,20 +383,7 @@ export default {
                     this.isbac = true;
                     this.highlight = false;
                 }
-            } else {
-                this.isbac = true;
-                this.highlight = false;
-                if (this.cid != this.channelTree.nid) {
-                    this.cid = this.channelTree.nid;
-                    this.treeClone = _.cloneDeep(this.channelTree);
-                }else{
-                    this.getTreePrograss();
-                    this.getHistory();
-                }
             }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
         },
         nodeExpand (data) {
             this.cid = data.nid;
@@ -397,15 +392,12 @@ export default {
         },
         handleNodeClick (data) {
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
+                this.val = this.searchBarValue;
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
                 if (this.cid != data.nid) {
                     this.cid = data.nid;
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
                 } else {
                     return;
                 }
