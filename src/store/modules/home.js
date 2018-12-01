@@ -1,11 +1,19 @@
 const home = {
     state: {
+        overviewArr: [],
+        overviewTrendArr: [],
         productArr: [],
         productTrendArr: [],
         channelArr: [],
         channelTrendArr: [],
     },
     mutations: {
+        SAVE_OVERVIEW_ARR: (state, arr) => {
+            state.overviewArr = arr;
+        },
+        SAVE_OVERVIEWTREND_ARR: (state, arr) => {
+            state.overviewTrendArr = arr;
+        },
         SAVE_HOMEPRODUCT_ARR: (state, arr) => {
             state.productArr = arr;
         },
@@ -20,6 +28,12 @@ const home = {
         },
     },
     actions: {
+        SaveOverviewProgressData({ commit }, arr) {
+            commit('SAVE_OVERVIEW_ARR', arr);
+        },
+        SaveOverviewTrendArr({ commit }, arr) {
+            commit('SAVE_OVERVIEWTREND_ARR', arr);
+        },
         SaveProductProgressData({ commit }, arr) {
             commit('SAVE_HOMEPRODUCT_ARR', arr);
         },
