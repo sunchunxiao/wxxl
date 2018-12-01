@@ -184,7 +184,7 @@ export default {
         this.debounce = _.debounce(this.getCompare, 1000);
     },
     mounted() {
-        if(this.channelTree.children){
+        if(this.channelCompareArr.length){
             this.cid = this.channelTree.nid;
             this.treeClone = _.cloneDeep(this.channelTree);
             let arr = [];
@@ -198,7 +198,6 @@ export default {
         }else{
             this.promise();
         }
-
     },
     methods: {
         promise(){
@@ -274,6 +273,7 @@ export default {
             return API.GetChannelProgress(params);
         },
         getCompare() {
+            this.loading = true;
             if(!this.cidObjArr.length){
                 return;
             }
@@ -289,6 +289,8 @@ export default {
                 if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveChannelCompareArr', resultList);
                 }
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTrend(subject) {
@@ -343,7 +345,6 @@ export default {
         },
         handleSearch(val) {
             this.nodeArr = [];
-            this.loading = true;
             this.val = val;
             if(val.cid!=""){
                 this.nodeArr.push(val.cid);
@@ -355,10 +356,6 @@ export default {
                 this.getTree();
                 this.getCompare();
             }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
-
         },
         cleanChecked() {
             this.cidObjArr = [];

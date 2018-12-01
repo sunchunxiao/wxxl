@@ -219,18 +219,15 @@ export default {
             if (this.cid == this.productTree.cid) {
                 return;
             } else {
-                this.loading = true;
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
                 this.highlight = false;
                 this.cid = this.productTree.cid;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
         },
         getHistory () {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 subject: this.form.subject,
@@ -238,9 +235,12 @@ export default {
             };
             API.GetProductHistory(params).then(res => {
                 this.$store.dispatch('SaveProductHistory', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTree () {
+            this.loading = true;
             const params = {
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
@@ -251,10 +251,14 @@ export default {
                 }
                 this.treeClone = _.cloneDeep(res.tree);
                 this.$store.dispatch('SaveProductTree', res.tree);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         //获取百分比数据
         getTreePrograss () {
+            this.loading = true;
+            this.loading = true;
             const params = {
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
@@ -277,6 +281,8 @@ export default {
                     }
                 }
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getDateObj () {
@@ -360,37 +366,31 @@ export default {
             };
         },
         handleSearch (val) {
-            if (val.cid != this.cid) {
-                this.highlight = true;
-                this.nodeArr = [];
-                this.loading = true;
-                this.val = val;
-                if (val.cid != "") {
-                    this.isbac = false;
-                    this.nodeArr.push(val.cid);
-                    this.$nextTick(() => {
-                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                    });
-                    this.cid = val.cid;
-                    if (this.cid == this.productTree.cid) {
-                        this.isbac = true;
-                        this.highlight = false;
-                    }
-                } else {
+            this.highlight = true;
+            this.nodeArr = [];
+            this.val = val;
+            if (!val.cid) {
+                this.isbac = true;
+                this.highlight = false;
+                if (this.cid != this.productTree.cid) {
+                    this.cid = this.productTree.cid;
+                    this.treeClone = _.cloneDeep(this.productTree);
+                }else{
+                    this.getTreePrograss();
+                    this.getHistory();
+                }
+            } else {
+                this.isbac = false;
+                this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                });
+                this.cid = val.cid;
+                if (this.cid == this.productTree.cid) {
                     this.isbac = true;
                     this.highlight = false;
-                    if (this.cid != this.productTree.cid) {
-                        this.cid = this.productTree.cid;
-                        this.treeClone = _.cloneDeep(this.productTree);
-                    }else{
-                        this.getTreePrograss();
-                        this.getHistory();
-                    }
-
                 }
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
+
             }
         },
         nodeExpand (data) {
@@ -400,6 +400,7 @@ export default {
         },
         handleNodeClick (data) {
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
+                this.val = this.searchBarValue;
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
@@ -407,10 +408,6 @@ export default {
                     return;
                 } else {
                     this.cid = data.cid;
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
                 }
             } else {
                 this.$message({

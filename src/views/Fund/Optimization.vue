@@ -126,7 +126,7 @@
 <script>
 import API from './api';
 import Card from '../../components/Card';
-import SearchBar from 'components/SearchBarOrg';
+import SearchBar from 'components/SearchBar';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
@@ -222,18 +222,15 @@ export default {
             if(this.cid==this.fundTree.cid){
                 return;
             }else{
-                this.loading = true;
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
                 this.highlight = false;
                 this.cid=this.fundTree.cid;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
         },
         getHistory() {
+            this.loading = true;
             const params = {
                 cid:this.cid,
                 version: this.form.version,
@@ -241,6 +238,8 @@ export default {
             };
             API.GetFundStrategiesOpt(params).then(res => {
                 this.$store.dispatch('SaveFundtHistory', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTree() {
@@ -365,7 +364,6 @@ export default {
             // 默认公司的背景色
             this.isbac = false;
             this.nodeArr = [];
-            this.loading = true;
             this.val = val;
             if(val.cid!=""){
                 this.cid = val.cid;
@@ -388,10 +386,6 @@ export default {
                     this.getHistory();
                 }
             }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
-
         },
         nodeExpand(data){
             this.cid = data.cid;
@@ -407,10 +401,6 @@ export default {
                 return ;
             }else {
                 this.cid = data.cid;
-                this.loading = true;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
         },
         clickIndex(i, idx) {

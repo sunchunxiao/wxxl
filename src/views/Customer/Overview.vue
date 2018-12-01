@@ -331,15 +331,11 @@ export default {
             if(this.cid==this.customerTree.cid){
                 return;
             }else{
-                this.loading = true;
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
                 this.highlight = false;
                 this.cid=this.customerTree.cid;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
 
         },
@@ -418,6 +414,7 @@ export default {
             });
         },
         getProgress() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -432,6 +429,8 @@ export default {
                     });
                     this.$store.dispatch('SaveCusTrendArr', resultList);
                 });
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTrend(subject) {
@@ -443,22 +442,27 @@ export default {
             return API.GetCusTrend(params);
         },
         getStructure() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
             };
             API.GetCusStructure(params).then(res => {
                 this.$store.dispatch('SaveCusStructureArr', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getRank() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
             };
             API.GetCusRank(params).then(res => {
-                // console.log(res.data);
                 this.$store.dispatch('SaveCusRankArr', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getDateObj () {
@@ -497,9 +501,6 @@ export default {
                     pt: '日',
                     sDate: '2018-05-01',
                     eDate: '2018-06-30',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
                 };
             }
         },
@@ -521,9 +522,20 @@ export default {
             // 默认公司的背景色
             this.isbac = false;
             this.nodeArr = [];
-            this.loading = true;
             this.val = val;
-            if(val.cid!=""){
+            if(!val.cid){
+                this.isbac = true;
+                this.highlight = false;
+                if(this.cid!=this.customerTree.cid){
+                    this.cid = this.customerTree.cid;
+                    this.treeClone = _.cloneDeep(this.customerTree);
+                } else {
+                    this.getTreePrograss();
+                    this.getProgress();
+                    this.getStructure();
+                    this.getRank();
+                }
+            } else {
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref
@@ -533,23 +545,7 @@ export default {
                     this.isbac = true;
                     this.highlight = false;
                 }
-            }else{
-                this.isbac = true;
-                this.highlight = false;
-                if(this.cid!=this.customerTree.cid){
-                    this.cid = this.customerTree.cid;
-                    this.treeClone = _.cloneDeep(this.customerTree);
-                }else{
-                    this.getTreePrograss();
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
-                }
             }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
-
         },
         nodeExpand(data){
             this.cid = data.cid;
@@ -557,19 +553,24 @@ export default {
             this.highlight = true;
         },
         handleNodeClick(data) {
-            this.isbac = false;
-            this.highlight = true;
-            this.$refs.child.clearKw();
-            if(this.cid === data.cid){
-                return ;
-            }else if(data.children != undefined) {
-                this.cid = data.cid;
-                this.loading = true;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
+            if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+                this.val = this.searchBarValue;
+                this.isbac = false;
+                this.highlight = true;
+                this.$refs.child.clearKw();
+                if(this.cid === data.cid){
+                    return ;
+                }else if(data.children != undefined) {
+                    this.cid = data.cid;
+                }
+            } else{
+                this.highlight = false;
+                this.$message({
+                    type: 'error',
+                    message: '请选择日期',
+                    duration: 2000
+                });
             }
-
         },
         calculatePercent(a, b) {
             if(b > 0) {

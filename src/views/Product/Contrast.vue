@@ -35,15 +35,15 @@
             class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
         </div>
         <el-tree
-          :data="treeClone.children"
           ref="tree"
-          empty-text="正在加载"
           check-strictly
+          show-checkbox
           node-key="cid"
+          :data="treeClone.children"
+          empty-text="正在加载"
           :default-expanded-keys="nodeArr"
           :highlight-current="highlight"
           :props="defaultProps"
-          show-checkbox
           @node-expand="nodeExpand"
           @check-change="handleCheckChange">
           <span
@@ -75,6 +75,7 @@
       </el-col>
       <el-col
         :span="19"
+        v-loading="loading"
         class="overflow">
         <Card>
           <el-row class="card-title">产品对比分析和平均值分析</el-row>
@@ -143,6 +144,7 @@ export default {
             cid:'',
             defaultProps: TREE_PROPS,
             index0: 0,
+            loading:false,
             cidObjArr:[],
             cancelKey: '',
             debounce: null,
@@ -177,7 +179,7 @@ export default {
         this.debounce = _.debounce(this.getCompare, 500);
     },
     mounted() {
-        if(this.productTree.children){
+        if(this.compareArr.length){
             this.cid = this.productTree.cid;
             this.treeClone = _.cloneDeep(this.productTree);
             let arr = [];
@@ -267,6 +269,7 @@ export default {
             return API.GetProductProgress(params);
         },
         getCompare () {
+            this.loading = true;
             if (!this.cidObjArr.length) {
                 return;
             }
@@ -281,6 +284,8 @@ export default {
                 if (resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveCompareArr', resultList);
                 }
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTrend (subject) {
@@ -337,26 +342,20 @@ export default {
             if(val.cid!=this.cid){
                 // 默认公司的背景色
                 this.nodeArr = [];
-                this.loading = true;
                 this.val = val;
-                if(val.cid!=""){
+                if(!val.cid){
+                    this.getTree();
+                    this.getCompare();
+                }else{
                     this.nodeArr.push(val.cid);
                     this.$nextTick(() => {
                         this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                     });
                     this.cid = val.cid;
-
-                }else{
-                    this.getTree();
-                    this.getCompare();
                 }
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
         },
         nodeExpand(data){
-
             this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;

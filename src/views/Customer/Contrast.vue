@@ -69,6 +69,7 @@
       </el-col>
       <el-col
         :span="19"
+        v-loading="loading"
         class="overflow">
         <el-row>
           <Card>
@@ -146,6 +147,7 @@ export default {
             cid:'',
             defaultProps: TREE_PROPS,
             index0: 0,
+            loading:false,
             val:{},
             post:1,
             nodeArr:[],
@@ -266,6 +268,7 @@ export default {
             return API.GetCusProgress(params);
         },
         getCompare() {
+            this.loading = true;
             if(!this.cidObjArr.length){
                 return;
             }
@@ -281,6 +284,8 @@ export default {
                 if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveCusCompareArr', resultList);
                 }
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTrend(subject) {
@@ -334,7 +339,6 @@ export default {
         handleSearch(val) {
             this.nodeArr = [];
             this.nodeArr.push(val.cid);
-            this.loading = true;
             this.val = val;
             if(val.cid!=""){
                 this.cid = val.cid;
@@ -342,10 +346,6 @@ export default {
                 this.getTree();
                 this.getProgress();
             }
-            setTimeout(() => {
-                this.loading = false;
-            }, 1000);
-
         },
         cleanChecked() {
             this.cidObjArr = [];
