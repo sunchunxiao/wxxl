@@ -1,0 +1,44 @@
+@import './normalize.css';
+@import './reset.css';
+
+html, body {
+  height: 100%;
+}
+
+/* height */
+.min-height-400 {
+  min-height: 400px;
+}
+
+/* margin */
+@each $px in 10 50 {
+    .margin-top-#{$px} {
+        margin-bottom: 1px * $px;
+    }
+}
+@each $px in 5 10 20 {
+    .margin-bottom-#{$px} {
+        margin-bottom: 1px * $px;
+    }
+}
+
+/* border */
+.border-left-2-gray {
+  border-left: 2px solid #D8D8D8;
+}
+.border-radius-0{
+  border-radius: 0;
+}
+
+/* color */
+.red {
+  color: #c13633;
+}
+.blue {
+  color: #26a6d7;
+}
+
+/* font */
+.bold{
+  font-weight: bolder;
+}

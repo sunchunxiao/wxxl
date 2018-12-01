@@ -29,7 +29,6 @@
             v-if="treeClone.children"
             class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
         </div>
-        <!-- 有多个tree -->
         <el-tree
           empty-text="正在加载"
           ref="tree"
@@ -49,12 +48,12 @@
               effect="dark"
               placement="right">
               <div slot="content">
-                <div class="tooltip_margin bold">品类:{{ data.name }}</div>
+                <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
                 <div
-                  class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                  class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                 <div
                   v-if="data.children"
-                  class="tooltip_margin">子项目数 : {{ data.children.length }}</div>
+                  class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
                 <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
               </div>
               <span class="label">
@@ -64,7 +63,7 @@
               </span>
             </el-tooltip>
             <div
-              :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+              :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
           </span>
         </el-tree>
@@ -74,7 +73,7 @@
         class="overflow">
         <el-row v-loading="loading">
           <Card v-if="type==1||type==3">
-            <el-row class="card-title">组织对比分析和平均值分析前端</el-row>
+            <el-row class="margin-bottom-20">组织对比分析和平均值分析前端</el-row>
             <el-row v-if="orgcompareArr.length > 0">
               <el-col :span="6">
                 <template v-for="(item, index) in orgcompareArr">
@@ -104,7 +103,7 @@
               class="please_select">请选择要对比的项目</el-row>
           </Card>
           <Card v-if="type==2||type==3">
-            <el-row class="card-title">组织对比分析和平均值分析后端</el-row>
+            <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
             <el-row v-if="orgcompareArrback.length > 0">
               <el-col :span="6">
                 <template v-for="(item, index) in orgcompareArrback">

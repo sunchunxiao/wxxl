@@ -202,6 +202,7 @@ export default {
             },
             kw: '',
             cid: '',
+            isDateChange: true,
         };
     },
     props: {
@@ -376,17 +377,14 @@ export default {
         }
     },
     watch: {
-        form: [{
+        form: {
             handler: function (val) {
                 this.handleFormChange(val);
-            },
-            deep: true
-        }, {
-            handler: function (val) {
                 this.$store.dispatch('SaveDate', _.cloneDeep(val));
+                this.isDateChange = true;
             },
             deep: true
-        }],
+        },
         kw: function (val) {
             // 搜索框内容修改时 清空 cid
             if (val == '') {
@@ -443,8 +441,13 @@ export default {
                 });
                 return;
             } else {
+                // 如果时间改变了 调用 props.search
+                if(!this.isDateChange) {
+                    return;
+                }
                 obj.cid = this.cid;
                 this.$emit('search', obj);
+                this.isDateChange = false;
             }
         },
         searchKw (kw, cb) {
