@@ -364,16 +364,14 @@ export default {
             idArr: [],
             val:{},
             post:1,
-            nodeArr:[],
-            highlight:true,
             style:undefined
         };
     },
     computed: {
-        ...mapGetters(['productArr','productTrendArr','channelArr','channelTrendArr'])
-    // hasTree() {
-    //     return !_.isEmpty(this.productTree);
-    // }
+        ...mapGetters(['productArr','productTrendArr','channelArr','channelTrendArr']),
+        hasTree() {
+            return !_.isEmpty(this.productArr);
+        }
     },
     mounted() {
         this.getProductProgress();
@@ -408,7 +406,7 @@ export default {
                         v.subject = res.data[k].subject;
                         v.subject_name = res.data[k].subject_name;
                     });
-                    this.$store.dispatch('SaveTrendArr', resultList);
+                    this.$store.dispatch('SaveProductTrendArr', resultList);
                 });
             });
         },
@@ -489,19 +487,14 @@ export default {
         },
         handleSearch(val) {
             // 默认公司的背景色
-            this.nodeArr = [];
-            this.nodeArr.push(val.cid);
             this.loading = true;
             this.val = val;
-            if(val.cid!=""){
-                this.cid = val.cid;
-            }else{
-                this.getProductProgress();
-            }
+
+            this.getProductProgress();
+            this.getChannelProgress();
             setTimeout(() => {
                 this.loading = false;
             }, 1000);
-
         },
 
     }

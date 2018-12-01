@@ -517,54 +517,35 @@ export default {
             }
         },
         handleSearch(val) {
-            // console.log(this.searchBarValue.sDate);
-            // console.log(this.changeDate);
-
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
-            if(this.changeDate==this.searchBarValue.sDate){
-                if(val.cid!=""){
-                    this.loading = true;
-                    this.isbac = false;
-                    this.nodeArr.push(val.cid);
-                    this.$nextTick(() => {
-                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                    });
-                    this.cid = val.cid;
-                    //如果是根节点
-                    if(this.cid==this.productTree.cid){
-                        this.isbac = true;
-                        this.highlight = false;
-                    }
-                }else{
-                    if(this.changeDate==this.searchBarValue.sDate){
-                        // console.log(111);
-                    }else{
-                    // 时间是否改变
-                        this.changeDate = this.searchBarValue.sDate;
-                        this.isbac = true;
-                        this.highlight = false;
-                        if(this.cid!=this.productTree.cid){
-                            this.cid = this.productTree.cid;
-                            this.treeClone = _.cloneDeep(this.productTree);
-                        }else{
-                            this.getTreePrograss();
-                            this.getProgress();
-                            this.getStructure();
-                            this.getRank();
-                        }
-                    }
+            if(val.cid!=""){
+                this.loading = true;
+                this.isbac = false;
+                this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                });
+                this.cid = val.cid;
+                //如果是根节点
+                if(this.cid==this.productTree.cid){
+                    this.isbac = true;
+                    this.highlight = false;
                 }
             }else{
-                this.cid = this.productTree.cid;
-                this.treeClone = _.cloneDeep(this.productTree);
-                this.getTreePrograss();
-                this.getProgress();
-                this.getStructure();
-                this.getRank();
+                this.isbac = true;
+                this.highlight = false;
+                if(this.cid!=this.productTree.cid){
+                    this.cid = this.productTree.cid;
+                    this.treeClone = _.cloneDeep(this.productTree);
+                }else{
+                    this.getTreePrograss();
+                    this.getProgress();
+                    this.getStructure();
+                    this.getRank();
+                }
             }
-
             setTimeout(() => {
                 this.loading = false;
             }, 1000);
