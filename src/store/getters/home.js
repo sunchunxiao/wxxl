@@ -5,6 +5,8 @@ const home = {
     productTrendArr: state => state.home.productTrendArr,
     channelArr: state => state.home.channelArr,
     channelTrendArr: state => state.home.channelTrendArr,
+    orgHomeArr: state => state.home.orgHomeArr,
+    orgTrendArr: state => state.home.orgTrendArr,
 };
 
 export default home;

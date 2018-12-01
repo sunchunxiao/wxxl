@@ -91,7 +91,7 @@
                         v-if="productArr.length>0"
                         :key="index">
                         <ProTargetAchievement
-                          :id="`${index+overviewArr.length}`"
+                          :id="`product${index}`"
                           :data="item" />
                       </el-col>
                     </template>
@@ -105,7 +105,7 @@
                     v-if="productTrendArr.length>0"
                     :key="index">
                     <ProTargetActualDiffTrend
-                      :id="`${index+overviewTrendArr.length}`"
+                      :id="`product${index}`"
                       :data="item" />
                   </el-col>
                 </template>
@@ -131,7 +131,7 @@
                         v-if="productArr.length>0"
                         :key="index">
                         <ProTargetAchievement
-                          :id="`${index+overviewArr.length+productArr.length}`"
+                          :id="`channel${index}`"
                           :data="item" />
                       </el-col>
                     </template>
@@ -145,7 +145,7 @@
                     v-if="productTrendArr.length>0"
                     :key="index">
                     <ProTargetActualDiffTrend
-                      :id="`${index+overviewTrendArr.length+productTrendArr.length}`"
+                      :id="`channel${index}`"
                       :data="item" />
                   </el-col>
                 </template>
@@ -171,7 +171,7 @@
                         v-if="productArr.length>0"
                         :key="index">
                         <ProTargetAchievement
-                          :id="`${index+overviewArr.length+productArr.length*2}`"
+                          :id="`cus${index}`"
                           :data="item" />
                       </el-col>
                     </template>
@@ -185,7 +185,7 @@
                     v-if="productTrendArr.length>0"
                     :key="index">
                     <ProTargetActualDiffTrend
-                      :id="`${index+overviewTrendArr.length+productTrendArr.length*2}`"
+                      :id="`cus${index}`"
                       :data="item" />
                   </el-col>
                 </template>
@@ -206,12 +206,12 @@
                 <el-row class="margin-bottom-20">目标达成情况总览</el-row>
                 <el-row>
                   <el-col>
-                    <template v-for="(item, index) in pieOrganization">
+                    <template v-for="(item, index) in orgHomeArr">
                       <el-col
-                        v-if="productArr.length>0"
+                        v-if="orgHomeArr.length>0"
                         :key="index">
                         <ProTargetAchievement
-                          :id="`${index+overviewArr.length+productArr.length*3}`"
+                          :id="`org${index}`"
                           :data="item" />
                       </el-col>
                     </template>
@@ -220,12 +220,12 @@
               </div>
               <div class="card_company_target">
                 <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
-                <template v-for="(item, index) in dataOrganization">
+                <template v-for="(item, index) in orgTrendArr">
                   <el-col
-                    v-if="productTrendArr.length>0"
+                    v-if="orgTrendArr.length>0"
                     :key="index">
                     <ProTargetActualDiffTrend
-                      :id="`${index+overviewTrendArr.length+productTrendArr.length*3}`"
+                      :id="`org${index}`"
                       :data="item" />
                   </el-col>
                 </template>
@@ -251,7 +251,7 @@
                         v-if="productArr.length>0"
                         :key="index">
                         <ProTargetAchievement
-                          :id="`${index+overviewArr.length+productArr.length*4}`"
+                          :id="`fund+${index}`"
                           :data="item" />
                       </el-col>
                     </template>
@@ -265,7 +265,7 @@
                     v-if="productTrendArr.length>0"
                     :key="index">
                     <ProTargetActualDiffTrend
-                      :id="`${index+overviewTrendArr.length+productTrendArr.length*4}`"
+                      :id="`fund+${index}`"
                       :data="item" />
                   </el-col>
                 </template>
@@ -369,7 +369,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['overviewArr','overviewTrendArr','productArr','productTrendArr','channelArr','channelTrendArr']),
+        ...mapGetters(['overviewArr','overviewTrendArr','productArr','productTrendArr','channelArr','channelTrendArr','orgHomeArr','orgTrendArr']),
         hasTree() {
             return !_.isEmpty(this.productArr);
         }
@@ -380,7 +380,7 @@ export default {
         this.getProductProgress();
         this.getChannelProgress();
         // 组织
-        // this.getOrgProgress();
+        this.getOrgProgress();
     },
     watch: {
         cid: function() {
@@ -472,7 +472,31 @@ export default {
             return API.GetChannelTrend(params);
         },
         //组织
-
+        getOrgProgress(){
+            const params = {
+                ...this.getPeriodByPt(),
+                version:0
+            };
+            API.GetOrgProgress(params).then(res=>{
+                this.$store.dispatch('SaveOrgHomeProgress', res.data);
+                const promises = _.map(res.data, o => this.getOrgTrend(o.subject));
+                Promise.all(promises).then(resultList => {
+                    _.forEach(resultList, (v, k) => {
+                        v.subject = res.data[k].subject;
+                        v.subject_name = res.data[k].subject_name;
+                    });
+                    this.$store.dispatch('SaveOrgHomeTrendArr', resultList);
+                });
+            });
+        },
+        getOrgTrend(subject) {
+            const params = {
+                ...this.getPeriodByPt(),
+                subject: subject,
+                version:0
+            };
+            return API.GetOrgTrend(params);
+        },
         getDateObj () {
             const {
                 date
