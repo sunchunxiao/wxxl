@@ -1,204 +1,217 @@
 <template>
   <div class="overview">
     <el-row>
-      <search-bar 
-        @search="handleSearch"
+      <search-bar
+        ref="child"
         @input="input"
+        @search="handleSearch"
         url="/product/search"
         placeholder="产品编号/产品名称"
         v-model="searchBarValue"
-        ref="child"
         :pt-options="['日', '周', '月', '季', '年']" />
     </el-row>
-    <el-row 
+    <el-row
       class="content_row"
       :gutter="20">
-      <el-col 
+      <el-col
         :span="5"
         class="tree_container">
         <div v-if="hasTree">
           <div class="title">毛利目标达成率</div>
-          <div 
+          <div
             @click="click"
             v-if="productTree.children"
             :class="{bac:isbac}"
             class="company">
-            <span class="left label">{{ productTree.name }}</span>
-            <span 
-              :class="{percent: true, red: !calculatePercent(productTree.real_total, productTree.target_total).largerThanOne, blue: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              class="right">{{ calculatePercent(productTree.real_total, productTree.target_total).percent + '%' }}</span>
-            <div 
-              :class="{comprogress: true, 'border-radius0': calculatePercent(productTree.real_total, productTree.target_total).largerThanOne}"
-              :style="{width: calculatePercent(productTree.real_total, productTree.target_total).largerThanOne ? '105%' : `${calculatePercent(productTree.real_total, productTree.target_total).percent + 5}%`}" />
+            <span class="left label">{{ treeClone.name }}</span>
+            <span
+              :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+              class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
+            <div
+              :class="{comprogress: true, 'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+              :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
           </div>
         </div>
-        <!-- 有多个tree -->
-        <el-tree 
+        <el-tree
           ref="tree"
+          :data="treeClone.children"
           empty-text="正在加载"
           node-key="cid"
-          :highlight-current="highlight"
           :expand-on-click-node="false"
+          :highlight-current="highlight"
           :props="defaultProps"
-          :data="productTree.children"
           :default-expanded-keys="nodeArr"
-          
+          @node-expand="nodeExpand"
           @node-click="handleNodeClick">
-          <span 
+          <span
             class="custom-tree-node"
             slot-scope="{ node, data }">
-            <el-tooltip 
+            <el-tooltip
               class="item"
               effect="dark"
               placement="right">
               <div slot="content">
-                <div class="tooltip_margin bold">品类:{{ data.name }}</div>
-                <div class="tooltip_margin">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
-                <div 
+                <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
+                <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                <div
                   v-if="data.children"
-                  class="tooltip_margin">子项目数 : {{ data.children.length }}</div>
+                  class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
                 <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
               </div>
               <span class="label">
                 <span class="label_left">{{ data.name }}</span>
-                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+                <span
+                  v-if="data.real_total"
+                  :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
               </span>
             </el-tooltip>
-            <div 
-              :class="{progress: true, 'border-radius0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+            <div
+              :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
               :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
           </span>
         </el-tree>
       </el-col>
-      <el-col 
+      <el-col
         :span="18"
         class="overflow">
-        <el-row v-loading="loading">
-          <Card>
-            <el-row class="card-title">目标达成情况总览</el-row>
-            <el-row>
-              <el-col :span="15">
-                <template v-for="(item, index) in progressArr">
-                  <el-col 
+        <el-row
+          v-loading="loading"
+          class="min-height-400">
+          <vue-lazy-component>
+            <Card>
+              <el-row class="margin-bottom-20">目标达成情况总览</el-row>
+              <el-row>
+                <el-col :span="15">
+                  <template v-for="(item, index) in progressArr">
+                    <el-col
+                      :key="index"
+                      :span="6">
+                      <ProTargetAchievement
+                        :id="`${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </el-col>
+                <el-col
+                  v-if="rankArr.length > 0"
+                  :span="9"
+                  class="border-left-2-gray">
+                  <Radar
+                    :id="'select'"
+                    :data="rankArr[rankArr.length-1]" />
+                </el-col>
+              </el-row>
+            </Card>
+          </vue-lazy-component>
+        </el-row>
+        <el-row
+          v-loading="loading"
+          class="margin-top-10 min-height-400">
+          <vue-lazy-component>
+            <Card>
+              <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
+              <el-row>
+                <template v-for="(item, index) in trendArr">
+                  <el-col
                     :key="index"
-                    :span="6">
-                    <ProTargetAchievement 
+                    :span="12"
+                    @click.native="clickIndex(1 ,index)">
+                    <ProTargetActualDiffTrend
                       :id="`${index}`"
                       :data="item" />
                   </el-col>
                 </template>
-              </el-col>
-              <el-col 
-                v-if="rankArr.length > 0"
-                :span="9"
-                class="border-left">
-                <Radar 
-                  :id="'select'"
-                  :data="rankArr[rankArr.length-1]" />
-              </el-col>
-            </el-row>
-          </Card>
+              </el-row>
+            </Card>
+          </vue-lazy-component>
         </el-row>
-        <el-row 
+        <el-row
           v-loading="loading"
-          class="margin-top-10">
-          <Card>
-            <el-row class="card-title">目标-实际-差异趋势分析</el-row>
-            <el-row>
-              <template v-for="(item, index) in trendArr">
-                <el-col 
-                  :key="index"
-                  :span="12"
-                  @click.native="clickIndex(1 ,index)">
-                  <ProTargetActualDiffTrend 
-                    :id="`${index}`"
-                    :data="item" />
-                </el-col>
-              </template>
-            </el-row>
-          </Card>
-        </el-row>
-        <el-row 
-          v-loading="loading"
-          class="margin-top-10">
-          <Card>
-            <el-row class="card-title">同比环比趋势分析</el-row>
-            <el-row>
-              <template v-for="(item, index) in trendArr">
-                <el-col 
-                  :key="index"
-                  :span="12"
-                  @click.native="clickIndex(2 ,index)">
-                  <ProYearOnYearTrend 
-                    :id="`${index}`"
-                    :data="item" />
-                </el-col>
-              </template>
-            </el-row>
-          </Card>
-        </el-row>
-        <el-row 
-          v-loading="loading"
-          class="margin-top-10">
-          <Card>
-            <el-row class="card-title">比例结构与平均值对比分析</el-row>
-            <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in structureArr">
-                  <el-col 
+          class="margin-top-10 min-height-400">
+          <vue-lazy-component>
+            <Card>
+              <el-row class="margin-bottom-20">同比环比趋势分析</el-row>
+              <el-row>
+                <template v-for="(item, index) in trendArr">
+                  <el-col
                     :key="index"
-                    :span="6"
-                    @click.native="clickIndex(3 ,index)">
-                    <ProportionalStructureAverageComparison 
+                    :span="12"
+                    @click.native="clickIndex(2 ,index)">
+                    <ProYearOnYearTrend
                       :id="`${index}`"
                       :data="item" />
                   </el-col>
                 </template>
-              </el-col>
-              <el-col 
-                :span="8"
-                class="border-left">
-                <ProportionalStructureAverageComparisonBig 
-                  v-if="structureArr.length>0"
-                  id="ProportionalStructureAverageComparisonBig"
-                  :data="structureArr[index3]" />
-              </el-col>
-            </el-row>
-          </Card>
+              </el-row>
+            </Card>
+          </vue-lazy-component>
         </el-row>
-        <el-row 
+        <el-row
           v-loading="loading"
-          class="margin-top-10">
-          <Card>
-            <el-row class="card-title">智能评选和智能策略</el-row>
-            <el-row>
-              <el-col :span="14">
-                <IntelligentSelection 
-                  id="rank"
-                  @showStragety="showStragety"
-                  :data="rankArr" />
-              </el-col>
-              <el-col :span="10">
-                <div class="stragety">
-                  <div class="stragety-title">智能策略</div>
-                  <div class="stragety-box">
-                    <div class="stragety-selected-title">{{ stragetyTitle }}</div>
-                    <el-checkbox-group v-model="stragetyCheckList">
-                      <el-checkbox 
-                        v-for="(item,index) in stragety"
-                        :key="index"
-                        :label="item.id"
-                        @change="change">{{ item.strategy }}</el-checkbox>
-                    </el-checkbox-group>
-                    <el-button 
-                      @click="submit"
-                      type="primary"
-                      class="center">确 认</el-button>
+          class="margin-top-10 min-height-400">
+          <vue-lazy-component>
+            <Card>
+              <el-row class="margin-bottom-20">比例结构与平均值对比分析</el-row>
+              <el-row>
+                <el-col :span="16">
+                  <template v-for="(item, index) in structureArr">
+                    <el-col
+                      :key="index"
+                      :span="6"
+                      @click.native="clickIndex(3 ,index)">
+                      <ProportionalStructureAverageComparison
+                        :id="`${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </el-col>
+                <el-col
+                  :span="8"
+                  class="border-left-2-gray">
+                  <ProportionalStructureAverageComparisonBig
+                    v-if="structureArr.length>0"
+                    id="ProportionalStructureAverageComparisonBig"
+                    :data="structureArr[index3]" />
+                </el-col>
+              </el-row>
+            </Card>
+          </vue-lazy-component>
+        </el-row>
+        <el-row
+          v-loading="loading"
+          class="margin-top-10 min-height-400">
+          <vue-lazy-component>
+            <Card>
+              <el-row class="margin-bottom-20">智能评选和智能策略</el-row>
+              <el-row>
+                <el-col :span="14">
+                  <IntelligentSelection
+                    id="rank"
+                    @showStragety="showStragety"
+                    :data="rankArr" />
+                </el-col>
+                <el-col :span="10">
+                  <div class="stragety">
+                    <div class="stragety-title">智能策略</div>
+                    <div class="stragety-box">
+                      <div class="margin-bottom-10">{{ stragetyTitle }}</div>
+                      <el-checkbox-group v-model="stragetyCheckList">
+                        <el-checkbox
+                          v-for="(item,index) in stragety"
+                          :key="index"
+                          :label="item.id"
+                          @change="change">{{ item.strategy }}</el-checkbox>
+                      </el-checkbox-group>
+                      <el-button
+                        @click="submit"
+                        type="primary"
+                        class="center">确 认</el-button>
+                    </div>
                   </div>
-                </div>
-              </el-col>
-            </el-row>
-          </Card>
+                </el-col>
+              </el-row>
+            </Card>
+          </vue-lazy-component>
         </el-row>
       </el-col>
     </el-row>
@@ -271,12 +284,12 @@ export default {
                 pt: '',
                 sDate: '',
                 eDate: ''
-            }
-            
+            },
+            treeClone:{},
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr', 'productDateArr']),
+        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr', 'productDateArr','treePrograss']),
         hasTree () {
             return !_.isEmpty(this.productTree);
         }
@@ -287,20 +300,32 @@ export default {
                 this.getTree();
             });
         } else {
+            this.treeClone = _.cloneDeep(this.productTree);
             this.cid = this.productTree.cid;
         }
     },
     watch: {
         cid () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            // 暂时先在这里做
-            // this.getTreePrograss();
+            this.getTreePrograss();
             this.getProgress();
             this.getStructure();
             this.getRank();
         }
     },
     methods: {
+        preOrder(node,cid){
+            for(let i of node){
+                if (i.cid == cid) {
+                    return i;
+                }
+                if(i.children && i.children.length){
+                    if (this.preOrder(i.children, cid)) {
+                        return this.preOrder(i.children,cid);
+                    }
+                }
+            }
+        },
         input (val) {
             this.form.date = val;
         },
@@ -308,15 +333,11 @@ export default {
             if (this.cid == this.productTree.cid) {
                 return;
             } else {
-                this.loading = true;
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
                 this.highlight = false;
                 this.cid = this.productTree.cid;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
             }
         },
         change () {
@@ -357,7 +378,6 @@ export default {
                     duration: 1500
                 });
             });
-
         },
         initFormDataFromUrl () {
             const {
@@ -371,25 +391,25 @@ export default {
                 formData.date = [sDate, eDate];
             }
             this.cid = cid;
-            this.form = {                ...this.form,
-                ...formData
-            };
+            this.form = { ...this.form,...formData };
         },
+        //树结构
         getTree () {
             const params = {
                 // pt: this.form.pt,
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
             };
-            
+
             API.GetProductTree(params).then(res => {
-                // console.log(this.productTree.cid);
                 if (this.productTree.cid == undefined) {
                     this.cid = res.tree.cid;
                 }
+                this.treeClone = _.cloneDeep(res.tree);
                 this.$store.dispatch('SaveProductTree', res.tree);
             });
         },
+        //获取百分比数据
         getTreePrograss(){
             const params = {
                 subject:this.form.subject,
@@ -397,12 +417,23 @@ export default {
                 nid:this.cid
             };
             API.GetProductTreeProduct(params).then(res=>{
-                // console.log(res.data);
+                let obj = this.preOrder([this.treeClone], this.cid);
+                // console.log(obj,obj.cid,this.cid,res.data);
+                if(obj.cid == this.cid){
+                    obj.real_total = res.data[this.cid].real;
+                    obj.target_total = res.data[this.cid].target;
+                }
+                for(let i of obj.children){
+                    if(res.data.hasOwnProperty(i.cid)){
+                        i.real_total = res.data[i.cid].real;
+                        i.target_total = res.data[i.cid].target;
+
+                    }
+                }
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
         getProgress() {
-            // console.log(this.val);
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -489,55 +520,58 @@ export default {
             }
         },
         handleSearch(val) {
-                this.highlight = true;
-                // 默认公司的背景色
-                this.isbac = false;
-                this.nodeArr = [];
-                this.loading = true;
-                this.val = val;
-                if(val.cid!=""){
-                    this.nodeArr.push(val.cid);
-                    this.$nextTick(() => {
-                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                    });
-                    this.cid = val.cid;
-                    if(this.cid==this.productTree.cid){
-                        this.isbac = true;
-                        this.highlight = false;
-                    }
+            this.highlight = true;
+            this.nodeArr = [];
+            this.val = val;
+            if(!val.cid){
+                this.isbac = true;
+                this.highlight = false;
+                if(this.cid!=this.productTree.cid){
+                    this.cid = this.productTree.cid;
+                    this.treeClone = _.cloneDeep(this.productTree);
                 }else{
-                    if(this.cid==this.productTree.cid){
-                        this.isbac = true;
-                        this.highlight = false;
-                    }
-                    // this.getTree();
-                    // this.getTreePrograss();
+                    this.getTreePrograss();
                     this.getProgress();
                     this.getStructure();
                     this.getRank();
                 }
-            
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
+            }else{
+                this.isbac = false;
+                this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                });
+                this.cid = val.cid;
+                //如果是根节点
+                if(this.cid==this.productTree.cid){
+                    this.isbac = true;
+                    this.highlight = false;
+                }
+            }
 
         },
-        // nodeExpand(data){
-            // console.log(data);
-            // this.cid = data.cid;
-        // },
-        handleNodeClick (data) {
+        nodeExpand(data){
+            this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;
-            this.$refs.child.clearKw();
-            if (this.cid === data.cid) {
-                return;
-            } else if (data.children != undefined) {
-                this.cid = data.cid;
-                this.loading = true;
-                setTimeout(() => {
-                    this.loading = false;
-                }, 1000);
+        },
+        handleNodeClick (data) {
+            if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+                this.isbac = false;
+                this.highlight = true;
+                this.$refs.child.clearKw();
+                if (this.cid === data.cid) {
+                    return;
+                } else if (data.children != undefined) {
+                    this.cid = data.cid;
+                }
+            }else{
+                this.highlight = false;
+                this.$message({
+                    type: 'error',
+                    message: '请选择日期',
+                    duration: 2000
+                });
             }
 
         },
@@ -598,5 +632,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./style/overview.scss";
+@import './style/overview.scss';
 </style>

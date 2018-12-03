@@ -1,21 +1,21 @@
 <template>
-  <el-menu 
+  <el-menu
     :default-active="activePath"
     router
     :collapse="isCollapse">
     <template v-for="item in menuData">
-      <el-submenu 
+      <el-submenu
         :index="item.path"
         :key="item.path">
         <template slot="title">
-          <img 
+          <img
             class="menu_icon"
             :src="require(`../assets/${item.icon}`)"
             :alt="item.icon">
           <span slot="title">{{ item.title }}</span>
         </template>
         <template v-for="itm in item.children">
-          <el-menu-item 
+          <el-menu-item
             :index="`${item.path}${itm.path}`"
             :key="`${item.path}${itm.path}`">
             <span class="sub-text">
@@ -25,10 +25,9 @@
         </template>
       </el-submenu>
     </template>
-    <el-menu-item 
+    <el-menu-item
       v-show="false"
-      index="placeholder" 
-    />
+      index="placeholder" />
   </el-menu>
 </template>
 

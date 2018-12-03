@@ -1,8 +1,8 @@
 <template>
   <div class="pie-container">
-    <div 
-      class="pie" 
-      :id="`pie-${id}`"/>
+    <div
+      class="pie"
+      :id="`pie-${id}`" />
     <div class="detail">
       <span class="text">目标: </span>
       <span class="value">{{ target }}</span>
@@ -10,8 +10,8 @@
     </div>
     <div class="detail">
       <span class="text">实际: </span>
-      <span 
-        class="value" 
+      <span
+        class="value"
         :style="{color: color}">{{ real }}</span>
       &nbsp;<span>{{ unit }}</span>
     </div>
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import echarts from 'echarts';
+import echarts from 'plugins/echarts';
 
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
 const COLORMAP = { over: '#b12725', below: '#308db9' };
@@ -41,13 +41,11 @@ export default {
     computed: {
         unit() {
             const { subject } = this.data;
-            if (subject== 'NIR'||subject== 'CTR') { // 投入产出比 %
+            if (_.includes(['NIR','CTR'],subject)) { // 投入产出比 %
                 return '%';
             } else if (subject === 'ITO') { // 库存周转率不需要单位
                 return '';
             }
-            
-            // return 'w';
         },
         real() {
             const { real } = this.data;
@@ -73,34 +71,31 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
-            if(val==null){
+            if (val==null){
                 return "未设定";
-            }else{
-                if (subject === 'ITO'||subject === 'ROI') { // 库存周转率不需要单位
-                return val;
+            } else {
+                //SHP店铺数量
+                if (_.includes(['ITO','ROI','SKU','PER','SHP'], subject)){
+                    return val;
                 }else if (subject === 'POR') { // 库存周转率不需要单位
                     return parseInt(val);
                 }
                 let Tenthousand = parseInt(val / 10000 / 100);
-                if(Tenthousand>=1){
+                if (Tenthousand>=1){
                     return parseInt(val / 10000 / 100)+'w';
-                }else{
+                } else {
                     return parseInt(val/100);
                 }
-            // return parseInt(val / 10000 / 100); // 金额从分转换为万
             }
-            
         },
         renderChart(data) {
             const { subject, subject_name, progress ,real } = data;
             var valuePercent;
-            if(progress==null){
+            if (progress==null){
                 valuePercent = this.calculateToShow(real);
-            }else{
+            } else {
                 valuePercent = parseInt(progress * 100);
-                
             }
-    
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
             // 反向指标 颜色需要相反
             if (_.includes(REVERSE_TARGET, subject)) {
@@ -114,11 +109,11 @@ export default {
                     trigger: 'item',
                     formatter: function(params){
                         var result = [];
-                        if(progress==null){
+                        if (progress==null){
                             result += params.marker + " " + params.name + " : " + params.value + "</br>";
-                        }else{
+                        } else {
                             result += params.marker + " " + params.name + " : " + params.value+
-                            '%' + "</br>";
+                '%' + "</br>";
                         }
                         return result;
                     }
@@ -141,71 +136,70 @@ export default {
                         }
                     },
                     data: [{
-                            value: valuePercent,
-                            name: subject_name,
-                            itemStyle: {
-                                normal: {
+                        value: valuePercent,
+                        name: subject_name,
+                        itemStyle: {
+                            normal: {
+                                color: color,
+                            }
+                        },
+                        label: {
+                            normal: {
+                                formatter: function(data){
+                                    if (progress==null){
+                                        return data.value;
+                                    } else {
+                                        return data.value+"%";
+                                    }
+                                },
+                                textStyle: {
+                                    fontSize: FONTSIZE1,
                                     color: color,
                                 }
                             },
-                            label: {
-                                normal: {
-                                    formatter: function(data){
-                                        if(progress==null){
-                                            return data.value;
-                                        }else{
-                                            return data.value+"%";
-                                        }
-                                            
-                                    },
-                                    textStyle: {
-                                        fontSize: FONTSIZE1,
-                                        color: color,
-                                    }
-                                },
+                        }
+                    },
+                    {
+                        value: valueLeft,
+                        name: subject_name,
+                        tooltip: {
+                            show: false
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: colorLeft,
                             }
                         },
-                        {
-                            value: valueLeft,
-                            name: subject_name,
-                            tooltip: {
-                                show: false
-                            },
-                            itemStyle: {
-                                normal: {
-                                    color: colorLeft,
-                                }
-                            },
-                            label: {
-                                normal: {
-                                    textStyle: {
-                                        fontSize: FONTSIZE2,
-                                        fontWeight: FONTWEIGHT,
-                                        color: '#5e5e5e'
-                                    }
+                        label: {
+                            normal: {
+                                textStyle: {
+                                    fontSize: FONTSIZE2,
+                                    fontWeight: FONTWEIGHT,
+                                    color: '#5e5e5e'
                                 }
                             }
-                        }, {
-                            value: 0,
-                            name: '',
-                            tooltip: {
-                                show: false
-                            },
-                            itemStyle: {
-                                normal: {
-                                    color: colorLeft,
-                                }
-                            },
-                            label: {
-                                normal: {
-                                    textStyle: {
-                                        fontSize: FONTSIZE2,
-                                        fontWeight: FONTWEIGHT,
-                                        color: color,
-                                    }
+                        }
+                    }, {
+                        value: 0,
+                        name: '',
+                        tooltip: {
+                            show: false
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: colorLeft,
+                            }
+                        },
+                        label: {
+                            normal: {
+                                textStyle: {
+                                    fontSize: FONTSIZE2,
+                                    fontWeight: FONTWEIGHT,
+                                    color: color,
                                 }
                             }
-                        }, 
+                        }
+                    },
                     ]
                 }]
             };

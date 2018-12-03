@@ -1,14 +1,14 @@
 <template>
   <div class="trendline-container">
-    <div 
-      class="trendline" 
-      :id="`trendline-${id}`"/>
+    <div
+      class="trendline"
+      :id="`trendline-${id}`" />
     <div class="detail">{{ data.subject_name }}</div>
   </div>
 </template>
 
 <script>
-import echarts from 'echarts';
+import echarts from 'plugins/echarts';
 
 export default {
     props: {
@@ -24,7 +24,7 @@ export default {
     mounted() {
         this.chart = echarts.init(document.getElementById(`trendline-${this.id}`));
         this.renderChart(this.data);
-        this.debounce = _.debounce(this.chart.resize,1000);
+        this.debounce = _.debounce(this.chart.resize, 1000);
         window.addEventListener("resize",this.debounce);
     },
     beforeDestroy () {
@@ -41,7 +41,6 @@ export default {
     methods: {
         renderChart(data) {
             const { timeLabels, ring, yoy } = data;
-            
             const options = {
                 tooltip: {
                     show: true,
@@ -58,7 +57,6 @@ export default {
                     data: ['同比增长率', '环比增长率'],
                     left:'right',
                     show:true,
-                    
                 },
                 color:['#b12725','#338cb6'],
                 xAxis: {
@@ -68,17 +66,6 @@ export default {
                 yAxis: {
                     type: 'value'
                 },
-                // toolbox: {
-                //     show: true,
-                //     feature: {
-                //         dataZoom: {},
-                //         dataView: {},
-                //         restore: {},
-                //         saveAsImage: {}
-                //     },
-                //     top: 0,
-                //     right: 0
-                // },
                 series: [
                     {
                         data: ring,

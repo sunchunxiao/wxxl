@@ -1,39 +1,41 @@
-import { FetchGet, FetchPostNew } from 'utils/fetch';
+import { FetchGet } from 'utils/fetch';
 // import store from 'store';
 
 export default {
-    GetProductTree(params) {
-        return FetchGet('/product/tree', params);
+    GetOverviewProgress(params) {
+        return FetchGet('/overview/progress', params);
+    },
+    GetOverviewTrend(params) {
+        return FetchGet('/overview/trend', params);
     },
     GetProductProgress(params) {
-        return FetchGet('/product/progress', params);
+        return FetchGet('/product/avg/progress', params);
     },
     GetProductTrend(params) {
-        return FetchGet('/product/trend', params);
+        return FetchGet('/product/avg/trend', params);
     },
-    GetProductStructure(params) {
-        return FetchGet('/product/structure', params);
+    GetChannelProgress(params) {
+        return FetchGet('/channel/avg/progress', params);
     },
-    GetProductRank(params) {
-        return FetchGet('/product/rank', params);
+    GetChannelTrend(params) {
+        return FetchGet('/channel/avg/trend', params);
     },
-    GetProductCompare(params) {
-        return FetchGet('/product/compare', params);
+    GetOrgProgress(params) {
+        return FetchGet('/org/avg/progress', params);
     },
-    GetProductHistory(params) {
-        return FetchGet('/product/strategy/history', params);
+    GetOrgTrend(params) {
+        return FetchGet('/org/avg/trend', params);
     },
-	GetProductStrategy(params) {
-		return FetchGet('/product/strategy', params);
-	},
-	GetProductMatch(params) {
-		return FetchGet('/product/strategy/match', params);
-	},
-	PostProductSave(params) {
-		return FetchPostNew('/product/strategy/save', params);
+    GetFundProgress(params) {
+        return FetchGet('/fund/avg/progress', params);
     },
-    GetProductSearch(params) {
-		return FetchGet('/product/search', params);
-	},
-
+    GetFundTrend(params) {
+        return FetchGet('/fund/avg/trend', params);
+    },
+    GetCusProgress(params) {
+        return FetchGet('/cus/avg/progress', params);
+    },
+    GetCusTrend(params) {
+        return FetchGet('/cus/avg/trend', params);
+    },
 };

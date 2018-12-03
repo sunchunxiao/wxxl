@@ -1,23 +1,23 @@
 <template>
   <div class="index_container">
-    <el-carousel 
-      :interval="3000" 
+    <el-carousel
+      :interval="3000"
       arrow="always">
-      <el-carousel-item 
-        v-for="item in 3" 
+      <el-carousel-item
+        v-for="item in 3"
         :key="item">
-        <img 
-          :src="require(`../assets/${item}.jpg`)" 
+        <img
+          :src="require(`../assets/${item}.jpg`)"
           alt="">
       </el-carousel-item>
     </el-carousel>
     <div class="header_container">
       <div class="header">
         <a href="http://www.gyxr.cn">
-          <img 
-            class="logo" 
-            src="http://img2.58tu.com/sitepublic/images/wuxiangxiaolv/logo.png" 
-            alt="logo" >
+          <img
+            class="logo"
+            src="http://img2.58tu.com/sitepublic/images/wuxiangxiaolv/logo.png"
+            alt="logo">
         </a>
         <ul class="nav">
           <li>
@@ -71,23 +71,23 @@
             </div>
           </li>
           <li>
-            <a 
-              class="contact" 
+            <a
+              class="contact"
               href="http://www.gyxr.cn/ContactUs.html">联系我们</a>
           </li>
           <li>
-            <a 
-              v-if="!token" 
+            <a
+              v-if="!token"
               href="/login">登录</a>
-            
-            <el-dropdown 
-              v-else 
+
+            <el-dropdown
+              v-else
               size="medium">
               <a href="/home">进入系统</a>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>
-                  <el-button 
-                    type="text" 
+                  <el-button
+                    type="text"
                     @click="logout">退出登录</el-button></el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -102,17 +102,17 @@
 import { getToken, removeToken } from 'utils/auth';
 
 export default {
-  computed: {
-    token() {
-      return getToken();
+    computed: {
+        token() {
+            return getToken();
+        }
+    },
+    methods: {
+        logout() {
+            removeToken();
+            this.$router.replace('/login');
+        }
     }
-  },
-  methods: {
-    logout() {
-      removeToken();
-      this.$router.replace('/login');
-    }
-  }
 };
 </script>
 

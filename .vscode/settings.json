@@ -1,47 +1,57 @@
 {
-  // Run the linter on save (onSave) or on type (onType)
-  "eslint.enable": true, //Enable eslint
-  "eslint.run": "onSave",
-  "eslint.autoFixOnSave": true, //Autofix any fixable errors when linting
-  "eslint.options": {
-    "extensions": [
-      //List of file extensions to activate eslint
-      ".html",
-      ".js",
-      ".vue"
-    ]
-  },
-  "eslint.validate": [
-    {
-      "language": "html",
-      "autoFix": true
+    // Run the linter on save (onSave) or on type (onType)
+    "eslint.enable": true, //Enable eslint
+    //   "eslint.run": "onSave",
+    "eslint.autoFixOnSave": true, //Autofix any fixable errors when linting
+    "eslint.options": {
+      "extensions": [
+        //List of file extensions to activate eslint
+        ".html",
+        ".js",
+        ".vue"
+      ]
     },
-    {
-      "language": "vue",
-      "autoFix": true
+    "eslint.validate": [
+      {
+        "language": "html",
+        "autoFix": true
+      },
+      {
+        "language": "vue",
+        "autoFix": true
+      },
+      {
+        "language": "javascript",
+        "autoFix": true
+      },
+      {
+        "language": "javascriptreact",
+        "autoFix": true
+      }
+    ],
+    "prettier.eslintIntegration": true, //让prettier使用eslint的代码格式进行校验
+    "prettier.semi": false, //去掉代码结尾的分号
+    "prettier.singleQuote": true, //使用单引号替代双引号
+    "javascript.format.insertSpaceBeforeFunctionParenthesis": true, //让函数(名)和后面的括号之间加个空格
+    "vetur.format.defaultFormatter.js": "vscode-typescript", //让vue中的js按编辑器自带的ts格式进行格式化
+    "vetur.format.defaultFormatterOptions": {
+      "js-beautify-html": {
+        "wrap_attributes": "force" //属性强制折行对齐
+      }
     },
-    {
-      "language": "javascript",
-      "autoFix": true
-    },
-    {
-      "language": "javascriptreact",
-      "autoFix": true
-    }
-  ],
-  "prettier.eslintIntegration": true, //让prettier使用eslint的代码格式进行校验
-  "prettier.semi": false, //去掉代码结尾的分号
-  "prettier.singleQuote": true, //使用单引号替代双引号
-  "javascript.format.insertSpaceBeforeFunctionParenthesis": true, //让函数(名)和后面的括号之间加个空格
-  "vetur.format.defaultFormatter.js": "vscode-typescript", //让vue中的js按编辑器自带的ts格式进行格式化
-  "vetur.format.defaultFormatterOptions": {
-    "js-beautify-html": {
-      "wrap_attributes": "force" //属性强制折行对齐
-    }
-  },
-  "editor.tabSize": 4,
-  "emmet.includeLanguages": {
-    "vue-html": "html",
-    "javascript": "javascriptreact"
+    // The number of spaces a tab is equal to. This setting is overriden
+    // based on the file contents when `editor.detectIndentation` is true.
+    "editor.tabSize": 4,
+  
+    // Insert spaces when pressing Tab. This setting is overriden
+    // based on the file contents when `editor.detectIndentation` is true.
+    "editor.insertSpaces": true,
+  
+    // When opening a file, `editor.tabSize` and `editor.insertSpaces`
+    // will be detected based on the file contents. Set to false to keep
+    // the values you've explicitly set, above.
+    "editor.detectIndentation": false,
+    "editor.renderWhitespace": "boundary",
+    "editor.formatOnSave": false,
   }
-}
+  

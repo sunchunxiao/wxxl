@@ -1,30 +1,30 @@
 <template>
   <div class="login_container">
     <div class="login_box">
-      <el-form 
-        :model="form" 
-        :rules="rules" 
-        ref="form" 
-        label-width="100px" >
-        <el-form-item 
-          label="用户名" 
+      <el-form
+        :model="form"
+        :rules="rules"
+        ref="form"
+        label-width="100px">
+        <el-form-item
+          label="用户名"
           prop="username">
-          <el-input 
-            v-model="form.username" 
-            ref="username"/>
+          <el-input
+            v-model="form.username"
+            ref="username" />
         </el-form-item>
-        <el-form-item 
-          label="密码" 
+        <el-form-item
+          label="密码"
           prop="password">
-          <el-input 
-            type="password" 
-            v-model="form.password" 
-            @keyup.enter.native="submitForm('form')"/>
+          <el-input
+            type="password"
+            v-model="form.password"
+            @keyup.enter.native="submitForm('form')" />
         </el-form-item>
         <el-form-item>
-          <el-button 
-            type="primary" 
-            @click="submitForm('form')" 
+          <el-button
+            type="primary"
+            @click="submitForm('form')"
             :loading="submitLoading">登 录</el-button>
         </el-form-item>
       </el-form>

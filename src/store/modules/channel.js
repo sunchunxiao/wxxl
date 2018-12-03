@@ -46,7 +46,7 @@ const channel = {
         },
         SaveChannelStructureArr({ commit }, arr) {
             commit('SAVE_CHANSTRUCTURE_ARR', arr);
-          },
+        },
         SaveChannelRankArr({ commit }, arr) {
             commit('SAVE_CHANRANK_ARR', arr);
         },

@@ -1,12 +1,15 @@
 // Created by sunchunxiao on 2018/10/22.
 
-import { FetchGet,FetchPostNew } from 'utils/fetch';
+import { FetchGet, FetchPostNew } from 'utils/fetch';
 // import store from 'store';
 
 export default {
     //查询组织结构
     GetFundTree(params) {
         return FetchGet('/fund/tree', params);
+    },
+    GetFundTreePrograss(params) {
+        return FetchGet('/fund/tree/progress', params);
     },
     GetFundProgress(params) {
         return FetchGet('/fund/progress', params);
@@ -38,5 +41,5 @@ export default {
     GetFundStrategiesTrack(params) {
         return FetchGet('/fund/strategiesTrack', params);
     },
-   
+
 };

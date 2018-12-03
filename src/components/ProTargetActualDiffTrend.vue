@@ -1,6 +1,6 @@
 <template>
   <div class="bar-container">
-    <div 
+    <div
       class="bar"
       :id="`bar-${id}`" />
     <div class="detail">{{ data.subject_name }}</div>
@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import echarts from 'echarts';
+import echarts from 'plugins/echarts';
 
 export default {
     props: {
@@ -39,15 +39,9 @@ export default {
         },
     },
     methods: {
-        // resize () {
-        //     return _.debounce(() => {
-        //         this.chart.resize();
-        //     }, 500);
-        // },
         calculateToShow (val) {
-            const { subject_name } = this.data;
-            // console.log(val);
-            if (subject_name === '投入产出比' || subject_name === '库存周转率') { // 投入产出比需要,库存周转率不需要单位
+            const { subject } = this.data;
+            if (_.includes(['ROI','ITO','SKU','PER','SHP'], subject)) { // 投入产出比需要,库存周转率不需要单位
                 return val;
             } else {
                 let Tenthousand = parseInt(val / 10000);
@@ -57,14 +51,10 @@ export default {
                     return parseInt(val);
                 }
             }
-
-            // return parseInt(val / 10000 / 100); // 金额从分转换为万
         },
         renderChart (data) {
-            // console.log(data.hasTarget);
             var _this = this;
             const { real, target, timeLabels,subject,hasTarget } = data;
-            // console.log(timeLabels);
             var arr = [];
             const diff = [];
             var realItem, targetItem;
@@ -72,67 +62,39 @@ export default {
             const underTarget = [];
             const realClone = _.cloneDeep(real);
             const targetClone = _.cloneDeep(target);
-            // if(data.hasTarget){
-                 for(let i=0;i<hasTarget.length;i++){
-                     //POR人员冗余
-                     if (subject == 'ROI' || subject == 'ITO'||subject == 'POR') {
-                            arr.push({
-                                    value:targetClone[i],
-                                    hasTarget:hasTarget[i]
-                                });
-                        }else{
-                            realClone[i] = parseInt(realClone[i] / 100);
-                            arr.push({
-                                value:parseInt(targetClone[i]/100),
-                                hasTarget:hasTarget[i]
-                            });
-                            // realItem = realClone[i];
-                            // targetItem = arr[i].value;
-                        }
-                        realItem = realClone[i];
-                        targetItem = arr[i].value;
-                        if (realItem < 0 && targetItem < 0) {
-                        bottom.push(realItem < targetItem ? targetItem : realItem);
-                        
+            for(let i=0;i<hasTarget.length;i++){
+                //POR人员冗余
+                if (_.includes(['ROI','ITO','POR','SKU','PER'],subject)) {
+                    arr.push({
+                        value:targetClone[i],
+                        hasTarget:hasTarget[i]
+                    });
+                } else {
+                    realClone[i] = parseInt(realClone[i] / 100);
+                    arr.push({
+                        value:parseInt(targetClone[i]/100),
+                        hasTarget:hasTarget[i]
+                    });
+                }
+                realItem = realClone[i];
+                targetItem = arr[i].value;
+                if (realItem < 0 && targetItem < 0) {
+                    bottom.push(realItem < targetItem ? targetItem : realItem);
+                    if(_.isInteger(realItem - targetItem)){
                         diff.push(-Math.abs(realItem - targetItem));
-                        } else if (realItem >= 0 && targetItem >= 0) {
-                            bottom.push(realItem < targetItem ? realItem : targetItem);
-                            diff.push(Math.abs(realItem - targetItem));
-                        }
-                        realItem < targetItem && underTarget.push(i);
-
-                 }
-            // }else{
-                 
-            //      for (let i = 0; i < realClone.length; i++) {
-            //     if (subject_name == '投入产出比' || subject_name == '库存周转率') {
-            //         realItem = realClone[i];
-            //         targetItem = targetClone[i];
-            //     } else {
-            //         realClone[i] = parseInt(realClone[i] / 100);
-            //         targetClone[i] = parseInt(targetClone[i] / 100);
-            //         realItem = realClone[i];
-            //         targetItem = targetClone[i];
-            //     }
-
-            //     // realClone[i] = -20;
-            //     // const realItem = realClone[i];
-            //     // targetClone[i] = 30;
-            //     // const targetItem = targetClone[i];
-
-            //     if (realItem < 0 && targetItem < 0) {
-            //         bottom.push(realItem < targetItem ? targetItem : realItem);
-            //         diff.push(-Math.abs(realItem - targetItem));
-            //     } else if (realItem >= 0 && targetItem >= 0) {
-            //         bottom.push(realItem < targetItem ? realItem : targetItem);
-            //         diff.push(Math.abs(realItem - targetItem));
-            //     }
-
-            //     realItem < targetItem && underTarget.push(i);
-
-            // }
-            // }
-            
+                    }else {
+                        diff.push(-Math.abs(realItem - targetItem).toFixed(2));
+                    }
+                } else if (realItem >= 0 && targetItem >= 0) {
+                    bottom.push(realItem < targetItem ? realItem : targetItem);
+                    if (_.isInteger(realItem - targetItem)){
+                        diff.push(Math.abs(realItem - targetItem));
+                    } else {
+                        diff.push(Math.abs(realItem - targetItem).toFixed(2));
+                    }
+                }
+                realItem < targetItem && underTarget.push(i);
+            }
             const options = {
                 grid: {
                     left: 0,
@@ -152,15 +114,15 @@ export default {
                         var result = params[0].axisValue + "<br />";
                         const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
-                            if(hasTarget==0){
+                            if (hasTarget==0){
                                 if (item.seriesIndex != 2&&item.seriesIndex != 3) {
                                     if (item.seriesIndex == 0) {//目标
                                         result += item.marker + " " + item.seriesName + " : " + '未设定' + "</br>";
-                                    }else{
+                                    } else {
                                         result += item.marker + " " + item.seriesName + " : " + item.value + "</br>";
                                     }
                                 }
-                                    
+
                             }else{
                                 if (item.seriesIndex != 2) {
                                     result += item.marker + " " + item.seriesName + " : " + item.value + "</br>";
@@ -169,7 +131,6 @@ export default {
                         });
                         return result;
                     },
-
                 },
                 color: ['#318cb8', '#fcb448', '#b12725'],
                 legend: {
@@ -177,24 +138,11 @@ export default {
                     left: 'right',
                     show: true,
                 },
-                // toolbox: {
-                //     show: true,
-                //     feature: {
-                //         dataZoom: {},
-                //         dataView: {},
-                //         restore: {},
-                //         saveAsImage: {}
-                //     },
-                //     top: -5,
-                //     right: 150
-                // },
                 xAxis: {
                     type: 'category',
                     data: timeLabels
                 },
                 yAxis: {
-                    // type: 'value',
-                    // data: value
                     axisLabel: {
                         formatter: function (val) {
                             return _this.calculateToShow(val);
@@ -217,7 +165,7 @@ export default {
                             width: 2
                         }
                     },
-                    
+
                     {
                         data: bottom,
                         type: 'bar',

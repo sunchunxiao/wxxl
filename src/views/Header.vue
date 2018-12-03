@@ -4,11 +4,11 @@
       欢迎您, <span class="blue">{{ username }}</span> ! 请开始处理您的业务, 祝您工作愉快!
       <el-dropdown class="logoutMenu">
         <span class="el-dropdown-link">
-          菜单<i class="el-icon-arrow-down el-icon--right"/>
+          菜单<i class="el-icon-arrow-down el-icon--right" />
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item><el-button 
-            @click="logout" 
+          <el-dropdown-item><el-button
+            @click="logout"
             type="text">退出登录</el-button></el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -29,11 +29,11 @@ export default {
         };
     },
     methods: {
-    logout() {
-      removeToken();
-      this.$router.replace('/login');
+        logout() {
+            removeToken();
+            this.$router.replace('/login');
+        }
     }
-  }
 };
 </script>
 

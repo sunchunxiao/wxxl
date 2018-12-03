@@ -1,12 +1,15 @@
 // Created by sunchunxiao on 2018/10/16.
 
-import { FetchPostNew,FetchGet } from 'utils/fetch';
+import { FetchPostNew, FetchGet } from 'utils/fetch';
 // import store from 'store';
 
 export default {
-	//查询组织结构
+    //查询组织结构
     GetCusTree(params) {
         return FetchGet('/cus/tree', params);
+    },
+    GetCusTreePrograss(params) {
+        return FetchGet('/cus/tree/progress', params);
     },
     GetCusSubject(params) {
         return FetchGet('/cus/subject', params);
@@ -38,5 +41,5 @@ export default {
     GetCusStrategiesTrack(params) {
         return FetchGet('/cus/strategiesTrack', params);
     },
-   
+
 };

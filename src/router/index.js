@@ -15,7 +15,7 @@ Vue.use(Router);
 // which is lazy-loaded when the route is visited.
 export default new Router({
     mode: 'history',
-	routes: [{
+    routes: [{
         path: '/',
         name: 'home',
         component: () => import('views/Home.vue'),
@@ -28,20 +28,20 @@ export default new Router({
             ...channelRoute,
             ...homeRoute
         ] }, {
-            path: '/index',
-            name: 'index',
-            component: () => import('views/Index.vue')
-        }, {
-            path: '/login',
-            name: 'login',
-            component: () => import('views/Login.vue')
-        },  {
-            path: '/404',
-            name: '404',
-            component: () => import('views/404.vue')
-        }, {
-            path: '*',
-            redirect: '/404'
-        }
-	]
+        path: '/index',
+        name: 'index',
+        component: () => import('views/Index.vue')
+    }, {
+        path: '/login',
+        name: 'login',
+        component: () => import('views/Login.vue')
+    },  {
+        path: '/404',
+        name: '404',
+        component: () => import('views/404.vue')
+    }, {
+        path: '*',
+        redirect: '/404'
+    }
+    ]
 });
