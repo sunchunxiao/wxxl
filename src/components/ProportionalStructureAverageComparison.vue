@@ -41,7 +41,6 @@ export default {
             //日销，投入产出比和库存周转率是显示原值
             if (subject==='SD'){//日销
                 let Tenthousand = (val / 10000 / 100).toFixed(2);
-                // console.log(Tenthousand);
                 if (Tenthousand>=1){
                     return Tenthousand+'w';
                 } else {
