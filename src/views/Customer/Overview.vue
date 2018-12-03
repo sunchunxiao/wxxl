@@ -176,7 +176,7 @@
         </el-row>
         <el-row
           v-loading="loading"
-          class="margin-top-10 min-height-400">
+          class="margin-top-10 ">
           <vue-lazy-component>
             <Card>
               <el-row class="margin-bottom-20">智能评选和智能策略</el-row>
