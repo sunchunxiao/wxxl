@@ -70,133 +70,145 @@
       <el-col
         :span="18"
         class="overflow">
-        <el-row v-loading="loading">
-          <Card>
-            <el-row class="margin-bottom-20">目标达成情况总览</el-row>
-            <el-row>
-              <el-col :span="15">
-                <template v-for="(item, index) in channelProgressArr">
+        <el-row
+          class="min-height-400"
+          v-loading="loading">
+          <vue-lazy-component>
+            <Card>
+              <el-row class="margin-bottom-20">目标达成情况总览</el-row>
+              <el-row>
+                <el-col :span="15">
+                  <template v-for="(item, index) in channelProgressArr">
+                    <el-col
+                      :key="index"
+                      :span="6">
+                      <ProTargetAchievement
+                        :id="`${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </el-col>
+                <el-col
+                  :span="9"
+                  v-if="channelRankArr.length > 0"
+                  class="border-left-2-gray">
+                  <Radar
+                    :id="'select'"
+                    :data="channelRankArr[channelRankArr.length-1]" />
+                </el-col>
+              </el-row>
+            </Card>
+          </vue-lazy-component>
+        </el-row>
+        <el-row
+          v-loading="loading"
+          class="margin-top-10 min-height-400">
+          <vue-lazy-component>
+            <Card>
+              <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
+              <el-row>
+                <template v-for="(item, index) in channelTrendArr">
                   <el-col
                     :key="index"
-                    :span="6">
-                    <ProTargetAchievement
+                    :span="12"
+                    @click.native="clickIndex(1 ,index)">
+                    <ProTargetActualDiffTrend
                       :id="`${index}`"
                       :data="item" />
                   </el-col>
                 </template>
-              </el-col>
-              <el-col
-                :span="9"
-                v-if="channelRankArr.length > 0"
-                class="border-left-2-gray">
-                <Radar
-                  :id="'select'"
-                  :data="channelRankArr[channelRankArr.length-1]" />
-              </el-col>
-            </el-row>
-          </Card>
+              </el-row>
+            </Card>
+          </vue-lazy-component>
         </el-row>
         <el-row
           v-loading="loading"
-          class="margin-top-10">
-          <Card>
-            <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
-            <el-row>
-              <template v-for="(item, index) in channelTrendArr">
-                <el-col
-                  :key="index"
-                  :span="12"
-                  @click.native="clickIndex(1 ,index)">
-                  <ProTargetActualDiffTrend
-                    :id="`${index}`"
-                    :data="item" />
-                </el-col>
-              </template>
-            </el-row>
-          </Card>
-        </el-row>
-        <el-row
-          v-loading="loading"
-          class="margin-top-10">
-          <Card>
-            <el-row class="margin-bottom-20">同比环比趋势分析</el-row>
-            <el-row>
-              <template v-for="(item, index) in channelTrendArr">
-                <el-col
-                  :key="index"
-                  :span="12"
-                  @click.native="clickIndex(2 ,index)">
-                  <ProYearOnYearTrend
-                    :id="`${index}`"
-                    :data="item" />
-                </el-col>
-              </template>
-            </el-row>
-          </Card>
-        </el-row>
-        <el-row
-          v-loading="loading"
-          class="margin-top-10">
-          <Card>
-            <el-row class="margin-bottom-20">比例结构与平均值对比分析</el-row>
-            <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in channelStructureArr">
+          class="margin-top-10 min-height-400">
+          <vue-lazy-component>
+            <Card>
+              <el-row class="margin-bottom-20">同比环比趋势分析</el-row>
+              <el-row>
+                <template v-for="(item, index) in channelTrendArr">
                   <el-col
                     :key="index"
-                    :span="6"
-                    @click.native="clickIndex(3 ,index)">
-                    <ProportionalStructureAverageComparison
+                    :span="12"
+                    @click.native="clickIndex(2 ,index)">
+                    <ProYearOnYearTrend
                       :id="`${index}`"
                       :data="item" />
                   </el-col>
                 </template>
-              </el-col>
-              <el-col
-                :span="8"
-                v-if="channelStructureArr.length>0"
-                class="border-left-2-gray">
-                <ProportionalStructureAverageComparisonBig
+              </el-row>
+            </Card>
+          </vue-lazy-component>
+        </el-row>
+        <el-row
+          v-loading="loading"
+          class="margin-top-10 min-height-400">
+          <vue-lazy-component>
+            <Card>
+              <el-row class="margin-bottom-20">比例结构与平均值对比分析</el-row>
+              <el-row>
+                <el-col :span="16">
+                  <template v-for="(item, index) in channelStructureArr">
+                    <el-col
+                      :key="index"
+                      :span="6"
+                      @click.native="clickIndex(3 ,index)">
+                      <ProportionalStructureAverageComparison
+                        :id="`${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </el-col>
+                <el-col
+                  :span="8"
+                  v-if="channelStructureArr.length>0"
+                  class="border-left-2-gray">
+                  <ProportionalStructureAverageComparisonBig
 
-                  id="ProportionalStructureAverageComparisonBig"
-                  :data="channelStructureArr[index3]" />
-              </el-col>
-            </el-row>
-          </Card>
+                    id="ProportionalStructureAverageComparisonBig"
+                    :data="channelStructureArr[index3]" />
+                </el-col>
+              </el-row>
+            </Card>
+          </vue-lazy-component>
         </el-row>
         <el-row
           v-loading="loading"
-          class="margin-top-10">
-          <Card>
-            <el-row class="margin-bottom-20">智能评选和智能策略</el-row>
-            <el-row>
-              <el-col :span="14">
-                <IntelligentSelection
-                  id="heatmap"
-                  @showStragety="showStragety"
-                  :data="channelRankArr" />
-              </el-col>
-              <el-col :span="10">
-                <div class="stragety">
-                  <div class="stragety-title">智能策略</div>
-                  <div class="stragety-box">
-                    <div class="margin-bottom-10">{{ stragetyTitle }}</div>
-                    <el-checkbox-group v-model="stragetyCheckList">
-                      <el-checkbox
-                        v-for="(item,index) in stragety"
-                        :key="index"
-                        :label="item.id"
-                        @change="change">{{ item.strategy }}</el-checkbox>
-                    </el-checkbox-group>
-                    <el-button
-                      type="primary"
-                      @click="submit"
-                      class="center">确 认</el-button>
+          class="margin-top-10 min-height-400">
+          <vue-lazy-component>
+            <Card>
+              <el-row class="margin-bottom-20">智能评选和智能策略</el-row>
+              <el-row>
+                <el-col :span="14">
+                  <IntelligentSelection
+                    id="heatmap"
+                    @showStragety="showStragety"
+                    :data="channelRankArr" />
+                </el-col>
+                <el-col :span="10">
+                  <div class="stragety">
+                    <div class="stragety-title">智能策略</div>
+                    <div class="stragety-box">
+                      <div class="margin-bottom-10">{{ stragetyTitle }}</div>
+                      <el-checkbox-group v-model="stragetyCheckList">
+                        <el-checkbox
+                          v-for="(item,index) in stragety"
+                          :key="index"
+                          :label="item.id"
+                          @change="change">{{ item.strategy }}</el-checkbox>
+                      </el-checkbox-group>
+                      <el-button
+                        type="primary"
+                        @click="submit"
+                        class="center">确 认</el-button>
+                    </div>
                   </div>
-                </div>
-              </el-col>
-            </el-row>
-          </Card>
+                </el-col>
+              </el-row>
+            </Card>
+          </vue-lazy-component>
         </el-row>
       </el-col>
     </el-row>
