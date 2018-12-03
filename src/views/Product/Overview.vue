@@ -286,7 +286,6 @@ export default {
                 eDate: ''
             },
             treeClone:{},
-            changeDate:''
         };
     },
     computed: {
@@ -296,9 +295,6 @@ export default {
         }
     },
     mounted () {
-        //获取初始值时间
-        this.changeDate = this.searchBarValue.sDate;
-        // console.log(this.changeDate);
         if (!this.hasTree) {
             this.$nextTick(() => {
                 this.getTree();
