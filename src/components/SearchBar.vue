@@ -263,7 +263,7 @@ export default {
                 this.form.monthEnd = new Date(moment().startOf('month').subtract(1, 'M').format('YYYY-MM'));
             }
         }
-        this.handleFormChange(this.form);
+        // this.handleFormChange(this.form);
     },
     computed: {
         ...mapGetters(['productDateArr', 'date']),

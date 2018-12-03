@@ -65,7 +65,7 @@ export default {
             const targetClone = _.cloneDeep(target);
             for(let i=0;i<hasTarget.length;i++){
                 //POR人员冗余
-                if (subject == 'ROI' || subject == 'ITO'||subject == 'POR'||subject === 'SKU') {
+                if (subject == 'ROI' || subject == 'ITO'||subject == 'POR'||subject === 'SKU'||subject === 'PER') {
                     arr.push({
                         value:targetClone[i],
                         hasTarget:hasTarget[i]

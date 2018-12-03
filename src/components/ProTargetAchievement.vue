@@ -74,7 +74,8 @@ export default {
             if(val==null){
                 return "未设定";
             }else{
-                if (subject === 'ITO'||subject === 'ROI'||subject === 'SKU') { // 库存周转率不需要单位
+                //SHP店铺数量
+                if (subject === 'ITO'||subject === 'ROI'||subject === 'SKU'||subject === 'PER'||subject === 'SHP') {
                     return val;
                 }else if (subject === 'POR') { // 库存周转率不需要单位
                     return parseInt(val);

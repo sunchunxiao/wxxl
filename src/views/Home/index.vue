@@ -17,7 +17,7 @@
         <div class="homeSlider">
           <div class="slider_header">首页</div>
           <div class="slider_menu">
-            <div class="menu_company"><span class="company_before" /> 公司关键经营指标</div>
+            <!-- <div class="menu_company"><span class="company_before" /> 公司关键经营指标</div> -->
             <template v-for="(item,index) in menuData">
               <a
                 class="menu_list"
@@ -25,6 +25,7 @@
                 @click="select(index)"
                 :class="{'menu_list_select':style==index}"
                 :key="item.path">{{ item.title }}
+                <span :class="{'company_before':style==index}" />
                 <img
                   class="menu_list_img"
                   src="../../assets/right.png"
@@ -36,7 +37,7 @@
       <el-col
         :span="18"
         class="overflow common">
-        <el-row id="#company">
+        <el-row id="overview">
           <span
             class="common-title">
             公司关键经营指标
@@ -299,6 +300,10 @@ const TREE_PROPS = {
 };
 const MENUDATA = [
     {
+        title:'公司经营指标',
+        path:'#overview',
+    },
+    {
         title:'产品效率',
         path:'#produce',
     },
@@ -365,7 +370,7 @@ export default {
             idArr: [],
             val:{},
             post:1,
-            style:undefined
+            style:0
         };
     },
     computed: {
@@ -387,10 +392,17 @@ export default {
         this.getCusProgress();
     },
     watch: {
-        cid: function() {
-            // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            // 暂时先在这里做
-            //   this.getProductProgress();
+        val() {
+            //公司
+            this.getOverviewProgress();
+            this.getProductProgress();
+            this.getChannelProgress();
+            // 组织
+            this.getOrgProgress();
+            // //资金
+            this.getFundProgress();
+            //客户
+            this.getCusProgress();
         }
     },
     methods: {
