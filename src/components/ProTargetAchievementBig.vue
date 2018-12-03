@@ -41,7 +41,7 @@ export default {
     computed: {
         unit() {
             const { subject } = this.data;
-            if (subject== 'NIR'||subject== 'CTR') { // 投入产出比 %
+            if (_.includes(['NIR','CTR'],subject)) { // 投入产出比 %
                 return '%';
             } else if (subject === 'ITO') { // 库存周转率不需要单位
                 return '';
@@ -72,18 +72,18 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
-            if(val==null){
+            if (val==null){
                 return "未设定";
-            }else{
-                if (subject === 'ITO'||subject === 'ROI') { // 库存周转率不需要单位
+            } else {
+                if (_.includes(['ITO','ROI','SKU','PER','SHP'], subject)) { // 库存周转率不需要单位
                     return val;
                 }else if (subject === 'POR') { // 库存周转率不需要单位
                     return parseInt(val);
                 }
                 let Tenthousand = parseInt(val / 10000 / 100);
-                if(Tenthousand>=1){
+                if (Tenthousand>=1){
                     return parseInt(val / 10000 / 100)+'w';
-                }else{
+                } else {
                     return parseInt(val/100);
                 }
                 // return parseInt(val / 10000 / 100); // 金额从分转换为万
@@ -93,9 +93,9 @@ export default {
         renderChart(data) {
             const { subject, subject_name, progress ,real } = data;
             var valuePercent;
-            if(progress==null){
+            if (progress==null){
                 valuePercent = this.calculateToShow(real);
-            }else{
+            } else {
                 valuePercent = parseInt(progress * 100);
             }
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
@@ -111,9 +111,9 @@ export default {
                     trigger: 'item',
                     formatter: function(params){
                         var result = [];
-                        if(progress==null){
+                        if (progress==null){
                             result += params.marker + " " + params.name + " : " + params.value + "</br>";
-                        }else{
+                        } else {
                             result += params.marker + " " + params.name + " : " + params.value+
                 '%' + "</br>";
                         }
@@ -148,9 +148,9 @@ export default {
                         label: {
                             normal: {
                                 formatter: function(data){
-                                    if(progress==null){
+                                    if (progress==null){
                                         return data.value;
-                                    }else{
+                                    } else {
                                         return data.value+"%";
                                     }
                                 },
