@@ -121,7 +121,7 @@
         <el-row
           id="channel"
           v-loading="loading"
-          class="margin-top-50">
+          class="margin-top-50 min-height-400">
           <span class="common-title">
             渠道效率-单店平均效率
           </span>
