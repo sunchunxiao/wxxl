@@ -445,12 +445,16 @@ export default {
             this.nodeArr = [];
             this.nodeArr.push(val.cid);
             this.val = val;
-            if(val.cid!=""){
-                this.cid = val.cid;
+            if(!val.cid){
+                if(this.cid!=this.fundTree.cid){
+                    this.cid = this.fundTree.cid;
+                    this.treeClone = _.cloneDeep(this.fundTree);
+                }
+                this.getTreePrograss();
+                this.getCompare();
+                this.getCompareBack();
             }else{
-                this.getTree();
-                this.getProgressbefore();
-                this.getProgressback();
+                this.cid = val.cid;
             }
         },
         cleanChecked() {

@@ -339,11 +339,14 @@ export default {
             this.nodeArr = [];
             this.nodeArr.push(val.cid);
             this.val = val;
-            if(val.cid!=""){
-                this.cid = val.cid;
+            if(!val.cid){
+                if(this.cid!=this.customerTree.cid){
+                    this.cid = this.customerTree.cid;
+                    this.treeClone = _.cloneDeep(this.customerTree);
+                }
+                this.getCompare();
             }else{
-                this.getTree();
-                this.getProgress();
+                this.cid = val.cid;
             }
         },
         cleanChecked() {

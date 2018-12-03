@@ -229,7 +229,7 @@ export default {
         this.debounceBack = _.debounce(this.getCompareBack, 1000);
     },
     mounted () {
-        if (this.organizationTree.children) {
+        if (this.orgcompareArr.length) {
             this.cid = this.organizationTree.cid;
             this.treeClone = _.cloneDeep(this.organizationTree);
             let arr = [];
@@ -309,7 +309,6 @@ export default {
         },
         //获取百分比数据
         getTreePrograss(){
-
             const params = {
                 subject:this.form.subject,
                 ...this.getPeriodByPt(),
@@ -447,14 +446,21 @@ export default {
         },
         handleSearch (val) {
             this.nodeArr = [];
-            this.nodeArr.push(val.cid);
             this.val = val;
-            if (val.cid != "") {
-                this.cid = val.cid;
+            if (!val.cid) {
+                if(this.cid!=this.organizationTree.cid){
+                    this.cid = this.organizationTree.cid;
+                    this.treeClone = _.cloneDeep(this.organizationTree);
+                }
+                this.getTreePrograss();
+                this.getCompare();
+                this.getCompareBack();
             } else {
-                this.getTree();
-                this.getProgressbefore();
-                this.getProgressback();
+                this.cid = val.cid;
+                this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                });
             }
 
         },
