@@ -285,7 +285,6 @@ import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
 // 目标达成情况总览
 import ProTargetAchievement from 'components/ProTargetAchievement';
-import ProTargetAchievementBig from 'components/ProTargetAchievementBig';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 
@@ -330,7 +329,6 @@ export default {
         Card,
         SearchBar,
         ProTargetAchievement,
-        ProTargetAchievementBig,
         ProTargetActualDiffTrend,
     },
     data() {
