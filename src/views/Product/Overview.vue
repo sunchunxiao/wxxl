@@ -32,7 +32,6 @@
               :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
           </div>
         </div>
-
         <el-tree
           ref="tree"
           :data="treeClone.children"
@@ -287,7 +286,6 @@ export default {
                 eDate: ''
             },
             treeClone:{},
-            changeDate:''
         };
     },
     computed: {
@@ -297,8 +295,6 @@ export default {
         }
     },
     mounted () {
-        //获取初始值时间
-        this.changeDate = this.searchBarValue.eDate;
         if (!this.hasTree) {
             this.$nextTick(() => {
                 this.getTree();
@@ -315,7 +311,7 @@ export default {
             this.getProgress();
             this.getStructure();
             this.getRank();
-        },
+        }
     },
     methods: {
         preOrder(node,cid){
@@ -404,6 +400,7 @@ export default {
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
             };
+
             API.GetProductTree(params).then(res => {
                 if (this.productTree.cid == undefined) {
                     this.cid = res.tree.cid;
@@ -414,7 +411,6 @@ export default {
         },
         //获取百分比数据
         getTreePrograss(){
-            this.loading = true;
             const params = {
                 subject:this.form.subject,
                 ...this.getPeriodByPt(),
@@ -431,15 +427,13 @@ export default {
                     if(res.data.hasOwnProperty(i.cid)){
                         i.real_total = res.data[i.cid].real;
                         i.target_total = res.data[i.cid].target;
+
                     }
                 }
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
-            }).finally(() => {
-                this.loading = false;
             });
         },
         getProgress() {
-            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -454,8 +448,6 @@ export default {
                     });
                     this.$store.dispatch('SaveTrendArr', resultList);
                 });
-            }).finally(() => {
-                this.loading = false;
             });
         },
         getTrend (subject) {
@@ -468,27 +460,21 @@ export default {
             return API.GetProductTrend(params);
         },
         getStructure () {
-            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
             };
             API.GetProductStructure(params).then(res => {
                 this.$store.dispatch('SaveStructureArr', res.data);
-            }).finally(() => {
-                this.loading = false;
             });
         },
         getRank () {
-            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
             };
             API.GetProductRank(params).then(res => {
                 this.$store.dispatch('SaveRankArr', res.data);
-            }).finally(() => {
-                this.loading = false;
             });
         },
         getDateObj () {
@@ -538,15 +524,8 @@ export default {
             this.nodeArr = [];
             this.val = val;
             if(!val.cid){
-                //时间没有改变不发送请求
-                if(this.changeDate==this.searchBarValue.eDate){
-                    return;
-                }
-                //记录最后一次选择的时间,对比时间是否改变
-                this.changeDate = this.searchBarValue.eDate;
                 this.isbac = true;
                 this.highlight = false;
-                //时间改变重新加载树,回到根节点
                 if(this.cid!=this.productTree.cid){
                     this.cid = this.productTree.cid;
                     this.treeClone = _.cloneDeep(this.productTree);
@@ -556,7 +535,7 @@ export default {
                     this.getStructure();
                     this.getRank();
                 }
-            } else {
+            }else{
                 this.isbac = false;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
@@ -578,7 +557,6 @@ export default {
         },
         handleNodeClick (data) {
             if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
-                this.val = this.searchBarValue;
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();

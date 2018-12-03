@@ -344,7 +344,10 @@ export default {
                 this.nodeArr = [];
                 this.val = val;
                 if(!val.cid){
-                    this.getTree();
+                    if(this.cid!=this.productTree.cid){
+                        this.cid = this.productTree.cid;
+                        this.treeClone = _.cloneDeep(this.productTree);
+                    }
                     this.getCompare();
                 }else{
                     this.nodeArr.push(val.cid);
