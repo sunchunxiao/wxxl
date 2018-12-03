@@ -23,7 +23,7 @@ export default {
     computed: {
         unit() {
             const { subject } = this.data;
-            if (subject== 'NIR'||subject== 'CTR') { // 投入产出比 %
+            if (_.includes(['NIR','CTR'], subject)) { // 投入产出比 %
                 return '%';
             } else if (subject === 'ITO') { // 库存周转率不需要单位
                 return '';

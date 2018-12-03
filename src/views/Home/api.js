@@ -26,7 +26,16 @@ export default {
     GetOrgTrend(params) {
         return FetchGet('/org/avg/trend', params);
     },
-    GetProductSearch(params) {
-        return FetchGet('/product/search', params);
+    GetFundProgress(params) {
+        return FetchGet('/fund/avg/progress', params);
+    },
+    GetFundTrend(params) {
+        return FetchGet('/fund/avg/trend', params);
+    },
+    GetCusProgress(params) {
+        return FetchGet('/cus/avg/progress', params);
+    },
+    GetCusTrend(params) {
+        return FetchGet('/cus/avg/trend', params);
     },
 };

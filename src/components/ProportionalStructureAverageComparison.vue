@@ -39,21 +39,20 @@ export default {
             const { subject } = this.data;
 
             //日销，投入产出比和库存周转率是显示原值
-            if(subject=='SD'){//日销
+            if (subject==='SD'){//日销
                 let Tenthousand = (val / 10000 / 100).toFixed(2);
-                // console.log(Tenthousand);
-                if(Tenthousand>=1){
+                if (Tenthousand>=1){
                     return Tenthousand+'w';
-                }else{
+                } else {
                     return val/100;
                 }
-            }else if(subject=='ROI'){//投入产出比
-                if(val>=10000){
+            } else if (subject==='ROI'){//投入产出比
+                if (val>=10000){
                     return (val/10000).toFixed(2) +'w';
-                }else{
+                } else {
                     return val;
                 }
-            }else{
+            } else {
                 return val;
             }
 
@@ -61,6 +60,7 @@ export default {
         renderChart(nodes) {
             var _this = this;
             const {
+                subject,
                 nodes: pData
             } = nodes;
             const percentArr = [];
@@ -77,11 +77,11 @@ export default {
                     },
                     formatter: function(params){
                         var result =[];
-                        if(nodes.subject=='ROI'||nodes.subject=='POR'){
+                        if (_.includes(['ROI','POR','ITO'],subject)){
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + " : " + item.value +"</br>";
                             });
-                        }else{
+                        } else {
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name  + " : " + parseInt(item.value/100 )+"</br>";
                             });
@@ -139,12 +139,12 @@ export default {
                             position: [5, 6],
                             color: "#000",
                             formatter: function(params) {
-                                if(nodes.display_rate == 0) {
+                                if (nodes.display_rate == 0) {
                                     return `${pData[params.dataIndex]} : ${ _this.calculateToShow(params.data)}`;
-                                }else{
-                                    if(nodes.total==0){
+                                } else {
+                                    if (nodes.total==0){
                                         return `${pData[params.dataIndex]} : ${params.data}`;
-                                    }else{
+                                    } else {
                                         return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
                                     }
                                 }
@@ -156,12 +156,12 @@ export default {
                         symbol: 'none',
                         label: {
                             formatter:function(){
-                                if( nodes.display_rate == 0){
+                                if ( nodes.display_rate == 0){
                                     return `平均值${_this.calculateToShow(average)}`;
-                                }else{
-                                    if(average==0){
+                                } else {
+                                    if (average==0){
                                         return `平均值${average}`;
-                                    }else{
+                                    } else {
                                         return `平均值${(average/nodes.total*100).toFixed(2)}%`;
                                     }
                                 }

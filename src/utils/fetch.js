@@ -36,7 +36,7 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(response => {
     const res = response.data;
     if (res.api_info) {
-        if(res.api_info.error === 0 && res.api_info.message === 'success') {
+        if (res.api_info.error === 0 && res.api_info.message === 'success') {
             // eslint-disable-next-line no-unused-vars
             const { api_info, ...data } = res;
             return data;
@@ -68,7 +68,7 @@ const FetchGet = (url, params) => {
         url,
         method: 'get'
     };
-    if(params) {
+    if (params) {
         options.params = params;
     }
     return service(options);
@@ -79,7 +79,7 @@ const FetchPostNew = (url, params) => {
         url,
         method: 'post'
     };
-    if(params) {
+    if (params) {
         options.params = params;
     }
     return service(options);
@@ -90,10 +90,10 @@ const FetchPost = (url, data, params) => {
         url,
         method: 'post'
     };
-    if(data) {
+    if (data) {
         options.data = data;
     }
-    if(params) {
+    if (params) {
         options.params = params;
     }
     return service(options);
