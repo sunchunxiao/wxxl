@@ -17,7 +17,6 @@
         <div class="homeSlider">
           <div class="slider_header">首页</div>
           <div class="slider_menu">
-            <!-- <div class="menu_company"><span class="company_before" /> 公司关键经营指标</div> -->
             <template v-for="(item,index) in menuData">
               <a
                 class="menu_list"
@@ -42,76 +41,82 @@
             class="common-title">
             公司关键经营指标
           </span>
-          <el-row v-loading="loading">
-            <Card>
-              <div class="card_company">
-                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
-                <el-row>
-                  <el-col>
-                    <template v-for="(item, index) in overviewArr">
-                      <el-col
-                        :key="index">
-                        <ProTargetAchievement
-                          :id="`${index}`"
-                          :data="item" />
-                      </el-col>
-                    </template>
-                  </el-col>
-                </el-row>
-              </div>
-              <div class="card_company_target">
-                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
-                <template v-for="(item, index) in overviewTrendArr">
-                  <el-col
-                    v-if="overviewTrendArr.length>0"
-                    :key="index">
-                    <ProTargetActualDiffTrend
-                      :id="`${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </div>
-            </Card>
+          <el-row
+            class="min-height-400"
+            v-loading="loading">
+            <vue-lazy-component>
+              <Card>
+                <div class="card_company">
+                  <el-row class="margin-bottom-20">目标达成情况总览</el-row>
+                  <el-row>
+                    <el-col>
+                      <template v-for="(item, index) in overviewArr">
+                        <el-col
+                          :key="index">
+                          <ProTargetAchievement
+                            :id="`${index}`"
+                            :data="item" />
+                        </el-col>
+                      </template>
+                    </el-col>
+                  </el-row>
+                </div>
+                <div class="card_company_target">
+                  <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
+                  <template v-for="(item, index) in overviewTrendArr">
+                    <el-col
+                      v-if="overviewTrendArr.length>0"
+                      :key="index">
+                      <ProTargetActualDiffTrend
+                        :id="`${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </div>
+              </Card>
+            </vue-lazy-component>
           </el-row>
         </el-row>
         <el-row
           id="produce"
           v-loading="loading"
-          class="margin-top-50">
+          class="margin-top-50 min-height-400">
           <span class="common-title">
             产品效率-单品平均效率
           </span>
           <el-row v-loading="loading">
-            <Card>
-              <div class="card_company">
-                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
-                <el-row>
-                  <el-col>
-                    <template v-for="(item, index) in productArr">
-                      <el-col
-                        v-if="productArr.length>0"
-                        :key="index">
-                        <ProTargetAchievement
-                          :id="`product${index}`"
-                          :data="item" />
-                      </el-col>
-                    </template>
-                  </el-col>
-                </el-row>
-              </div>
-              <div class="card_company_target">
-                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
-                <template v-for="(item, index) in productTrendArr">
-                  <el-col
-                    v-if="productTrendArr.length>0"
-                    :key="index">
-                    <ProTargetActualDiffTrend
-                      :id="`product${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </div>
-            </Card>
+            <vue-lazy-component>
+              <Card>
+                <div class="card_company">
+                  <el-row class="margin-bottom-20">目标达成情况总览</el-row>
+                  <el-row>
+                    <el-col>
+                      <template v-for="(item, index) in productArr">
+                        <el-col
+                          v-if="productArr.length>0"
+                          :key="index">
+                          <ProTargetAchievement
+                            :id="`product${index}`"
+                            :data="item" />
+                        </el-col>
+                      </template>
+                    </el-col>
+                  </el-row>
+                </div>
+                <div class="card_company_target">
+                  <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
+                  <template v-for="(item, index) in productTrendArr">
+                    <el-col
+                      v-if="productTrendArr.length>0"
+                      :key="index">
+                      <ProTargetActualDiffTrend
+                        :id="`product${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </div>
+              </Card>
+            </vue-lazy-component>
           </el-row>
         </el-row>
         <el-row
@@ -122,36 +127,38 @@
             渠道效率-单店平均效率
           </span>
           <el-row v-loading="loading">
-            <Card>
-              <div class="card_company">
-                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
-                <el-row>
-                  <el-col>
-                    <template v-for="(item, index) in channelArr">
-                      <el-col
-                        v-if="channelArr.length>0"
-                        :key="index">
-                        <ProTargetAchievement
-                          :id="`channel${index}`"
-                          :data="item" />
-                      </el-col>
-                    </template>
-                  </el-col>
-                </el-row>
-              </div>
-              <div class="card_company_target">
-                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
-                <template v-for="(item, index) in channelTrendArr">
-                  <el-col
-                    v-if="channelTrendArr.length>0"
-                    :key="index">
-                    <ProTargetActualDiffTrend
-                      :id="`channel${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </div>
-            </Card>
+            <vue-lazy-component>
+              <Card>
+                <div class="card_company">
+                  <el-row class="margin-bottom-20">目标达成情况总览</el-row>
+                  <el-row>
+                    <el-col>
+                      <template v-for="(item, index) in channelArr">
+                        <el-col
+                          v-if="channelArr.length>0"
+                          :key="index">
+                          <ProTargetAchievement
+                            :id="`channel${index}`"
+                            :data="item" />
+                        </el-col>
+                      </template>
+                    </el-col>
+                  </el-row>
+                </div>
+                <div class="card_company_target">
+                  <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
+                  <template v-for="(item, index) in channelTrendArr">
+                    <el-col
+                      v-if="channelTrendArr.length>0"
+                      :key="index">
+                      <ProTargetActualDiffTrend
+                        :id="`channel${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </div>
+              </Card>
+            </vue-lazy-component>
           </el-row>
         </el-row>
         <el-row
@@ -162,36 +169,38 @@
             客户效率-消费者人均效率
           </span>
           <el-row v-loading="loading">
-            <Card>
-              <div class="card_company">
-                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
-                <el-row>
-                  <el-col>
-                    <template v-for="(item, index) in cusHomeArr">
-                      <el-col
-                        v-if="cusHomeArr.length>0"
-                        :key="index">
-                        <ProTargetAchievement
-                          :id="`cus${index}`"
-                          :data="item" />
-                      </el-col>
-                    </template>
-                  </el-col>
-                </el-row>
-              </div>
-              <div class="card_company_target">
-                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
-                <template v-for="(item, index) in cusHomeTrendArr">
-                  <el-col
-                    v-if="cusHomeTrendArr.length>0"
-                    :key="index">
-                    <ProTargetActualDiffTrend
-                      :id="`cus${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </div>
-            </Card>
+            <vue-lazy-component>
+              <Card>
+                <div class="card_company">
+                  <el-row class="margin-bottom-20">目标达成情况总览</el-row>
+                  <el-row>
+                    <el-col>
+                      <template v-for="(item, index) in cusHomeArr">
+                        <el-col
+                          v-if="cusHomeArr.length>0"
+                          :key="index">
+                          <ProTargetAchievement
+                            :id="`cus${index}`"
+                            :data="item" />
+                        </el-col>
+                      </template>
+                    </el-col>
+                  </el-row>
+                </div>
+                <div class="card_company_target">
+                  <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
+                  <template v-for="(item, index) in cusHomeTrendArr">
+                    <el-col
+                      v-if="cusHomeTrendArr.length>0"
+                      :key="index">
+                      <ProTargetActualDiffTrend
+                        :id="`cus${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </div>
+              </Card>
+            </vue-lazy-component>
           </el-row>
         </el-row>
         <el-row
@@ -202,36 +211,38 @@
             组织效率-企业人均效率
           </span>
           <el-row v-loading="loading">
-            <Card>
-              <div class="card_company">
-                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
-                <el-row>
-                  <el-col>
-                    <template v-for="(item, index) in orgHomeArr">
-                      <el-col
-                        v-if="orgHomeArr.length>0"
-                        :key="index">
-                        <ProTargetAchievement
-                          :id="`org${index}`"
-                          :data="item" />
-                      </el-col>
-                    </template>
-                  </el-col>
-                </el-row>
-              </div>
-              <div class="card_company_target">
-                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
-                <template v-for="(item, index) in orgTrendArr">
-                  <el-col
-                    v-if="orgTrendArr.length>0"
-                    :key="index">
-                    <ProTargetActualDiffTrend
-                      :id="`org${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </div>
-            </Card>
+            <vue-lazy-component>
+              <Card>
+                <div class="card_company">
+                  <el-row class="margin-bottom-20">目标达成情况总览</el-row>
+                  <el-row>
+                    <el-col>
+                      <template v-for="(item, index) in orgHomeArr">
+                        <el-col
+                          v-if="orgHomeArr.length>0"
+                          :key="index">
+                          <ProTargetAchievement
+                            :id="`org${index}`"
+                            :data="item" />
+                        </el-col>
+                      </template>
+                    </el-col>
+                  </el-row>
+                </div>
+                <div class="card_company_target">
+                  <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
+                  <template v-for="(item, index) in orgTrendArr">
+                    <el-col
+                      v-if="orgTrendArr.length>0"
+                      :key="index">
+                      <ProTargetActualDiffTrend
+                        :id="`org${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </div>
+              </Card>
+            </vue-lazy-component>
           </el-row>
         </el-row>
         <el-row
@@ -242,36 +253,38 @@
             资金效率
           </span>
           <el-row v-loading="loading">
-            <Card>
-              <div class="card_company">
-                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
-                <el-row>
-                  <el-col>
-                    <template v-for="(item, index) in fundHomeArr">
-                      <el-col
-                        v-if="fundHomeArr.length>0"
-                        :key="index">
-                        <ProTargetAchievement
-                          :id="`fund+${index}`"
-                          :data="item" />
-                      </el-col>
-                    </template>
-                  </el-col>
-                </el-row>
-              </div>
-              <div class="card_company_target">
-                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
-                <template v-for="(item, index) in fundHomeTrendArr">
-                  <el-col
-                    v-if="fundHomeTrendArr.length>0"
-                    :key="index">
-                    <ProTargetActualDiffTrend
-                      :id="`fund+${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </div>
-            </Card>
+            <vue-lazy-component>
+              <Card>
+                <div class="card_company">
+                  <el-row class="margin-bottom-20">目标达成情况总览</el-row>
+                  <el-row>
+                    <el-col>
+                      <template v-for="(item, index) in fundHomeArr">
+                        <el-col
+                          v-if="fundHomeArr.length>0"
+                          :key="index">
+                          <ProTargetAchievement
+                            :id="`fund+${index}`"
+                            :data="item" />
+                        </el-col>
+                      </template>
+                    </el-col>
+                  </el-row>
+                </div>
+                <div class="card_company_target">
+                  <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
+                  <template v-for="(item, index) in fundHomeTrendArr">
+                    <el-col
+                      v-if="fundHomeTrendArr.length>0"
+                      :key="index">
+                      <ProTargetActualDiffTrend
+                        :id="`fund+${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </div>
+              </Card>
+            </vue-lazy-component>
           </el-row>
         </el-row>
       </el-col>
@@ -606,8 +619,6 @@ export default {
         handleSearch(val) {
             // 默认公司的背景色
             this.val = val;
-            this.getProductProgress();
-            this.getChannelProgress();
         },
 
     }
