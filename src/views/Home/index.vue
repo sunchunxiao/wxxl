@@ -163,7 +163,7 @@
         <el-row
           id="customer"
           v-loading="loading"
-          class="margin-top-50">
+          class="margin-top-50 min-height-400">
           <span class="common-title">
             客户效率-消费者人均效率
           </span>
@@ -205,7 +205,7 @@
         <el-row
           id="organization"
           v-loading="loading"
-          class="margin-top-50">
+          class="margin-top-50 min-height-400">
           <span class="common-title">
             组织效率-企业人均效率
           </span>
@@ -247,7 +247,7 @@
         <el-row
           id="fund"
           v-loading="loading"
-          class="margin-top-50">
+          class="margin-top-50 min-height-400">
           <span class="common-title">
             资金效率
           </span>
