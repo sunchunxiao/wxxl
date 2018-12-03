@@ -41,8 +41,7 @@ export default {
     methods: {
         calculateToShow (val) {
             const { subject } = this.data;
-            // console.log(val);
-            if (subject === 'ROI' || subject === 'ITO'||subject === 'SKU') { // 投入产出比需要,库存周转率不需要单位
+            if (_.includes(['ROI','ITO','SKU','PER','SHP'], subject)) { // 投入产出比需要,库存周转率不需要单位
                 return val;
             } else {
                 let Tenthousand = parseInt(val / 10000);
@@ -65,12 +64,12 @@ export default {
             const targetClone = _.cloneDeep(target);
             for(let i=0;i<hasTarget.length;i++){
                 //POR人员冗余
-                if (subject == 'ROI' || subject == 'ITO'||subject == 'POR'||subject === 'SKU'||subject === 'PER') {
+                if (_.includes(['ROI','ITO','POR','SKU','PER'],subject)) {
                     arr.push({
                         value:targetClone[i],
                         hasTarget:hasTarget[i]
                     });
-                }else{
+                } else {
                     realClone[i] = parseInt(realClone[i] / 100);
                     arr.push({
                         value:parseInt(targetClone[i]/100),
@@ -108,11 +107,11 @@ export default {
                         var result = params[0].axisValue + "<br />";
                         const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
-                            if(hasTarget==0){
+                            if (hasTarget==0){
                                 if (item.seriesIndex != 2&&item.seriesIndex != 3) {
                                     if (item.seriesIndex == 0) {//目标
                                         result += item.marker + " " + item.seriesName + " : " + '未设定' + "</br>";
-                                    }else{
+                                    } else {
                                         result += item.marker + " " + item.seriesName + " : " + item.value + "</br>";
                                     }
                                 }

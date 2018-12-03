@@ -8,7 +8,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
-
+const RANK = ['未知', '差', '中', '良', '优'];
 export default {
     props: {
         id: String,
@@ -31,23 +31,21 @@ export default {
         let _this = this;
         this.chart.on('click', function(params) {
             let time = params.seriesId;
-
             for(let i=0;i<_this.data.length;i++){
-                if(_this.data[i].timeLabel == time){
+                if (_this.data[i].timeLabel == time){
                     for(let j=0;j<_this.data[i].subjects.length;j++){
-                        if(params.data[0] == j){
+                        if (params.data[0] == j){
                             this.name = _this.data[i].subjects[j];
                         }
                     }
                     for(let m=0;m<_this.data[i].categoryNames.length;m++){
-                        if(params.data[1] == m){
+                        if (params.data[1] == m){
                             this.brand = _this.data[i].categoryNames[m];
                             this.cid = _this.data[i].categoryIds[m];
                         }
                     }
                 }
             }
-
             if (params.componentType == "series") {
                 _this.$emit('showStragety', {
                     brand: this.brand,
@@ -73,12 +71,7 @@ export default {
     },
     methods: {
         getRank(score) {
-            let scoremap = ['未知',"差","中","良","优"];
-            if(scoremap[score]){
-                return scoremap[score];
-            }
-            return '';
-
+            return RANK[score] || '';
         },
         renderChart(data) {
             const _this = this;

@@ -38,13 +38,13 @@ export default {
         calculateToShow(val) {
             const { subject } = this.data;
 
-            if (subject === 'ROI'||subject === 'ITO') { // ROI投入产出比需要,ITO库存周转率不需要单位
+            if (_.includes(['ROI','ITO'],subject)) { // ROI投入产出比需要,ITO库存周转率不需要单位
                 return val;
-            }else{
+            } else {
                 let Tenthousand = parseInt(val / 10000);
-                if(Tenthousand>=1){
+                if (Tenthousand>=1){
                     return parseInt(val / 10000)+'w';
-                }else{
+                } else {
                     return parseInt(val);
                 }
             }
@@ -54,11 +54,11 @@ export default {
             const { series,timeLabels,subject } = data;
             const seriesClone = _.cloneDeep(series);
             for(let i = 0;i < seriesClone.length; i++) {
-                if(subject=='ROI'||subject=='ITO'){
+                if (_.includes(['ROI','ITO'],subject)){
                     _.forEach(seriesClone[i], (v,k) => {
                         seriesClone[i][k] = v;
                     });
-                }else{
+                } else {
                     _.forEach(seriesClone[i], (v,k) => {
                         seriesClone[i][k] = parseInt(v/100);
                     });
