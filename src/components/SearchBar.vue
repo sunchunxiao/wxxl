@@ -141,7 +141,8 @@
           :debounce="500"
           :trigger-on-focus="false"
           value-key="name"
-          :placeholder="cptPlaceholder">
+          :placeholder="cptPlaceholder"
+          clearable>
           <i
             slot="prefix"
             class="el-input__icon el-icon-search" />
@@ -206,7 +207,7 @@ export default {
             },
             kw: '',
             cid: '',
-            isDateChange: true,
+            isSearchChange: true,
         };
     },
     props: {
@@ -385,16 +386,18 @@ export default {
             handler: function (val) {
                 this.handleFormChange(val);
                 this.$store.dispatch('SaveDate', _.cloneDeep(val));
-                this.isDateChange = true;
+                this.isSearchChange = true;
             },
             deep: true
         },
         kw: function (val) {
-            // 搜索框内容修改时 清空 cid
-            if (val == '') {
+            if (!val) {
                 this.cid = '';
             }
-        }
+        },
+        cid: function () {
+            this.isSearchChange = true;
+        },
     },
     methods: {
         handleFormChange (val) {
@@ -446,12 +449,12 @@ export default {
                 return;
             } else {
                 // 如果时间改变了 调用 props.search
-                if(!this.isDateChange) {
+                if(!this.isSearchChange) {
                     return;
                 }
                 obj.cid = this.cid;
                 this.$emit('search', obj);
-                this.isDateChange = false;
+                this.isSearchChange = false;
             }
         },
         searchKw (kw, cb) {
