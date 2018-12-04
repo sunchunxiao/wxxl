@@ -341,7 +341,7 @@ export default {
             this.form.date = val;
         },
         click(){
-            if (this.cid==this.customerTree.cid){
+            if (this.cid === this.customerTree.cid){
                 return;
             }else{
                 //点击发送请求清除搜索框
@@ -398,7 +398,7 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetCusTree(params).then(res => {
-                if (this.customerTree.cid === undefined){
+                if (!this.customerTree.cid){
                     this.cid = res.tree.cid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);

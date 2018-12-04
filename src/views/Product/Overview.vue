@@ -331,7 +331,7 @@ export default {
             this.form.date = val;
         },
         click () {
-            if (this.cid == this.productTree.cid) {
+            if (this.cid === this.productTree.cid) {
                 return;
             } else {
                 //点击发送请求清除搜索框
@@ -389,7 +389,7 @@ export default {
             };
 
             API.GetProductTree(params).then(res => {
-                if (this.productTree.cid === undefined) {
+                if (!this.productTree.cid) {
                     this.cid = res.tree.cid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);

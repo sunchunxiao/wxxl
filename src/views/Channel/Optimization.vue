@@ -220,7 +220,7 @@ export default {
             }
         },
         click () {
-            if (this.cid == this.channelTree.nid) {
+            if (this.cid === this.channelTree.nid) {
                 return;
             } else {
                 //点击发送请求清除搜索框
@@ -252,7 +252,7 @@ export default {
                 version: this.form.version
             };
             API.GetChannelTree(params).then(res => {
-                if (this.channelTree.cid === undefined) {
+                if (!this.channelTree.cid) {
                     this.cid = res.tree.nid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);

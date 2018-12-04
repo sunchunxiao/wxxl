@@ -448,7 +448,7 @@ export default {
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
-                if (this.cid!=this.organizationTree.cid){
+                if (this.cid !== this.organizationTree.cid){
                     this.cid = this.organizationTree.cid;
                     this.treeClone = _.cloneDeep(this.organizationTree);
                 }
@@ -482,7 +482,7 @@ export default {
                 return;
             }
             if (checked) { // 如果选中
-                if (data.type == 2) {
+                if (data.type === 2) {
                     // 如果有选中的节点 并且此次选择了不同pid的节点
                     if (this.cidObjBackArr[0] && data.parent_id !== this.cidObjBackArr[0].parent_id) {
                         this.warn('请选择相同父级下的进行对比');
@@ -524,7 +524,7 @@ export default {
                 }
             } else { // 如果取消选择
                 // 找到取消选择的下标
-                if (data.type == 2) {
+                if (data.type === 2) {
                     // 找到取消选择的下标
                     const index = _.findIndex(this.cidObjBackArr, item => item.cid === data.cid);
                     this.cidObjBackArr.splice(index, 1);

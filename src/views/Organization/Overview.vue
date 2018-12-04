@@ -381,7 +381,7 @@ export default {
         click(){
             //点击发送请求清除搜索框
             this.$refs.child.clearKw();
-            if (this.cid==this.organizationTree.cid){
+            if (this.cid === this.organizationTree.cid){
                 return;
             } else {
                 this.isbac = true;
@@ -435,7 +435,7 @@ export default {
                 version: this.form.version
             };
             API.GetOrgTree(params).then(res => {
-                if (this.organizationTree.cid === undefined){
+                if (!this.organizationTree.cid){
                     this.cid = res.tree.cid;
                 }
                 this.type = res.tree.type;
