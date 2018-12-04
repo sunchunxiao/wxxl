@@ -70,7 +70,6 @@ export default {
     },
     methods: {
         calculateToShow(val) {
-            // console.log(val);
             const { subject } = this.data;
             if (val==null){
                 return "未设定";
@@ -92,7 +91,6 @@ export default {
         renderChart(data) {
             const { subject, subject_name, progress ,real } = data;
             var valuePercent;
-            // console.log(progress,real);
             if (progress==null){
                 valuePercent = this.calculateToShow(real);
             } else {

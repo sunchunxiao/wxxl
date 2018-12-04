@@ -405,7 +405,7 @@ export default {
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
-                if (this.cid != data.nid) {
+                if (this.cid !== data.nid) {
                     this.cid = data.nid;
                 } else {
                     return;
