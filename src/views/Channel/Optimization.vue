@@ -368,7 +368,7 @@ export default {
             if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid != this.channelTree.nid) {
+                if (this.cid !== this.channelTree.nid) {
                     this.cid = this.channelTree.nid;
                     this.treeClone = _.cloneDeep(this.channelTree);
                 } else {
@@ -377,7 +377,7 @@ export default {
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate!=val.sDate||this.changeDate.eDate!=val.eDate){
+                if (this.changeDate.sDate !== val.sDate||this.changeDate.eDate !== val.eDate){
                     this.getTreePrograss();
                     this.getHistory();
                 }
@@ -388,7 +388,7 @@ export default {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
                 this.cid = val.cid;
-                if (this.cid == this.channelTree.nid) {
+                if (this.cid === this.channelTree.nid) {
                     this.isbac = true;
                     this.highlight = false;
                 }
@@ -405,7 +405,7 @@ export default {
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
-                if (this.cid != data.nid) {
+                if (this.cid !== data.nid) {
                     this.cid = data.nid;
                 } else {
                     return;

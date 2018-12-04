@@ -459,11 +459,12 @@ export default {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.cid)){
-                        i.real_total = res.data[i.cid].real;
-                        i.target_total = res.data[i.cid].target;
-
+                if (obj.children) {
+                    for(let i of obj.children){
+                        if(res.data.hasOwnProperty(i.cid)){
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
+                        }
                     }
                 }
             });
@@ -545,7 +546,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate !== undefined && this.val.eDate !== undefined) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -606,7 +607,7 @@ export default {
             if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid!=this.organizationTree.cid){
+                if (this.cid !== this.organizationTree.cid){
                     this.cid = this.organizationTree.cid;
                     this.treeClone = _.cloneDeep(this.organizationTree);
                 } else {
@@ -618,7 +619,7 @@ export default {
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate!=val.sDate||this.changeDate.eDate!=val.eDate){
+                if (this.changeDate.sDate !== val.sDate||this.changeDate.eDate !== val.eDate){
                     this.getTreePrograss();
                     this.getProgress();
                     this.getStructure1();
@@ -632,7 +633,7 @@ export default {
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
                 });
-                if (this.cid==this.organizationTree.cid){
+                if (this.cid === this.organizationTree.cid){
                     this.isbac = true;
                     this.highlight = false;
                 }
@@ -652,7 +653,7 @@ export default {
                 this.type = data.type;
                 if(this.cid === data.cid){
                     return ;
-                }else if (data.children != undefined) {
+                }else if (data.children !== undefined) {
                     this.cid = data.cid;
                 }
             } else {

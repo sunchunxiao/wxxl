@@ -425,14 +425,15 @@ export default {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.cid)){
-                        i.real_total = res.data[i.cid].real;
-                        i.target_total = res.data[i.cid].target;
-
+                if (obj.children) {
+                    for(let i of obj.children){
+                        if(res.data.hasOwnProperty(i.cid)){
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
+                        }
                     }
                 }
-                this.$store.dispatch('SaveProductTreePrograss', res.data);
+                // this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
         getProgress() {
@@ -529,7 +530,7 @@ export default {
             if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid!=this.productTree.cid){
+                if (this.cid !== this.productTree.cid){
                     this.cid = this.productTree.cid;
                     this.treeClone = _.cloneDeep(this.productTree);
                 } else {
@@ -541,7 +542,7 @@ export default {
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate!=val.sDate||this.changeDate.eDate!=val.eDate){
+                if (this.changeDate.sDate !== val.sDate||this.changeDate.eDate !== val.eDate){
                     this.getTreePrograss();
                     this.getProgress();
                     this.getStructure();
@@ -574,7 +575,7 @@ export default {
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {
                     return;
-                } else if (data.children != undefined) {
+                } else if (data.children !== undefined) {
                     this.cid = data.cid;
                 }
             }else{

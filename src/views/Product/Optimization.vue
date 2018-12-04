@@ -375,7 +375,7 @@ export default {
             if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid != this.productTree.cid) {
+                if (this.cid !== this.productTree.cid) {
                     this.cid = this.productTree.cid;
                     this.treeClone = _.cloneDeep(this.productTree);
                 } else {
@@ -384,7 +384,7 @@ export default {
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate!=val.sDate||this.changeDate.eDate!=val.eDate){
+                if (this.changeDate.sDate !== val.sDate||this.changeDate.eDate !== val.eDate){
                     this.getTreePrograss();
                     this.getHistory();
                 }

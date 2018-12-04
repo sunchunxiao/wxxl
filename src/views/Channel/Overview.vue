@@ -425,11 +425,12 @@ export default {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for (let i of obj.children) {
-                    if (res.data.hasOwnProperty(i.nid)) {
-                        i.real_total = res.data[i.nid].real;
-                        i.target_total = res.data[i.nid].target;
-
+                if (obj.children) {
+                    for (let i of obj.children) {
+                        if (res.data.hasOwnProperty(i.nid)) {
+                            i.real_total = res.data[i.nid].real;
+                            i.target_total = res.data[i.nid].target;
+                        }
                     }
                 }
             });
@@ -492,7 +493,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate !== undefined && this.val.eDate !== undefined) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -547,7 +548,7 @@ export default {
             if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid != this.channelTree.nid) {
+                if (this.cid !== this.channelTree.nid) {
                     this.cid = this.channelTree.nid;
                     this.treeClone = _.cloneDeep(this.channelTree);
                 } else {
@@ -558,7 +559,7 @@ export default {
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate!=val.sDate||this.changeDate.eDate!=val.eDate){
+                if (this.changeDate.sDate !== val.sDate||this.changeDate.eDate !== val.eDate){
                     this.getTreePrograss();
                     this.getProgress();
                     this.getStructure();
@@ -571,7 +572,7 @@ export default {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
                 this.cid = val.cid;
-                if (this.cid == this.channelTree.nid) {
+                if (this.cid === this.channelTree.nid) {
                     this.isbac = true;
                     this.highlight = false;
                 }
@@ -590,7 +591,7 @@ export default {
                 this.$refs.child.clearKw();
                 if (this.cid === data.nid) {
                     return;
-                } else if (data.children != undefined) {
+                } else if (data.children !== undefined) {
                     this.cid = data.nid;
                 }
             } else {

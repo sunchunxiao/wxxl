@@ -371,7 +371,7 @@ export default {
                 this.changeDate = this.searchBarValue;
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid!=this.fundTree.cid){
+                if (this.cid !== this.fundTree.cid){
                     this.cid = this.fundTree.cid;
                     this.treeClone = _.cloneDeep(this.fundTree);
                 } else {
@@ -380,7 +380,7 @@ export default {
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate!=val.sDate||this.changeDate.eDate!=val.eDate){
+                if (this.changeDate.sDate !== val.sDate||this.changeDate.eDate !== val.eDate){
                     this.getTreePrograss();
                     this.getHistory();
                 }
@@ -390,7 +390,7 @@ export default {
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree 元素的ref  绑定的node-key
                 });
-                if (this.cid==this.fundTree.cid){
+                if (this.cid === this.fundTree.cid){
                     this.isbac = true;
                     this.highlight = false;
                 }
