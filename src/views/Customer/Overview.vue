@@ -217,7 +217,6 @@
 
 <script>
 import API from './api';
-import moment from 'moment';
 import Card from '../../components/Card';
 import SearchBar from 'components/SearchBar';
 // 目标达成情况总览
@@ -305,13 +304,12 @@ export default {
     mounted() {
         //获取初始时间
         this.changeDate = this.searchBarValue;
-        if(!this.hasTree) {
+        if (!this.hasTree) {
             this.getTree();
-        }else{
+        } else {
             this.treeClone = _.cloneDeep(this.customerTree);
             this.cid = this.customerTree.cid;
         }
-    // this.initFormDataFromUrl();
     },
     watch: {
         form: {
@@ -328,11 +326,11 @@ export default {
     },
     methods: {
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -343,7 +341,7 @@ export default {
             this.form.date = val;
         },
         click(){
-            if(this.cid==this.customerTree.cid){
+            if (this.cid==this.customerTree.cid){
                 return;
             }else{
                 //点击发送请求清除搜索框
@@ -400,7 +398,7 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetCusTree(params).then(res => {
-                if(this.customerTree.cid==undefined){
+                if (this.customerTree.cid === undefined){
                     this.cid = res.tree.cid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);
@@ -415,13 +413,13 @@ export default {
             };
             API.GetCusTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
                 if (obj.children) {
-                    for(let i of obj.children){
-                        if(res.data.hasOwnProperty(i.cid)){
+                    for (let i of obj.children){
+                        if (res.data.hasOwnProperty(i.cid)){
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
 
@@ -488,7 +486,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate !== undefined && this.val.eDate !== undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -521,20 +519,6 @@ export default {
                     eDate: '2018-06-30',
                 };
             }
-        },
-        initFormDataFromUrl() {
-            const {
-                pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-            } = this.$route.query;
-            let formData = {
-                pt: pt,
-                subject: subject,
-            };
-            if (moment(sDate).isValid() && moment(eDate).isValid()) {
-                formData.date = [sDate, eDate];
-            }
-            this.cid = cid;
-            this.form = { ...this.form,...formData };
         },
         handleSearch(val) {
             // 默认公司的背景色
@@ -579,17 +563,17 @@ export default {
             this.highlight = true;
         },
         handleNodeClick(data) {
-            if(this.searchBarValue.sDate && this.searchBarValue.eDate){
+            if (this.searchBarValue.sDate && this.searchBarValue.eDate){
                 this.val = this.searchBarValue;
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
-                if(this.cid === data.cid){
+                if (this.cid === data.cid){
                     return ;
-                }else if(data.children !== undefined) {
+                } else if (data.children) {
                     this.cid = data.cid;
                 }
-            } else{
+            } else {
                 this.highlight = false;
                 this.$message({
                     type: 'error',
@@ -599,14 +583,14 @@ export default {
             }
         },
         calculatePercent(a, b) {
-            if(b > 0) {
+            if (b > 0) {
                 const percent = parseInt(a / b * 100);
                 const largerThanOne = (a / b) > 1;
                 return {
                     percent,
                     largerThanOne
                 };
-            }else{
+            } else {
                 const percent = 0;
                 const largerThanOne = false;
                 return {

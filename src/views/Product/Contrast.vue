@@ -179,11 +179,11 @@ export default {
         this.debounce = _.debounce(this.getCompare, 500);
     },
     mounted() {
-        if(this.compareArr.length){
+        if (this.compareArr.length){
             this.cid = this.productTree.cid;
             this.treeClone = _.cloneDeep(this.productTree);
             let arr = [];
-            for(let i = 0; i < 3; i++) {
+            for (let i = 0; i < 3; i++) {
                 this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
             }
             const checkKeys = arr.map(i => i.cid);
@@ -191,7 +191,7 @@ export default {
                 this.$refs.tree.setCheckedKeys(checkKeys);
             });
 
-        }else{
+        } else {
             this.promise();
         }
     },
@@ -217,11 +217,11 @@ export default {
             });
         },
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -247,12 +247,12 @@ export default {
             };
             API.GetProductTreeProduct(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                if(obj.cid == this.cid){
+                if(obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.cid)){
+                for (let i of obj.children){
+                    if (res.data.hasOwnProperty(i.cid)){
                         i.real_total = res.data[i.cid].real;
                         i.target_total = res.data[i.cid].target;
 
@@ -302,7 +302,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -339,17 +339,17 @@ export default {
             }
         },
         handleSearch(val) {
-            if(val.cid!=this.cid){
+            if(val.cid != this.cid){
                 // 默认公司的背景色
                 this.nodeArr = [];
                 this.val = val;
-                if(!val.cid){
-                    if(this.cid!=this.productTree.cid){
+                if (!val.cid){
+                    if (this.cid !== this.productTree.cid){
                         this.cid = this.productTree.cid;
                         this.treeClone = _.cloneDeep(this.productTree);
                     }
                     this.getCompare();
-                }else{
+                } else {
                     this.nodeArr.push(val.cid);
                     this.$nextTick(() => {
                         this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key

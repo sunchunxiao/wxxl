@@ -249,7 +249,7 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetProductTree(params).then(res => {
-                if (this.productTree.cid == undefined) {
+                if (this.productTree.cid === undefined) {
                     this.cid = res.tree.cid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);
@@ -270,7 +270,7 @@ export default {
             API.GetProductTreeProduct(params).then(res => {
                 let obj = this.preOrder([this.treeClone], this.cid);
                 // console.log(obj,obj.cid,this.cid,res.data);
-                if (obj.cid == this.cid) {
+                if (obj.cid === this.cid) {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
@@ -293,7 +293,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -384,7 +384,7 @@ export default {
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate !== val.sDate||this.changeDate.eDate !== val.eDate){
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
                     this.getTreePrograss();
                     this.getHistory();
                 }

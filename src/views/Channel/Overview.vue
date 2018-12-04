@@ -321,7 +321,6 @@ export default {
             this.treeClone = _.cloneDeep(this.channelTree);
             this.cid = this.channelTree.nid;
         }
-    // this.initFormDataFromUrl();
     },
     methods: {
         preOrder (node, cid) {
@@ -404,7 +403,7 @@ export default {
                 version: this.form.version
             };
             API.GetChannelTree(params).then(res => {
-                if (this.channelTree.cid == undefined) {
+                if (this.channelTree.cid === undefined) {
                     this.cid = res.tree.nid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);
@@ -421,7 +420,7 @@ export default {
             API.GetChannelTreePrograss(params).then(res => {
                 let obj = this.preOrder([this.treeClone], this.cid);
                 // console.log(obj,this.cid,res.data);
-                if (obj.nid == this.cid) {
+                if (obj.nid === this.cid) {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
@@ -493,7 +492,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate !== undefined && this.val.eDate !== undefined) {
+            if (this.val.sDate && this.val.eDate ) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -527,20 +526,6 @@ export default {
                 };
             }
         },
-        initFormDataFromUrl () {
-            const {
-                pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-            } = this.$route.query;
-            let formData = {
-                pt: pt,
-                subject: subject,
-            };
-            if (moment(sDate).isValid() && moment(eDate).isValid()) {
-                formData.date = [sDate, eDate];
-            }
-            this.cid = cid;
-            this.form = { ...this.form,...formData };
-        },
         handleSearch (val) {
             this.highlight = true;
             this.nodeArr = [];
@@ -559,7 +544,7 @@ export default {
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate !== val.sDate||this.changeDate.eDate !== val.eDate){
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
                     this.getTreePrograss();
                     this.getProgress();
                     this.getStructure();
@@ -591,7 +576,7 @@ export default {
                 this.$refs.child.clearKw();
                 if (this.cid === data.nid) {
                     return;
-                } else if (data.children !== undefined) {
+                } else if (data.children) {
                     this.cid = data.nid;
                 }
             } else {

@@ -249,7 +249,6 @@
 
 <script>
 import API from './api';
-import moment from 'moment';
 import SearchBar from 'components/SearchBar';
 import Card from '../../components/Card';
 // 目标达成情况总览
@@ -342,9 +341,9 @@ export default {
     mounted() {
         //获取初始时间
         this.changeDate = this.searchBarValue;
-        if(!this.hasTree) {
+        if (!this.hasTree) {
             this.getTree();
-        }else{
+        } else {
             this.treeClone = _.cloneDeep(this.organizationTree);
             this.cid = this.organizationTree.cid;
         }
@@ -365,11 +364,11 @@ export default {
     },
     methods: {
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -382,9 +381,9 @@ export default {
         click(){
             //点击发送请求清除搜索框
             this.$refs.child.clearKw();
-            if(this.cid==this.organizationTree.cid){
+            if (this.cid==this.organizationTree.cid){
                 return;
-            }else{
+            } else {
                 this.isbac = true;
                 this.highlight = false;
                 this.cid=this.organizationTree.cid;
@@ -436,7 +435,7 @@ export default {
                 version: this.form.version
             };
             API.GetOrgTree(params).then(res => {
-                if(this.organizationTree.cid==undefined){
+                if (this.organizationTree.cid === undefined){
                     this.cid = res.tree.cid;
                 }
                 this.type = res.tree.type;
@@ -455,13 +454,13 @@ export default {
             API.GetOrgTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
                 // console.log(obj,obj.cid,this.cid,res.data);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
                 if (obj.children) {
-                    for(let i of obj.children){
-                        if(res.data.hasOwnProperty(i.cid)){
+                    for (let i of obj.children){
+                        if (res.data.hasOwnProperty(i.cid)){
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
                         }
@@ -546,7 +545,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate !== undefined && this.val.eDate !== undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -583,22 +582,6 @@ export default {
                 };
             }
         },
-        initFormDataFromUrl() {
-            const {
-                pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-            } = this.$route.query;
-            let formData = {
-                pt: pt,
-                subject: subject,
-            };
-            if (moment(sDate).isValid() && moment(eDate).isValid()) {
-                formData.date = [sDate, eDate];
-            }
-            this.cid = cid;
-            this.form = { ...this.form,
-                ...formData
-            };
-        },
         handleSearch(val) {
             this.highlight = true;
             // 默认公司的背景色
@@ -619,7 +602,7 @@ export default {
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate !== val.sDate||this.changeDate.eDate !== val.eDate){
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
                     this.getTreePrograss();
                     this.getProgress();
                     this.getStructure1();
@@ -645,15 +628,15 @@ export default {
             this.highlight = true;
         },
         handleNodeClick(data) {
-            if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+            if (this.searchBarValue.sDate&&this.searchBarValue.eDate){
                 this.val = this.searchBarValue;
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
                 this.type = data.type;
-                if(this.cid === data.cid){
+                if (this.cid === data.cid){
                     return ;
-                }else if (data.children !== undefined) {
+                } else if (data.children) {
                     this.cid = data.cid;
                 }
             } else {
@@ -674,7 +657,7 @@ export default {
                     percent,
                     largerThanOne
                 };
-            }else{
+            } else {
                 const percent = 0;
                 const largerThanOne = false;
                 return {

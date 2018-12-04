@@ -183,18 +183,18 @@ export default {
         this.debounce = _.debounce(this.getCompare, 1000);
     },
     mounted() {
-        if(this.channelCompareArr.length){
+        if (this.channelCompareArr.length){
             this.cid = this.channelTree.nid;
             this.treeClone = _.cloneDeep(this.channelTree);
             let arr = [];
-            for(let i = 0; i < 3; i++) {
+            for (let i = 0; i < 3; i++) {
                 this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
             }
             const checkKeys = arr.map(i => i.nid);
             this.$store.dispatch('SaveChannelTree', this.channelTree).then(() => {
                 this.$refs.tree.setCheckedKeys(checkKeys);
             });
-        }else{
+        } else {
             this.promise();
         }
     },
@@ -207,7 +207,7 @@ export default {
                 this.treeClone = _.cloneDeep(treeData.tree);
                 const children = treeData.tree.children;
                 let arr = [];
-                for(let i = 0; i < 3; i++) {
+                for (let i = 0; i < 3; i++) {
                     children[i] && arr.push(children[i]);
                 }
                 const checkKeys = arr.map(i => i.nid);
@@ -220,11 +220,11 @@ export default {
             });
         },
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.nid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -252,12 +252,12 @@ export default {
             API.GetChannelTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
                 // console.log(obj,this.cid,res.data);
-                if(obj.nid == this.cid){
+                if (obj.nid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.nid)){
+                for (let i of obj.children){
+                    if (res.data.hasOwnProperty(i.nid)){
                         i.real_total = res.data[i.nid].real;
                         i.target_total = res.data[i.nid].target;
                     }
@@ -328,7 +328,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -345,13 +345,13 @@ export default {
         handleSearch(val) {
             this.nodeArr = [];
             this.val = val;
-            if(!val.cid){
-                if(this.cid!=this.channelTree.nid){
+            if (!val.cid){
+                if (this.cid !== this.channelTree.nid){
                     this.cid = this.channelTree.nid;
                     this.treeClone = _.cloneDeep(this.channelTree);
                 }
                 this.getCompare();
-            }else{
+            } else {
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
@@ -370,7 +370,7 @@ export default {
         },
         handleCheckChange(data, checked) {
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
-            if(!checked && this.cancelKey && data.nid === this.cancelKey) {
+            if (!checked && this.cancelKey && data.nid === this.cancelKey) {
                 return;
             }
             if (checked) { // 如果选中
@@ -407,14 +407,14 @@ export default {
             this[`index${i}`] = idx;
         },
         calculatePercent(a, b) {
-            if(b > 0) {
+            if (b > 0) {
                 const percent = parseInt(a / b * 100);
                 const largerThanOne = (a / b) > 1;
                 return {
                     percent,
                     largerThanOne
                 };
-            }else{
+            } else {
                 const percent = 0;
                 const largerThanOne = false;
                 return {

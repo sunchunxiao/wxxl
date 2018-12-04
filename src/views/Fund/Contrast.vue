@@ -407,7 +407,7 @@ export default {
                 date
             } = this.form;
             // console.log(date,this.val.sDate);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -445,15 +445,15 @@ export default {
             this.nodeArr = [];
             this.nodeArr.push(val.cid);
             this.val = val;
-            if(!val.cid){
-                if(this.cid!=this.fundTree.cid){
+            if (!val.cid){
+                if (this.cid !== this.fundTree.cid){
                     this.cid = this.fundTree.cid;
                     this.treeClone = _.cloneDeep(this.fundTree);
                 }
                 this.getTreePrograss();
                 this.getCompare();
                 this.getCompareBack();
-            }else{
+            } else {
                 this.cid = val.cid;
             }
         },
@@ -474,11 +474,11 @@ export default {
             // if (this.isFirstLoad) {
             //         return;
             // }
-            if(!checked && this.cancelKey && data.cid === this.cancelKey) {
+            if (!checked && this.cancelKey && data.cid === this.cancelKey) {
                 return;
             }
             if (checked) { // 如果选中
-                if(data.type==2){
+                if (data.type==2){
                     // 如果有选中的节点 并且此次选择了不同pid的节点
                     if (this.cidObjBackArr[0] && data.parent_id !== this.cidObjBackArr[0].parent_id) {
                         this.warn('请选择相同父级下的进行对比');
@@ -497,7 +497,7 @@ export default {
                     // 		const checkKeys = this.cidObjArr.map(i => i.cid);
                     // 		this.$refs.tree.setCheckedKeys(checkKeys);
                     // }
-                }else{
+                } else {
                     // 如果有选中的节点 并且此次选择了不同pid的节点
                     if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
                         this.warn('请选择相同父级下的进行对比');
@@ -521,11 +521,11 @@ export default {
                 }
             } else { // 如果取消选择
                 // 找到取消选择的下标
-                if(data.type==2){
+                if (data.type==2){
                     // 找到取消选择的下标
                     const index = _.findIndex(this.cidObjBackArr, item => item.cid === data.cid);
                     this.cidObjBackArr.splice(index, 1);
-                }else{
+                } else {
                     const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
                     this.cidObjArr.splice(index, 1);
                 }

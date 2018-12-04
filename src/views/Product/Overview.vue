@@ -221,7 +221,6 @@
 import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
-import moment from 'moment';
 // 目标达成情况总览
 import ProTargetAchievement from 'components/ProTargetAchievement';
 import Radar from 'components/radar';
@@ -317,11 +316,11 @@ export default {
     },
     methods: {
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -381,20 +380,6 @@ export default {
                 });
             });
         },
-        initFormDataFromUrl () {
-            const {
-                pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-            } = this.$route.query;
-            let formData = {
-                pt: pt,
-                subject: subject,
-            };
-            if (moment(sDate).isValid() && moment(eDate).isValid()) {
-                formData.date = [sDate, eDate];
-            }
-            this.cid = cid;
-            this.form = { ...this.form,...formData };
-        },
         //树结构
         getTree () {
             const params = {
@@ -404,7 +389,7 @@ export default {
             };
 
             API.GetProductTree(params).then(res => {
-                if (this.productTree.cid == undefined) {
+                if (this.productTree.cid === undefined) {
                     this.cid = res.tree.cid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);
@@ -421,7 +406,7 @@ export default {
             API.GetProductTreeProduct(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
                 // console.log(obj,obj.cid,this.cid,res.data);
-                if(obj.cid == this.cid){
+                if(obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
@@ -485,7 +470,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -542,7 +527,7 @@ export default {
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate !== val.sDate||this.changeDate.eDate !== val.eDate){
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
                     this.getTreePrograss();
                     this.getProgress();
                     this.getStructure();
@@ -569,16 +554,16 @@ export default {
             this.highlight = true;
         },
         handleNodeClick (data) {
-            if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+            if (this.searchBarValue.sDate&&this.searchBarValue.eDate){
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {
                     return;
-                } else if (data.children !== undefined) {
+                } else if (data.children) {
                     this.cid = data.cid;
                 }
-            }else{
+            } else {
                 this.highlight = false;
                 this.$message({
                     type: 'error',
