@@ -61,7 +61,6 @@
               <span class="label">
                 <span class="label_left">{{ data.name }}</span>
                 <span
-                  v-if="data.real_total"
                   :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
               </span>
             </el-tooltip>
@@ -286,6 +285,7 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -295,6 +295,8 @@ export default {
         }
     },
     mounted () {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if (!this.hasTree) {
             this.$nextTick(() => {
                 this.getTree();
@@ -523,27 +525,37 @@ export default {
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
-            if(!val.cid){
+            // console.log(val.sDate,this.changeDate.sDate,val.cid);
+            if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid!=this.productTree.cid){
+                if (this.cid!=this.productTree.cid){
                     this.cid = this.productTree.cid;
                     this.treeClone = _.cloneDeep(this.productTree);
-                }else{
+                } else {
+                    //公司根节点
                     this.getTreePrograss();
                     this.getProgress();
                     this.getStructure();
                     this.getRank();
                 }
-            }else{
+            } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate!=val.sDate||this.changeDate.eDate!=val.eDate){
+                    this.getTreePrograss();
+                    this.getProgress();
+                    this.getStructure();
+                    this.getRank();
+                }
+                this.changeDate = this.searchBarValue;
+                this.cid = val.cid;
                 this.isbac = false;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
-                this.cid = val.cid;
                 //如果是根节点
-                if(this.cid==this.productTree.cid){
+                if (this.cid==this.productTree.cid){
                     this.isbac = true;
                     this.highlight = false;
                 }
@@ -613,7 +625,6 @@ export default {
                 rank: rank,
                 time_label: time_label,
             };
-
             API.GetProductMatch(params).then(res => {
                 this.stragetyCheckList = [];
                 this.stragety = res.data;

@@ -328,6 +328,7 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -339,13 +340,14 @@ export default {
         }
     },
     mounted() {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if(!this.hasTree) {
             this.getTree();
         }else{
             this.treeClone = _.cloneDeep(this.organizationTree);
             this.cid = this.organizationTree.cid;
         }
-    // this.initFormDataFromUrl();
     },
     watch: {
         form: {
@@ -601,10 +603,10 @@ export default {
             // 默认公司的背景色
             this.nodeArr = [];
             this.val = val;
-            if(!val.cid){
+            if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid!=this.organizationTree.cid){
+                if (this.cid!=this.organizationTree.cid){
                     this.cid = this.organizationTree.cid;
                     this.treeClone = _.cloneDeep(this.organizationTree);
                 } else {
@@ -615,13 +617,22 @@ export default {
                     this.getRank();
                 }
             } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate!=val.sDate||this.changeDate.eDate!=val.eDate){
+                    this.getTreePrograss();
+                    this.getProgress();
+                    this.getStructure1();
+                    this.getStructure2();
+                    this.getRank();
+                }
+                this.changeDate = this.searchBarValue;
                 this.isbac = false;
                 this.cid = val.cid;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
                 });
-                if(this.cid==this.organizationTree.cid){
+                if (this.cid==this.organizationTree.cid){
                     this.isbac = true;
                     this.highlight = false;
                 }

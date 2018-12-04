@@ -174,6 +174,7 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -194,6 +195,8 @@ export default {
         }
     },
     mounted() {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if(!this.hasTree) {
             this.getTree();
         }else{
@@ -364,25 +367,32 @@ export default {
             this.isbac = false;
             this.nodeArr = [];
             this.val = val;
-            if(val.cid!=""){
+            if (!val.cid){
+                this.changeDate = this.searchBarValue;
+                this.isbac = true;
+                this.highlight = false;
+                if (this.cid!=this.fundTree.cid){
+                    this.cid = this.fundTree.cid;
+                    this.treeClone = _.cloneDeep(this.fundTree);
+                } else {
+                    this.getTreePrograss();
+                    this.getHistory();
+                }
+            } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate!=val.sDate||this.changeDate.eDate!=val.eDate){
+                    this.getTreePrograss();
+                    this.getHistory();
+                }
+                this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree 元素的ref  绑定的node-key
                 });
-                if(this.cid==this.fundTree.cid){
+                if (this.cid==this.fundTree.cid){
                     this.isbac = true;
                     this.highlight = false;
-                }
-            }else{
-                this.isbac = true;
-                this.highlight = false;
-                if(this.cid!=this.fundTree.cid){
-                    this.cid = this.fundTree.cid;
-                    this.treeClone = _.cloneDeep(this.fundTree);
-                }else{
-                    this.getTreePrograss();
-                    this.getHistory();
                 }
             }
         },

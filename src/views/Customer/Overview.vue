@@ -293,6 +293,7 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -302,6 +303,8 @@ export default {
         }
     },
     mounted() {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if(!this.hasTree) {
             this.getTree();
         }else{
@@ -535,10 +538,10 @@ export default {
             this.isbac = false;
             this.nodeArr = [];
             this.val = val;
-            if(!val.cid){
+            if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid!=this.customerTree.cid){
+                if (this.cid!=this.customerTree.cid){
                     this.cid = this.customerTree.cid;
                     this.treeClone = _.cloneDeep(this.customerTree);
                 } else {
@@ -548,12 +551,20 @@ export default {
                     this.getRank();
                 }
             } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate!=val.sDate||this.changeDate.eDate!=val.eDate){
+                    this.getTreePrograss();
+                    this.getProgress();
+                    this.getStructure();
+                    this.getRank();
+                }
+                this.changeDate = this.searchBarValue;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref
                 });
                 this.cid = val.cid;
-                if(this.cid==this.customerTree.cid){
+                if (this.cid==this.customerTree.cid){
                     this.isbac = true;
                     this.highlight = false;
                 }

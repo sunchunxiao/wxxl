@@ -325,6 +325,7 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -348,6 +349,8 @@ export default {
         }
     },
     mounted() {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if(!this.hasTree) {
             this.getTree();
         }else{
@@ -595,20 +598,29 @@ export default {
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
-            if(!val.cid){
+            if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid!=this.fundTree.cid){
+                if (this.cid!=this.fundTree.cid){
                     this.cid = this.fundTree.cid;
                     this.treeClone = _.cloneDeep(this.fundTree);
-                }else{
+                } else {
                     this.getTreePrograss();
                     this.getProgress();
                     this.getStructure1();
                     this.getStructure2();
                     this.getRank();
                 }
-            }else{
+            } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate!=val.sDate||this.changeDate.eDate!=val.eDate){
+                    this.getTreePrograss();
+                    this.getProgress();
+                    this.getStructure1();
+                    this.getStructure2();
+                    this.getRank();
+                }
+                this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
                 this.isbac = false;
                 this.nodeArr.push(val.cid);

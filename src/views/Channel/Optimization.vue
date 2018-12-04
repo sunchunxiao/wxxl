@@ -173,6 +173,7 @@ export default {
                 eDate: ''
             },
             treeClone: {},
+            changeDate:{}
         };
     },
     computed: {
@@ -193,6 +194,8 @@ export default {
         }
     },
     mounted () {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if (!this.hasTree) {
             this.getTree();
         } else {
@@ -368,11 +371,17 @@ export default {
                 if (this.cid != this.channelTree.nid) {
                     this.cid = this.channelTree.nid;
                     this.treeClone = _.cloneDeep(this.channelTree);
-                }else{
+                } else {
                     this.getTreePrograss();
                     this.getHistory();
                 }
             } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate!=val.sDate||this.changeDate.eDate!=val.eDate){
+                    this.getTreePrograss();
+                    this.getHistory();
+                }
+                this.changeDate = this.searchBarValue;
                 this.isbac = false;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
