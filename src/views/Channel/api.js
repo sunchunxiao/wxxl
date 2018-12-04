@@ -38,5 +38,7 @@ export default {
     GetChannelCompare(params) {
         return FetchGet('/channel/compare', params);
     },
-
+    GetChannelApplog(params) {
+        return FetchGet('/channel/strategy/app_log', params);
+    },
 };

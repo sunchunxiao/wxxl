@@ -38,4 +38,7 @@ export default {
     GetProductSearch(params) {
         return FetchGet('/product/search', params);
     },
+    GetProductApplog(params) {
+        return FetchGet('/product/strategy/app_log', params);
+    },
 };
