@@ -251,7 +251,6 @@ export default {
             };
             API.GetChannelTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,this.cid,res.data);
                 if (obj.nid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
@@ -283,7 +282,6 @@ export default {
                     v.subject_name = this.channelProgressArr[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
-                // console.log(cidName);
                 // 只有当返回的跟当前选中的一样才更新 store
                 if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveChannelCompareArr', resultList);
@@ -307,8 +305,6 @@ export default {
                 sDate,
                 eDate
             } = this.getDateObj();
-
-            // console.log(sDate,eDate);
             if (sDate && eDate) { // 计算时间周期
                 return {
                     pt: pt,
@@ -327,7 +323,6 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
             if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,

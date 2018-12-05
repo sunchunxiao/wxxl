@@ -268,7 +268,6 @@ export default {
             };
             API.GetChannelTreePrograss(params).then(res => {
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,this.cid,res.data);
                 if (obj.nid === this.cid) {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
@@ -309,7 +308,6 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
             if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,

@@ -613,22 +613,19 @@ export default {
                 time_label,
                 rank
             } = data;
-            // console.log(cid, brand, name, rank);
             this.stragetyTitle = `${brand} - ${name} - ${rank}`;
             const params = {
                 cid: cid,
                 subject: subject,
                 time_label: time_label,
             };
-
             API.GetCusStrategy(params).then(res => {
-                // console.log(res.data)
                 this.stragetyCheckList = [];
                 this.stragety = res.data;
+                const checked = 1;
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].status === 1) {
+                    if (res.data[i].status === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
-                        // console.log(this.stragetyCheckList)
                     }
                 }
             });

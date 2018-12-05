@@ -392,7 +392,6 @@ export default {
                 });
                 this.idArr.push(stragetyObj.id);
             }
-            // console.log(this.stragetyCheckList, this.idArr);
         },
         submit() {
             let data1 = JSON.parse(localStorage.data);
@@ -414,7 +413,6 @@ export default {
                         showClose: true,
                         message: '保存成功'
                     });
-                    // console.log(res.api_info)
                 });
             }).catch(() => {
                 this.$message({
@@ -449,7 +447,6 @@ export default {
             };
             API.GetFundTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,obj.cid,this.cid,res.data);
                 if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
@@ -541,7 +538,6 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
             if (this.val.sDate  && this.val.eDate) {
                 return {
                     pt: this.val.pt,
@@ -662,7 +658,6 @@ export default {
             this[`index${i}`] = idx;
         },
         showStragety(data) {
-            // console.log(data)
             localStorage.setItem("data", JSON.stringify(data));
             const {
                 cid,
@@ -672,22 +667,19 @@ export default {
                 time_label,
                 rank
             } = data;
-            // console.log(cid, brand, name, rank);
             this.stragetyTitle = `${brand} - ${name} - ${rank}`;
             const params = {
                 cid: cid,
                 subject: subject,
                 time_label: time_label,
             };
-
             API.GetFundStrategy(params).then(res => {
-                // console.log(res.data)
                 this.stragetyCheckList = [];
                 this.stragety = res.data;
+                const checked = 1;//1是选中,0是不选中
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].status === 1) {
+                    if (res.data[i].status === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
-                        // console.log(this.stragetyCheckList)
                     }
                 }
             });

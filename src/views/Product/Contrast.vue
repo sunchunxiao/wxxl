@@ -301,7 +301,6 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
             if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
@@ -322,8 +321,6 @@ export default {
                 sDate,
                 eDate
             } = this.getDateObj();
-
-            // console.log(sDate,eDate);
             if (sDate && eDate) { // 计算时间周期
                 return {
                     pt: pt,

@@ -269,7 +269,6 @@ export default {
             };
             API.GetProductTreeProduct(params).then(res => {
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,obj.cid,this.cid,res.data);
                 if (obj.cid === this.cid) {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
@@ -292,7 +291,6 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
             if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
@@ -313,8 +311,6 @@ export default {
                 sDate,
                 eDate
             } = this.getDateObj();
-
-            // console.log(sDate,eDate);
             if (sDate && eDate) { // 计算时间周期
                 return {
                     pt: pt,

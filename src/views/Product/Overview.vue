@@ -349,7 +349,6 @@ export default {
                 });
                 this.idArr.push(stragetyObj.id);
             }
-            // console.log(this.stragetyCheckList, this.idArr);
         },
         submit () {
             let data1 = JSON.parse(localStorage.data);
@@ -405,7 +404,6 @@ export default {
             };
             API.GetProductTreeProduct(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,obj.cid,this.cid,res.data);
                 if(obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
@@ -467,7 +465,6 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
             if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
@@ -509,7 +506,6 @@ export default {
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
-            // console.log(val.sDate,this.changeDate.sDate,val.cid);
             if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
@@ -600,7 +596,6 @@ export default {
                 time_label,
                 rank
             } = data;
-            // console.log(cid, brand, name, rank);
             this.stragetyTitle = `${brand} - ${name} - ${rank}`;
             const params = {
                 cid: cid,
@@ -611,13 +606,12 @@ export default {
             API.GetProductMatch(params).then(res => {
                 this.stragetyCheckList = [];
                 this.stragety = res.data;
+                const checked = 1;//1是选中,0是不选中
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].is_selected === 1) {
+                    if (res.data[i].is_selected === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
-                        // console.log(this.stragetyCheckList)
                     }
                 }
-                // this.$store.dispatch('SaveRankArr', res.data);
             });
 
         }

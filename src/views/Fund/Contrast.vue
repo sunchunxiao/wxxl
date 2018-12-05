@@ -406,7 +406,6 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(date,this.val.sDate);
             if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
@@ -468,7 +467,7 @@ export default {
             this.highlight = true;
         },
         handleCheckChange(data, checked) {
-            // this.type = data.type;
+            const type = 2;//1是前端,2是后端
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             // 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
             // if (this.isFirstLoad) {
@@ -478,7 +477,7 @@ export default {
                 return;
             }
             if (checked) { // 如果选中
-                if (data.type === 2){
+                if (data.type === type){
                     // 如果有选中的节点 并且此次选择了不同pid的节点
                     if (this.cidObjBackArr[0] && data.parent_id !== this.cidObjBackArr[0].parent_id) {
                         this.warn('请选择相同父级下的进行对比');
@@ -521,7 +520,7 @@ export default {
                 }
             } else { // 如果取消选择
                 // 找到取消选择的下标
-                if (data.type === 2){
+                if (data.type === type){
                     // 找到取消选择的下标
                     const index = _.findIndex(this.cidObjBackArr, item => item.cid === data.cid);
                     this.cidObjBackArr.splice(index, 1);
