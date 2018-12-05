@@ -39,17 +39,30 @@ export default {
         },
     },
     methods: {
+        //多位数字加逗号
+        formatNumber(num) {
+            var str = (num || 0).toString();
+            var result = '';
+            while (str.length > 3){
+                result = ','+str.slice(-3) + result;
+                str = str.slice(0,str.length - 3);
+            }
+            if(str){
+                result = str +result;
+            }
+            return result;
+        },
         calculateToShow (val) {
             const { subject } = this.data;
-            if (_.includes(['ROI','ITO','SKU','PER','SHP'], subject)) { // 投入产出比需要,库存周转率不需要单位
+            //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率
+            if (_.includes(['ITO','ROI','SKU','PER','SHP','RY','POR'], subject)){
                 return val;
+            }
+            let Tenthousand = parseInt(val / 10000);
+            if (Tenthousand >= 1) {
+                return parseInt(val / 10000) + 'w';
             } else {
-                let Tenthousand = parseInt(val / 10000);
-                if (Tenthousand >= 1) {
-                    return parseInt(val / 10000) + 'w';
-                } else {
-                    return parseInt(val);
-                }
+                return parseInt(val);
             }
         },
         renderChart (data) {
@@ -62,9 +75,9 @@ export default {
             const underTarget = [];
             const realClone = _.cloneDeep(real);
             const targetClone = _.cloneDeep(target);
-            for(let i=0;i<hasTarget.length;i++){
+            for (let i=0;i<hasTarget.length;i++){
                 //POR人员冗余
-                if (_.includes(['ROI','ITO','POR','SKU','PER'],subject)) {
+                if (_.includes(['ITO','ROI','SKU','PER','SHP','RY','POR'],subject)) {
                     arr.push({
                         value:targetClone[i],
                         hasTarget:hasTarget[i]
@@ -80,9 +93,9 @@ export default {
                 targetItem = arr[i].value;
                 if (realItem < 0 && targetItem < 0) {
                     bottom.push(realItem < targetItem ? targetItem : realItem);
-                    if(_.isInteger(realItem - targetItem)){
+                    if (_.isInteger(realItem - targetItem)){
                         diff.push(-Math.abs(realItem - targetItem));
-                    }else {
+                    } else {
                         diff.push(-Math.abs(realItem - targetItem).toFixed(2));
                     }
                 } else if (realItem >= 0 && targetItem >= 0) {
@@ -109,23 +122,25 @@ export default {
                     axisPointer: {
                         type: 'line',
                     },
+                    position: function(pos){ // point: 鼠标位置
+                        return { left:pos[0]-100, top: pos[1] };
+                    },
                     formatter: function (params) {
-                        // console.log(params);
                         var result = params[0].axisValue + "<br />";
                         const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
+                            const value = _this.formatNumber(item.value);
                             if (hasTarget==0){
                                 if (item.seriesIndex != 2&&item.seriesIndex != 3) {
                                     if (item.seriesIndex == 0) {//目标
                                         result += item.marker + " " + item.seriesName + " : " + '未设定' + "</br>";
                                     } else {
-                                        result += item.marker + " " + item.seriesName + " : " + item.value + "</br>";
+                                        result += item.marker + " " + item.seriesName + " : " + value + "</br>";
                                     }
                                 }
-
-                            }else{
+                            } else {
                                 if (item.seriesIndex != 2) {
-                                    result += item.marker + " " + item.seriesName + " : " + item.value + "</br>";
+                                    result += item.marker + " " + item.seriesName + " : " + value + "</br>";
                                 }
                             }
                         });
@@ -165,7 +180,6 @@ export default {
                             width: 2
                         }
                     },
-
                     {
                         data: bottom,
                         type: 'bar',

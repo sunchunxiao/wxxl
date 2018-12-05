@@ -6,14 +6,14 @@
     <div class="detail">
       <span class="text">目标: </span>
       <span class="value">{{ target }}</span>
-      &nbsp;<span>{{ unit }}</span>
+      <!-- &nbsp;<span>{{ unit }}</span> -->
     </div>
     <div class="detail">
       <span class="text">实际: </span>
       <span
         class="value"
         :style="{color: color}">{{ real }}</span>
-      &nbsp;<span>{{ unit }}</span>
+        <!-- &nbsp;<span>{{ unit }}</span> -->
     </div>
   </div>
 </template>
@@ -39,14 +39,14 @@ export default {
         };
     },
     computed: {
-        unit() {
-            const { subject } = this.data;
-            if (_.includes(['NIR','CTR'],subject)) { // 投入产出比 %
-                return '%';
-            } else if (subject === 'ITO') { // 库存周转率不需要单位
-                return '';
-            }
-        },
+        // unit() {
+        //     const { subject } = this.data;
+        //     if (_.includes(['ROI','NIR','CTR'],subject)) { // 投入产出比ROI %
+        //         return '%';
+        //     } else if (subject === 'ITO') { // 库存周转率不需要单位
+        //         return '';
+        //     }
+        // },
         real() {
             const { real } = this.data;
             return this.calculateToShow(real);
@@ -74,24 +74,24 @@ export default {
             if (val==null){
                 return "未设定";
             } else {
-                //SHP店铺数量
-                if (_.includes(['ITO','ROI','SKU','PER','SHP'], subject)){
+                //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率
+                if (_.includes(['ITO','ROI','SKU','PER','SHP','RY','POR'], subject)){
                     return val;
-                }else if (subject === 'POR') { // 库存周转率不需要单位
-                    return parseInt(val);
                 }
-                let Tenthousand = parseInt(val / 10000 / 100);
+                let Tenthousand = val / 10000 / 100;
                 if (Tenthousand>=1){
-                    return parseInt(val / 10000 / 100)+'w';
-                } else {
-                    return parseInt(val/100);
+                    return (val / 10000 / 100).toFixed(2)+'w';
+                } else if (Tenthousand<1 && Tenthousand>0){
+                    return (val/100).toFixed(2);
+                }else{
+                    return val;
                 }
             }
         },
         renderChart(data) {
             const { subject, subject_name, progress ,real } = data;
             var valuePercent;
-            if (progress==null){
+            if (!progress){
                 valuePercent = this.calculateToShow(real);
             } else {
                 valuePercent = parseInt(progress * 100);
@@ -109,14 +109,15 @@ export default {
                     trigger: 'item',
                     formatter: function(params){
                         var result = [];
-                        if (progress==null){
+                        if (!progress){
                             result += params.marker + " " + params.name + " : " + params.value + "</br>";
                         } else {
                             result += params.marker + " " + params.name + " : " + params.value+
                 '%' + "</br>";
                         }
                         return result;
-                    }
+                    },
+                    position: ['50%', '50%']
                 },
                 grid: {
                     left: 0,
@@ -146,7 +147,7 @@ export default {
                         label: {
                             normal: {
                                 formatter: function(data){
-                                    if (progress==null){
+                                    if (!progress){
                                         return data.value;
                                     } else {
                                         return data.value+"%";
