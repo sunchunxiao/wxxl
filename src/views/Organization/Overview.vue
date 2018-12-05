@@ -363,7 +363,7 @@ export default {
         }
     },
     methods: {
-        preOrder(node,cid){
+        preOrder (node,cid){
             for (let i of node){
                 if (i.cid == cid) {
                     return i;
@@ -375,10 +375,10 @@ export default {
                 }
             }
         },
-        input (val) {
+        input (val){
             this.form.date = val;
         },
-        click(){
+        click (){
             //点击发送请求清除搜索框
             this.$refs.child.clearKw();
             if (this.cid === this.organizationTree.cid){
@@ -389,7 +389,7 @@ export default {
                 this.cid=this.organizationTree.cid;
             }
         },
-        change() {
+        change (){
             this.idArr = [];
             for (let i of this.stragetyCheckList) {
                 let stragetyObj = this.stragety.find(el => {
@@ -399,7 +399,7 @@ export default {
             }
             // console.log(this.stragetyCheckList, this.idArr);
         },
-        submit() {
+        submit (){
             let data1 = JSON.parse(localStorage.data);
             this.$confirm('确认?', {
                 confirmButtonText: '保存',
@@ -428,7 +428,7 @@ export default {
             });
 
         },
-        getTree() {
+        getTree (){
             const params = {
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
@@ -444,7 +444,7 @@ export default {
             });
         },
         //获取百分比数据
-        getTreePrograss(){
+        getTreePrograss (){
             const params = {
                 subject:this.form.subject,
                 ...this.getPeriodByPt(),
@@ -468,7 +468,7 @@ export default {
                 }
             });
         },
-        getProgress() {
+        getProgress (){
             this.loading = true;
             const params = {
                 cid: this.cid,
@@ -490,7 +490,7 @@ export default {
                 this.loading = false;
             });
         },
-        getTrend(subject) {
+        getTrend (subject) {
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -500,7 +500,7 @@ export default {
             return API.GetOrgTrend(params);
         },
         //前端
-        getStructure1() {
+        getStructure1 (){
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -540,7 +540,7 @@ export default {
                 this.loading = false;
             });
         },
-        getDateObj () {
+        getDateObj (){
             const {
                 date
             } = this.form;
@@ -559,7 +559,7 @@ export default {
                 };
             }
         },
-        getPeriodByPt () {
+        getPeriodByPt (){
             const {
                 pt,
                 sDate,
@@ -622,12 +622,12 @@ export default {
                 }
             }
         },
-        nodeExpand(data){
+        nodeExpand (data){
             this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;
         },
-        handleNodeClick(data) {
+        handleNodeClick (data) {
             if (this.searchBarValue.sDate&&this.searchBarValue.eDate){
                 this.val = this.searchBarValue;
                 this.isbac = false;
@@ -649,7 +649,7 @@ export default {
             }
 
         },
-        calculatePercent(a, b) {
+        calculatePercent (a, b) {
             if (b > 0) {
                 const percent = parseInt(a / b * 100);
                 const largerThanOne = (a / b) > 1;
@@ -694,7 +694,7 @@ export default {
                 this.stragetyCheckList = [];
                 this.stragety = res.data;
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].status == 1) {
+                    if (res.data[i].status === 1) {
                         this.stragetyCheckList.push(res.data[i].id);
                         // console.log(this.stragetyCheckList)
                     }

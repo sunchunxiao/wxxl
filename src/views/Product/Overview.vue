@@ -315,7 +315,7 @@ export default {
         }
     },
     methods: {
-        preOrder(node,cid){
+        preOrder (node,cid){
             for (let i of node){
                 if (i.cid == cid) {
                     return i;
@@ -418,7 +418,6 @@ export default {
                         }
                     }
                 }
-                // this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
         getProgress() {
@@ -441,7 +440,6 @@ export default {
         getTrend (subject) {
             const params = {
                 cid: this.cid,
-                // pt: this.form.pt,
                 ...this.getPeriodByPt(),
                 subject: subject
             };
@@ -507,7 +505,7 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
+        handleSearch (val) {
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
@@ -541,20 +539,20 @@ export default {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
                 //如果是根节点
-                if (this.cid==this.productTree.cid){
+                if (this.cid === this.productTree.cid){
                     this.isbac = true;
                     this.highlight = false;
                 }
             }
 
         },
-        nodeExpand(data){
+        nodeExpand (data){
             this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;
         },
         handleNodeClick (data) {
-            if (this.searchBarValue.sDate&&this.searchBarValue.eDate){
+            if (this.searchBarValue.sDate && this.searchBarValue.eDate){
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
@@ -571,7 +569,6 @@ export default {
                     duration: 2000
                 });
             }
-
         },
         calculatePercent (a, b) {
             if (b > 0) {
@@ -615,7 +612,7 @@ export default {
                 this.stragetyCheckList = [];
                 this.stragety = res.data;
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].is_selected == 1) {
+                    if (res.data[i].is_selected === 1) {
                         this.stragetyCheckList.push(res.data[i].id);
                         // console.log(this.stragetyCheckList)
                     }

@@ -685,7 +685,7 @@ export default {
                 this.stragetyCheckList = [];
                 this.stragety = res.data;
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].status == 1) {
+                    if (res.data[i].status === 1) {
                         this.stragetyCheckList.push(res.data[i].id);
                         // console.log(this.stragetyCheckList)
                     }

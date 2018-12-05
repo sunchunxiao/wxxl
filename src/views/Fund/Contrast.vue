@@ -234,9 +234,9 @@ export default {
             let arr = [];
             let arrback = [];
             for(let i = 0; i < this.treeClone.children.length; i++) {
-                if(this.treeClone.children[i].type==1){
+                if(this.treeClone.children[i].type === 1){
                     this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
-                }else if(this.treeClone.children[i].type==2){
+                }else if(this.treeClone.children[i].type === 2){
                     this.treeClone.children[i] && arrback.push(this.treeClone.children[i]);
                 }
             }
@@ -261,9 +261,9 @@ export default {
                 let arr = [];
                 let arrback = [];
                 for(let i = 0; i < children.length; i++) {
-                    if(children[i].type==1){
+                    if(children[i].type === 1){
                         children[i] && arr.push(children[i]);
-                    }else if(children[i].type==2){
+                    }else if(children[i].type === 2){
                         children[i] && arrback.push(children[i]);
                     }
                 }
