@@ -190,15 +190,17 @@ export default {
         sortChange(){
             this.trackList = this.trackList.map(o => {
                 o.visible = false;
-                o.visibleEff=false;
-                o.visibleRate = false;return o;
+                o.visibleEff = false;
+                o.visibleRate = false;
+                return o;
             });
         },
         showEff(val){
             this.trackListEff = [];
+            const effRecord = 1;//是否只返回有效的应用记录 1是 0否
             const params = {
                 strategyId: val.id,
-                goodOnly:1
+                goodOnly:effRecord
             };
             API.GetChannelApplog(params).then(res => {
                 this.trackListEff = res.data;
@@ -206,9 +208,10 @@ export default {
         },
         show(val){
             this.trackListAll = [];
+            const unEffRecord = 0;//是否只返回有效的应用记录 1是 0否(全部)
             const params = {
                 strategyId: val.id,
-                goodOnly:0
+                goodOnly:unEffRecord
             };
             API.GetChannelApplog(params).then(res => {
                 this.trackListAll = res.data;
@@ -225,9 +228,9 @@ export default {
             };
             API.GetChannelStrategy(params).then(res => {
                 this.trackList = res.data.map(o => {
-                    o.visible=false;
-                    o.visibleEff=false;
-                    o.visibleRate=false;
+                    o.visible = false;
+                    o.visibleEff = false;
+                    o.visibleRate = false;
                     return o;
                 });
                 this.total = res.total;

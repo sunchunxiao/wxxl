@@ -249,7 +249,6 @@
 
 <script>
 import API from './api';
-import moment from 'moment';
 import SearchBar from 'components/SearchBar';
 import Card from '../../components/Card';
 // 目标达成情况总览
@@ -328,6 +327,7 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -339,13 +339,14 @@ export default {
         }
     },
     mounted() {
-        if(!this.hasTree) {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
+        if (!this.hasTree) {
             this.getTree();
-        }else{
+        } else {
             this.treeClone = _.cloneDeep(this.organizationTree);
             this.cid = this.organizationTree.cid;
         }
-    // this.initFormDataFromUrl();
     },
     watch: {
         form: {
@@ -362,33 +363,33 @@ export default {
         }
     },
     methods: {
-        preOrder(node,cid){
-            for(let i of node){
+        preOrder (node,cid){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
                 }
             }
         },
-        input (val) {
+        input (val){
             this.form.date = val;
         },
-        click(){
+        click (){
             //点击发送请求清除搜索框
             this.$refs.child.clearKw();
-            if(this.cid==this.organizationTree.cid){
+            if (this.cid === this.organizationTree.cid){
                 return;
-            }else{
+            } else {
                 this.isbac = true;
                 this.highlight = false;
                 this.cid=this.organizationTree.cid;
             }
         },
-        change() {
+        change (){
             this.idArr = [];
             for (let i of this.stragetyCheckList) {
                 let stragetyObj = this.stragety.find(el => {
@@ -396,9 +397,8 @@ export default {
                 });
                 this.idArr.push(stragetyObj.id);
             }
-            // console.log(this.stragetyCheckList, this.idArr);
         },
-        submit() {
+        submit (){
             let data1 = JSON.parse(localStorage.data);
             this.$confirm('确认?', {
                 confirmButtonText: '保存',
@@ -427,14 +427,14 @@ export default {
             });
 
         },
-        getTree() {
+        getTree (){
             const params = {
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
                 version: this.form.version
             };
             API.GetOrgTree(params).then(res => {
-                if(this.organizationTree.cid==undefined){
+                if (!this.organizationTree.cid){
                     this.cid = res.tree.cid;
                 }
                 this.type = res.tree.type;
@@ -443,7 +443,7 @@ export default {
             });
         },
         //获取百分比数据
-        getTreePrograss(){
+        getTreePrograss (){
             const params = {
                 subject:this.form.subject,
                 ...this.getPeriodByPt(),
@@ -452,21 +452,21 @@ export default {
             };
             API.GetOrgTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,obj.cid,this.cid,res.data);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.cid)){
-                        i.real_total = res.data[i.cid].real;
-                        i.target_total = res.data[i.cid].target;
-
+                if (obj.children) {
+                    for (let i of obj.children){
+                        if (res.data.hasOwnProperty(i.cid)){
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
+                        }
                     }
                 }
             });
         },
-        getProgress() {
+        getProgress (){
             this.loading = true;
             const params = {
                 cid: this.cid,
@@ -488,7 +488,7 @@ export default {
                 this.loading = false;
             });
         },
-        getTrend(subject) {
+        getTrend (subject) {
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -498,7 +498,7 @@ export default {
             return API.GetOrgTrend(params);
         },
         //前端
-        getStructure1() {
+        getStructure1 (){
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -506,7 +506,6 @@ export default {
                 rType: 1
             };
             API.GetOrgStructure(params).then(res => {
-                // console.log(res.data);
                 this.$store.dispatch('SaveOrgStructureArr1', res.data);
             });
         },
@@ -538,12 +537,11 @@ export default {
                 this.loading = false;
             });
         },
-        getDateObj () {
+        getDateObj (){
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -557,7 +555,7 @@ export default {
                 };
             }
         },
-        getPeriodByPt () {
+        getPeriodByPt (){
             const {
                 pt,
                 sDate,
@@ -580,31 +578,15 @@ export default {
                 };
             }
         },
-        initFormDataFromUrl() {
-            const {
-                pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-            } = this.$route.query;
-            let formData = {
-                pt: pt,
-                subject: subject,
-            };
-            if (moment(sDate).isValid() && moment(eDate).isValid()) {
-                formData.date = [sDate, eDate];
-            }
-            this.cid = cid;
-            this.form = { ...this.form,
-                ...formData
-            };
-        },
         handleSearch(val) {
             this.highlight = true;
             // 默认公司的背景色
             this.nodeArr = [];
             this.val = val;
-            if(!val.cid){
+            if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid!=this.organizationTree.cid){
+                if (this.cid !== this.organizationTree.cid){
                     this.cid = this.organizationTree.cid;
                     this.treeClone = _.cloneDeep(this.organizationTree);
                 } else {
@@ -615,33 +597,42 @@ export default {
                     this.getRank();
                 }
             } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.getTreePrograss();
+                    this.getProgress();
+                    this.getStructure1();
+                    this.getStructure2();
+                    this.getRank();
+                }
+                this.changeDate = this.searchBarValue;
                 this.isbac = false;
                 this.cid = val.cid;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
                 });
-                if(this.cid==this.organizationTree.cid){
+                if (this.cid === this.organizationTree.cid){
                     this.isbac = true;
                     this.highlight = false;
                 }
             }
         },
-        nodeExpand(data){
+        nodeExpand (data){
             this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;
         },
-        handleNodeClick(data) {
-            if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+        handleNodeClick (data) {
+            if (this.searchBarValue.sDate&&this.searchBarValue.eDate){
                 this.val = this.searchBarValue;
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
                 this.type = data.type;
-                if(this.cid === data.cid){
+                if (this.cid === data.cid){
                     return ;
-                }else if (data.children != undefined) {
+                } else if (data.children) {
                     this.cid = data.cid;
                 }
             } else {
@@ -654,7 +645,7 @@ export default {
             }
 
         },
-        calculatePercent(a, b) {
+        calculatePercent (a, b) {
             if (b > 0) {
                 const percent = parseInt(a / b * 100);
                 const largerThanOne = (a / b) > 1;
@@ -662,7 +653,7 @@ export default {
                     percent,
                     largerThanOne
                 };
-            }else{
+            } else {
                 const percent = 0;
                 const largerThanOne = false;
                 return {
@@ -675,7 +666,6 @@ export default {
             this[`index${i}`] = idx;
         },
         showStragety(data) {
-            // console.log(data)
             localStorage.setItem("data", JSON.stringify(data));
             const {
                 cid,
@@ -685,23 +675,19 @@ export default {
                 time_label,
                 rank
             } = data;
-
-            // console.log(cid, brand, name, rank)
             this.stragetyTitle = `${brand} - ${name} - ${rank}`;
             const params = {
                 cid: cid,
                 subject: subject,
                 time_label: time_label,
             };
-
             API.GetOrgStrategy(params).then(res => {
-                // console.log(res.data)
                 this.stragetyCheckList = [];
                 this.stragety = res.data;
+                const checked = 1;
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].status == 1) {
+                    if (res.data[i].status === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
-                        // console.log(this.stragetyCheckList)
                     }
                 }
             });

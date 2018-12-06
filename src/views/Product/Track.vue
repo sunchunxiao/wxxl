@@ -197,15 +197,17 @@ export default {
         sortChange(){
             this.trackList = this.trackList.map(o => {
                 o.visible = false;
-                o.visibleEff=false;
-                o.visibleRate = false;return o;
+                o.visibleEff = false;
+                o.visibleRate = false;
+                return o;
             });
         },
         showEff(val){
             this.trackListEff = [];
+            const effRecord = 1;//是否只返回有效的应用记录 1是 0否
             const params = {
                 strategyId: val.id,
-                goodOnly:1
+                goodOnly:effRecord
             };
             API.GetProductApplog(params).then(res => {
                 this.trackListEff = res.data;
@@ -213,9 +215,10 @@ export default {
         },
         show(val){
             this.trackListAll = [];
+            const unEffRecord = 0;//是否只返回有效的应用记录 1是 0否(全部)
             const params = {
                 strategyId: val.id,
-                goodOnly:0
+                goodOnly:unEffRecord
             };
             API.GetProductApplog(params).then(res => {
                 this.trackListAll = res.data;
@@ -319,8 +322,6 @@ export default {
             return row[property] === value;
         },
         handleCurrentChange(val) {
-            // console.log(`当前页: ${val}`);
-            // console.log(val)
             this.currentPage = val;
             const params = {
                 page: this.currentPage,

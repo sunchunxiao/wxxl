@@ -44,7 +44,7 @@
               trigger="click"
               placement="top">
               <el-table
-                :data="trackList1">
+                :data="trackListAll">
                 <el-table-column
                   type="index"
                   label="序号" />
@@ -85,7 +85,7 @@
               trigger="click"
               placement="top">
               <el-table
-                :data="trackList1">
+                :data="trackListAll">
                 <el-table-column
                   type="index"
                   label="序号" />
@@ -144,7 +144,7 @@ export default {
             currentPage: 1,
             trackList:[],
             total:0,
-            trackList1:[]
+            trackListAll:[]
         };
     },
     mounted(){
@@ -152,13 +152,16 @@ export default {
     },
     methods: {
         sortChange(){
-            this.trackList = this.trackList.map(o=>{o.visible=false;o.visibleRate = false;return o;});
+            this.trackList = this.trackList.map(o => {
+                o.visible = false;
+                o.visibleRate = false;
+                return o;
+            });
         },
         show(val){
-            // console.log(val);
-            this.trackList1 = [];
+            this.trackListAll = [];
             if(val){
-                this.trackList1.push({
+                this.trackListAll.push({
                     level:"整体人群A-聚类人群A",
                     time:'2018.1.2',
                     rank1:'差',
@@ -180,7 +183,11 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetCusStrategiesTrack(params).then(res => {
-                this.trackList = res.data.map(o=>{o.visible=false;o.visibleRate=false;return o;});
+                this.trackList = res.data.map(o => {
+                    o.visible = false;
+                    o.visibleRate = false;
+                    return o;
+                });
                 this.total = res.total;
             });
         },
