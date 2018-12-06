@@ -73,7 +73,8 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
-            if (val == null){
+            //目标值为null,是未设定,为数值显示数值(0显示0)
+            if (val === null){
                 return "未设定";
             } else {
                 if (_.includes(SUBJECT, subject)){
