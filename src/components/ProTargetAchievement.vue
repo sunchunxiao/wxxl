@@ -94,7 +94,7 @@ export default {
             if (!progress){
                 valuePercent = this.calculateToShow(real);
             } else {
-                valuePercent = parseInt(progress * 100);
+                valuePercent = (progress * 100).toFixed(0);
             }
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
             // 反向指标 颜色需要相反
