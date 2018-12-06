@@ -157,7 +157,6 @@ export default {
             this.trackList = this.trackList.map(o=>{o.visible=false;o.visibleRate = false;return o;});
         },
         show(val){
-            // console.log(val);
             this.trackList1 = [];
             if(val){
                 this.trackList1.push({

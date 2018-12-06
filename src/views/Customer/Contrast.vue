@@ -180,18 +180,18 @@ export default {
         this.debounce = _.debounce(this.getCompare, 1000);
     },
     mounted() {
-        if(this.customerTree.children){
+        if (this.customerTree.children){
             this.cid = this.customerTree.cid;
             this.treeClone = _.cloneDeep(this.customerTree);
             let arr = [];
-            for(let i = 0; i < 3; i++) {
+            for (let i = 0; i < 3; i++) {
                 this.customerTree.children[i] && arr.push(this.customerTree.children[i]);
             }
             const checkKeys = arr.map(i => i.cid);
             this.$store.dispatch('SaveCusTree', this.customerTree).then(() => {
                 this.$refs.tree.setCheckedKeys(checkKeys);
             });
-        }else{
+        } else {
             this.promise();
         }
     },
@@ -217,11 +217,11 @@ export default {
             });
         },
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -246,12 +246,12 @@ export default {
             };
             API.GetCusTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.cid)){
+                for (let i of obj.children){
+                    if (res.data.hasOwnProperty(i.cid)){
                         i.real_total = res.data[i.cid].real;
                         i.target_total = res.data[i.cid].target;
 
@@ -321,7 +321,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -339,13 +339,13 @@ export default {
             this.nodeArr = [];
             this.nodeArr.push(val.cid);
             this.val = val;
-            if(!val.cid){
-                if(this.cid!=this.customerTree.cid){
+            if (!val.cid){
+                if (this.cid!=this.customerTree.cid){
                     this.cid = this.customerTree.cid;
                     this.treeClone = _.cloneDeep(this.customerTree);
                 }
                 this.getCompare();
-            }else{
+            } else {
                 this.cid = val.cid;
             }
         },
@@ -360,7 +360,7 @@ export default {
         },
         handleCheckChange(data, checked) {
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
-            if(!checked && this.cancelKey && data.cid === this.cancelKey) {
+            if (!checked && this.cancelKey && data.cid === this.cancelKey) {
                 return;
             }
             if (checked) { // 如果选中
@@ -397,14 +397,14 @@ export default {
             this[`index${i}`] = idx;
         },
         calculatePercent(a, b) {
-            if(b > 0) {
+            if (b > 0) {
                 const percent = parseInt(a / b * 100);
                 const largerThanOne = (a / b) > 1;
                 return {
                     percent,
                     largerThanOne
                 };
-            }else{
+            } else {
                 const percent = 0;
                 const largerThanOne = false;
                 return {
