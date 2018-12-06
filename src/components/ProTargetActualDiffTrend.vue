@@ -85,7 +85,7 @@ export default {
                 } else {
                     realClone[i] = parseInt(realClone[i] / 100);
                     arr.push({
-                        value:parseInt(targetClone[i]/100),
+                        value:parseInt(targetClone[i] / 100),
                         hasTarget:hasTarget[i]
                     });
                 }
@@ -123,7 +123,7 @@ export default {
                         type: 'line',
                     },
                     position: function(pos){ // point: 鼠标位置
-                        return { left:pos[0]-100, top: pos[1] };
+                        return { left:pos[0] - 100, top: pos[1] };
                     },
                     formatter: function (params) {
                         var result = params[0].axisValue + "<br />";

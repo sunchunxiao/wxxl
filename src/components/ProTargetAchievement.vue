@@ -71,7 +71,7 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
-            if (val==null){
+            if (val == null){
                 return "未设定";
             } else {
                 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率
@@ -79,10 +79,10 @@ export default {
                     return val;
                 }
                 let Tenthousand = val / 10000 / 100;
-                if (Tenthousand>=1){
+                if (Tenthousand >= 1){
                     return (val / 10000 / 100).toFixed(2)+'w';
-                } else if (Tenthousand<1 && Tenthousand>0){
-                    return (val/100).toFixed(2);
+                } else if (Tenthousand < 1 && Tenthousand > 0){
+                    return (val / 100).toFixed(2);
                 }else{
                     return val;
                 }
