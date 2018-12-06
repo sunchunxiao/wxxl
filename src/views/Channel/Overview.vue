@@ -588,7 +588,7 @@ export default {
         },
         calculatePercent (a, b) {
             if (b > 0) {
-                const percent = parseInt(a / b * 100);
+                const percent = (a / b * 100).toFixed(0);
                 const largerThanOne = (a / b) > 1;
                 return {
                     percent,

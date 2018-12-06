@@ -5,6 +5,7 @@
         ref="child"
         @input="input"
         @search="handleSearch"
+        v-model="searchBarValue"
         placeholder="产品编号/产品名称"
         url="/product/search" />
     </el-row>
@@ -153,7 +154,13 @@ export default {
             post:1,
             nodeArr:[],
             highlight:true,
+            searchBarValue: {
+                pt: '',
+                sDate: '',
+                eDate: ''
+            },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -179,6 +186,8 @@ export default {
         this.debounce = _.debounce(this.getCompare, 500);
     },
     mounted() {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if (this.compareArr.length){
             this.cid = this.productTree.cid;
             this.treeClone = _.cloneDeep(this.productTree);
@@ -255,7 +264,6 @@ export default {
                     if (res.data.hasOwnProperty(i.cid)){
                         i.real_total = res.data[i.cid].real;
                         i.target_total = res.data[i.cid].target;
-
                     }
                 }
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
@@ -269,10 +277,10 @@ export default {
             return API.GetProductProgress(params);
         },
         getCompare () {
-            this.loading = true;
             if (!this.cidObjArr.length) {
                 return;
             }
+            this.loading = true;
             const promises = _.map(this.progressArr, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
@@ -336,23 +344,24 @@ export default {
             }
         },
         handleSearch(val) {
-            if(val.cid != this.cid){
-                // 默认公司的背景色
-                this.nodeArr = [];
-                this.val = val;
-                if (!val.cid){
-                    if (this.cid !== this.productTree.cid){
-                        this.cid = this.productTree.cid;
-                        this.treeClone = _.cloneDeep(this.productTree);
-                    }
+            // 默认公司的背景色
+            this.nodeArr = [];
+            this.val = val;
+            if (!val.cid){
+                this.getTreePrograss();
+                this.getCompare();
+            } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.getTreePrograss();
                     this.getCompare();
-                } else {
-                    this.nodeArr.push(val.cid);
-                    this.$nextTick(() => {
-                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                    });
-                    this.cid = val.cid;
                 }
+                this.changeDate = this.searchBarValue;
+                this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                });
+                this.cid = val.cid;
             }
         },
         nodeExpand(data){

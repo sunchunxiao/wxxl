@@ -37,8 +37,8 @@
           empty-text="正在加载"
           :data="treeClone.children"
           :props="defaultProps"
-          :default-expanded-keys="nodeArr"
           @node-expand="nodeExpand"
+          :default-expanded-keys="nodeArr"
           @check-change="handleCheckChange">
           <span
             class="custom-tree-node"

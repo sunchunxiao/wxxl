@@ -36,6 +36,8 @@
           :props="defaultProps"
           node-key="nid"
           show-checkbox
+          :highlight-current="highlight"
+          :default-expanded-keys="nodeArr"
           @node-expand="nodeExpand"
           @check-change="handleCheckChange">
           <span
@@ -152,6 +154,7 @@ export default {
             nodeArr:[],
             cidObjArr:[],
             cancelKey: '',
+            highlight:true,
             searchBarValue: {
                 pt: '',
                 sDate: '',
@@ -183,6 +186,8 @@ export default {
         this.debounce = _.debounce(this.getCompare, 1000);
     },
     mounted() {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if (this.channelCompareArr.length){
             this.cid = this.channelTree.nid;
             this.treeClone = _.cloneDeep(this.channelTree);
@@ -341,12 +346,15 @@ export default {
             this.nodeArr = [];
             this.val = val;
             if (!val.cid){
-                if (this.cid !== this.channelTree.nid){
-                    this.cid = this.channelTree.nid;
-                    this.treeClone = _.cloneDeep(this.channelTree);
-                }
+                this.getTreePrograss();
                 this.getCompare();
             } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.getTreePrograss();
+                    this.getCompare();
+                }
+                this.changeDate = this.searchBarValue;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
