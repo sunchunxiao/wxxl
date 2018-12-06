@@ -159,14 +159,12 @@ export default {
     },
     mounted(){
         this.getProductStrategy();
-    // console.log(this.strategyArr)
     },
     methods: {
         sortChange(){
             this.trackList = this.trackList.map(o=>{o.visible=false;o.visibleRate = false;return o;});
         },
         show(val){
-            // console.log(val);
             this.trackList1 = [];
             if(val){
                 this.trackList1.push({
@@ -272,7 +270,6 @@ export default {
             return row[property] === value;
         },
         handleCurrentChange(val) {
-            // console.log(`当前页: ${val}`);
             this.currentPage = val;
             const params = {
                 page: this.currentPage,

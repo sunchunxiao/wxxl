@@ -174,6 +174,7 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -194,20 +195,22 @@ export default {
         }
     },
     mounted() {
-        if(!this.hasTree) {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
+        if (!this.hasTree) {
             this.getTree();
-        }else{
+        } else {
             this.treeClone = _.cloneDeep(this.fundTree);
             this.cid = this.fundTree.cid;
         }
     },
     methods: {
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -218,9 +221,9 @@ export default {
             this.form.date = val;
         },
         click(){
-            if(this.cid==this.fundTree.cid){
+            if (this.cid === this.fundTree.cid){
                 return;
-            }else{
+            } else {
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
@@ -248,7 +251,7 @@ export default {
                 version: this.form.version
             };
             API.GetFundTree(params).then(res => {
-                if (this.fundTree.cid == undefined) {
+                if (!this.fundTree.cid) {
                     this.cid = res.tree.cid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);
@@ -265,17 +268,15 @@ export default {
             };
             API.GetFundTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,obj.cid,this.cid,res.data);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
                 if (obj.children) {
-                    for(let i of obj.children){
-                        if(res.data.hasOwnProperty(i.cid)){
+                    for (let i of obj.children){
+                        if (res.data.hasOwnProperty(i.cid)){
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
-
                         }
                     }
                 }
@@ -285,8 +286,7 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -337,7 +337,7 @@ export default {
                 return o.subject;
             });
             const newStrategies = _.cloneDeep(strategies);
-            for(let i = 1; i < newStrategies.length; i++) {
+            for (let i = 1; i < newStrategies.length; i++) {
                 let prev = newStrategies[i-1];
                 let current = newStrategies[i];
                 if (current.subject === prev.subject) {
@@ -351,7 +351,7 @@ export default {
             }) => {
                 const rowSpan = group[row.subject].length;
                 if ([0, 3, 4].includes(columnIndex)) {
-                    if(!newStrategies[rowIndex].hidden) {
+                    if (!newStrategies[rowIndex].hidden) {
                         return [rowSpan, 1];
                     } else {
                         return [0, 0];
@@ -364,25 +364,32 @@ export default {
             this.isbac = false;
             this.nodeArr = [];
             this.val = val;
-            if(val.cid!=""){
+            if (!val.cid){
+                this.changeDate = this.searchBarValue;
+                this.isbac = true;
+                this.highlight = false;
+                if (this.cid !== this.fundTree.cid){
+                    this.cid = this.fundTree.cid;
+                    this.treeClone = _.cloneDeep(this.fundTree);
+                } else {
+                    this.getTreePrograss();
+                    this.getHistory();
+                }
+            } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.getTreePrograss();
+                    this.getHistory();
+                }
+                this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree 元素的ref  绑定的node-key
                 });
-                if(this.cid==this.fundTree.cid){
+                if (this.cid === this.fundTree.cid){
                     this.isbac = true;
                     this.highlight = false;
-                }
-            }else{
-                this.isbac = true;
-                this.highlight = false;
-                if(this.cid!=this.fundTree.cid){
-                    this.cid = this.fundTree.cid;
-                    this.treeClone = _.cloneDeep(this.fundTree);
-                }else{
-                    this.getTreePrograss();
-                    this.getHistory();
                 }
             }
         },
@@ -396,9 +403,9 @@ export default {
             this.highlight = true;
             this.$refs.child.clearKw();
             this.type = data.type;
-            if(this.cid === data.cid){
+            if (this.cid === data.cid){
                 return ;
-            }else {
+            } else {
                 this.cid = data.cid;
             }
         },
@@ -406,14 +413,14 @@ export default {
             this[`index${i}`] = idx;
         },
         calculatePercent(a, b) {
-            if(b > 0) {
+            if (b > 0) {
                 const percent = parseInt(a / b * 100);
                 const largerThanOne = (a / b) > 1;
                 return {
                     percent,
                     largerThanOne
                 };
-            }else{
+            } else {
                 const percent = 0;
                 const largerThanOne = false;
                 return {

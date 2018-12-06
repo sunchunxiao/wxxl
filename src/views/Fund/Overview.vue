@@ -249,7 +249,6 @@
 
 <script>
 import API from './api';
-import moment from 'moment';
 import Card from '../../components/Card';
 import SearchBar from 'components/SearchBar';
 // 目标达成情况总览
@@ -325,6 +324,7 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -348,20 +348,22 @@ export default {
         }
     },
     mounted() {
-        if(!this.hasTree) {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
+        if (!this.hasTree) {
             this.getTree();
-        }else{
+        } else {
             this.treeClone = _.cloneDeep(this.fundTree);
             this.cid = this.fundTree.cid;
         }
     },
     methods: {
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -372,9 +374,9 @@ export default {
             this.form.date = val;
         },
         click(){
-            if(this.cid==this.fundTree.cid){
+            if (this.cid === this.fundTree.cid){
                 return;
-            }else{
+            } else {
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
@@ -390,7 +392,6 @@ export default {
                 });
                 this.idArr.push(stragetyObj.id);
             }
-            // console.log(this.stragetyCheckList, this.idArr);
         },
         submit() {
             let data1 = JSON.parse(localStorage.data);
@@ -412,7 +413,6 @@ export default {
                         showClose: true,
                         message: '保存成功'
                     });
-                    // console.log(res.api_info)
                 });
             }).catch(() => {
                 this.$message({
@@ -430,7 +430,7 @@ export default {
                 version: this.form.version
             };
             API.GetFundTree(params).then(res => {
-                if (this.fundTree.cid == undefined) {
+                if (!this.fundTree.cid) {
                     this.cid = res.tree.cid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);
@@ -447,16 +447,16 @@ export default {
             };
             API.GetFundTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,obj.cid,this.cid,res.data);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.cid)){
-                        i.real_total = res.data[i.cid].real;
-                        i.target_total = res.data[i.cid].target;
-
+                if (obj.children) {
+                    for (let i of obj.children){
+                        if (res.data.hasOwnProperty(i.cid)){
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
+                        }
                     }
                 }
             });
@@ -538,8 +538,7 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate  && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -576,39 +575,34 @@ export default {
                 };
             }
         },
-        initFormDataFromUrl() {
-            const {
-                pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-            } = this.$route.query;
-            let formData = {
-                pt: pt,
-                subject: subject,
-            };
-            if (moment(sDate).isValid() && moment(eDate).isValid()) {
-                formData.date = [sDate, eDate];
-            }
-            this.cid = cid;
-            this.form = { ...this.form,...formData };
-        },
         handleSearch(val) {
             // 默认公司的背景色
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
-            if(!val.cid){
+            if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid!=this.fundTree.cid){
+                if (this.cid !== this.fundTree.cid){
                     this.cid = this.fundTree.cid;
                     this.treeClone = _.cloneDeep(this.fundTree);
-                }else{
+                } else {
                     this.getTreePrograss();
                     this.getProgress();
                     this.getStructure1();
                     this.getStructure2();
                     this.getRank();
                 }
-            }else{
+            } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.getTreePrograss();
+                    this.getProgress();
+                    this.getStructure1();
+                    this.getStructure2();
+                    this.getRank();
+                }
+                this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
                 this.isbac = false;
                 this.nodeArr.push(val.cid);
@@ -623,15 +617,24 @@ export default {
             this.highlight = true;
         },
         handleNodeClick(data) {
-            this.isbac = false;
-            //   this.highlight = true;
-            this.$refs.child.clearKw();
-            this.type = data.type;
-            if(this.cid === data.cid){
-                return ;
-            }else if (data.children != undefined) {
-                this.cid = data.cid;
+            if (this.searchBarValue.sDate&&this.searchBarValue.eDate){
+                this.isbac = false;
+                this.$refs.child.clearKw();
+                this.type = data.type;
+                if(this.cid === data.cid){
+                    return ;
+                }else if (data.children) {
+                    this.cid = data.cid;
+                }
+            } else {
+                this.highlight = false;
+                this.$message({
+                    type: 'error',
+                    message: '请选择日期',
+                    duration: 2000
+                });
             }
+
         },
         calculatePercent(a, b) {
             if(b > 0) {
@@ -641,7 +644,7 @@ export default {
                     percent,
                     largerThanOne
                 };
-            }else{
+            } else {
                 const percent = 0;
                 const largerThanOne = false;
                 return {
@@ -655,7 +658,6 @@ export default {
             this[`index${i}`] = idx;
         },
         showStragety(data) {
-            // console.log(data)
             localStorage.setItem("data", JSON.stringify(data));
             const {
                 cid,
@@ -665,25 +667,21 @@ export default {
                 time_label,
                 rank
             } = data;
-            // console.log(cid, brand, name, rank);
             this.stragetyTitle = `${brand} - ${name} - ${rank}`;
             const params = {
                 cid: cid,
                 subject: subject,
                 time_label: time_label,
             };
-
             API.GetFundStrategy(params).then(res => {
-                // console.log(res.data)
                 this.stragetyCheckList = [];
                 this.stragety = res.data;
+                const checked = 1;//1是选中,0是不选中
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].status == 1) {
+                    if (res.data[i].status === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
-                        // console.log(this.stragetyCheckList)
                     }
                 }
-                // this.$store.dispatch('SaveRankArr', res.data);
             });
 
         }

@@ -171,6 +171,7 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -191,6 +192,8 @@ export default {
         }
     },
     mounted() {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if(!this.hasTree) {
             this.getTree();
         }else{
@@ -215,7 +218,7 @@ export default {
             this.form.date = val;
         },
         click(){
-            if(this.cid==this.customerTree.cid){
+            if(this.cid === this.customerTree.cid){
                 return;
             }else{
                 //点击发送请求清除搜索框
@@ -246,7 +249,7 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetCusTree(params).then(res => {
-                if(this.customerTree.cid==undefined){
+                if (!this.customerTree.cid){
                     this.cid = res.tree.cid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);
@@ -263,13 +266,13 @@ export default {
             API.GetCusTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
                 // console.log(obj,obj.cid,this.cid,res.data);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
                 if (obj.children) {
-                    for(let i of obj.children){
-                        if(res.data.hasOwnProperty(i.cid)){
+                    for (let i of obj.children){
+                        if (res.data.hasOwnProperty(i.cid)){
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
                         }
@@ -305,7 +308,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -347,7 +350,7 @@ export default {
             }) => {
                 const rowSpan = group[row.subject].length;
                 if ([0, 3, 4].includes(columnIndex)) {
-                    if(!newStrategies[rowIndex].hidden) {
+                    if (!newStrategies[rowIndex].hidden) {
                         return [rowSpan, 1];
                     } else {
                         return [0, 0];
@@ -360,24 +363,30 @@ export default {
             this.isbac = false;
             this.nodeArr = [];
             this.val = val;
-            if(!val.cid){
+            if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid!=this.customerTree.cid){
+                if (this.cid !== this.customerTree.cid){
                     this.cid = this.customerTree.cid;
                     this.treeClone = _.cloneDeep(this.customerTree);
-                }else{
+                } else {
                     this.getTreePrograss();
                     this.getHistory();
                 }
-            }else{
+            } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.getTreePrograss();
+                    this.getHistory();
+                }
+                this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref
                 });
                 //根节点添加样式
-                if(this.cid==this.customerTree.cid){
+                if (this.cid === this.customerTree.cid){
                     this.isbac = true;
                     this.highlight = false;
                 }
@@ -389,21 +398,17 @@ export default {
             this.highlight = true;
         },
         handleNodeClick(data) {
-            if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+            if (this.searchBarValue.sDate && this.searchBarValue.eDate){
                 this.val = this.searchBarValue;
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
-                if(this.cid === data.cid){
+                if (this.cid === data.cid){
                     return ;
-                }else{
+                } else {
                     this.cid = data.cid;
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
                 }
-            }else{
+            } else {
                 this.highlight = false;
                 this.$message({
                     type: 'error',
@@ -419,14 +424,14 @@ export default {
             this[`index${i}`] = idx;
         },
         calculatePercent(a, b) {
-            if(b > 0) {
+            if (b > 0) {
                 const percent = parseInt(a / b * 100);
                 const largerThanOne = (a / b) > 1;
                 return {
                     percent,
                     largerThanOne
                 };
-            }else{
+            } else {
                 const percent = 0;
                 const largerThanOne = false;
                 return {

@@ -217,7 +217,6 @@
 
 <script>
 import API from './api';
-import moment from 'moment';
 import Card from '../../components/Card';
 import SearchBar from 'components/SearchBar';
 // 目标达成情况总览
@@ -293,6 +292,7 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -302,13 +302,14 @@ export default {
         }
     },
     mounted() {
-        if(!this.hasTree) {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
+        if (!this.hasTree) {
             this.getTree();
-        }else{
+        } else {
             this.treeClone = _.cloneDeep(this.customerTree);
             this.cid = this.customerTree.cid;
         }
-    // this.initFormDataFromUrl();
     },
     watch: {
         form: {
@@ -325,11 +326,11 @@ export default {
     },
     methods: {
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -340,7 +341,7 @@ export default {
             this.form.date = val;
         },
         click(){
-            if(this.cid==this.customerTree.cid){
+            if (this.cid === this.customerTree.cid){
                 return;
             }else{
                 //点击发送请求清除搜索框
@@ -397,7 +398,7 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetCusTree(params).then(res => {
-                if(this.customerTree.cid==undefined){
+                if (!this.customerTree.cid){
                     this.cid = res.tree.cid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);
@@ -412,17 +413,20 @@ export default {
             };
             API.GetCusTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.cid)){
-                        i.real_total = res.data[i.cid].real;
-                        i.target_total = res.data[i.cid].target;
+                if (obj.children) {
+                    for (let i of obj.children){
+                        if (res.data.hasOwnProperty(i.cid)){
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
 
+                        }
                     }
                 }
+
             });
         },
         getProgress() {
@@ -482,7 +486,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -516,29 +520,15 @@ export default {
                 };
             }
         },
-        initFormDataFromUrl() {
-            const {
-                pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-            } = this.$route.query;
-            let formData = {
-                pt: pt,
-                subject: subject,
-            };
-            if (moment(sDate).isValid() && moment(eDate).isValid()) {
-                formData.date = [sDate, eDate];
-            }
-            this.cid = cid;
-            this.form = { ...this.form,...formData };
-        },
         handleSearch(val) {
             // 默认公司的背景色
             this.isbac = false;
             this.nodeArr = [];
             this.val = val;
-            if(!val.cid){
+            if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid!=this.customerTree.cid){
+                if (this.cid !== this.customerTree.cid){
                     this.cid = this.customerTree.cid;
                     this.treeClone = _.cloneDeep(this.customerTree);
                 } else {
@@ -548,12 +538,20 @@ export default {
                     this.getRank();
                 }
             } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.getTreePrograss();
+                    this.getProgress();
+                    this.getStructure();
+                    this.getRank();
+                }
+                this.changeDate = this.searchBarValue;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref
                 });
                 this.cid = val.cid;
-                if(this.cid==this.customerTree.cid){
+                if (this.cid === this.customerTree.cid){
                     this.isbac = true;
                     this.highlight = false;
                 }
@@ -565,17 +563,17 @@ export default {
             this.highlight = true;
         },
         handleNodeClick(data) {
-            if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+            if (this.searchBarValue.sDate && this.searchBarValue.eDate){
                 this.val = this.searchBarValue;
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
-                if(this.cid === data.cid){
+                if (this.cid === data.cid){
                     return ;
-                }else if(data.children != undefined) {
+                } else if (data.children) {
                     this.cid = data.cid;
                 }
-            } else{
+            } else {
                 this.highlight = false;
                 this.$message({
                     type: 'error',
@@ -592,7 +590,7 @@ export default {
                     percent,
                     largerThanOne
                 };
-            }else{
+            } else {
                 const percent = 0;
                 const largerThanOne = false;
                 return {
@@ -615,22 +613,19 @@ export default {
                 time_label,
                 rank
             } = data;
-            // console.log(cid, brand, name, rank);
             this.stragetyTitle = `${brand} - ${name} - ${rank}`;
             const params = {
                 cid: cid,
                 subject: subject,
                 time_label: time_label,
             };
-
             API.GetCusStrategy(params).then(res => {
-                // console.log(res.data)
                 this.stragetyCheckList = [];
                 this.stragety = res.data;
+                const checked = 1;
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].status == 1) {
+                    if (res.data[i].status === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
-                        // console.log(this.stragetyCheckList)
                     }
                 }
             });

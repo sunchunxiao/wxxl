@@ -290,6 +290,7 @@ export default {
                 eDate: ''
             },
             treeClone: {},
+            changeDate:{}
         };
     },
     computed: {
@@ -312,13 +313,14 @@ export default {
         }
     },
     mounted () {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if (!this.hasTree) {
             this.getTree();
         } else {
             this.treeClone = _.cloneDeep(this.channelTree);
             this.cid = this.channelTree.nid;
         }
-    // this.initFormDataFromUrl();
     },
     methods: {
         preOrder (node, cid) {
@@ -337,7 +339,7 @@ export default {
             this.form.date = val;
         },
         click () {
-            if (this.cid == this.channelTree.nid) {
+            if (this.cid === this.channelTree.nid) {
                 return;
             } else {
                 //点击发送请求清除搜索框
@@ -356,7 +358,6 @@ export default {
                 });
                 this.idArr.push(stragetyObj.id);
             }
-            // console.log(this.stragetyCheckList, this.idArr);
         },
         submit () {
             let data1 = JSON.parse(localStorage.data);
@@ -401,7 +402,7 @@ export default {
                 version: this.form.version
             };
             API.GetChannelTree(params).then(res => {
-                if (this.channelTree.cid == undefined) {
+                if (!this.channelTree.cid) {
                     this.cid = res.tree.nid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);
@@ -417,16 +418,16 @@ export default {
             };
             API.GetChannelTreePrograss(params).then(res => {
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,this.cid,res.data);
-                if (obj.nid == this.cid) {
+                if (obj.nid === this.cid) {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for (let i of obj.children) {
-                    if (res.data.hasOwnProperty(i.nid)) {
-                        i.real_total = res.data[i.nid].real;
-                        i.target_total = res.data[i.nid].target;
-
+                if (obj.children) {
+                    for (let i of obj.children) {
+                        if (res.data.hasOwnProperty(i.nid)) {
+                            i.real_total = res.data[i.nid].real;
+                            i.target_total = res.data[i.nid].target;
+                        }
                     }
                 }
             });
@@ -488,8 +489,7 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate ) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -523,20 +523,6 @@ export default {
                 };
             }
         },
-        initFormDataFromUrl () {
-            const {
-                pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-            } = this.$route.query;
-            let formData = {
-                pt: pt,
-                subject: subject,
-            };
-            if (moment(sDate).isValid() && moment(eDate).isValid()) {
-                formData.date = [sDate, eDate];
-            }
-            this.cid = cid;
-            this.form = { ...this.form,...formData };
-        },
         handleSearch (val) {
             this.highlight = true;
             this.nodeArr = [];
@@ -544,23 +530,31 @@ export default {
             if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid != this.channelTree.nid) {
+                if (this.cid !== this.channelTree.nid) {
                     this.cid = this.channelTree.nid;
                     this.treeClone = _.cloneDeep(this.channelTree);
-                }else{
+                } else {
                     this.getTreePrograss();
                     this.getProgress();
                     this.getStructure();
                     this.getRank();
                 }
             } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.getTreePrograss();
+                    this.getProgress();
+                    this.getStructure();
+                    this.getRank();
+                }
+                this.changeDate = this.searchBarValue;
                 this.isbac = false;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
                 this.cid = val.cid;
-                if (this.cid == this.channelTree.nid) {
+                if (this.cid === this.channelTree.nid) {
                     this.isbac = true;
                     this.highlight = false;
                 }
@@ -579,7 +573,7 @@ export default {
                 this.$refs.child.clearKw();
                 if (this.cid === data.nid) {
                     return;
-                } else if (data.children != undefined) {
+                } else if (data.children) {
                     this.cid = data.nid;
                 }
             } else {
@@ -622,7 +616,6 @@ export default {
                 time_label,
                 rank
             } = data;
-            // console.log(cid, brand, name, rank);
             this.stragetyTitle = `${brand} - ${name} - ${rank}`;
             const params = {
                 nid: cid,
@@ -633,10 +626,10 @@ export default {
             API.GetChannelMatch(params).then(res => {
                 this.stragetyCheckList = [];
                 this.stragety = res.data;
+                const checked = 1;
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].is_selected == 1) {
+                    if (res.data[i].is_selected === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
-                        // console.log(this.stragetyCheckList)
                     }
                 }
             });
