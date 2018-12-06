@@ -21,6 +21,8 @@
 <script>
 import echarts from 'plugins/echarts';
 
+//ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率
+const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR'];
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
 const COLORMAP = { over: '#b12725', below: '#308db9' };
 const colorLeft = '#E0E3E9';
@@ -74,8 +76,7 @@ export default {
             if (val == null){
                 return "未设定";
             } else {
-                //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率
-                if (_.includes(['ITO','ROI','SKU','PER','SHP','RY','POR'], subject)){
+                if (_.includes(SUBJECT, subject)){
                     return val;
                 }
                 let Tenthousand = val / 10000 / 100;

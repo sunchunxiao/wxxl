@@ -322,8 +322,6 @@ export default {
             return row[property] === value;
         },
         handleCurrentChange(val) {
-            // console.log(`当前页: ${val}`);
-            // console.log(val)
             this.currentPage = val;
             const params = {
                 page: this.currentPage,

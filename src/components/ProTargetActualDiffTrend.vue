@@ -9,7 +9,8 @@
 
 <script>
 import echarts from 'plugins/echarts';
-
+//ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率
+const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR'];
 export default {
     props: {
         id: String,
@@ -54,8 +55,7 @@ export default {
         },
         calculateToShow (val) {
             const { subject } = this.data;
-            //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率
-            if (_.includes(['ITO','ROI','SKU','PER','SHP','RY','POR'], subject)){
+            if (_.includes(SUBJECT, subject)){
                 return val;
             }
             let Tenthousand = parseInt(val / 10000);
@@ -75,9 +75,9 @@ export default {
             const underTarget = [];
             const realClone = _.cloneDeep(real);
             const targetClone = _.cloneDeep(target);
-            for (let i=0;i<hasTarget.length;i++){
+            for (let i = 0;i < hasTarget.length;i++){
                 //POR人员冗余
-                if (_.includes(['ITO','ROI','SKU','PER','SHP','RY','POR'],subject)) {
+                if (_.includes(SUBJECT,subject)) {
                     arr.push({
                         value:targetClone[i],
                         hasTarget:hasTarget[i]
