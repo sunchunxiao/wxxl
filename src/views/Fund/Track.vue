@@ -44,7 +44,7 @@
               trigger="click"
               placement="top">
               <el-table
-                :data="trackList1">
+                :data="trackListAll">
                 <el-table-column
                   type="index"
                   label="序号" />
@@ -85,7 +85,7 @@
               trigger="click"
               placement="top">
               <el-table
-                :data="trackList1">
+                :data="trackListAll">
                 <el-table-column
                   type="index"
                   label="序号" />
@@ -147,7 +147,7 @@ export default {
             trackList:[],
             total:0,
             arr:[],
-            trackList1:[]
+            trackListAll:[]
         };
     },
 
@@ -162,12 +162,16 @@ export default {
     },
     methods: {
         sortChange(){
-            this.trackList = this.trackList.map(o=>{o.visible=false;o.visibleRate = false;return o;});
+            this.trackList = this.trackList.map(o => {
+                o.visible = false;
+                o.visibleRate = false;
+                return o;
+            });
         },
         show(val){
-            this.trackList1 = [];
+            this.trackListAll = [];
             if(val){
-                this.trackList1.push({
+                this.trackListAll.push({
                     level:"事业部A-部门A",
                     time:'2018.1.2',
                     rank1:'差',
@@ -188,7 +192,11 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetFundStrategiesTrack(params).then(res => {
-                this.trackList = res.data.map(o=>{o.visible=false;o.visibleRate=false;return o;});
+                this.trackList = res.data.map(o => {
+                    o.visible = false;
+                    o.visibleRate = false;
+                    return o;
+                });
                 this.total = res.total;
             });
         },
