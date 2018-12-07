@@ -85,8 +85,8 @@ export default {
             var valuePercent;
             if (!progress){
                 valuePercent = this.calculateToShow(real);
-                if(valuePercent<0){
-                    valuePercent =null;
+                if(valuePercent < 0){
+                    valuePercent = null;
                 }
             } else {
                 valuePercent = (progress * 100).toFixed(0);
@@ -144,7 +144,7 @@ export default {
                         label: {
                             normal: {
                                 formatter: function(data){
-                                    //prograss为null时显示实际值,0和数值都显示百分比
+                                    //progress为null时显示实际值,0和数值都显示百分比
                                     if (progress === null){
                                         if(data.value === null){
                                             return '';
@@ -154,7 +154,7 @@ export default {
                                         if(data.value === null){
                                             return '';
                                         }
-                                        return data.value+"%";
+                                        return data.value + "%";
                                     }
                                 },
                                 textStyle: {
