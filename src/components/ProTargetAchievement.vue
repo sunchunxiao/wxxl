@@ -92,11 +92,18 @@ export default {
         },
         renderChart(data) {
             const { subject, subject_name, progress ,real } = data;
-            var valuePercent;
+            var valuePercent,value={};
             if (!progress){
                 valuePercent = this.calculateToShow(real);
+                value.realValue = valuePercent;
+                if(valuePercent<0){
+                    valuePercent =null;
+                }
+                value.value = valuePercent;
             } else {
                 valuePercent = (progress * 100).toFixed(0);
+                value.realValue = valuePercent;
+                value.value = valuePercent;
             }
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
             // 反向指标 颜色需要相反
@@ -111,8 +118,11 @@ export default {
                     trigger: 'item',
                     formatter: function(params){
                         var result = [];
+                        if(params.value==null){
+                            return;
+                        }
                         if (!progress){
-                            result += params.marker + " " + params.name + " : " + params.value + "</br>";
+                            result += params.marker + " " + params.name + " : " +  params.value+"</br>";
                         } else {
                             result += params.marker + " " + params.name + " : " + params.value+
                 '%' + "</br>";
@@ -150,8 +160,14 @@ export default {
                             normal: {
                                 formatter: function(data){
                                     if (!progress){
+                                        if(data.value==null){
+                                            return '';
+                                        }
                                         return data.value;
                                     } else {
+                                        if(data.value==null){
+                                            return '';
+                                        }
                                         return data.value+"%";
                                     }
                                 },
