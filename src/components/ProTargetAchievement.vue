@@ -108,10 +108,9 @@ export default {
                             return;
                         }
                         if (!progress){
-                            result += params.marker + " " + params.name + " : " +  params.value+"</br>";
+                            result += params.marker + " " + params.name + " : " + params.value + "</br>";
                         } else {
-                            result += params.marker + " " + params.name + " : " + params.value+
-                '%' + "</br>";
+                            result += params.marker + " " + params.name + " : " + params.value + '%' + "</br>";
                         }
                         return result;
                     },
