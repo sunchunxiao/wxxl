@@ -6,14 +6,12 @@
     <div class="detail">
       <span class="text">目标: </span>
       <span class="value">{{ target }}</span>
-      <!-- &nbsp;<span>{{ unit }}</span> -->
     </div>
     <div class="detail">
       <span class="text">实际: </span>
       <span
         class="value"
         :style="{color: color}">{{ real }}</span>
-        <!-- &nbsp;<span>{{ unit }}</span> -->
     </div>
   </div>
 </template>
@@ -41,14 +39,6 @@ export default {
         };
     },
     computed: {
-        // unit() {
-        //     const { subject } = this.data;
-        //     if (_.includes(['ROI','NIR','CTR'],subject)) { // 投入产出比ROI %
-        //         return '%';
-        //     } else if (subject === 'ITO') { // 库存周转率不需要单位
-        //         return '';
-        //     }
-        // },
         real() {
             const { real } = this.data;
             return this.calculateToShow(real);
@@ -92,18 +82,14 @@ export default {
         },
         renderChart(data) {
             const { subject, subject_name, progress ,real } = data;
-            var valuePercent,value={};
+            var valuePercent;
             if (!progress){
                 valuePercent = this.calculateToShow(real);
-                value.realValue = valuePercent;
                 if(valuePercent<0){
                     valuePercent =null;
                 }
-                value.value = valuePercent;
             } else {
                 valuePercent = (progress * 100).toFixed(0);
-                value.realValue = valuePercent;
-                value.value = valuePercent;
             }
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
             // 反向指标 颜色需要相反
@@ -118,7 +104,7 @@ export default {
                     trigger: 'item',
                     formatter: function(params){
                         var result = [];
-                        if(params.value==null){
+                        if(params.value === null){
                             return;
                         }
                         if (!progress){
@@ -159,13 +145,14 @@ export default {
                         label: {
                             normal: {
                                 formatter: function(data){
-                                    if (!progress){
-                                        if(data.value==null){
+                                    //prograss为null时显示实际值,0和数值都显示百分比
+                                    if (progress === null){
+                                        if(data.value === null){
                                             return '';
                                         }
                                         return data.value;
                                     } else {
-                                        if(data.value==null){
+                                        if(data.value === null){
                                             return '';
                                         }
                                         return data.value+"%";

@@ -382,7 +382,6 @@ export default {
         //树结构
         getTree () {
             const params = {
-                // pt: this.form.pt,
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
             };
