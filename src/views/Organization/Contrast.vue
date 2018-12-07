@@ -145,7 +145,8 @@ import SearchBar from 'components/SearchBar';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
-
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
@@ -176,10 +177,10 @@ export default {
             },
             loading: false,
             cid: '',
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             index0: 0,
             index1: 0,
-            length: 0,
             type: 3,
             val: {},
             post: 1,
@@ -187,7 +188,6 @@ export default {
             cidObjArr: [],
             cidObjBackArr: [],
             cancelKey: '',
-            isFirstLoad: true,
             debounce: null,
             debounceBack: null,
             searchBarValue: {
@@ -543,23 +543,6 @@ export default {
         clickIndex (i, idx) {
             this[`index${i}`] = idx;
 
-        },
-        calculatePercent (a, b) {
-            if (b > 0) {
-                const percent = (a / b * 100).toFixed(0) - 0;//将percent转化为number
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            } else {
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
         },
     }
 };
