@@ -382,7 +382,6 @@ export default {
         //树结构
         getTree () {
             const params = {
-                // pt: this.form.pt,
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
             };
@@ -568,7 +567,7 @@ export default {
         },
         calculatePercent (a, b) {
             if (b > 0) {
-                const percent = (a / b * 100).toFixed(0);
+                const percent = (a / b * 100).toFixed(0) - 0;//将percent转化为number
                 const largerThanOne = (a / b) > 1;
                 return {
                     percent,
@@ -613,7 +612,6 @@ export default {
                     }
                 }
             });
-
         }
     }
 };

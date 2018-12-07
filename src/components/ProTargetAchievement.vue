@@ -6,14 +6,12 @@
     <div class="detail">
       <span class="text">目标: </span>
       <span class="value">{{ target }}</span>
-      <!-- &nbsp;<span>{{ unit }}</span> -->
     </div>
     <div class="detail">
       <span class="text">实际: </span>
       <span
         class="value"
         :style="{color: color}">{{ real }}</span>
-        <!-- &nbsp;<span>{{ unit }}</span> -->
     </div>
   </div>
 </template>
@@ -41,14 +39,6 @@ export default {
         };
     },
     computed: {
-        // unit() {
-        //     const { subject } = this.data;
-        //     if (_.includes(['ROI','NIR','CTR'],subject)) { // 投入产出比ROI %
-        //         return '%';
-        //     } else if (subject === 'ITO') { // 库存周转率不需要单位
-        //         return '';
-        //     }
-        // },
         real() {
             const { real } = this.data;
             return this.calculateToShow(real);
@@ -95,6 +85,9 @@ export default {
             var valuePercent;
             if (!progress){
                 valuePercent = this.calculateToShow(real);
+                if(valuePercent < 0){
+                    valuePercent = null;
+                }
             } else {
                 valuePercent = (progress * 100).toFixed(0);
             }
@@ -111,11 +104,13 @@ export default {
                     trigger: 'item',
                     formatter: function(params){
                         var result = [];
+                        if(params.value === null){
+                            return;
+                        }
                         if (!progress){
                             result += params.marker + " " + params.name + " : " + params.value + "</br>";
                         } else {
-                            result += params.marker + " " + params.name + " : " + params.value+
-                '%' + "</br>";
+                            result += params.marker + " " + params.name + " : " + params.value + '%' + "</br>";
                         }
                         return result;
                     },
@@ -149,10 +144,17 @@ export default {
                         label: {
                             normal: {
                                 formatter: function(data){
-                                    if (!progress){
+                                    //progress为null时显示实际值,0和数值都显示百分比
+                                    if (progress === null){
+                                        if(data.value === null){
+                                            return '';
+                                        }
                                         return data.value;
                                     } else {
-                                        return data.value+"%";
+                                        if(data.value === null){
+                                            return '';
+                                        }
+                                        return data.value + "%";
                                     }
                                 },
                                 textStyle: {
