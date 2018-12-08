@@ -82,7 +82,7 @@ export default {
         },
         renderChart(data) {
             const { subject, subject_name, progress ,real } = data;
-            var valuePercent;
+            let valuePercent;
             if (!progress){
                 valuePercent = this.calculateToShow(real);
                 if(valuePercent < 0){
@@ -200,7 +200,7 @@ export default {
                                 textStyle: {
                                     fontSize: FONTSIZE2,
                                     fontWeight: FONTWEIGHT,
-                                    color: color,
+                                    color: '#000',
                                 }
                             }
                         }

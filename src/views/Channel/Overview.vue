@@ -185,6 +185,7 @@
                 <el-col :span="14">
                   <IntelligentSelection
                     id="heatmap"
+                    @changeTime="changeTime"
                     @showStragety="showStragety"
                     :data="channelRankArr" />
                 </el-col>
@@ -328,13 +329,13 @@ export default {
         }
     },
     methods: {
-        allRequest(){
+        allRequest() {
             this.getTreePrograss();
             this.getProgress();
             this.getStructure();
             this.getRank();
         },
-        preOrder (node, cid) {
+        preOrder(node, cid) {
             for (let i of node) {
                 if (i.nid == cid) {
                     return i;
@@ -346,10 +347,10 @@ export default {
                 }
             }
         },
-        input (val) {
+        input(val) {
             this.form.date = val;
         },
-        click () {
+        click() {
             if (this.cid === this.channelTree.nid) {
                 return;
             } else {
@@ -361,7 +362,7 @@ export default {
             }
 
         },
-        change () {
+        change() {
             this.idArr = [];
             for (let i of this.stragetyCheckList) {
                 let stragetyObj = this.stragety.find(el => {
@@ -370,43 +371,51 @@ export default {
                 this.idArr.push(stragetyObj.id);
             }
         },
-        submit () {
+        submit() {
             let data1 = JSON.parse(localStorage.data);
-            this.$confirm('确认?', {
-                confirmButtonText: '保存',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-            }).then(() => {
-                const data = {
-                    nid: data1.cid,
-                    rank: data1.rank,
-                    subject: data1.subject,
-                    time_label: data1.time_label,
-                    strategies: this.idArr.join(',')
-                };
-                API.PostChannelSave(data).then(() => {
-                    this.$message({
-                        type: 'success',
-                        showClose: true,
-                        message: '保存成功'
+            if(this.stragety.length){
+                this.$confirm('确认?', {
+                    confirmButtonText: '保存',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    const data = {
+                        nid: data1.cid,
+                        rank: data1.rank,
+                        subject: data1.subject,
+                        time_label: data1.time_label,
+                        strategies: this.idArr.join(',')
+                    };
+                    API.PostChannelSave(data).then(() => {
+                        this.$message({
+                            type: 'success',
+                            showClose: true,
+                            message: '保存成功'
+                        });
+                    }).catch(() => {
+                        this.$message({
+                            type: 'error',
+                            message: '保存失败',
+                            duration: 1500
+                        });
                     });
                 }).catch(() => {
                     this.$message({
-                        type: 'error',
-                        message: '保存失败',
+                        type: 'info',
+                        message: '已取消',
                         duration: 1500
                     });
                 });
-            }).catch(() => {
+            }else{
                 this.$message({
-                    type: 'info',
-                    message: '已取消',
-                    duration: 1500
+                    type: 'error',
+                    message: '无应用策略',
+                    duration: 2000
                 });
-            });
+            }
         },
-        getTree () {
+        getTree() {
             const params = {
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
@@ -415,7 +424,7 @@ export default {
             API.GetChannelTree(params).then(res => {
                 if(res.tree){
                     if (!this.channelTree || !this.channelTree.cid) {
-                        this.cid = res.tree.cid;
+                        this.cid = res.tree.nid;
                     }
                     this.treeClone = _.cloneDeep(res.tree);
                 }
@@ -423,7 +432,7 @@ export default {
             });
         },
         //获取百分比数据
-        getTreePrograss () {
+        getTreePrograss() {
             const params = {
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
@@ -445,7 +454,7 @@ export default {
                 }
             });
         },
-        getProgress () {
+        getProgress() {
             this.loading = true;
             const params = {
                 chId: this.cid,
@@ -465,7 +474,7 @@ export default {
                 this.loading = false;
             });
         },
-        getTrend (subject) {
+        getTrend(subject) {
             const params = {
                 chId: this.cid,
                 ...this.getPeriodByPt(),
@@ -473,7 +482,7 @@ export default {
             };
             return API.GetChannelTrend(params);
         },
-        getStructure () {
+        getStructure() {
             this.loading = true;
             const params = {
                 chId: this.cid,
@@ -486,7 +495,7 @@ export default {
                 this.loading = false;
             });
         },
-        getRank () {
+        getRank() {
             this.loading = true;
             const params = {
                 chId: this.cid,
@@ -498,7 +507,7 @@ export default {
                 this.loading = false;
             });
         },
-        getDateObj () {
+        getDateObj() {
             const {
                 date
             } = this.form;
@@ -516,7 +525,7 @@ export default {
                 };
             }
         },
-        getPeriodByPt () {
+        getPeriodByPt() {
             const {
                 pt,
                 sDate,
@@ -536,7 +545,7 @@ export default {
                 };
             }
         },
-        handleSearch (val) {
+        handleSearch(val) {
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
@@ -572,12 +581,12 @@ export default {
                 }
             }
         },
-        nodeExpand (data) {
+        nodeExpand(data) {
             this.cid = data.nid;
             this.isbac = false;
             this.highlight = true;
         },
-        handleNodeClick (data) {
+        handleNodeClick(data) {
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.val = this.searchBarValue;
                 this.isbac = false;
@@ -598,10 +607,14 @@ export default {
             }
 
         },
-        clickIndex (i, idx) {
+        clickIndex(i, idx) {
             this[`index${i}`] = idx;
         },
-        showStragety (data) {
+        changeTime() {
+            this.stragetyTitle = '';
+            this.stragety = [];
+        },
+        showStragety(data) {
             localStorage.setItem("data", JSON.stringify(data));
             const {
                 cid,
@@ -620,15 +633,16 @@ export default {
             };
             API.GetChannelMatch(params).then(res => {
                 this.stragetyCheckList = [];
+                this.idArr = [];
                 this.stragety = res.data;
                 const checked = 1;
                 for (let i = 0; i < res.data.length; i++) {
                     if (res.data[i].is_selected === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
+                        this.idArr.push(res.data[i].id);
                     }
                 }
             });
-
         }
     }
 };

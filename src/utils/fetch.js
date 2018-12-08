@@ -21,9 +21,9 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(config => {
     // Do something before request is sent
-    //if (getToken()) {
-    //  config.headers['Authorization'] = getToken(); // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
-    //}
+    if (getToken()) {
+        config.headers['Authorization'] = getToken(); // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
+    }
     return config;
 }, error => {
     // Do something with request error
@@ -53,11 +53,11 @@ service.interceptors.response.use(response => {
 },
 error => {
     // eslint-disable-next-line no-console
-    console.log('AFTER_RESPONSE_RETURN_ERROR', error); // for debug
+    console.log('AFTER_RESPONSE_RETURN_ERROR', error.response); // for debug
     if (error.code === "ECONNABORTED") {
         Message({ message: '请求超时', type: 'error', duration: MESSAGEDURATION });
     } else {
-        Message({ message: error.message, type: 'error', duration: MESSAGEDURATION });
+        Message({ message: _.get(error, 'response.data.api_info.message') || error.message, type: 'error', duration: MESSAGEDURATION });
     }
     return Promise.reject(error);
 }

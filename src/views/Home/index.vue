@@ -390,36 +390,30 @@ export default {
         }
     },
     mounted() {
-        //公司
-        this.getOverviewProgress();
-        this.getProductProgress();
-        this.getChannelProgress();
-        // 组织
-        this.getOrgProgress();
-        // //资金
-        this.getFundProgress();
-        //客户
-        this.getCusProgress();
+        this.allRequest();
     },
     watch: {
         val() {
+            this.allRequest();
+        }
+    },
+    methods: {
+        allRequest() {
             //公司
             this.getOverviewProgress();
             this.getProductProgress();
             this.getChannelProgress();
             // 组织
             this.getOrgProgress();
-            // //资金
+            //资金
             this.getFundProgress();
             //客户
             this.getCusProgress();
-        }
-    },
-    methods: {
-        input (val) {
+        },
+        input(val) {
             this.form.date = val;
         },
-        select(index){
+        select(index) {
             this.style = index;
         },
         //公司
@@ -474,7 +468,7 @@ export default {
             return API.GetProductTrend(params);
         },
         //渠道
-        getChannelProgress(){
+        getChannelProgress() {
             const params = {
                 ...this.getPeriodByPt(),
             };
@@ -498,7 +492,7 @@ export default {
             return API.GetChannelTrend(params);
         },
         //组织
-        getOrgProgress(){
+        getOrgProgress() {
             const params = {
                 ...this.getPeriodByPt(),
                 version:0
@@ -524,7 +518,7 @@ export default {
             return API.GetOrgTrend(params);
         },
         //资金
-        getFundProgress(){
+        getFundProgress() {
             const params = {
                 ...this.getPeriodByPt(),
                 version:0
@@ -550,7 +544,7 @@ export default {
             return API.GetFundTrend(params);
         },
         //客户
-        getCusProgress(){
+        getCusProgress() {
             const params = {
                 ...this.getPeriodByPt(),
             };
@@ -577,7 +571,6 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
             if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
