@@ -55,6 +55,9 @@ export default {
                     time_label: time,
                     rank: _this.getRank(params.data[2]),
                 });
+            }else{
+                const time = params.name;
+                _this.$emit('changeTime',time);
             }
         });
     },

@@ -230,7 +230,6 @@ export default {
                     const progressData = res[1];
                     this.$store.dispatch('SaveChannelProgress', progressData.data);
                 }
-
             });
         },
         preOrder(node,cid){

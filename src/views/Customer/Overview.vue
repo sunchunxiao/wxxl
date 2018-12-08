@@ -184,6 +184,7 @@
                 <el-col :span="14">
                   <IntelligentSelection
                     id="heatmap"
+                    @changeTime="changeTime"
                     @showStragety="showStragety"
                     :data="cusrankArr" />
                 </el-col>
@@ -330,7 +331,7 @@ export default {
             this.getStructure();
             this.getRank();
         },
-        preOrder(node,cid){
+        preOrder(node,cid) {
             for (let i of node){
                 if (i.cid == cid) {
                     return i;
@@ -345,7 +346,7 @@ export default {
         input (val) {
             this.form.date = val;
         },
-        click(){
+        click() {
             if (this.cid === this.customerTree.cid){
                 return;
             }else{
@@ -365,37 +366,42 @@ export default {
                 });
                 this.idArr.push(stragetyObj.id);
             }
-            // console.log(this.stragetyCheckList, this.idArr);
         },
         submit() {
             let data1 = JSON.parse(localStorage.data);
-            this.$confirm('确认?', {
-                confirmButtonText: '保存',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-            }).then(() => {
-                const data = {
-                    cid: data1.cid,
-                    subject: data1.subject,
-                    time_label: data1.time_label,
-                    strategies: this.idArr.join(',')
-                };
-                API.PostCusStrategyLog(data).then(() => {
-                    this.$message({
-                        showClose: true,
-                        message: '保存成功'
+            if(this.stragety.length){
+                this.$confirm('确认?', {
+                    confirmButtonText: '保存',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    const data = {
+                        cid: data1.cid,
+                        subject: data1.subject,
+                        time_label: data1.time_label,
+                        strategies: this.idArr.join(',')
+                    };
+                    API.PostCusStrategyLog(data).then(() => {
+                        this.$message({
+                            showClose: true,
+                            message: '保存成功'
+                        });
                     });
-                    // console.log(res.api_info)
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消',
+                        duration: 1500
+                    });
                 });
-            }).catch(() => {
+            }else{
                 this.$message({
-                    type: 'info',
-                    message: '已取消',
-                    duration: 1500
+                    type: 'error',
+                    message: '无应用策略',
+                    duration: 2000
                 });
-            });
-
+            }
         },
         getTree() {
             const params = {
@@ -410,7 +416,7 @@ export default {
                 this.$store.dispatch('SaveCusTree', res.tree);
             });
         },
-        getTreePrograss(){
+        getTreePrograss() {
             const params = {
                 subject:this.form.subject,
                 ...this.getPeriodByPt(),
@@ -486,11 +492,10 @@ export default {
                 this.loading = false;
             });
         },
-        getDateObj () {
+        getDateObj() {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
             if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
@@ -505,7 +510,7 @@ export default {
                 };
             }
         },
-        getPeriodByPt () {
+        getPeriodByPt() {
             const {
                 pt,
                 sDate,
@@ -556,7 +561,7 @@ export default {
                 }
             }
         },
-        nodeExpand(data){
+        nodeExpand(data) {
             this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;
@@ -584,8 +589,11 @@ export default {
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
         },
+        changeTime() {
+            this.stragetyTitle = '';
+            this.stragety = [];
+        },
         showStragety(data) {
-            // console.log(data)
             localStorage.setItem("data", JSON.stringify(data));
             const {
                 cid,
@@ -603,15 +611,16 @@ export default {
             };
             API.GetCusStrategy(params).then(res => {
                 this.stragetyCheckList = [];
+                this.idArr = [];
                 this.stragety = res.data;
                 const checked = 1;
                 for (let i = 0; i < res.data.length; i++) {
                     if (res.data[i].status === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
+                        this.idArr.push(res.data[i].id);
                     }
                 }
             });
-
         }
     }
 };

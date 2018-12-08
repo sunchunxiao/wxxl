@@ -153,18 +153,18 @@ export default {
             return !_.isEmpty(this.strategyArr);
         }
     },
-    mounted(){
+    mounted() {
         this.getProductStrategy();
     },
     methods: {
-        sortChange(){
+        sortChange() {
             this.trackList = this.trackList.map(o => {
                 o.visible = false;
                 o.visibleRate = false;
                 return o;
             });
         },
-        show(val){
+        show(val) {
             this.trackListAll = [];
             if(val){
                 this.trackListAll.push({

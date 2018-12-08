@@ -216,6 +216,7 @@
                 <el-col :span="14">
                   <IntelligentSelection
                     id="rank"
+                    @changeTime="changeTime"
                     @showStragety="showStragety"
                     :data="orgrankArr" />
                 </el-col>
@@ -359,14 +360,14 @@ export default {
         }
     },
     methods: {
-        allRequest(){
+        allRequest() {
             this.getTreePrograss();
             this.getProgress();
             this.getStructure1();
             this.getStructure2();
             this.getRank();
         },
-        preOrder (node,cid){
+        preOrder(node,cid) {
             for (let i of node){
                 if (i.cid == cid) {
                     return i;
@@ -378,10 +379,10 @@ export default {
                 }
             }
         },
-        input (val){
+        input(val) {
             this.form.date = val;
         },
-        click (){
+        click() {
             //点击发送请求清除搜索框
             this.$refs.child.clearKw();
             if (this.cid === this.organizationTree.cid){
@@ -392,7 +393,7 @@ export default {
                 this.cid=this.organizationTree.cid;
             }
         },
-        change (){
+        change() {
             this.idArr = [];
             for (let i of this.stragetyCheckList) {
                 let stragetyObj = this.stragety.find(el => {
@@ -401,36 +402,43 @@ export default {
                 this.idArr.push(stragetyObj.id);
             }
         },
-        submit (){
+        submit() {
             let data1 = JSON.parse(localStorage.data);
-            this.$confirm('确认?', {
-                confirmButtonText: '保存',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-            }).then(() => {
-                const data = {
-                    cid: data1.cid,
-                    subject: data1.subject,
-                    time_label: data1.time_label,
-                    strategies: this.idArr.join(',')
-                };
-                API.PostOrgStrategyLog(data).then(() => {
+            if(this.stragety.length){
+                this.$confirm('确认?', {
+                    confirmButtonText: '保存',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    const data = {
+                        cid: data1.cid,
+                        subject: data1.subject,
+                        time_label: data1.time_label,
+                        strategies: this.idArr.join(',')
+                    };
+                    API.PostOrgStrategyLog(data).then(() => {
+                        this.$message({
+                            showClose: true,
+                            message: '保存成功'
+                        });
+                    });
+                }).catch(() => {
                     this.$message({
-                        showClose: true,
-                        message: '保存成功'
+                        type: 'info',
+                        message: '已取消',
+                        duration: 1500
                     });
                 });
-            }).catch(() => {
+            }else{
                 this.$message({
-                    type: 'info',
-                    message: '已取消',
-                    duration: 1500
+                    type: 'error',
+                    message: '无应用策略',
+                    duration: 2000
                 });
-            });
-
+            }
         },
-        getTree (){
+        getTree() {
             const params = {
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
@@ -446,7 +454,7 @@ export default {
             });
         },
         //获取百分比数据
-        getTreePrograss (){
+        getTreePrograss() {
             const params = {
                 subject:this.form.subject,
                 ...this.getPeriodByPt(),
@@ -469,7 +477,7 @@ export default {
                 }
             });
         },
-        getProgress (){
+        getProgress() {
             this.loading = true;
             const params = {
                 cid: this.cid,
@@ -491,7 +499,7 @@ export default {
                 this.loading = false;
             });
         },
-        getTrend (subject) {
+        getTrend(subject) {
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -501,7 +509,7 @@ export default {
             return API.GetOrgTrend(params);
         },
         //前端
-        getStructure1 (){
+        getStructure1() {
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -540,7 +548,7 @@ export default {
                 this.loading = false;
             });
         },
-        getDateObj (){
+        getDateObj() {
             const {
                 date
             } = this.form;
@@ -558,7 +566,7 @@ export default {
                 };
             }
         },
-        getPeriodByPt (){
+        getPeriodByPt() {
             const {
                 pt,
                 sDate,
@@ -643,6 +651,10 @@ export default {
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
         },
+        changeTime() {
+            this.stragetyTitle = '';
+            this.stragety = [];
+        },
         showStragety(data) {
             localStorage.setItem("data", JSON.stringify(data));
             const {
@@ -661,15 +673,16 @@ export default {
             };
             API.GetOrgStrategy(params).then(res => {
                 this.stragetyCheckList = [];
+                this.idArr = [];
                 this.stragety = res.data;
                 const checked = 1;
                 for (let i = 0; i < res.data.length; i++) {
                     if (res.data[i].status === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
+                        this.idArr.push(res.data[i].id);
                     }
                 }
             });
-
         }
     }
 };

@@ -187,11 +187,11 @@ export default {
             return !_.isEmpty(this.strategyArr);
         }
     },
-    mounted(){
+    mounted() {
         this.getProductStrategy();
     },
     methods: {
-        sortChange(){
+        sortChange() {
             this.trackList = this.trackList.map(o => {
                 o.visible = false;
                 o.visibleEff = false;
@@ -199,7 +199,7 @@ export default {
                 return o;
             });
         },
-        showEff(val){
+        showEff(val) {
             this.trackListEff = [];
             const effRecord = 1;//是否只返回有效的应用记录 1是 0否
             const params = {
@@ -210,7 +210,7 @@ export default {
                 this.trackListEff = res.data;
             });
         },
-        show(val){
+        show(val) {
             this.trackListAll = [];
             const unEffRecord = 0;//是否只返回有效的应用记录 1是 0否(全部)
             const params = {

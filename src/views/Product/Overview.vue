@@ -187,7 +187,8 @@
                 <el-col :span="14">
                   <IntelligentSelection
                     id="rank"
-                    @showStragety="showStragety"
+                    @changeTime="changeTime"
+                    @showStragety = "showStragety"
                     :data="rankArr" />
                 </el-col>
                 <el-col :span="10">
@@ -317,19 +318,19 @@ export default {
         }
     },
     watch: {
-        cid () {
+        cid() {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
             this.allRequest();
         }
     },
     methods: {
-        allRequest(){
+        allRequest() {
             this.getTreePrograss();
             this.getProgress();
             this.getStructure();
             this.getRank();
         },
-        preOrder (node,cid){
+        preOrder(node,cid) {
             for (let i of node){
                 if (i.cid == cid) {
                     return i;
@@ -341,10 +342,10 @@ export default {
                 }
             }
         },
-        input (val) {
+        input(val) {
             this.form.date = val;
         },
-        click () {
+        click() {
             if (this.cid === this.productTree.cid) {
                 return;
             } else {
@@ -355,7 +356,7 @@ export default {
                 this.cid = this.productTree.cid;
             }
         },
-        change () {
+        change() {
             this.idArr = [];
             for (let i of this.stragetyCheckList) {
                 let stragetyObj = this.stragety.find(el => {
@@ -364,37 +365,45 @@ export default {
                 this.idArr.push(stragetyObj.id);
             }
         },
-        submit () {
+        submit() {
             let data1 = JSON.parse(localStorage.data);
-            this.$confirm('确认?', {
-                confirmButtonText: '保存',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-            }).then(() => {
-                const data = {
-                    cid: data1.cid,
-                    rank: data1.rank,
-                    subject: data1.subject,
-                    time_label: data1.time_label,
-                    strategies: this.idArr.join(',')
-                };
-                API.PostProductSave(data).then(() => {
+            if(this.stragety.length){
+                this.$confirm('确认?', {
+                    confirmButtonText: '保存',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    const data = {
+                        cid: data1.cid,
+                        rank: data1.rank,
+                        subject: data1.subject,
+                        time_label: data1.time_label,
+                        strategies: this.idArr.join(',')
+                    };
+                    API.PostProductSave(data).then(() => {
+                        this.$message({
+                            showClose: true,
+                            message: '保存成功'
+                        });
+                    });
+                }).catch(() => {
                     this.$message({
-                        showClose: true,
-                        message: '保存成功'
+                        type: 'info',
+                        message: '已取消',
+                        duration: 1500
                     });
                 });
-            }).catch(() => {
+            }else{
                 this.$message({
-                    type: 'info',
-                    message: '已取消',
-                    duration: 1500
+                    type: 'error',
+                    message: '无应用策略',
+                    duration: 2000
                 });
-            });
+            }
         },
         //树结构
-        getTree () {
+        getTree() {
             const params = {
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
@@ -411,7 +420,7 @@ export default {
             });
         },
         //获取百分比数据
-        getTreePrograss(){
+        getTreePrograss() {
             const params = {
                 subject:this.form.subject,
                 ...this.getPeriodByPt(),
@@ -453,7 +462,7 @@ export default {
                 this.loading = false;
             });
         },
-        getTrend (subject) {
+        getTrend(subject) {
             this.loading = true;
             const params = {
                 cid: this.cid,
@@ -462,7 +471,7 @@ export default {
             };
             return API.GetProductTrend(params);
         },
-        getStructure () {
+        getStructure() {
             this.loading = true;
             const params = {
                 cid: this.cid,
@@ -474,7 +483,7 @@ export default {
                 this.loading = false;
             });
         },
-        getRank () {
+        getRank() {
             this.loading = true;
             const params = {
                 cid: this.cid,
@@ -486,7 +495,7 @@ export default {
                 this.loading = false;
             });
         },
-        getDateObj () {
+        getDateObj() {
             const {
                 date
             } = this.form;
@@ -504,7 +513,7 @@ export default {
                 };
             }
         },
-        getPeriodByPt () {
+        getPeriodByPt() {
             const {
                 pt,
                 sDate,
@@ -527,7 +536,7 @@ export default {
                 };
             }
         },
-        handleSearch (val) {
+        handleSearch(val) {
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
@@ -565,12 +574,12 @@ export default {
             }
 
         },
-        nodeExpand (data){
+        nodeExpand(data) {
             this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;
         },
-        handleNodeClick (data) {
+        handleNodeClick(data) {
             if (this.searchBarValue.sDate && this.searchBarValue.eDate){
                 this.isbac = false;
                 this.highlight = true;
@@ -589,10 +598,14 @@ export default {
                 });
             }
         },
-        clickIndex (i, idx) {
+        clickIndex(i, idx) {
             this[`index${i}`] = idx;
         },
-        showStragety (data) {
+        changeTime() {
+            this.stragetyTitle = '';
+            this.stragety = [];
+        },
+        showStragety(data) {
             localStorage.setItem("data", JSON.stringify(data));
             const {
                 cid,
@@ -611,11 +624,13 @@ export default {
             };
             API.GetProductMatch(params).then(res => {
                 this.stragetyCheckList = [];
+                this.idArr = [];
                 this.stragety = res.data;
                 const checked = 1;//1是选中,0是不选中
                 for (let i = 0; i < res.data.length; i++) {
                     if (res.data[i].is_selected === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
+                        this.idArr.push(res.data[i].id);
                     }
                 }
             });
