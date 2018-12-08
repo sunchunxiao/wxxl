@@ -39,6 +39,7 @@ module.exports = {
         },
         plugins: plugins
     },
+    // 暂时保留 chainWebpack 的写法
     // chainWebpack: config => {
     //     config
     //         .plugin('provide')
