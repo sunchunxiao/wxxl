@@ -180,7 +180,7 @@ export default {
                                 textStyle: {
                                     fontSize: FONTSIZE2,
                                     fontWeight: FONTWEIGHT,
-                                    color: '#5e5e5e'
+                                    color: color
                                 }
                             }
                         }

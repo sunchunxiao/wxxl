@@ -366,7 +366,6 @@ export default {
                 });
                 this.idArr.push(stragetyObj.id);
             }
-            // console.log(this.stragetyCheckList, this.idArr);
         },
         submit() {
             let data1 = JSON.parse(localStorage.data);
@@ -388,7 +387,6 @@ export default {
                             showClose: true,
                             message: '保存成功'
                         });
-                    // console.log(res.api_info)
                     });
                 }).catch(() => {
                     this.$message({
@@ -498,7 +496,6 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
             if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
