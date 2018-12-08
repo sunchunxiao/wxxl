@@ -1,11 +1,13 @@
 <template>
   <div class="track">
-    <div class="table_container">
+    <div
+      v-loading="loading"
+      class="table_container">
       <div class="title">策略跟踪和策略应用</div>
-      <!-- <el-table :data="strategyArr.slice((currentPage - 1) * 10, currentPage * 10)" stripe> -->
       <el-table
         @sort-change='sortChange'
-        :data="trackList">
+        :data="trackList"
+        stripe>
         <el-table-column
           type="index"
           label="序号" />
@@ -159,12 +161,6 @@
 <script>
 import API from './api';
 import { mapGetters } from 'vuex';
-const TIMEPT = {
-    '周': 'week',
-    '月': 'month',
-    '季': 'quarter',
-    '年': 'year'
-};
 
 export default {
     components: {},
@@ -176,6 +172,7 @@ export default {
                 search: '', // 暂时没有接口 先这样
                 subject: 'S', // S: 销售额 P: 利润额
             },
+            loading: false,
             trackList:[],
             total:0,
             currentPage: 1,
@@ -225,13 +222,13 @@ export default {
             });
         },
         getProductStrategy() {
+            this.loading = true;
             const params = {
                 page: this.currentPage,
                 per_page: 10,
                 level: "",
                 package:'供应商',
                 subject: this.form.subject,
-                ...this.getPeriodByPt(),
             };
             API.GetProductStrategy(params).then(res => {
                 this.trackList = res.data.map(o => {
@@ -241,57 +238,9 @@ export default {
                     return o;
                 });
                 this.total = res.total;
-                // this.$store.dispatch('SaveProductStrategy', res.trackList);
+            }).finally(() => {
+                this.loading = false;
             });
-        },
-        getDateObj() {
-            const {
-                date
-            } = this.form;
-            return {
-                sDate: date[0] || '',
-                eDate: date[1] || '',
-            };
-        },
-        getPeriodByPt() {
-            const {
-                sDate,
-                eDate
-            } = this.getDateObj();
-            const {
-                pt
-            } = this.form;
-            if (sDate && eDate) { // 计算时间周期
-                if (pt === '日') {
-                    return {
-                        sDate,
-                        eDate
-                    };
-                }
-                let unit = TIMEPT[pt];
-                if (unit) {
-                    return {
-                        sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
-                        eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-                    };
-                } else {
-                    return {
-                        sDate: '2018-01-01',
-                        eDate: '2018-06-01',
-                        // 先写死个时间
-                        // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                        // eDate: moment().format('YYYY-MM-DD'),
-                    };
-                }
-            } else {
-                return {
-                    sDate: '2018-01-01',
-                    eDate: '2018-06-01',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
-                };
-            }
         },
         filterA(value, row, column) {
             const property = column['property'];
@@ -322,6 +271,7 @@ export default {
             return row[property] === value;
         },
         handleCurrentChange(val) {
+            this.loading = true;
             this.currentPage = val;
             const params = {
                 page: this.currentPage,
@@ -329,11 +279,11 @@ export default {
                 level: 1,
                 package:'供应商',
                 subject: this.form.subject,
-                ...this.getPeriodByPt(),
             };
             API.GetProductStrategy(params).then(res => {
                 this.trackList = res.data;
-                // this.$store.dispatch('SaveProductStrategy', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         }
     }

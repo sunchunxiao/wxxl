@@ -10,6 +10,7 @@
         url="/channel/search" />
     </el-row>
     <el-row
+      v-if="channelTree"
       class="content_row"
       :gutter="20">
       <el-col
@@ -212,6 +213,11 @@
         </el-row>
       </el-col>
     </el-row>
+    <el-row
+      v-else
+      class="overview_select">
+      暂无数据
+    </el-row>
   </div>
 </template>
 
@@ -232,7 +238,8 @@ import ProportionalStructureAverageComparison from '../../components/Proportiona
 import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
 // 智能评选和智能策略
 import IntelligentSelection from '../../components/IntelligentSelection';
-
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
@@ -268,6 +275,7 @@ export default {
             },
             cid: '',
             loading: false,
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             // index
             index0: 0,
@@ -306,10 +314,7 @@ export default {
         },
         cid: function () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            this.getTreePrograss();
-            this.getProgress();
-            this.getStructure();
-            this.getRank();
+            this.allRequest();
         }
     },
     mounted () {
@@ -323,6 +328,12 @@ export default {
         }
     },
     methods: {
+        allRequest(){
+            this.getTreePrograss();
+            this.getProgress();
+            this.getStructure();
+            this.getRank();
+        },
         preOrder (node, cid) {
             for (let i of node) {
                 if (i.nid == cid) {
@@ -402,10 +413,12 @@ export default {
                 version: this.form.version
             };
             API.GetChannelTree(params).then(res => {
-                if (!this.channelTree.cid) {
-                    this.cid = res.tree.nid;
+                if(res.tree){
+                    if (!this.channelTree || !this.channelTree.cid) {
+                        this.cid = res.tree.cid;
+                    }
+                    this.treeClone = _.cloneDeep(res.tree);
                 }
-                this.treeClone = _.cloneDeep(res.tree);
                 this.$store.dispatch('SaveChannelTree', res.tree);
             });
         },
@@ -530,22 +543,21 @@ export default {
             if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid !== this.channelTree.nid) {
-                    this.cid = this.channelTree.nid;
-                    this.treeClone = _.cloneDeep(this.channelTree);
-                } else {
-                    this.getTreePrograss();
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
+                if(this.cid){//数据tree不为null时
+                    if (this.cid !== this.channelTree.nid) {
+                        this.cid = this.channelTree.nid;
+                        this.treeClone = _.cloneDeep(this.channelTree);
+                    } else {
+                        this.allRequest();
+                    }
+                }else{
+                    this.getTree();//数据tree为空时,没有id
                 }
+
             } else {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
-                    this.getTreePrograss();
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
+                    this.allRequest();
                 }
                 this.changeDate = this.searchBarValue;
                 this.isbac = false;
@@ -585,23 +597,6 @@ export default {
                 });
             }
 
-        },
-        calculatePercent (a, b) {
-            if (b > 0) {
-                const percent = (a / b * 100).toFixed(0) - 0;//将percent转化为number
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            } else {
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
         },
         clickIndex (i, idx) {
             this[`index${i}`] = idx;

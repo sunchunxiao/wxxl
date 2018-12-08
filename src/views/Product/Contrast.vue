@@ -10,6 +10,7 @@
         url="/product/search" />
     </el-row>
     <el-row
+      v-if="productTree"
       class="content_row"
       :gutter="20">
       <el-col
@@ -110,6 +111,11 @@
         </Card>
       </el-col>
     </el-row>
+    <el-row
+      v-else
+      class="overview_select">
+      暂无数据
+    </el-row>
   </div>
 </template>
 
@@ -120,6 +126,9 @@ import Card from '../../components/Card';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
+//vuex
 import { mapGetters } from 'vuex';
 
 const TREE_PROPS = {
@@ -143,6 +152,7 @@ export default {
                 subject: 'S', // S: 销售额 P: 利润额
             },
             cid:'',
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             index0: 0,
             loading:false,
@@ -209,20 +219,23 @@ export default {
             Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
-                this.cid = treeData.tree.cid;
-                this.treeClone = _.cloneDeep(treeData.tree);
-                const children = treeData.tree.children;
-                let arr = [];
-                for(let i = 0; i < 3; i++) {
-                    children[i] && arr.push(children[i]);
+                if(treeData.tree){
+                    this.cid = treeData.tree.cid;
+                    this.treeClone = _.cloneDeep(treeData.tree);
+                    const children = treeData.tree.children;
+                    let arr = [];
+                    for(let i = 0; i < 3; i++) {
+                        children[i] && arr.push(children[i]);
+                    }
+                    const checkKeys = arr.map(i => i.cid);
+                    this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
+                        this.$refs.tree.setCheckedKeys(checkKeys);
+                    });
+                    // 指标
+                    const progressData = res[1];
+                    this.$store.dispatch('SaveProgressData', progressData.data);
                 }
-                const checkKeys = arr.map(i => i.cid);
-                this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
-                    this.$refs.tree.setCheckedKeys(checkKeys);
-                });
-                // 指标
-                const progressData = res[1];
-                this.$store.dispatch('SaveProgressData', progressData.data);
+
             });
         },
         preOrder(node,cid){
@@ -347,9 +360,15 @@ export default {
             // 默认公司的背景色
             this.nodeArr = [];
             this.val = val;
-            if (!val.cid){
-                this.getTreePrograss();
-                this.getCompare();
+            if (!val.cid){//无精确搜索
+                //数据不为null时
+                if(this.cid){
+                    this.getTreePrograss();
+                    this.getCompare();
+                }else{
+                    this.promise();//数据tree为null时,选择时间后调用接口,
+                }
+
             } else {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
@@ -359,7 +378,7 @@ export default {
                 this.changeDate = this.searchBarValue;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref,绑定的node-key
                 });
                 this.cid = val.cid;
             }
@@ -410,23 +429,6 @@ export default {
         },
         clickIndex (i, idx) {
             this[`index${i}`] = idx;
-        },
-        calculatePercent (a, b) {
-            if (b > 0) {
-                const percent = (a / b * 100).toFixed(0) - 0;//将percent转化为number
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            } else {
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
         },
     }
 };

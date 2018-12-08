@@ -11,6 +11,7 @@
         :pt-options="['日', '周', '月', '季', '年']" />
     </el-row>
     <el-row
+      v-if="productTree"
       class="content_row"
       :gutter="20">
       <el-col
@@ -214,6 +215,11 @@
         </el-row>
       </el-col>
     </el-row>
+    <el-row
+      v-else
+      class="overview_select">
+      暂无数据
+    </el-row>
   </div>
 </template>
 
@@ -233,7 +239,9 @@ import ProportionalStructureAverageComparison from 'components/ProportionalStruc
 import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
 // 智能评选和智能策略
 import IntelligentSelection from 'components/IntelligentSelection';
-
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
+//vuex
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
@@ -261,6 +269,8 @@ export default {
                 subject: 'S', // S: 销售额 P: 利润额
             },
             cid: '',
+            //tree
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             loading: false,
             // index
@@ -284,7 +294,8 @@ export default {
                 eDate: ''
             },
             treeClone:{},
-            changeDate:{}
+            changeDate:{},
+
         };
     },
     computed: {
@@ -308,13 +319,16 @@ export default {
     watch: {
         cid () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+            this.allRequest();
+        }
+    },
+    methods: {
+        allRequest(){
             this.getTreePrograss();
             this.getProgress();
             this.getStructure();
             this.getRank();
-        }
-    },
-    methods: {
+        },
         preOrder (node,cid){
             for (let i of node){
                 if (i.cid == cid) {
@@ -385,12 +399,14 @@ export default {
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
             };
-
             API.GetProductTree(params).then(res => {
-                if (!this.productTree.cid) {
-                    this.cid = res.tree.cid;
+                //选择的日期没有数据,res.tree可能为null
+                if(res.tree){
+                    if (!this.productTree || !this.productTree.cid) {
+                        this.cid = res.tree.cid;
+                    }
+                    this.treeClone = _.cloneDeep(res.tree);
                 }
-                this.treeClone = _.cloneDeep(res.tree);
                 this.$store.dispatch('SaveProductTree', res.tree);
             });
         },
@@ -418,6 +434,7 @@ export default {
             });
         },
         getProgress() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -432,9 +449,12 @@ export default {
                     });
                     this.$store.dispatch('SaveTrendArr', resultList);
                 });
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getTrend (subject) {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -443,21 +463,27 @@ export default {
             return API.GetProductTrend(params);
         },
         getStructure () {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
             };
             API.GetProductStructure(params).then(res => {
                 this.$store.dispatch('SaveStructureArr', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getRank () {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
             };
             API.GetProductRank(params).then(res => {
                 this.$store.dispatch('SaveRankArr', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getDateObj () {
@@ -508,23 +534,21 @@ export default {
             if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid !== this.productTree.cid){
-                    this.cid = this.productTree.cid;
-                    this.treeClone = _.cloneDeep(this.productTree);
-                } else {
+                if(this.cid){//数据tree不为null时
+                    if (this.cid !== this.productTree.cid){
+                        this.cid = this.productTree.cid;
+                        this.treeClone = _.cloneDeep(this.productTree);
+                    } else {
                     //公司根节点
-                    this.getTreePrograss();
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
+                        this.allRequest();
+                    }
+                }else{
+                    this.getTree();//数据tree为空时,没有id
                 }
             } else {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
-                    this.getTreePrograss();
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
+                    this.allRequest();
                 }
                 this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
@@ -563,23 +587,6 @@ export default {
                     message: '请选择日期',
                     duration: 2000
                 });
-            }
-        },
-        calculatePercent (a, b) {
-            if (b > 0) {
-                const percent = (a / b * 100).toFixed(0) - 0;//将percent转化为number
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            } else {
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
             }
         },
         clickIndex (i, idx) {

@@ -10,6 +10,7 @@
         url="/channel/search" />
     </el-row>
     <el-row
+      v-if="channelTree"
       class="content_row"
       :gutter="20">
       <el-col
@@ -114,9 +115,13 @@
               </el-col>
             </template>
           </el-row>
-
         </Card>
       </el-col>
+    </el-row>
+    <el-row
+      v-else
+      class="overview_select">
+      暂无数据
     </el-row>
   </div>
 </template>
@@ -128,7 +133,8 @@ import SearchBar from 'components/SearchBar';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
-
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
@@ -159,6 +165,7 @@ export default {
             },
             cid: '',
             loading: false,
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             time: '7.30 - 8.05',
             index0: 0,
@@ -252,10 +259,12 @@ export default {
                 version: this.form.version
             };
             API.GetChannelTree(params).then(res => {
-                if (!this.channelTree.cid) {
-                    this.cid = res.tree.nid;
+                if(res.tree){
+                    if (!this.channelTree || !this.channelTree.cid) {
+                        this.cid = res.tree.nid;
+                    }
+                    this.treeClone = _.cloneDeep(res.tree);
                 }
-                this.treeClone = _.cloneDeep(res.tree);
                 this.$store.dispatch('SaveChannelTree', res.tree);
             });
         },
@@ -366,12 +375,17 @@ export default {
             if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid !== this.channelTree.nid) {
-                    this.cid = this.channelTree.nid;
-                    this.treeClone = _.cloneDeep(this.channelTree);
-                } else {
-                    this.getTreePrograss();
-                    this.getHistory();
+                //数据为空时,没有id
+                if(this.cid){
+                    if (this.cid !== this.channelTree.nid) {
+                        this.cid = this.channelTree.nid;
+                        this.treeClone = _.cloneDeep(this.channelTree);
+                    } else {
+                        this.getTreePrograss();
+                        this.getHistory();
+                    }
+                }else{
+                    this.getTree();
                 }
             } else {
                 //搜索相同的id,改变时间
@@ -420,23 +434,6 @@ export default {
         },
         clickIndex (i, idx) {
             this[`index${i}`] = idx;
-        },
-        calculatePercent (a, b) {
-            if (b > 0) {
-                const percent = (a / b * 100).toFixed(0) - 0;//将percent转化为number
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            } else {
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
         },
     }
 };

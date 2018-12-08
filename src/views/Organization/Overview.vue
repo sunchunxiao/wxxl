@@ -265,7 +265,8 @@ import ProportionalStructureAverageComparison from '../../components/Proportiona
 import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
 // 智能评选和智能策略
 import IntelligentSelection from '../../components/IntelligentSelection';
-
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
@@ -283,14 +284,12 @@ export default {
         Card,
         SearchBar,
         ProYearOnYearTrend,
-        // ProYearOnYearTrendBig,
         ProportionalStructureAverageComparison,
         ProportionalStructureAverageComparisonBig,
         IntelligentSelection,
         ProTargetAchievement,
         Radar,
         ProTargetActualDiffTrend,
-    // ProTargetActualDiffTrendBig
     },
     data() {
         return {
@@ -303,6 +302,7 @@ export default {
             },
             cid: 0,
             loading: false,
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             // index
             index0: 0,
@@ -355,14 +355,17 @@ export default {
         },
         cid: function() {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+            this.allRequest();
+        }
+    },
+    methods: {
+        allRequest(){
             this.getTreePrograss();
             this.getProgress();
             this.getStructure1();
             this.getStructure2();
             this.getRank();
-        }
-    },
-    methods: {
+        },
         preOrder (node,cid){
             for (let i of node){
                 if (i.cid == cid) {
@@ -590,20 +593,12 @@ export default {
                     this.cid = this.organizationTree.cid;
                     this.treeClone = _.cloneDeep(this.organizationTree);
                 } else {
-                    this.getTreePrograss();
-                    this.getProgress();
-                    this.getStructure1();
-                    this.getStructure2();
-                    this.getRank();
+                    this.allRequest();
                 }
             } else {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
-                    this.getTreePrograss();
-                    this.getProgress();
-                    this.getStructure1();
-                    this.getStructure2();
-                    this.getRank();
+                    this.allRequest();
                 }
                 this.changeDate = this.searchBarValue;
                 this.isbac = false;
@@ -644,23 +639,6 @@ export default {
                 });
             }
 
-        },
-        calculatePercent (a, b) {
-            if (b > 0) {
-                const percent = (a / b * 100).toFixed(0) - 0;//将percent转化为number
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            } else {
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
         },
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
