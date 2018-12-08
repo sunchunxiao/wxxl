@@ -1,11 +1,18 @@
 const path = require('path');
+const webpack = require('webpack');
 const isProduction = process.env.NODE_ENV === 'production';
-const ProvidePluginOptions = [{
-    _: 'lodash',
-    moment: 'moment'
-}];
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-let plugins = [];
+
+let plugins = [
+    new webpack.DllReferencePlugin({
+        context: __dirname,
+        manifest: require('./manifest.json'),
+    }),
+    new webpack.ProvidePlugin({
+        moment: 'moment',
+        _: 'lodash',
+    }),
+];
 !isProduction && plugins.push(new BundleAnalyzerPlugin());
 
 module.exports = {
@@ -16,7 +23,6 @@ module.exports = {
     // 部署应用时的基本 URL
     baseUrl: isProduction ? '/' : '/',
     outputDir: 'dist',
-    // assetsDir: '/',
     runtimeCompiler: true,
     productionSourceMap: false,
     parallel: false,
@@ -33,11 +39,11 @@ module.exports = {
         },
         plugins: plugins
     },
-    chainWebpack: config => {
-        config
-            .plugin('provide')
-            .use(require('webpack/lib/ProvidePlugin'), ProvidePluginOptions);
-    },
+    // chainWebpack: config => {
+    //     config
+    //         .plugin('provide')
+    //         .use(require('webpack/lib/ProvidePlugin'), ProvidePluginOptions);
+    // },
     // 同时需要把 .env.development 文件中的环境变量 修改为 /api
     devServer: {
         historyApiFallback: true
