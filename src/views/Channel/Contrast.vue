@@ -10,6 +10,7 @@
         url="/channel/search" />
     </el-row>
     <el-row
+      v-if="channelTree"
       class="content_row"
       :gutter="20">
       <el-col
@@ -71,7 +72,6 @@
         :span="19"
         v-loading="loading"
         class="overflow">
-        <!-- <el-row> -->
         <Card>
           <el-row class="margin-bottom-20">组织对比分析和平均值分析</el-row>
           <el-row v-if="channelCompareArr.length>0">
@@ -103,8 +103,12 @@
             请选择要对比的项目
           </el-row>
         </Card>
-        <!-- </el-row> -->
       </el-col>
+    </el-row>
+    <el-row
+      v-else
+      class="overview_select">
+      暂无数据
     </el-row>
   </div>
 </template>
@@ -210,20 +214,23 @@ export default {
             Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
-                this.cid = treeData.tree.nid;
-                this.treeClone = _.cloneDeep(treeData.tree);
-                const children = treeData.tree.children;
-                let arr = [];
-                for (let i = 0; i < 3; i++) {
-                    children[i] && arr.push(children[i]);
+                if(treeData.tree){
+                    this.cid = treeData.tree.nid;
+                    this.treeClone = _.cloneDeep(treeData.tree);
+                    const children = treeData.tree.children;
+                    let arr = [];
+                    for (let i = 0; i < 3; i++) {
+                        children[i] && arr.push(children[i]);
+                    }
+                    const checkKeys = arr.map(i => i.nid);
+                    this.$store.dispatch('SaveChannelTree', treeData.tree).then(() => {
+                        this.$refs.tree.setCheckedKeys(checkKeys);
+                    });
+                    // 指标
+                    const progressData = res[1];
+                    this.$store.dispatch('SaveChannelProgress', progressData.data);
                 }
-                const checkKeys = arr.map(i => i.nid);
-                this.$store.dispatch('SaveChannelTree', treeData.tree).then(() => {
-                    this.$refs.tree.setCheckedKeys(checkKeys);
-                });
-                // 指标
-                const progressData = res[1];
-                this.$store.dispatch('SaveChannelProgress', progressData.data);
+
             });
         },
         preOrder(node,cid){

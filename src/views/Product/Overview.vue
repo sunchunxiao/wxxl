@@ -534,8 +534,7 @@ export default {
             if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                //数据为空时,没有id
-                if(this.cid){
+                if(this.cid){//数据tree不为null时
                     if (this.cid !== this.productTree.cid){
                         this.cid = this.productTree.cid;
                         this.treeClone = _.cloneDeep(this.productTree);
@@ -544,7 +543,7 @@ export default {
                         this.allRequest();
                     }
                 }else{
-                    this.getTree();
+                    this.getTree();//数据tree为空时,没有id
                 }
             } else {
                 //搜索相同的id,改变时间

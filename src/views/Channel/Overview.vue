@@ -413,10 +413,12 @@ export default {
                 version: this.form.version
             };
             API.GetChannelTree(params).then(res => {
-                if (!this.channelTree.cid) {
-                    this.cid = res.tree.nid;
+                if(res.tree){
+                    if (!this.channelTree || !this.channelTree.cid) {
+                        this.cid = res.tree.cid;
+                    }
+                    this.treeClone = _.cloneDeep(res.tree);
                 }
-                this.treeClone = _.cloneDeep(res.tree);
                 this.$store.dispatch('SaveChannelTree', res.tree);
             });
         },
@@ -541,12 +543,17 @@ export default {
             if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid !== this.channelTree.nid) {
-                    this.cid = this.channelTree.nid;
-                    this.treeClone = _.cloneDeep(this.channelTree);
-                } else {
-                    this.allRequest();
+                if(this.cid){//数据tree不为null时
+                    if (this.cid !== this.channelTree.nid) {
+                        this.cid = this.channelTree.nid;
+                        this.treeClone = _.cloneDeep(this.channelTree);
+                    } else {
+                        this.allRequest();
+                    }
+                }else{
+                    this.getTree();//数据tree为空时,没有id
                 }
+
             } else {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){

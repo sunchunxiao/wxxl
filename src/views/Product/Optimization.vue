@@ -10,6 +10,7 @@
         url="/product/search" />
     </el-row>
     <el-row
+      v-if="productTree"
       class="content_row"
       :gutter="20">
       <el-col
@@ -18,7 +19,7 @@
         <div class="title">毛利目标达成率</div>
         <div
           @click="click"
-          v-if="productTree.children"
+          v-if="productTree"
           :class="{bac:isbac}"
           class="company">
           <span class="left label">{{ treeClone.name }}</span>
@@ -115,6 +116,11 @@
           </el-row>
         </Card>
       </el-col>
+    </el-row>
+    <el-row
+      v-else
+      class="overview_select">
+      暂无数据
     </el-row>
   </div>
 </template>
@@ -250,10 +256,12 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetProductTree(params).then(res => {
-                if (!this.productTree.cid) {
-                    this.cid = res.tree.cid;
+                if(res.tree){
+                    if (!this.productTree || !this.productTree.cid) {
+                        this.cid = res.tree.cid;
+                    }
+                    this.treeClone = _.cloneDeep(res.tree);
                 }
-                this.treeClone = _.cloneDeep(res.tree);
                 this.$store.dispatch('SaveProductTree', res.tree);
             }).finally(() => {
                 this.loading = false;
@@ -372,12 +380,17 @@ export default {
             if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid !== this.productTree.cid) {
-                    this.cid = this.productTree.cid;
-                    this.treeClone = _.cloneDeep(this.productTree);
-                } else {
-                    this.getTreePrograss();
-                    this.getHistory();
+                //数据为空时,没有id
+                if(this.cid){
+                    if (this.cid !== this.productTree.cid) {
+                        this.cid = this.productTree.cid;
+                        this.treeClone = _.cloneDeep(this.productTree);
+                    } else {
+                        this.getTreePrograss();
+                        this.getHistory();
+                    }
+                }else{
+                    this.getTree();
                 }
             } else {
                 //搜索相同的id,改变时间

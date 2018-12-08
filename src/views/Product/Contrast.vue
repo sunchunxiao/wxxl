@@ -10,6 +10,7 @@
         url="/product/search" />
     </el-row>
     <el-row
+      v-if="productTree"
       class="content_row"
       :gutter="20">
       <el-col
@@ -109,6 +110,11 @@
           </el-row>
         </Card>
       </el-col>
+    </el-row>
+    <el-row
+      v-else
+      class="overview_select">
+      暂无数据
     </el-row>
   </div>
 </template>
@@ -213,20 +219,23 @@ export default {
             Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
-                this.cid = treeData.tree.cid;
-                this.treeClone = _.cloneDeep(treeData.tree);
-                const children = treeData.tree.children;
-                let arr = [];
-                for(let i = 0; i < 3; i++) {
-                    children[i] && arr.push(children[i]);
+                if(treeData.tree){
+                    this.cid = treeData.tree.cid;
+                    this.treeClone = _.cloneDeep(treeData.tree);
+                    const children = treeData.tree.children;
+                    let arr = [];
+                    for(let i = 0; i < 3; i++) {
+                        children[i] && arr.push(children[i]);
+                    }
+                    const checkKeys = arr.map(i => i.cid);
+                    this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
+                        this.$refs.tree.setCheckedKeys(checkKeys);
+                    });
+                    // 指标
+                    const progressData = res[1];
+                    this.$store.dispatch('SaveProgressData', progressData.data);
                 }
-                const checkKeys = arr.map(i => i.cid);
-                this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
-                    this.$refs.tree.setCheckedKeys(checkKeys);
-                });
-                // 指标
-                const progressData = res[1];
-                this.$store.dispatch('SaveProgressData', progressData.data);
+
             });
         },
         preOrder(node,cid){
@@ -351,9 +360,15 @@ export default {
             // 默认公司的背景色
             this.nodeArr = [];
             this.val = val;
-            if (!val.cid){
-                this.getTreePrograss();
-                this.getCompare();
+            if (!val.cid){//无精确搜索
+                //数据不为null时
+                if(this.cid){
+                    this.getTreePrograss();
+                    this.getCompare();
+                }else{
+                    this.promise();//数据tree为null时,选择时间后调用接口,
+                }
+
             } else {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
@@ -363,7 +378,7 @@ export default {
                 this.changeDate = this.searchBarValue;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref,绑定的node-key
                 });
                 this.cid = val.cid;
             }
