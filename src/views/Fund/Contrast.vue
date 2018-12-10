@@ -152,12 +152,7 @@ const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-// const TIMEPT = {
-//     '周': 'week',
-//     '月': 'month',
-//     '季': 'quarter',
-//     '年': 'year'
-// };
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
     components: {
@@ -172,7 +167,6 @@ export default {
                 pt: '月',
                 date: {},
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
                 version: '0'
             },
             loading: false,
@@ -302,7 +296,7 @@ export default {
         },
         getTree() {
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
                 version: this.form.version
             };
@@ -311,10 +305,10 @@ export default {
         //获取百分比数据
         getTreePrograss(){
             const params = {
-                subject:this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid,
-                version:this.form.version
+                nid: this.cid,
+                version: this.form.version
             };
             API.GetFundTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);

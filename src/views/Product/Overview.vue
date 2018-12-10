@@ -244,6 +244,7 @@ import IntelligentSelection from 'components/IntelligentSelection';
 import { calculatePercent } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
@@ -267,7 +268,6 @@ export default {
                 pt: '', // 周期类型
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
-                subject: 'S', // S: 销售额 P: 利润额
             },
             cid: '',
             //tree
@@ -405,7 +405,7 @@ export default {
         //树结构
         getTree() {
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
             };
             API.GetProductTree(params).then(res => {
@@ -422,7 +422,7 @@ export default {
         //获取百分比数据
         getTreePrograss() {
             const params = {
-                subject:this.form.subject,
+                subject:SUBJECT,
                 ...this.getPeriodByPt(),
                 nid:this.cid
             };

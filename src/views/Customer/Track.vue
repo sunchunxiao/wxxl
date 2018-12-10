@@ -127,7 +127,7 @@
 
 <script>
 import API from './api';
-
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {},
     data() {
@@ -136,7 +136,6 @@ export default {
                 pt: '月',
                 date: [],
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
             },
             loading: false,
             currentPage: 1,
@@ -175,7 +174,7 @@ export default {
         getProductStrategy() {
             this.loading = true;
             const params = {
-                subject: '',
+                subject: SUBJECT,
                 page: this.currentPage,
                 limit: 10,
                 package:'供应商',
@@ -225,7 +224,7 @@ export default {
             const params = {
                 page: this.currentPage,
                 limit: 10,
-                subject: '',
+                subject: SUBJECT,
             };
             API.GetCusStrategiesTrack(params).then(res => {
                 this.trackList = res.data;

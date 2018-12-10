@@ -269,16 +269,11 @@ import IntelligentSelection from '../../components/IntelligentSelection';
 //tree 百分比计算
 import { calculatePercent } from 'utils/common';
 import { mapGetters } from 'vuex';
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-// const TIMEPT = {
-//     '周': 'week',
-//     '月': 'month',
-//     '季': 'quarter',
-//     '年': 'year'
-// };
 
 export default {
     components: {
@@ -298,7 +293,6 @@ export default {
                 pt: '',
                 date: [],
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
                 version: '0'
             },
             cid: 0,
@@ -440,7 +434,7 @@ export default {
         },
         getTree() {
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
                 version: this.form.version
             };
@@ -456,7 +450,7 @@ export default {
         //获取百分比数据
         getTreePrograss() {
             const params = {
-                subject:this.form.subject,
+                subject:SUBJECT,
                 ...this.getPeriodByPt(),
                 nid:this.cid,
                 version:this.form.version
