@@ -185,7 +185,7 @@ export default {
                 subject: SUBJECT,
                 page: this.currentPage,
                 limit: 10,
-                package:'供应商',
+                package: '供应商',
             };
             API.GetOrgStrategiesTrack(params).then(res => {
                 this.trackList = res.data.map(o => {

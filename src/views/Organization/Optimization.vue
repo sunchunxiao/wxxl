@@ -258,10 +258,10 @@ export default {
         //获取百分比数据
         getTreePrograss(){
             const params = {
-                subject:SUBJECT,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid,
-                version:this.form.version
+                nid: this.cid,
+                version: this.form.version
             };
             API.GetOrgTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);

@@ -262,9 +262,9 @@ export default {
         //获取百分比数据
         getTreePrograss(){
             const params = {
-                subject:SUBJECT,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid
+                nid: this.cid
             };
             API.GetProductTreeProduct(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);

@@ -219,7 +219,7 @@ export default {
                 page: this.currentPage,
                 per_page: 10,
                 level: "",
-                package:'供应商',
+                package: '供应商',
                 subject: SUBJECT,
             };
             API.GetProductStrategy(params).then(res => {
@@ -269,7 +269,7 @@ export default {
                 page: this.currentPage,
                 per_page: 10,
                 level: 1,
-                package:'供应商',
+                package: '供应商',
                 subject: SUBJECT,
             };
             API.GetProductStrategy(params).then(res => {
