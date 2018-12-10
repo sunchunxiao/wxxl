@@ -4,6 +4,7 @@
       <search-bar
         @input="input"
         @search="handleSearch"
+        :has-search="false"
         ref="child"
         url="/home/search"
         :pt-options="['月', '季', '年']" />
