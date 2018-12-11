@@ -89,7 +89,7 @@ export default {
         renderChart(data) {
             const { subject, subject_name, progress ,real } = data;
             let valuePercent;
-            if (progress==null){
+            if (progress === null){
                 valuePercent = this.calculateToShow(real);
                 if(valuePercent < 0){
                     valuePercent = null;

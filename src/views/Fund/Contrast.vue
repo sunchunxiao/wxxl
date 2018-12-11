@@ -23,7 +23,7 @@
           <span
             class="clean_select">取消全部</span>
         </div>
-        <div class="titleTarget">当前选中目标数:{{ cidObjArr.length+cidObjBackArr.length }}</div>
+        <div class="titleTarget">当前选中目标数:{{ num }}</div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ treeClone.name }}</span>
@@ -199,7 +199,14 @@ export default {
         ...mapGetters(['fundTree','fundprogressArr','fundprogressbackArr','fundcompareArr','fundcompareArrback']),
         hasTree() {
             return !_.isEmpty(this.fundTree);
-        }
+        },
+        num () {
+            if (this.cidObjArr.length && this.cidObjBackArr.length) {
+                return this.cidObjArr.length + this.cidObjBackArr.length;
+            } else {
+                return 0;
+            }
+        },
     },
     watch: {
         cidObjArr(val) {
