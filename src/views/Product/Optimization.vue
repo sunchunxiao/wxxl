@@ -136,6 +136,7 @@ import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverage
 import { calculatePercent } from 'utils/common';
 
 import { mapGetters } from 'vuex';
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
@@ -160,7 +161,6 @@ export default {
                 pt: '日',
                 date: [],
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
                 version: '0'
             },
             cid: 0,
@@ -240,7 +240,7 @@ export default {
             this.loading = true;
             const params = {
                 cid: this.cid,
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
             };
             API.GetProductHistory(params).then(res => {
@@ -252,7 +252,7 @@ export default {
         getTree () {
             this.loading = true;
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
             };
             API.GetProductTree(params).then(res => {
@@ -272,7 +272,7 @@ export default {
             this.loading = true;
             this.loading = true;
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
                 nid: this.cid
             };

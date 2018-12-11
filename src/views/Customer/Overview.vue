@@ -243,12 +243,7 @@ const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-// const TIMEPT = {
-//     '周': 'week',
-//     '月': 'month',
-//     '季': 'quarter',
-//     '年': 'year'
-// };
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
     components: {
@@ -268,7 +263,6 @@ export default {
                 pt: '月',
                 date: [],
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
             },
             cid:'',
             loading: false,
@@ -405,7 +399,7 @@ export default {
         },
         getTree() {
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
             };
             API.GetCusTree(params).then(res => {
@@ -418,9 +412,9 @@ export default {
         },
         getTreePrograss() {
             const params = {
-                subject:this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid,
+                nid: this.cid,
             };
             API.GetCusTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);

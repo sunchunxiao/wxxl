@@ -136,7 +136,7 @@ const TREE_PROPS = {
     label: 'name'
 };
 const ROOTCID = 1;
-const SUBJECT = 'S'; // S: 销售额 P: 利润额
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
     components: {
@@ -149,7 +149,6 @@ export default {
         return {
             form: {
                 date: [],
-                subject: 'S', // S: 销售额 P: 利润额
             },
             cid:'',
             calculatePercent:calculatePercent,
@@ -263,9 +262,9 @@ export default {
         //获取百分比数据
         getTreePrograss(){
             const params = {
-                subject:this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid
+                nid: this.cid
             };
             API.GetProductTreeProduct(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
