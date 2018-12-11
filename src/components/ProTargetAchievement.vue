@@ -68,14 +68,16 @@ export default {
                 return "未设定";
             } else {
                 if (_.includes(SUBJECT, subject)){
-                    if((val / 10000) >=1){
+                    if ((val / 10000) >= 1){
                         return (val / 10000).toFixed(2)+'w';
-                    }else{
+                    } else {
                         return val;
                     }
                 }
                 let Tenthousand = val / 10000 / 100;
-                if (Tenthousand >= 1){
+                if (Tenthousand / 10000 >= 1) {
+                    return (val / 10000 / 10000 / 100).toFixed(2)+'亿';
+                } else if (Tenthousand >= 1){
                     return (val / 10000 / 100).toFixed(2)+'w';
                 } else if (Tenthousand < 1 && Tenthousand > 0){
                     return (val / 100).toFixed(2);
