@@ -160,7 +160,7 @@
 
 <script>
 import API from './api';
-
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {},
     data() {
@@ -169,7 +169,6 @@ export default {
                 pt: '日', // 周期类型
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
-                subject: 'S', // S: 销售额 P: 利润额
             },
             loading: false,
             trackList:[],
@@ -221,7 +220,7 @@ export default {
                 per_page: 10,
                 level: '',
                 package:'供应商',
-                subject: this.form.subject,
+                subject: SUBJECT,
                 sort:''
             };
             API.GetChannelStrategy(params).then(res => {
@@ -272,7 +271,7 @@ export default {
                 per_page: 10,
                 level: 1,
                 package:'供应商',
-                subject: this.form.subject,
+                subject: SUBJECT,
             };
             API.GetChannelStrategy(params).then(res => {
                 this.trackList = res.data;

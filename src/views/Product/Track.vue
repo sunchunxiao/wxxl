@@ -160,8 +160,8 @@
 
 <script>
 import API from './api';
-import { mapGetters } from 'vuex';
 
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {},
     data() {
@@ -170,7 +170,6 @@ export default {
                 pt: '日', // 周期类型
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
-                subject: 'S', // S: 销售额 P: 利润额
             },
             loading: false,
             trackList:[],
@@ -179,13 +178,6 @@ export default {
             trackListAll:[],
             trackListEff:[],
         };
-    },
-
-    computed: {
-        ...mapGetters(['strategyArr']),
-        hasTree() {
-            return !_.isEmpty(this.strategyArr);
-        }
     },
     mounted() {
         this.getProductStrategy();
@@ -227,8 +219,8 @@ export default {
                 page: this.currentPage,
                 per_page: 10,
                 level: "",
-                package:'供应商',
-                subject: this.form.subject,
+                package: '供应商',
+                subject: SUBJECT,
             };
             API.GetProductStrategy(params).then(res => {
                 this.trackList = res.data.map(o => {
@@ -277,8 +269,8 @@ export default {
                 page: this.currentPage,
                 per_page: 10,
                 level: 1,
-                package:'供应商',
-                subject: this.form.subject,
+                package: '供应商',
+                subject: SUBJECT,
             };
             API.GetProductStrategy(params).then(res => {
                 this.trackList = res.data;

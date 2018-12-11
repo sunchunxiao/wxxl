@@ -40,9 +40,6 @@ service.interceptors.response.use(response => {
             // eslint-disable-next-line no-unused-vars
             const { api_info, ...data } = res;
             return data;
-        } else if (res.api_info.error === AUTH_FAILED) { // token error
-            removeToken();
-            router.replace('/login');
         } else {
             Message({ message: res.api_info.message, type: 'warning', duration: MESSAGEDURATION });
             return Promise.reject(res);
@@ -58,6 +55,10 @@ error => {
         Message({ message: '请求超时', type: 'error', duration: MESSAGEDURATION });
     } else {
         Message({ message: _.get(error, 'response.data.api_info.message') || error.message, type: 'error', duration: MESSAGEDURATION });
+        if (error.response.data.api_info.error === AUTH_FAILED) { // token error
+            removeToken();
+            router.replace('/login');
+        }
     }
     return Promise.reject(error);
 }

@@ -16,12 +16,14 @@
       <el-col
         :span="5"
         class="tree_container">
-        <div class="padding_top">
-          <el-button
-            @click="cleanChecked"
-            size="mini"
-            class="clean_btn">清空选择</el-button>
+        <div
+          @click="cleanChecked"
+          size="mini"
+          class="clean_btn">
+          <span
+            class="clean_select">取消全部</span>
         </div>
+        <div class="titleTarget">当前选中目标数:{{ cidObjArr.length+cidObjBackArr.length }}</div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ treeClone.name }}</span>
@@ -148,16 +150,11 @@ import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverage
 //tree 百分比计算
 import { calculatePercent } from 'utils/common';
 import { mapGetters } from 'vuex';
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-// const TIMEPT = {
-//     '周': 'week',
-//     '月': 'month',
-//     '季': 'quarter',
-//     '年': 'year'
-// };
 
 export default {
     components: {
@@ -172,7 +169,6 @@ export default {
                 pt: '月',
                 date: [],
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
                 version: '0'
             },
             loading: false,
@@ -301,7 +297,7 @@ export default {
         },
         getTree () {
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
                 version: this.form.version
             };
@@ -310,10 +306,10 @@ export default {
         //获取百分比数据
         getTreePrograss(){
             const params = {
-                subject:this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid,
-                version:this.form.version
+                nid: this.cid,
+                version: this.form.version
             };
             API.GetOrgTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);

@@ -128,7 +128,7 @@
 <script>
 import API from './api';
 import { mapGetters } from 'vuex';
-
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {},
     data() {
@@ -137,7 +137,6 @@ export default {
                 pt: '月',
                 date: [],
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
                 version: '0'
             },
             loading: false,
@@ -183,10 +182,10 @@ export default {
         getProductStrategy() {
             this.loading = true;
             const params = {
-                subject: '',
+                subject: SUBJECT,
                 page: this.currentPage,
                 limit: 10,
-                package:'供应商',
+                package: '供应商',
             };
             API.GetOrgStrategiesTrack(params).then(res => {
                 this.trackList = res.data.map(o => {
@@ -233,7 +232,7 @@ export default {
             const params = {
                 page: this.currentPage,
                 limit: 10,
-                subject: '',
+                subject: SUBJECT,
             };
             API.GetOrgStrategiesTrack(params).then(res => {
                 this.trackList = res.data;

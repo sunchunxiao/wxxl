@@ -16,19 +16,14 @@
       <el-col
         :span="5"
         class="tree_container">
-        <div class="padding_top">
-          <el-button
-            @click="cleanChecked"
-            size="mini"
-            class="clean_btn">清空选择</el-button>
-        </div>
-        <!-- <div
+        <div
           @click="cleanChecked"
           size="mini"
           class="clean_btn">
           <span
-            class="clean_select" >取消全部</span>
-        </div> -->
+            class="clean_select">取消全部</span>
+        </div>
+        <div class="titleTarget">当前选中目标数:{{ cidObjArr.length }}</div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ treeClone.name }}</span>
@@ -136,7 +131,7 @@ const TREE_PROPS = {
     label: 'name'
 };
 const ROOTCID = 1;
-const SUBJECT = 'S'; // S: 销售额 P: 利润额
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
     components: {
@@ -149,7 +144,6 @@ export default {
         return {
             form: {
                 date: [],
-                subject: 'S', // S: 销售额 P: 利润额
             },
             cid:'',
             calculatePercent:calculatePercent,
@@ -263,9 +257,9 @@ export default {
         //获取百分比数据
         getTreePrograss(){
             const params = {
-                subject:this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid
+                nid: this.cid
             };
             API.GetProductTreeProduct(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
