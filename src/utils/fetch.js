@@ -40,9 +40,6 @@ service.interceptors.response.use(response => {
             // eslint-disable-next-line no-unused-vars
             const { api_info, ...data } = res;
             return data;
-        } else if (res.api_info.error === AUTH_FAILED) { // token error
-            removeToken();
-            router.replace('/login');
         } else {
             Message({ message: res.api_info.message, type: 'warning', duration: MESSAGEDURATION });
             return Promise.reject(res);
