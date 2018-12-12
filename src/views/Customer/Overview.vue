@@ -424,10 +424,9 @@ export default {
                 }
                 if (obj.children) {
                     for (let i of obj.children){
-                        if (res.data.hasOwnProperty(i.cid)){
+                        if (_.has(res.data, i.cid)) {
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
-
                         }
                     }
                 }

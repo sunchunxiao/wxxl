@@ -16,19 +16,14 @@
       <el-col
         :span="5"
         class="tree_container">
-        <div class="padding_top">
-          <el-button
-            @click="cleanChecked"
-            size="mini"
-            class="clean_btn">清空选择</el-button>
-        </div>
-        <!-- <div
+        <div
           @click="cleanChecked"
           size="mini"
           class="clean_btn">
           <span
-            class="clean_select" >取消全部</span>
-        </div> -->
+            class="clean_select">取消全部</span>
+        </div>
+        <div class="title_target">当前选中目标数:{{ num }}</div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ treeClone.name }}</span>
@@ -176,7 +171,14 @@ export default {
         ...mapGetters(['productTree', 'progressArr', 'compareArr' ]),
         hasTree() {
             return !_.isEmpty(this.productTree);
-        }
+        },
+        num () {
+            if (this.cidObjArr.length) {
+                return this.cidObjArr.length;
+            } else {
+                return 0;
+            }
+        },
     },
     watch: {
         cidObjArr(val) {
@@ -272,12 +274,15 @@ export default {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for (let i of obj.children){
-                    if (res.data.hasOwnProperty(i.cid)){
-                        i.real_total = res.data[i.cid].real;
-                        i.target_total = res.data[i.cid].target;
+                if (obj.children) {
+                    for (let i of obj.children){
+                        if (_.has(res.data, i.cid)) {
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
+                        }
                     }
                 }
+
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },

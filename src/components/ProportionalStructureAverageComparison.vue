@@ -39,16 +39,16 @@ export default {
             const { subject } = this.data;
 
             //日销，投入产出比和库存周转率是显示原值
-            if (subject==='SD'){//日销
-                let Tenthousand = (val / 10000 / 100).toFixed(2);
-                if (Tenthousand>=1){
-                    return Tenthousand+'w';
+            if (subject === 'SD'){//日销
+                let tenThousand = (val / 10000 / 100).toFixed(2);
+                if (tenThousand >= 1){
+                    return tenThousand + 'w';
                 } else {
-                    return val/100;
+                    return val / 100;
                 }
-            } else if (subject==='ROI'){//投入产出比
-                if (val>=10000){
-                    return (val/10000).toFixed(2) +'w';
+            } else if (subject === 'ROI'){//投入产出比
+                if (val >= 10000){
+                    return (val / 10000).toFixed(2) + 'w';
                 } else {
                     return val;
                 }

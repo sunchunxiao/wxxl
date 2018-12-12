@@ -261,14 +261,13 @@ export default {
             };
             API.GetCusTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,obj.cid,this.cid,res.data);
                 if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
                 if (obj.children) {
                     for (let i of obj.children){
-                        if (res.data.hasOwnProperty(i.cid)){
+                        if (_.has(res.data, i.cid)) {
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
                         }

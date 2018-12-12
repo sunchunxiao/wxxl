@@ -276,7 +276,7 @@ export default {
                     obj.target_total = res.data[this.cid].target;
                 }
                 for (let i of obj.children) {
-                    if (res.data.hasOwnProperty(i.nid)) {
+                    if (_.has(res.data, i.nid)) {
                         i.real_total = res.data[i.nid].real;
                         i.target_total = res.data[i.nid].target;
 
