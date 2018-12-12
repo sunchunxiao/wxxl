@@ -175,7 +175,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
-          v-if="type==2||type==3"
+          v-if="fundstructureArr2 &&(type === 2 || type === 3)"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -189,7 +189,7 @@
                       :span="6"
                       @click.native="clickIndex(4 ,index)">
                       <ProportionalStructureAverageComparison
-                        :id="`${index+fundstructureArr1.length}`"
+                        :id="`fundstructureArr2${index}`"
                         :data="item1" />
                     </el-col>
                   </template>

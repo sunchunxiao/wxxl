@@ -70,7 +70,7 @@
         :span="19"
         class="overflow">
         <el-row v-loading="loading">
-          <Card v-if="type==1||type==3">
+          <Card v-if="type==1 || type==3">
             <el-row class="margin-bottom-20">组织对比分析和平均值分析前端</el-row>
             <el-row v-if="fundcompareArr.length>0">                                                <el-col :span="6">
               <template v-for="(item, index) in fundcompareArr">
@@ -100,7 +100,7 @@
               请选择要对比的项目
             </el-row>
           </Card>
-          <Card v-if="type==2||type==3">
+          <Card v-if="fundcompareArrback.length > 0 && (type=== 2 || type === 3)">
             <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
             <el-row v-if="fundcompareArrback.length>0">
               <el-col :span="6">
@@ -111,7 +111,7 @@
                     @click.native="clickIndex(1 ,index)">
                     <ConOrgComparisonAverage
                       :title="item1.subject_name"
-                      :id="`${index+fundcompareArr.length}`"
+                      :id="`fundcompareArrback${index}`"
                       :data="item1" />
                   </el-col>
                 </template>
@@ -237,7 +237,7 @@ export default {
             let arr = [];
             let arrback = [];
             for(let i = 0; i < this.treeClone.children.length; i++) {
-                if(this.treeClone.children[i].type === 1){
+                if(this.treeClone.children[i].type === 1 || this.treeClone.children[i].type === 3){
                     this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
                 }else if(this.treeClone.children[i].type === 2){
                     this.treeClone.children[i] && arrback.push(this.treeClone.children[i]);
@@ -264,7 +264,7 @@ export default {
                 let arr = [];
                 let arrback = [];
                 for(let i = 0; i < children.length; i++) {
-                    if(children[i].type === 1){
+                    if(children[i].type === 1 || children[i].type === 3){
                         children[i] && arr.push(children[i]);
                     }else if(children[i].type === 2){
                         children[i] && arrback.push(children[i]);

@@ -143,7 +143,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
-          v-if="type==1||type==3"
+          v-if="type==1 || type==3"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -175,7 +175,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
-          v-if="orgstructureArr2&&(type==2||type==3)"
+          v-if="orgstructureArr2 && (type === 2 || type === 3)"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
