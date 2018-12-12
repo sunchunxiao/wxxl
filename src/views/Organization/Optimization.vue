@@ -129,19 +129,14 @@ import SearchBar from 'components/SearchBar';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
-
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-
-// const TIMEPT = {
-//     '周': 'week',
-//     '月': 'month',
-//     '季': 'quarter',
-//     '年': 'year'
-// };
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
     components: {
@@ -156,11 +151,11 @@ export default {
                 pt: '月',
                 date: [],
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
                 version: '0'
             },
             cid:'',
             loading:false,
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             time: '7.30 - 8.05',
             index0: 0,
@@ -175,6 +170,7 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -195,20 +191,22 @@ export default {
         }
     },
     mounted() {
-        if(!this.hasTree) {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
+        if (!this.hasTree) {
             this.getTree();
-        }else{
+        } else {
             this.treeClone = _.cloneDeep(this.organizationTree);
             this.cid = this.organizationTree.cid;
         }
     },
     methods: {
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -221,9 +219,9 @@ export default {
         click(){
             //点击发送请求清除搜索框
             this.$refs.child.clearKw();
-            if(this.cid==this.organizationTree.cid){
+            if (this.cid === this.organizationTree.cid){
                 return;
-            }else{
+            } else {
                 this.isbac = true;
                 this.highlight = false;
                 this.cid=this.organizationTree.cid;
@@ -244,12 +242,12 @@ export default {
         },
         getTree() {
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
                 version: this.form.version
             };
             API.GetOrgTree(params).then(res => {
-                if(this.organizationTree.cid==undefined){
+                if (!this.organizationTree.cid){
                     this.cid = res.tree.cid;
                 }
                 this.type = res.tree.type;
@@ -260,21 +258,20 @@ export default {
         //获取百分比数据
         getTreePrograss(){
             const params = {
-                subject:this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid,
-                version:this.form.version
+                nid: this.cid,
+                version: this.form.version
             };
             API.GetOrgTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,obj.cid,this.cid,res.data);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
                 if (obj.children) {
-                    for(let i of obj.children){
-                        if(res.data.hasOwnProperty(i.cid)){
+                    for (let i of obj.children){
+                        if (_.has(res.data, i.cid)) {
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
                         }
@@ -287,8 +284,7 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -353,7 +349,7 @@ export default {
             }) => {
                 const rowSpan = group[row.subject].length;
                 if ([0, 3, 4].includes(columnIndex)) {
-                    if(!newStrategies[rowIndex].hidden) {
+                    if (!newStrategies[rowIndex].hidden) {
                         return [rowSpan, 1];
                     } else {
                         return [0, 0];
@@ -366,24 +362,30 @@ export default {
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
-            if(!val.cid){
+            if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid!=this.organizationTree.cid){
+                if (this.cid !== this.organizationTree.cid){
                     this.cid = this.organizationTree.cid;
                     this.treeClone = _.cloneDeep(this.organizationTree);
-                }else{
+                } else {
                     this.getTreePrograss();
                     this.getHistory();
                 }
-            }else{
+            } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.getTreePrograss();
+                    this.getHistory();
+                }
+                this.changeDate = this.searchBarValue;
                 this.isbac = false;
                 this.cid = val.cid;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
                 });
-                if(this.cid==this.organizationTree.cid){
+                if (this.cid === this.organizationTree.cid){
                     this.isbac = true;
                     this.highlight = false;
                 }
@@ -399,32 +401,15 @@ export default {
             this.highlight = true;
             this.$refs.child.clearKw();
             this.type = data.type;
-            if(this.cid === data.cid){
+            if (this.cid === data.cid){
                 return ;
-            }else{
+            } else {
                 this.type = data.type;
                 this.cid = data.cid;
             }
         },
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
-        },
-        calculatePercent(a, b) {
-            if(b > 0) {
-                const percent = parseInt(a / b * 100);
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }else{
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
         },
     }
 };

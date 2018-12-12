@@ -6,14 +6,12 @@
     <div class="detail">
       <span class="text">目标: </span>
       <span class="value">{{ target }}</span>
-      &nbsp;<span>{{ unit }}</span>
     </div>
     <div class="detail">
       <span class="text">实际: </span>
       <span
         class="value"
         :style="{color: color}">{{ real }}</span>
-      &nbsp;<span>{{ unit }}</span>
     </div>
   </div>
 </template>
@@ -21,6 +19,8 @@
 <script>
 import echarts from 'plugins/echarts';
 
+//ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 NIR净利率 CTR资金周转率
+const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
 const COLORMAP = { over: '#b12725', below: '#308db9' };
 const colorLeft = '#E0E3E9';
@@ -39,14 +39,6 @@ export default {
         };
     },
     computed: {
-        unit() {
-            const { subject } = this.data;
-            if (_.includes(['NIR','CTR'],subject)) { // 投入产出比 %
-                return '%';
-            } else if (subject === 'ITO') { // 库存周转率不需要单位
-                return '';
-            }
-        },
         real() {
             const { real } = this.data;
             return this.calculateToShow(real);
@@ -71,30 +63,39 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
-            if (val==null){
+            //目标值为null,是未设定,为数值显示数值(0显示0)
+            if (val === null){
                 return "未设定";
             } else {
-                //SHP店铺数量
-                if (_.includes(['ITO','ROI','SKU','PER','SHP'], subject)){
-                    return val;
-                }else if (subject === 'POR') { // 库存周转率不需要单位
-                    return parseInt(val);
+                if (_.includes(SUBJECT, subject)){
+                    if ((val / 10000) >= 1){
+                        return (val / 10000).toFixed(2) + 'w';
+                    } else {
+                        return val;
+                    }
                 }
-                let Tenthousand = parseInt(val / 10000 / 100);
-                if (Tenthousand>=1){
-                    return parseInt(val / 10000 / 100)+'w';
-                } else {
-                    return parseInt(val/100);
+                let tenThousand = val / 10000 / 100;
+                if (tenThousand / 10000 >= 1) {
+                    return (val / 10000 / 10000 / 100).toFixed(2) + '亿';
+                } else if (tenThousand >= 1){
+                    return (val / 10000 / 100).toFixed(2) + 'w';
+                } else if (tenThousand < 1 && tenThousand > 0){
+                    return (val / 100).toFixed(2);
+                }else{
+                    return val;
                 }
             }
         },
         renderChart(data) {
             const { subject, subject_name, progress ,real } = data;
-            var valuePercent;
-            if (progress==null){
+            let valuePercent;
+            if (progress === null){
                 valuePercent = this.calculateToShow(real);
+                if(valuePercent < 0){
+                    valuePercent = null;
+                }
             } else {
-                valuePercent = parseInt(progress * 100);
+                valuePercent = (progress * 100).toFixed(0);
             }
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
             // 反向指标 颜色需要相反
@@ -109,14 +110,17 @@ export default {
                     trigger: 'item',
                     formatter: function(params){
                         var result = [];
-                        if (progress==null){
+                        if(params.value === null){
+                            return;
+                        }
+                        if (!progress){
                             result += params.marker + " " + params.name + " : " + params.value + "</br>";
                         } else {
-                            result += params.marker + " " + params.name + " : " + params.value+
-                '%' + "</br>";
+                            result += params.marker + " " + params.name + " : " + params.value + '%' + "</br>";
                         }
                         return result;
-                    }
+                    },
+                    position: ['50%', '50%']
                 },
                 grid: {
                     left: 0,
@@ -146,10 +150,17 @@ export default {
                         label: {
                             normal: {
                                 formatter: function(data){
-                                    if (progress==null){
+                                    //progress为null时显示实际值,0和数值都显示百分比
+                                    if (progress === null){
+                                        if(data.value === null){
+                                            return '';
+                                        }
                                         return data.value;
                                     } else {
-                                        return data.value+"%";
+                                        if(data.value === null){
+                                            return '';
+                                        }
+                                        return data.value + "%";
                                     }
                                 },
                                 textStyle: {
@@ -175,7 +186,7 @@ export default {
                                 textStyle: {
                                     fontSize: FONTSIZE2,
                                     fontWeight: FONTWEIGHT,
-                                    color: '#5e5e5e'
+                                    color: color
                                 }
                             }
                         }
@@ -195,7 +206,7 @@ export default {
                                 textStyle: {
                                     fontSize: FONTSIZE2,
                                     fontWeight: FONTWEIGHT,
-                                    color: color,
+                                    color: '#000',
                                 }
                             }
                         }

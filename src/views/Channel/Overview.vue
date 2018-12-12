@@ -10,6 +10,7 @@
         url="/channel/search" />
     </el-row>
     <el-row
+      v-if="channelTree"
       class="content_row"
       :gutter="20">
       <el-col
@@ -184,6 +185,7 @@
                 <el-col :span="14">
                   <IntelligentSelection
                     id="heatmap"
+                    @changeTime="changeTime"
                     @showStragety="showStragety"
                     :data="channelRankArr" />
                 </el-col>
@@ -212,6 +214,11 @@
         </el-row>
       </el-col>
     </el-row>
+    <el-row
+      v-else
+      class="overview_select">
+      暂无数据
+    </el-row>
   </div>
 </template>
 
@@ -232,18 +239,14 @@ import ProportionalStructureAverageComparison from '../../components/Proportiona
 import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
 // 智能评选和智能策略
 import IntelligentSelection from '../../components/IntelligentSelection';
-
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-// const TIMEPT = {
-//     '周': 'week',
-//     '月': 'month',
-//     '季': 'quarter',
-//     '年': 'year'
-// };
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
     components: {
@@ -263,11 +266,11 @@ export default {
                 pt: '日',
                 date: [],
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
                 version: '0'
             },
             cid: '',
             loading: false,
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             // index
             index0: 0,
@@ -290,6 +293,7 @@ export default {
                 eDate: ''
             },
             treeClone: {},
+            changeDate:{}
         };
     },
     computed: {
@@ -305,23 +309,27 @@ export default {
         },
         cid: function () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            this.getTreePrograss();
-            this.getProgress();
-            this.getStructure();
-            this.getRank();
+            this.allRequest();
         }
     },
     mounted () {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if (!this.hasTree) {
             this.getTree();
         } else {
             this.treeClone = _.cloneDeep(this.channelTree);
             this.cid = this.channelTree.nid;
         }
-    // this.initFormDataFromUrl();
     },
     methods: {
-        preOrder (node, cid) {
+        allRequest() {
+            this.getTreePrograss();
+            this.getProgress();
+            this.getStructure();
+            this.getRank();
+        },
+        preOrder(node, cid) {
             for (let i of node) {
                 if (i.nid == cid) {
                     return i;
@@ -333,11 +341,11 @@ export default {
                 }
             }
         },
-        input (val) {
+        input(val) {
             this.form.date = val;
         },
-        click () {
-            if (this.cid == this.channelTree.nid) {
+        click() {
+            if (this.cid === this.channelTree.nid) {
                 return;
             } else {
                 //点击发送请求清除搜索框
@@ -348,7 +356,7 @@ export default {
             }
 
         },
-        change () {
+        change() {
             this.idArr = [];
             for (let i of this.stragetyCheckList) {
                 let stragetyObj = this.stragety.find(el => {
@@ -356,82 +364,91 @@ export default {
                 });
                 this.idArr.push(stragetyObj.id);
             }
-            // console.log(this.stragetyCheckList, this.idArr);
         },
-        submit () {
+        submit() {
             let data1 = JSON.parse(localStorage.data);
-            this.$confirm('确认?', {
-                confirmButtonText: '保存',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-            }).then(() => {
-                const data = {
-                    nid: data1.cid,
-                    rank: data1.rank,
-                    subject: data1.subject,
-                    time_label: data1.time_label,
-                    strategies: this.idArr.join(',')
-                };
-                API.PostChannelSave(data).then(() => {
-                    this.$message({
-                        type: 'success',
-                        showClose: true,
-                        message: '保存成功'
+            if(this.stragety.length){
+                this.$confirm('确认?', {
+                    confirmButtonText: '保存',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    const data = {
+                        nid: data1.cid,
+                        rank: data1.rank,
+                        subject: data1.subject,
+                        time_label: data1.time_label,
+                        strategies: this.idArr.join(',')
+                    };
+                    API.PostChannelSave(data).then(() => {
+                        this.$message({
+                            type: 'success',
+                            showClose: true,
+                            message: '保存成功'
+                        });
+                    }).catch(() => {
+                        this.$message({
+                            type: 'error',
+                            message: '保存失败',
+                            duration: 1500
+                        });
                     });
                 }).catch(() => {
                     this.$message({
-                        type: 'error',
-                        message: '保存失败',
+                        type: 'info',
+                        message: '已取消',
                         duration: 1500
                     });
                 });
-            }).catch(() => {
+            }else{
                 this.$message({
-                    type: 'info',
-                    message: '已取消',
-                    duration: 1500
+                    type: 'error',
+                    message: '无应用策略',
+                    duration: 2000
                 });
-            });
+            }
         },
-        getTree () {
+        getTree() {
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
                 version: this.form.version
             };
             API.GetChannelTree(params).then(res => {
-                if (this.channelTree.cid == undefined) {
-                    this.cid = res.tree.nid;
+                if(res.tree){
+                    if (!this.channelTree || !this.channelTree.cid) {
+                        this.cid = res.tree.nid;
+                    }
+                    this.treeClone = _.cloneDeep(res.tree);
                 }
-                this.treeClone = _.cloneDeep(res.tree);
                 this.$store.dispatch('SaveChannelTree', res.tree);
             });
         },
         //获取百分比数据
-        getTreePrograss () {
+        getTreePrograss() {
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
                 nid: this.cid
             };
             API.GetChannelTreePrograss(params).then(res => {
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,this.cid,res.data);
-                if (obj.nid == this.cid) {
+                if (obj.nid === this.cid) {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for (let i of obj.children) {
-                    if (res.data.hasOwnProperty(i.nid)) {
-                        i.real_total = res.data[i.nid].real;
-                        i.target_total = res.data[i.nid].target;
-
+                if (obj.children) {
+                    for (let i of obj.children) {
+                        if (_.has(res.data, i.nid)) {
+                            i.real_total = res.data[i.nid].real;
+                            i.target_total = res.data[i.nid].target;
+                        }
                     }
                 }
             });
         },
-        getProgress () {
+        getProgress() {
             this.loading = true;
             const params = {
                 chId: this.cid,
@@ -451,7 +468,7 @@ export default {
                 this.loading = false;
             });
         },
-        getTrend (subject) {
+        getTrend(subject) {
             const params = {
                 chId: this.cid,
                 ...this.getPeriodByPt(),
@@ -459,7 +476,7 @@ export default {
             };
             return API.GetChannelTrend(params);
         },
-        getStructure () {
+        getStructure() {
             this.loading = true;
             const params = {
                 chId: this.cid,
@@ -472,7 +489,7 @@ export default {
                 this.loading = false;
             });
         },
-        getRank () {
+        getRank() {
             this.loading = true;
             const params = {
                 chId: this.cid,
@@ -484,12 +501,11 @@ export default {
                 this.loading = false;
             });
         },
-        getDateObj () {
+        getDateObj() {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate ) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -503,7 +519,7 @@ export default {
                 };
             }
         },
-        getPeriodByPt () {
+        getPeriodByPt() {
             const {
                 pt,
                 sDate,
@@ -523,55 +539,48 @@ export default {
                 };
             }
         },
-        initFormDataFromUrl () {
-            const {
-                pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-            } = this.$route.query;
-            let formData = {
-                pt: pt,
-                subject: subject,
-            };
-            if (moment(sDate).isValid() && moment(eDate).isValid()) {
-                formData.date = [sDate, eDate];
-            }
-            this.cid = cid;
-            this.form = { ...this.form,...formData };
-        },
-        handleSearch (val) {
+        handleSearch(val) {
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid != this.channelTree.nid) {
-                    this.cid = this.channelTree.nid;
-                    this.treeClone = _.cloneDeep(this.channelTree);
+                if(this.cid){//数据tree不为null时
+                    if (this.cid !== this.channelTree.nid) {
+                        this.cid = this.channelTree.nid;
+                        this.treeClone = _.cloneDeep(this.channelTree);
+                    } else {
+                        this.allRequest();
+                    }
                 }else{
-                    this.getTreePrograss();
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
+                    this.getTree();//数据tree为空时,没有id
                 }
+
             } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.allRequest();
+                }
+                this.changeDate = this.searchBarValue;
                 this.isbac = false;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
                 this.cid = val.cid;
-                if (this.cid == this.channelTree.nid) {
+                if (this.cid === this.channelTree.nid) {
                     this.isbac = true;
                     this.highlight = false;
                 }
             }
         },
-        nodeExpand (data) {
+        nodeExpand(data) {
             this.cid = data.nid;
             this.isbac = false;
             this.highlight = true;
         },
-        handleNodeClick (data) {
+        handleNodeClick(data) {
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.val = this.searchBarValue;
                 this.isbac = false;
@@ -579,7 +588,7 @@ export default {
                 this.$refs.child.clearKw();
                 if (this.cid === data.nid) {
                     return;
-                } else if (data.children != undefined) {
+                } else if (data.children) {
                     this.cid = data.nid;
                 }
             } else {
@@ -592,27 +601,14 @@ export default {
             }
 
         },
-        calculatePercent (a, b) {
-            if (b > 0) {
-                const percent = parseInt(a / b * 100);
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            } else {
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
-        },
-        clickIndex (i, idx) {
+        clickIndex(i, idx) {
             this[`index${i}`] = idx;
         },
-        showStragety (data) {
+        changeTime() {
+            this.stragetyTitle = '';
+            this.stragety = [];
+        },
+        showStragety(data) {
             localStorage.setItem("data", JSON.stringify(data));
             const {
                 cid,
@@ -622,7 +618,6 @@ export default {
                 time_label,
                 rank
             } = data;
-            // console.log(cid, brand, name, rank);
             this.stragetyTitle = `${brand} - ${name} - ${rank}`;
             const params = {
                 nid: cid,
@@ -632,15 +627,16 @@ export default {
             };
             API.GetChannelMatch(params).then(res => {
                 this.stragetyCheckList = [];
+                this.idArr = [];
                 this.stragety = res.data;
+                const checked = 1;
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].is_selected == 1) {
+                    if (res.data[i].is_selected === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
-                        // console.log(this.stragetyCheckList)
+                        this.idArr.push(res.data[i].id);
                     }
                 }
             });
-
         }
     }
 };

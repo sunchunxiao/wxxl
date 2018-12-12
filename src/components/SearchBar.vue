@@ -25,6 +25,7 @@
         label="时间段选择"
         prop="dayRange">
         <el-date-picker
+          key="day"
           v-model="form.dayRange"
           type="daterange"
           :picker-options="dayRangeOptions"
@@ -42,6 +43,7 @@
             label="时间段选择"
             prop="weekStart">
             <el-date-picker
+              key="weekStart"
               v-model="form.weekStart"
               type="week"
               format="yyyy 第 WW 周"
@@ -53,6 +55,7 @@
               class="endFormItem"
               prop="weekEnd">
               <el-date-picker
+                key="weekEnd"
                 v-model="form.weekEnd"
                 type="week"
                 format="yyyy 第 WW 周"
@@ -67,6 +70,7 @@
           label="时间段选择"
           prop="monthStart">
           <el-date-picker
+            key="monthStart"
             v-model="form.monthStart"
             type="month"
             format="yyyy MM 月"
@@ -78,6 +82,7 @@
             class="endFormItem"
             prop="monthEnd">
             <el-date-picker
+              key="monthEnd"
               v-model="form.monthEnd"
               type="month"
               format="yyyy MM 月"
@@ -111,6 +116,7 @@
           label="时间段选择"
           prop="yearStart">
           <el-date-picker
+            key="yearStart"
             v-model="form.yearStart"
             type="year"
             :picker-options="yearStartOptions"
@@ -121,6 +127,7 @@
             class="endFormItem"
             prop="yearEnd">
             <el-date-picker
+              key="yearEnd"
               v-model="form.yearEnd"
               type="year"
               :picker-options="yearEndOptions"
@@ -130,9 +137,9 @@
       </template>
     </el-col>
     <el-col
+      v-if="hasSearch"
       :span="6"
-      class="accurate"
-      v-if="url!='/home/search'">
+      class="accurate">
       <el-form-item label="精确搜索">
         <el-autocomplete
           v-model="kw"
@@ -141,7 +148,8 @@
           :debounce="500"
           :trigger-on-focus="false"
           value-key="name"
-          :placeholder="cptPlaceholder">
+          :placeholder="cptPlaceholder"
+          clearable>
           <i
             slot="prefix"
             class="el-input__icon el-icon-search" />
@@ -206,7 +214,7 @@ export default {
             },
             kw: '',
             cid: '',
-            isDateChange: true,
+            isSearchChange: true,
         };
     },
     props: {
@@ -220,6 +228,7 @@ export default {
             type: Array,
             default: function () { return ['日', '周', '月', '季', '年']; }
         },
+        hasSearch: { type: Boolean, default: true }
     },
     created () {
         // store 中有日期
@@ -385,16 +394,18 @@ export default {
             handler: function (val) {
                 this.handleFormChange(val);
                 this.$store.dispatch('SaveDate', _.cloneDeep(val));
-                this.isDateChange = true;
+                this.isSearchChange = true;
             },
             deep: true
         },
         kw: function (val) {
-            // 搜索框内容修改时 清空 cid
-            if (val == '') {
+            if (!val) {
                 this.cid = '';
             }
-        }
+        },
+        cid: function () {
+            this.isSearchChange = true;
+        },
     },
     methods: {
         handleFormChange (val) {
@@ -446,12 +457,12 @@ export default {
                 return;
             } else {
                 // 如果时间改变了 调用 props.search
-                if(!this.isDateChange) {
+                if(!this.isSearchChange) {
                     return;
                 }
                 obj.cid = this.cid;
                 this.$emit('search', obj);
-                this.isDateChange = false;
+                this.isSearchChange = false;
             }
         },
         searchKw (kw, cb) {

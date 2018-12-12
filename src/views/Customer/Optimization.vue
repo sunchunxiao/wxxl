@@ -128,18 +128,14 @@ import SearchBar from 'components/SearchBar';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
-
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-// const TIMEPT = {
-//     '周': 'week',
-//     '月': 'month',
-//     '季': 'quarter',
-//     '年': 'year'
-// };
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
     components: {
@@ -154,10 +150,10 @@ export default {
                 pt: '月',
                 date: [],
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
             },
             cid:'',
             loading:false,
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             index0: 0,
             val:{},
@@ -171,6 +167,7 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
@@ -191,6 +188,8 @@ export default {
         }
     },
     mounted() {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if(!this.hasTree) {
             this.getTree();
         }else{
@@ -215,7 +214,7 @@ export default {
             this.form.date = val;
         },
         click(){
-            if(this.cid==this.customerTree.cid){
+            if(this.cid === this.customerTree.cid){
                 return;
             }else{
                 //点击发送请求清除搜索框
@@ -242,11 +241,11 @@ export default {
         getTree() {
             const params = {
                 pt: this.form.pt,
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
             };
             API.GetCusTree(params).then(res => {
-                if(this.customerTree.cid==undefined){
+                if (!this.customerTree.cid){
                     this.cid = res.tree.cid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);
@@ -256,20 +255,19 @@ export default {
         //获取百分比数据
         getTreePrograss(){
             const params = {
-                subject:this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid,
+                nid: this.cid,
             };
             API.GetCusTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,obj.cid,this.cid,res.data);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
                 if (obj.children) {
-                    for(let i of obj.children){
-                        if(res.data.hasOwnProperty(i.cid)){
+                    for (let i of obj.children){
+                        if (_.has(res.data, i.cid)) {
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
                         }
@@ -305,7 +303,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -347,7 +345,7 @@ export default {
             }) => {
                 const rowSpan = group[row.subject].length;
                 if ([0, 3, 4].includes(columnIndex)) {
-                    if(!newStrategies[rowIndex].hidden) {
+                    if (!newStrategies[rowIndex].hidden) {
                         return [rowSpan, 1];
                     } else {
                         return [0, 0];
@@ -360,24 +358,30 @@ export default {
             this.isbac = false;
             this.nodeArr = [];
             this.val = val;
-            if(!val.cid){
+            if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid!=this.customerTree.cid){
+                if (this.cid !== this.customerTree.cid){
                     this.cid = this.customerTree.cid;
                     this.treeClone = _.cloneDeep(this.customerTree);
-                }else{
+                } else {
                     this.getTreePrograss();
                     this.getHistory();
                 }
-            }else{
+            } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.getTreePrograss();
+                    this.getHistory();
+                }
+                this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref
                 });
                 //根节点添加样式
-                if(this.cid==this.customerTree.cid){
+                if (this.cid === this.customerTree.cid){
                     this.isbac = true;
                     this.highlight = false;
                 }
@@ -389,21 +393,17 @@ export default {
             this.highlight = true;
         },
         handleNodeClick(data) {
-            if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+            if (this.searchBarValue.sDate && this.searchBarValue.eDate){
                 this.val = this.searchBarValue;
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
-                if(this.cid === data.cid){
+                if (this.cid === data.cid){
                     return ;
-                }else{
+                } else {
                     this.cid = data.cid;
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
                 }
-            }else{
+            } else {
                 this.highlight = false;
                 this.$message({
                     type: 'error',
@@ -417,23 +417,6 @@ export default {
         },
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
-        },
-        calculatePercent(a, b) {
-            if(b > 0) {
-                const percent = parseInt(a / b * 100);
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }else{
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
         },
     }
 };

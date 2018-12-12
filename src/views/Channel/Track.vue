@@ -1,6 +1,8 @@
 <template>
   <div class="track">
-    <div class="table_container">
+    <div
+      v-loading="loading"
+      class="table_container">
       <div class="title">策略跟踪和策略应用</div>
       <el-table
         @sort-change='sortChange'
@@ -44,21 +46,21 @@
               trigger="click"
               placement="top">
               <el-table
-                :data="trackList1">
+                :data="trackListAll">
                 <el-table-column
                   type="index"
                   label="序号" />
                 <el-table-column
-                  prop="level"
+                  prop="node_name"
                   label="应用产品" />
                 <el-table-column
-                  prop="time"
+                  prop="period"
                   label="时间" />
                 <el-table-column
-                  prop="rank1"
+                  prop="rank_before"
                   label="策略应用前" />
                 <el-table-column
-                  prop="rank2"
+                  prop="rank_after"
                   label="策略应用前" />
               </el-table>
               <div
@@ -72,7 +74,40 @@
         <el-table-column
           prop="count_eff"
           label="有效次数"
-          sortable />
+          sortable>
+          <template
+            slot-scope="scope">
+            <el-popover
+              @show='showEff(scope.row)'
+              trigger="click"
+              v-model="scope.row.visibleEff"
+              placement="top">
+              <el-table
+                :data="trackListEff">
+                <el-table-column
+                  type="index"
+                  label="序号" />
+                <el-table-column
+                  prop="node_name"
+                  label="应用产品" />
+                <el-table-column
+                  prop="period"
+                  label="时间" />
+                <el-table-column
+                  prop="rank_before"
+                  label="策略应用前" />
+                <el-table-column
+                  prop='rank_after'
+                  label="策略应用前" />
+              </el-table>
+              <div
+                slot="reference"
+                class="name-wrapper cell_count_use">
+                {{ scope.row.rate }}
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="rate"
           label="策略准确度/适用度"
@@ -85,21 +120,21 @@
               trigger="click"
               placement="top">
               <el-table
-                :data="trackList1">
+                :data="trackListAll">
                 <el-table-column
                   type="index"
                   label="序号" />
                 <el-table-column
-                  prop="level"
+                  prop="node_name"
                   label="应用产品" />
                 <el-table-column
-                  prop="time"
+                  prop="period"
                   label="时间" />
                 <el-table-column
-                  prop="rank1"
+                  prop="rank_before"
                   label="策略应用前" />
                 <el-table-column
-                  prop="rank2"
+                  prop="rank_after"
                   label="策略应用前" />
               </el-table>
               <div
@@ -125,13 +160,7 @@
 
 <script>
 import API from './api';
-const TIMEPT = {
-    '周': 'week',
-    '月': 'month',
-    '季': 'quarter',
-    '年': 'year'
-};
-
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {},
     data() {
@@ -140,12 +169,13 @@ export default {
                 pt: '日', // 周期类型
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
-                subject: 'S', // S: 销售额 P: 利润额
             },
+            loading: false,
             trackList:[],
             total:0,
             currentPage: 1,
-            trackList1:[]
+            trackListAll:[],
+            trackListEff:[],
         };
     },
 
@@ -153,92 +183,57 @@ export default {
         this.getChannelStrategy();
     },
     methods: {
-        sortChange(){
-            this.trackList = this.trackList.map(o=>{o.visible=false;o.visibleRate = false;return o;});
+        sortChange() {
+            this.trackList = this.trackList.map(o => {
+                o.visible = false;
+                o.visibleEff = false;
+                o.visibleRate = false;
+                return o;
+            });
         },
-        show(val){
-            // console.log(val);
-            this.trackList1 = [];
-            if(val){
-                this.trackList1.push({
-                    level:"公司-品牌A-平台A",
-                    time:'2018.3.2',
-                    rank1:'差',
-                    rank2:'优'
-                },{
-                    level:"公司-品牌A-平台A",
-                    time:'2018.3.2',
-                    rank1:'中',
-                    rank2:'差'
-                });
-            }
+        showEff(val) {
+            this.trackListEff = [];
+            const effRecord = 1;//是否只返回有效的应用记录 1是 0否
+            const params = {
+                strategyId: val.id,
+                goodOnly:effRecord
+            };
+            API.GetChannelApplog(params).then(res => {
+                this.trackListEff = res.data;
+            });
+        },
+        show(val) {
+            this.trackListAll = [];
+            const unEffRecord = 0;//是否只返回有效的应用记录 1是 0否(全部)
+            const params = {
+                strategyId: val.id,
+                goodOnly:unEffRecord
+            };
+            API.GetChannelApplog(params).then(res => {
+                this.trackListAll = res.data;
+            });
         },
         getChannelStrategy() {
+            this.loading = true;
             const params = {
                 page: this.currentPage,
                 per_page: 10,
                 level: '',
                 package:'供应商',
-                subject: this.form.subject,
+                subject: SUBJECT,
                 sort:''
             };
             API.GetChannelStrategy(params).then(res => {
                 this.trackList = res.data.map(o => {
-                    o.visible=false;
-                    o.visibleRate=false;
+                    o.visible = false;
+                    o.visibleEff = false;
+                    o.visibleRate = false;
                     return o;
                 });
                 this.total = res.total;
+            }).finally(() => {
+                this.loading = false;
             });
-        },
-        getDateObj() {
-            const {
-                date
-            } = this.form;
-            return {
-                sDate: date[0] || '',
-                eDate: date[1] || '',
-            };
-        },
-        getPeriodByPt() {
-            const {
-                sDate,
-                eDate
-            } = this.getDateObj();
-            const {
-                pt
-            } = this.form;
-            if (sDate && eDate) { // 计算时间周期
-                if (pt === '日') {
-                    return {
-                        sDate,
-                        eDate
-                    };
-                }
-                let unit = TIMEPT[pt];
-                if (unit) {
-                    return {
-                        sDate: moment(sDate).startOf(unit).format('YYYY-MM-DD'),
-                        eDate: moment(eDate).endOf(unit).format('YYYY-MM-DD')
-                    };
-                } else {
-                    return {
-                        sDate: '2018-01-01',
-                        eDate: '2018-06-01',
-                        // 先写死个时间
-                        // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                        // eDate: moment().format('YYYY-MM-DD'),
-                    };
-                }
-            } else {
-                return {
-                    sDate: '2018-01-01',
-                    eDate: '2018-06-01',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
-                };
-            }
         },
         filterA(value, row, column) {
             const property = column['property'];
@@ -269,20 +264,19 @@ export default {
             return row[property] === value;
         },
         handleCurrentChange(val) {
-            // console.log(`当前页: ${val}`);
-            // console.log(val)
+            this.loading = true;
             this.currentPage = val;
             const params = {
                 page: this.currentPage,
                 per_page: 10,
                 level: 1,
                 package:'供应商',
-                subject: this.form.subject,
-                ...this.getPeriodByPt(),
+                subject: SUBJECT,
             };
             API.GetChannelStrategy(params).then(res => {
                 this.trackList = res.data;
-                // this.$store.dispatch('SaveProductStrategy', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         }
     }

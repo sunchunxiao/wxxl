@@ -35,11 +35,11 @@ export default {
             if (_.includes(['ROI','ITO'],subject)) { // ROI投入产出比需要,ITO库存周转率不需要单位
                 return val;
             } else {
-                let Tenthousand = parseInt(val / 10000);
-                if (Tenthousand/10000>=1){
-                    return parseInt(Tenthousand/10000)+'亿';
-                } else if (Tenthousand>=1){
-                    return parseInt(val / 10000)+'w';
+                let tenThousand = parseInt(val / 10000);
+                if (tenThousand / 10000 >= 1){
+                    return parseInt(tenThousand / 10000) + '亿';
+                } else if (tenThousand >= 1){
+                    return parseInt(val / 10000) + 'w';
                 } else {
                     return parseInt(val);
                 }

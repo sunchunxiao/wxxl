@@ -16,12 +16,14 @@
       <el-col
         :span="5"
         class="tree_container">
-        <div class="padding_top">
-          <el-button
-            @click="cleanChecked"
-            size="mini"
-            class="clean_btn">清空选择</el-button>
+        <div
+          @click="cleanChecked"
+          size="mini"
+          class="clean_btn">
+          <span
+            class="clean_select">取消全部</span>
         </div>
+        <div class="title_target">当前选中目标数:{{ num }}</div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ treeClone.name }}</span>
@@ -102,7 +104,7 @@
               v-else
               class="please_select">请选择要对比的项目</el-row>
           </Card>
-          <Card v-if="type==2||type==3">
+          <Card v-if="orgcompareArrback.length > 0 && (type === 2 || type === 3)">
             <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
             <el-row v-if="orgcompareArrback.length > 0">
               <el-col :span="6">
@@ -113,7 +115,7 @@
                     @click.native="clickIndex(1 ,index)">
                     <ConOrgComparisonAverage
                       :title="item.subject_name"
-                      :id="`${index+orgcompareArr.length}`"
+                      :id="`orgcompareArrback${index}`"
                       :data="item" />
                   </el-col>
                 </template>
@@ -145,18 +147,14 @@ import SearchBar from 'components/SearchBar';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
-
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
 import { mapGetters } from 'vuex';
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-// const TIMEPT = {
-//     '周': 'week',
-//     '月': 'month',
-//     '季': 'quarter',
-//     '年': 'year'
-// };
 
 export default {
     components: {
@@ -171,15 +169,14 @@ export default {
                 pt: '月',
                 date: [],
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
                 version: '0'
             },
             loading: false,
             cid: '',
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             index0: 0,
             index1: 0,
-            length: 0,
             type: 3,
             val: {},
             post: 1,
@@ -187,7 +184,6 @@ export default {
             cidObjArr: [],
             cidObjBackArr: [],
             cancelKey: '',
-            isFirstLoad: true,
             debounce: null,
             debounceBack: null,
             searchBarValue: {
@@ -202,7 +198,14 @@ export default {
         ...mapGetters(['organizationTree', 'orgprogressArr', 'orgprogressbackArr', 'orgcompareArr', 'orgcompareArrback']),
         hasTree () {
             return !_.isEmpty(this.organizationTree);
-        }
+        },
+        num () {
+            if (this.cidObjArr.length || this.cidObjBackArr.length) {
+                return this.cidObjArr.length + this.cidObjBackArr.length;
+            } else {
+                return 0;
+            }
+        },
     },
     watch: {
         cidObjArr (val) {
@@ -235,7 +238,7 @@ export default {
             let arr = [];
             let arrback = [];
             for (let i = 0; i < this.treeClone.children.length; i++) {
-                if (this.treeClone.children[i].type == 1) {
+                if (this.treeClone.children[i].type === 1 || this.treeClone.children[i].type ===3) {
                     this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
                 } else if (this.treeClone.children[i].type == 2) {
                     this.treeClone.children[i] && arrback.push(this.treeClone.children[i]);
@@ -264,7 +267,7 @@ export default {
                 let arr = [];
                 let arrback = [];
                 for (let i = 0; i < children.length; i++) {
-                    if (children[i].type == 1) {
+                    if (children[i].type == 1 || children[i].type == 3) {
                         children[i] && arr.push(children[i]);
                     } else if (children[i].type == 2) {
                         children[i] && arrback.push(children[i]);
@@ -285,11 +288,11 @@ export default {
             });
         },
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -301,7 +304,7 @@ export default {
         },
         getTree () {
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
                 version: this.form.version
             };
@@ -310,22 +313,23 @@ export default {
         //获取百分比数据
         getTreePrograss(){
             const params = {
-                subject:this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid,
-                version:this.form.version
+                nid: this.cid,
+                version: this.form.version
             };
             API.GetOrgTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.cid)){
-                        i.real_total = res.data[i.cid].real;
-                        i.target_total = res.data[i.cid].target;
-
+                if (obj.children) {
+                    for (let i of obj.children){
+                        if (_.has(res.data, i.cid)) {
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
+                        }
                     }
                 }
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
@@ -409,8 +413,7 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -448,7 +451,7 @@ export default {
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
-                if(this.cid!=this.organizationTree.cid){
+                if (this.cid !== this.organizationTree.cid){
                     this.cid = this.organizationTree.cid;
                     this.treeClone = _.cloneDeep(this.organizationTree);
                 }
@@ -475,14 +478,14 @@ export default {
             this.$refs.tree.setCheckedKeys([]);
         },
         handleCheckChange (data, checked) {
-            // this.type = data.type;
+            const type = 2;//1是前端,2是后端
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             // 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
             if (!checked && this.cancelKey && data.cid === this.cancelKey) {
                 return;
             }
             if (checked) { // 如果选中
-                if (data.type == 2) {
+                if (data.type === type) {
                     // 如果有选中的节点 并且此次选择了不同pid的节点
                     if (this.cidObjBackArr[0] && data.parent_id !== this.cidObjBackArr[0].parent_id) {
                         this.warn('请选择相同父级下的进行对比');
@@ -524,7 +527,7 @@ export default {
                 }
             } else { // 如果取消选择
                 // 找到取消选择的下标
-                if (data.type == 2) {
+                if (data.type === type) {
                     // 找到取消选择的下标
                     const index = _.findIndex(this.cidObjBackArr, item => item.cid === data.cid);
                     this.cidObjBackArr.splice(index, 1);
@@ -544,23 +547,6 @@ export default {
         clickIndex (i, idx) {
             this[`index${i}`] = idx;
 
-        },
-        calculatePercent (a, b) {
-            if (b > 0) {
-                const percent = parseInt(a / b * 100);
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            } else {
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
         },
     }
 };

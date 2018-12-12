@@ -5,28 +5,25 @@
         ref="child"
         @input="input"
         @search="handleSearch"
+        v-model="searchBarValue"
         placeholder="产品编号/产品名称"
         url="/product/search" />
     </el-row>
     <el-row
+      v-if="productTree"
       class="content_row"
       :gutter="20">
       <el-col
         :span="5"
         class="tree_container">
-        <div class="padding_top">
-          <el-button
-            @click="cleanChecked"
-            size="mini"
-            class="clean_btn">清空选择</el-button>
-        </div>
-        <!-- <div
+        <div
           @click="cleanChecked"
           size="mini"
           class="clean_btn">
           <span
-            class="clean_select" >取消全部</span>
-        </div> -->
+            class="clean_select">取消全部</span>
+        </div>
+        <div class="title_target">当前选中目标数:{{ num }}</div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ treeClone.name }}</span>
@@ -109,6 +106,11 @@
         </Card>
       </el-col>
     </el-row>
+    <el-row
+      v-else
+      class="overview_select">
+      暂无数据
+    </el-row>
   </div>
 </template>
 
@@ -119,6 +121,9 @@ import Card from '../../components/Card';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
+//vuex
 import { mapGetters } from 'vuex';
 
 const TREE_PROPS = {
@@ -126,7 +131,7 @@ const TREE_PROPS = {
     label: 'name'
 };
 const ROOTCID = 1;
-const SUBJECT = 'S'; // S: 销售额 P: 利润额
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
     components: {
@@ -139,9 +144,9 @@ export default {
         return {
             form: {
                 date: [],
-                subject: 'S', // S: 销售额 P: 利润额
             },
             cid:'',
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             index0: 0,
             loading:false,
@@ -153,14 +158,27 @@ export default {
             post:1,
             nodeArr:[],
             highlight:true,
+            searchBarValue: {
+                pt: '',
+                sDate: '',
+                eDate: ''
+            },
             treeClone:{},
+            changeDate:{}
         };
     },
     computed: {
         ...mapGetters(['productTree', 'progressArr', 'compareArr' ]),
         hasTree() {
             return !_.isEmpty(this.productTree);
-        }
+        },
+        num () {
+            if (this.cidObjArr.length) {
+                return this.cidObjArr.length;
+            } else {
+                return 0;
+            }
+        },
     },
     watch: {
         cidObjArr(val) {
@@ -179,11 +197,13 @@ export default {
         this.debounce = _.debounce(this.getCompare, 500);
     },
     mounted() {
-        if(this.compareArr.length){
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
+        if (this.compareArr.length){
             this.cid = this.productTree.cid;
             this.treeClone = _.cloneDeep(this.productTree);
             let arr = [];
-            for(let i = 0; i < 3; i++) {
+            for (let i = 0; i < 3; i++) {
                 this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
             }
             const checkKeys = arr.map(i => i.cid);
@@ -191,7 +211,7 @@ export default {
                 this.$refs.tree.setCheckedKeys(checkKeys);
             });
 
-        }else{
+        } else {
             this.promise();
         }
     },
@@ -200,28 +220,31 @@ export default {
             Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
-                this.cid = treeData.tree.cid;
-                this.treeClone = _.cloneDeep(treeData.tree);
-                const children = treeData.tree.children;
-                let arr = [];
-                for(let i = 0; i < 3; i++) {
-                    children[i] && arr.push(children[i]);
+                if(treeData.tree){
+                    this.cid = treeData.tree.cid;
+                    this.treeClone = _.cloneDeep(treeData.tree);
+                    const children = treeData.tree.children;
+                    let arr = [];
+                    for(let i = 0; i < 3; i++) {
+                        children[i] && arr.push(children[i]);
+                    }
+                    const checkKeys = arr.map(i => i.cid);
+                    this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
+                        this.$refs.tree.setCheckedKeys(checkKeys);
+                    });
+                    // 指标
+                    const progressData = res[1];
+                    this.$store.dispatch('SaveProgressData', progressData.data);
                 }
-                const checkKeys = arr.map(i => i.cid);
-                this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
-                    this.$refs.tree.setCheckedKeys(checkKeys);
-                });
-                // 指标
-                const progressData = res[1];
-                this.$store.dispatch('SaveProgressData', progressData.data);
+
             });
         },
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -241,23 +264,25 @@ export default {
         //获取百分比数据
         getTreePrograss(){
             const params = {
-                subject:this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid
+                nid: this.cid
             };
             API.GetProductTreeProduct(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                if(obj.cid == this.cid){
+                if(obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.cid)){
-                        i.real_total = res.data[i.cid].real;
-                        i.target_total = res.data[i.cid].target;
-
+                if (obj.children) {
+                    for (let i of obj.children){
+                        if (_.has(res.data, i.cid)) {
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
+                        }
                     }
                 }
+
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
@@ -269,10 +294,10 @@ export default {
             return API.GetProductProgress(params);
         },
         getCompare () {
-            this.loading = true;
             if (!this.cidObjArr.length) {
                 return;
             }
+            this.loading = true;
             const promises = _.map(this.progressArr, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
@@ -301,8 +326,7 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -322,8 +346,6 @@ export default {
                 sDate,
                 eDate
             } = this.getDateObj();
-
-            // console.log(sDate,eDate);
             if (sDate && eDate) { // 计算时间周期
                 return {
                     pt: pt,
@@ -339,23 +361,30 @@ export default {
             }
         },
         handleSearch(val) {
-            if(val.cid!=this.cid){
-                // 默认公司的背景色
-                this.nodeArr = [];
-                this.val = val;
-                if(!val.cid){
-                    if(this.cid!=this.productTree.cid){
-                        this.cid = this.productTree.cid;
-                        this.treeClone = _.cloneDeep(this.productTree);
-                    }
+            // 默认公司的背景色
+            this.nodeArr = [];
+            this.val = val;
+            if (!val.cid){//无精确搜索
+                //数据不为null时
+                if(this.cid){
+                    this.getTreePrograss();
                     this.getCompare();
                 }else{
-                    this.nodeArr.push(val.cid);
-                    this.$nextTick(() => {
-                        this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
-                    });
-                    this.cid = val.cid;
+                    this.promise();//数据tree为null时,选择时间后调用接口,
                 }
+
+            } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.getTreePrograss();
+                    this.getCompare();
+                }
+                this.changeDate = this.searchBarValue;
+                this.nodeArr.push(val.cid);
+                this.$nextTick(() => {
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref,绑定的node-key
+                });
+                this.cid = val.cid;
             }
         },
         nodeExpand(data){
@@ -404,23 +433,6 @@ export default {
         },
         clickIndex (i, idx) {
             this[`index${i}`] = idx;
-        },
-        calculatePercent (a, b) {
-            if (b > 0) {
-                const percent = parseInt(a / b * 100);
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            } else {
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
         },
     }
 };

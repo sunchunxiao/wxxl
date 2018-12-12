@@ -11,6 +11,7 @@
         :pt-options="['日', '周', '月', '季', '年']" />
     </el-row>
     <el-row
+      v-if="productTree"
       class="content_row"
       :gutter="20">
       <el-col
@@ -61,7 +62,6 @@
               <span class="label">
                 <span class="label_left">{{ data.name }}</span>
                 <span
-                  v-if="data.real_total"
                   :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
               </span>
             </el-tooltip>
@@ -187,7 +187,8 @@
                 <el-col :span="14">
                   <IntelligentSelection
                     id="rank"
-                    @showStragety="showStragety"
+                    @changeTime="changeTime"
+                    @showStragety = "showStragety"
                     :data="rankArr" />
                 </el-col>
                 <el-col :span="10">
@@ -215,6 +216,11 @@
         </el-row>
       </el-col>
     </el-row>
+    <el-row
+      v-else
+      class="overview_select">
+      暂无数据
+    </el-row>
   </div>
 </template>
 
@@ -222,7 +228,6 @@
 import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
-import moment from 'moment';
 // 目标达成情况总览
 import ProTargetAchievement from 'components/ProTargetAchievement';
 import Radar from 'components/radar';
@@ -235,13 +240,15 @@ import ProportionalStructureAverageComparison from 'components/ProportionalStruc
 import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
 // 智能评选和智能策略
 import IntelligentSelection from 'components/IntelligentSelection';
-
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
+//vuex
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {
         Card,
@@ -260,9 +267,10 @@ export default {
                 pt: '', // 周期类型
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
-                subject: 'S', // S: 销售额 P: 利润额
             },
             cid: '',
+            //tree
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             loading: false,
             // index
@@ -286,6 +294,8 @@ export default {
                 eDate: ''
             },
             treeClone:{},
+            changeDate:{},
+
         };
     },
     computed: {
@@ -295,6 +305,8 @@ export default {
         }
     },
     mounted () {
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
         if (!this.hasTree) {
             this.$nextTick(() => {
                 this.getTree();
@@ -305,32 +317,35 @@ export default {
         }
     },
     watch: {
-        cid () {
+        cid() {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+            this.allRequest();
+        }
+    },
+    methods: {
+        allRequest() {
             this.getTreePrograss();
             this.getProgress();
             this.getStructure();
             this.getRank();
-        }
-    },
-    methods: {
-        preOrder(node,cid){
-            for(let i of node){
+        },
+        preOrder(node,cid) {
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
                 }
             }
         },
-        input (val) {
+        input(val) {
             this.form.date = val;
         },
-        click () {
-            if (this.cid == this.productTree.cid) {
+        click() {
+            if (this.cid === this.productTree.cid) {
                 return;
             } else {
                 //点击发送请求清除搜索框
@@ -340,7 +355,7 @@ export default {
                 this.cid = this.productTree.cid;
             }
         },
-        change () {
+        change() {
             this.idArr = [];
             for (let i of this.stragetyCheckList) {
                 let stragetyObj = this.stragety.find(el => {
@@ -348,92 +363,86 @@ export default {
                 });
                 this.idArr.push(stragetyObj.id);
             }
-            // console.log(this.stragetyCheckList, this.idArr);
         },
-        submit () {
+        submit() {
             let data1 = JSON.parse(localStorage.data);
-            this.$confirm('确认?', {
-                confirmButtonText: '保存',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-            }).then(() => {
-                const data = {
-                    cid: data1.cid,
-                    rank: data1.rank,
-                    subject: data1.subject,
-                    time_label: data1.time_label,
-                    strategies: this.idArr.join(',')
-                };
-                API.PostProductSave(data).then(() => {
+            if(this.stragety.length){
+                this.$confirm('确认?', {
+                    confirmButtonText: '保存',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    const data = {
+                        cid: data1.cid,
+                        rank: data1.rank,
+                        subject: data1.subject,
+                        time_label: data1.time_label,
+                        strategies: this.idArr.join(',')
+                    };
+                    API.PostProductSave(data).then(() => {
+                        this.$message({
+                            showClose: true,
+                            message: '保存成功'
+                        });
+                    });
+                }).catch(() => {
                     this.$message({
-                        showClose: true,
-                        message: '保存成功'
+                        type: 'info',
+                        message: '已取消',
+                        duration: 1500
                     });
                 });
-            }).catch(() => {
+            }else{
                 this.$message({
-                    type: 'info',
-                    message: '已取消',
-                    duration: 1500
+                    type: 'error',
+                    message: '无应用策略',
+                    duration: 2000
                 });
-            });
-        },
-        initFormDataFromUrl () {
-            const {
-                pt = '月', sDate = '', eDate = '', subject = 'S', cid = '1',
-            } = this.$route.query;
-            let formData = {
-                pt: pt,
-                subject: subject,
-            };
-            if (moment(sDate).isValid() && moment(eDate).isValid()) {
-                formData.date = [sDate, eDate];
             }
-            this.cid = cid;
-            this.form = { ...this.form,...formData };
         },
         //树结构
-        getTree () {
+        getTree() {
             const params = {
-                // pt: this.form.pt,
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
             };
-
             API.GetProductTree(params).then(res => {
-                if (this.productTree.cid == undefined) {
-                    this.cid = res.tree.cid;
+                //选择的日期没有数据,res.tree可能为null
+                if(res.tree){
+                    if (!this.productTree || !this.productTree.cid) {
+                        this.cid = res.tree.cid;
+                    }
+                    this.treeClone = _.cloneDeep(res.tree);
                 }
-                this.treeClone = _.cloneDeep(res.tree);
                 this.$store.dispatch('SaveProductTree', res.tree);
             });
         },
         //获取百分比数据
-        getTreePrograss(){
+        getTreePrograss() {
             const params = {
-                subject:this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid
+                nid: this.cid
             };
             API.GetProductTreeProduct(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                // console.log(obj,obj.cid,this.cid,res.data);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid) {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.cid)){
-                        i.real_total = res.data[i.cid].real;
-                        i.target_total = res.data[i.cid].target;
-
+                if (obj.children) {
+                    for (let i of obj.children) {
+                        if (_.has(res.data, i.cid)) {
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
+                        }
                     }
                 }
-                this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
         getProgress() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
@@ -448,41 +457,48 @@ export default {
                     });
                     this.$store.dispatch('SaveTrendArr', resultList);
                 });
+            }).finally(() => {
+                this.loading = false;
             });
         },
-        getTrend (subject) {
+        getTrend(subject) {
+            this.loading = true;
             const params = {
                 cid: this.cid,
-                // pt: this.form.pt,
                 ...this.getPeriodByPt(),
                 subject: subject
             };
             return API.GetProductTrend(params);
         },
-        getStructure () {
+        getStructure() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
             };
             API.GetProductStructure(params).then(res => {
                 this.$store.dispatch('SaveStructureArr', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
-        getRank () {
+        getRank() {
+            this.loading = true;
             const params = {
                 cid: this.cid,
                 ...this.getPeriodByPt(),
             };
             API.GetProductRank(params).then(res => {
                 this.$store.dispatch('SaveRankArr', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
-        getDateObj () {
+        getDateObj() {
             const {
                 date
             } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -496,7 +512,7 @@ export default {
                 };
             }
         },
-        getPeriodByPt () {
+        getPeriodByPt() {
             const {
                 pt,
                 sDate,
@@ -523,49 +539,56 @@ export default {
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
-            if(!val.cid){
+            if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid!=this.productTree.cid){
-                    this.cid = this.productTree.cid;
-                    this.treeClone = _.cloneDeep(this.productTree);
+                if(this.cid){//数据tree不为null时
+                    if (this.cid !== this.productTree.cid){
+                        this.cid = this.productTree.cid;
+                        this.treeClone = _.cloneDeep(this.productTree);
+                    } else {
+                    //公司根节点
+                        this.allRequest();
+                    }
                 }else{
-                    this.getTreePrograss();
-                    this.getProgress();
-                    this.getStructure();
-                    this.getRank();
+                    this.getTree();//数据tree为空时,没有id
                 }
-            }else{
+            } else {
+                //搜索相同的id,改变时间
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                    this.allRequest();
+                }
+                this.changeDate = this.searchBarValue;
+                this.cid = val.cid;
                 this.isbac = false;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
-                this.cid = val.cid;
                 //如果是根节点
-                if(this.cid==this.productTree.cid){
+                if (this.cid === this.productTree.cid){
                     this.isbac = true;
                     this.highlight = false;
                 }
             }
 
         },
-        nodeExpand(data){
+        nodeExpand(data) {
             this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;
         },
-        handleNodeClick (data) {
-            if(this.searchBarValue.sDate&&this.searchBarValue.eDate){
+        handleNodeClick(data) {
+            if (this.searchBarValue.sDate && this.searchBarValue.eDate){
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {
                     return;
-                } else if (data.children != undefined) {
+                } else if (data.children) {
                     this.cid = data.cid;
                 }
-            }else{
+            } else {
                 this.highlight = false;
                 this.$message({
                     type: 'error',
@@ -573,29 +596,15 @@ export default {
                     duration: 2000
                 });
             }
-
         },
-        calculatePercent (a, b) {
-            if (b > 0) {
-                const percent = parseInt(a / b * 100);
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            } else {
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
-        },
-        clickIndex (i, idx) {
+        clickIndex(i, idx) {
             this[`index${i}`] = idx;
         },
-        showStragety (data) {
+        changeTime() {
+            this.stragetyTitle = '';
+            this.stragety = [];
+        },
+        showStragety(data) {
             localStorage.setItem("data", JSON.stringify(data));
             const {
                 cid,
@@ -605,7 +614,6 @@ export default {
                 time_label,
                 rank
             } = data;
-            // console.log(cid, brand, name, rank);
             this.stragetyTitle = `${brand} - ${name} - ${rank}`;
             const params = {
                 cid: cid,
@@ -613,19 +621,18 @@ export default {
                 rank: rank,
                 time_label: time_label,
             };
-
             API.GetProductMatch(params).then(res => {
                 this.stragetyCheckList = [];
+                this.idArr = [];
                 this.stragety = res.data;
+                const checked = 1;//1是选中,0是不选中
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].is_selected == 1) {
+                    if (res.data[i].is_selected === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
-                        // console.log(this.stragetyCheckList)
+                        this.idArr.push(res.data[i].id);
                     }
                 }
-                // this.$store.dispatch('SaveRankArr', res.data);
             });
-
         }
     }
 };

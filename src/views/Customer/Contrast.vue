@@ -15,12 +15,14 @@
       <el-col
         :span="4"
         class="tree_container">
-        <div class="padding_top">
-          <el-button
-            @click="cleanChecked"
-            size="mini"
-            class="clean_btn">清空选择</el-button>
+        <div
+          @click="cleanChecked"
+          size="mini"
+          class="clean_btn">
+          <span
+            class="clean_select">取消全部</span>
         </div>
+        <div class="title_target">当前选中目标数:{{ num }}</div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ treeClone.name }}</span>
@@ -115,18 +117,14 @@ import SearchBar from 'components/SearchBar';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
-
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-// const TIMEPT = {
-//     '周': 'week',
-//     '月': 'month',
-//     '季': 'quarter',
-//     '年': 'year'
-// };
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
     components: {
@@ -141,9 +139,9 @@ export default {
                 pt: '月',
                 date: [],
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
             },
             cid:'',
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             index0: 0,
             loading:false,
@@ -161,7 +159,14 @@ export default {
         ...mapGetters(['customerTree','cusprogressArr','cuscompareArr']),
         hasTree() {
             return !_.isEmpty(this.customerTree);
-        }
+        },
+        num () {
+            if (this.cidObjArr.length) {
+                return this.cidObjArr.length;
+            } else {
+                return 0;
+            }
+        },
     },
     watch: {
         cidObjArr(val) {
@@ -180,18 +185,18 @@ export default {
         this.debounce = _.debounce(this.getCompare, 1000);
     },
     mounted() {
-        if(this.customerTree.children){
+        if (this.customerTree.children){
             this.cid = this.customerTree.cid;
             this.treeClone = _.cloneDeep(this.customerTree);
             let arr = [];
-            for(let i = 0; i < 3; i++) {
+            for (let i = 0; i < 3; i++) {
                 this.customerTree.children[i] && arr.push(this.customerTree.children[i]);
             }
             const checkKeys = arr.map(i => i.cid);
             this.$store.dispatch('SaveCusTree', this.customerTree).then(() => {
                 this.$refs.tree.setCheckedKeys(checkKeys);
             });
-        }else{
+        } else {
             this.promise();
         }
     },
@@ -217,11 +222,11 @@ export default {
             });
         },
         preOrder(node,cid){
-            for(let i of node){
+            for (let i of node){
                 if (i.cid == cid) {
                     return i;
                 }
-                if(i.children && i.children.length){
+                if (i.children && i.children.length){
                     if (this.preOrder(i.children, cid)) {
                         return this.preOrder(i.children,cid);
                     }
@@ -233,28 +238,29 @@ export default {
         },
         getTree() {
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
             };
             return API.GetCusTree(params);
         },
         getTreePrograss(){
             const params = {
-                subject:this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid,
+                nid: this.cid,
             };
             API.GetCusTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                if(obj.cid == this.cid){
+                if (obj.cid === this.cid){
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.cid)){
-                        i.real_total = res.data[i.cid].real;
-                        i.target_total = res.data[i.cid].target;
-
+                if (obj.children) {
+                    for (let i of obj.children){
+                        if (_.has(res.data, i.cid)) {
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
+                        }
                     }
                 }
             });
@@ -321,7 +327,7 @@ export default {
                 date
             } = this.form;
             // console.log(this.val.sDate,date);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -339,13 +345,13 @@ export default {
             this.nodeArr = [];
             this.nodeArr.push(val.cid);
             this.val = val;
-            if(!val.cid){
-                if(this.cid!=this.customerTree.cid){
+            if (!val.cid){
+                if (this.cid!=this.customerTree.cid){
                     this.cid = this.customerTree.cid;
                     this.treeClone = _.cloneDeep(this.customerTree);
                 }
                 this.getCompare();
-            }else{
+            } else {
                 this.cid = val.cid;
             }
         },
@@ -360,7 +366,7 @@ export default {
         },
         handleCheckChange(data, checked) {
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
-            if(!checked && this.cancelKey && data.cid === this.cancelKey) {
+            if (!checked && this.cancelKey && data.cid === this.cancelKey) {
                 return;
             }
             if (checked) { // 如果选中
@@ -395,23 +401,6 @@ export default {
         },
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
-        },
-        calculatePercent(a, b) {
-            if(b > 0) {
-                const percent = parseInt(a / b * 100);
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }else{
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
         },
     }
 };

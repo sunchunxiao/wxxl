@@ -16,12 +16,14 @@
       <el-col
         :span="5"
         class="tree_container">
-        <div class="padding_top">
-          <el-button
-            @click="cleanChecked"
-            size="mini"
-            class="clean_btn">清空选择</el-button>
+        <div
+          @click="cleanChecked"
+          size="mini"
+          class="clean_btn">
+          <span
+            class="clean_select">取消全部</span>
         </div>
+        <div class="title_target">当前选中目标数:{{ num }}</div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ treeClone.name }}</span>
@@ -37,8 +39,8 @@
           empty-text="正在加载"
           :data="treeClone.children"
           :props="defaultProps"
-          :default-expanded-keys="nodeArr"
           @node-expand="nodeExpand"
+          :default-expanded-keys="nodeArr"
           @check-change="handleCheckChange">
           <span
             class="custom-tree-node"
@@ -70,7 +72,7 @@
         :span="19"
         class="overflow">
         <el-row v-loading="loading">
-          <Card v-if="type==1||type==3">
+          <Card v-if="type==1 || type==3">
             <el-row class="margin-bottom-20">组织对比分析和平均值分析前端</el-row>
             <el-row v-if="fundcompareArr.length>0">                                                <el-col :span="6">
               <template v-for="(item, index) in fundcompareArr">
@@ -100,7 +102,7 @@
               请选择要对比的项目
             </el-row>
           </Card>
-          <Card v-if="type==2||type==3">
+          <Card v-if="fundcompareArrback.length > 0 && (type=== 2 || type === 3)">
             <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
             <el-row v-if="fundcompareArrback.length>0">
               <el-col :span="6">
@@ -111,7 +113,7 @@
                     @click.native="clickIndex(1 ,index)">
                     <ConOrgComparisonAverage
                       :title="item1.subject_name"
-                      :id="`${index+fundcompareArr.length}`"
+                      :id="`fundcompareArrback${index}`"
                       :data="item1" />
                   </el-col>
                 </template>
@@ -145,18 +147,14 @@ import SearchBar from 'components/SearchBar';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
-
+//tree 百分比计算
+import { calculatePercent } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-// const TIMEPT = {
-//     '周': 'week',
-//     '月': 'month',
-//     '季': 'quarter',
-//     '年': 'year'
-// };
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
     components: {
@@ -171,11 +169,11 @@ export default {
                 pt: '月',
                 date: {},
                 search: '',
-                subject: 'S', // S: 销售额 P: 利润额
                 version: '0'
             },
             loading: false,
             cid:'',
+            calculatePercent:calculatePercent,
             defaultProps: TREE_PROPS,
             index0: 0,
             index1: 0,
@@ -201,7 +199,14 @@ export default {
         ...mapGetters(['fundTree','fundprogressArr','fundprogressbackArr','fundcompareArr','fundcompareArrback']),
         hasTree() {
             return !_.isEmpty(this.fundTree);
-        }
+        },
+        num () {
+            if (this.cidObjArr.length || this.cidObjBackArr.length) {
+                return this.cidObjArr.length + this.cidObjBackArr.length;
+            } else {
+                return 0;
+            }
+        },
     },
     watch: {
         cidObjArr(val) {
@@ -234,9 +239,9 @@ export default {
             let arr = [];
             let arrback = [];
             for(let i = 0; i < this.treeClone.children.length; i++) {
-                if(this.treeClone.children[i].type==1){
+                if(this.treeClone.children[i].type === 1 || this.treeClone.children[i].type === 3){
                     this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
-                }else if(this.treeClone.children[i].type==2){
+                }else if(this.treeClone.children[i].type === 2){
                     this.treeClone.children[i] && arrback.push(this.treeClone.children[i]);
                 }
             }
@@ -261,9 +266,9 @@ export default {
                 let arr = [];
                 let arrback = [];
                 for(let i = 0; i < children.length; i++) {
-                    if(children[i].type==1){
+                    if(children[i].type === 1 || children[i].type === 3){
                         children[i] && arr.push(children[i]);
-                    }else if(children[i].type==2){
+                    }else if(children[i].type === 2){
                         children[i] && arrback.push(children[i]);
                     }
                 }
@@ -300,7 +305,7 @@ export default {
         },
         getTree() {
             const params = {
-                subject: this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
                 version: this.form.version
             };
@@ -309,10 +314,10 @@ export default {
         //获取百分比数据
         getTreePrograss(){
             const params = {
-                subject:this.form.subject,
+                subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid:this.cid,
-                version:this.form.version
+                nid: this.cid,
+                version: this.form.version
             };
             API.GetFundTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
@@ -320,11 +325,12 @@ export default {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for(let i of obj.children){
-                    if(res.data.hasOwnProperty(i.cid)){
-                        i.real_total = res.data[i.cid].real;
-                        i.target_total = res.data[i.cid].target;
-
+                if (obj.children) {
+                    for(let i of obj.children){
+                        if (_.has(res.data, i.cid)) {
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
+                        }
                     }
                 }
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
@@ -406,8 +412,7 @@ export default {
             const {
                 date
             } = this.form;
-            // console.log(date,this.val.sDate);
-            if (this.val.sDate != undefined && this.val.eDate != undefined) {
+            if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
@@ -445,15 +450,15 @@ export default {
             this.nodeArr = [];
             this.nodeArr.push(val.cid);
             this.val = val;
-            if(!val.cid){
-                if(this.cid!=this.fundTree.cid){
+            if (!val.cid){
+                if (this.cid !== this.fundTree.cid){
                     this.cid = this.fundTree.cid;
                     this.treeClone = _.cloneDeep(this.fundTree);
                 }
                 this.getTreePrograss();
                 this.getCompare();
                 this.getCompareBack();
-            }else{
+            } else {
                 this.cid = val.cid;
             }
         },
@@ -468,17 +473,17 @@ export default {
             this.highlight = true;
         },
         handleCheckChange(data, checked) {
-            // this.type = data.type;
+            const type = 2;//1是前端,2是后端
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             // 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
             // if (this.isFirstLoad) {
             //         return;
             // }
-            if(!checked && this.cancelKey && data.cid === this.cancelKey) {
+            if (!checked && this.cancelKey && data.cid === this.cancelKey) {
                 return;
             }
             if (checked) { // 如果选中
-                if(data.type==2){
+                if (data.type === type){
                     // 如果有选中的节点 并且此次选择了不同pid的节点
                     if (this.cidObjBackArr[0] && data.parent_id !== this.cidObjBackArr[0].parent_id) {
                         this.warn('请选择相同父级下的进行对比');
@@ -497,7 +502,7 @@ export default {
                     // 		const checkKeys = this.cidObjArr.map(i => i.cid);
                     // 		this.$refs.tree.setCheckedKeys(checkKeys);
                     // }
-                }else{
+                } else {
                     // 如果有选中的节点 并且此次选择了不同pid的节点
                     if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
                         this.warn('请选择相同父级下的进行对比');
@@ -521,11 +526,11 @@ export default {
                 }
             } else { // 如果取消选择
                 // 找到取消选择的下标
-                if(data.type==2){
+                if (data.type === type){
                     // 找到取消选择的下标
                     const index = _.findIndex(this.cidObjBackArr, item => item.cid === data.cid);
                     this.cidObjBackArr.splice(index, 1);
-                }else{
+                } else {
                     const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
                     this.cidObjArr.splice(index, 1);
                 }
@@ -540,23 +545,6 @@ export default {
         },
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
-        },
-        calculatePercent(a, b) {
-            if(b > 0) {
-                const percent = parseInt(a / b * 100);
-                const largerThanOne = (a / b) > 1;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }else{
-                const percent = 0;
-                const largerThanOne = false;
-                return {
-                    percent,
-                    largerThanOne
-                };
-            }
         },
     }
 };
