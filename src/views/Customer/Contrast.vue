@@ -27,7 +27,7 @@
         <div class="company">
           <span class="left">{{ treeClone.name }}</span>
           <span
-            v-if="treeClone.children"
+            :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
             class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
         </div>
         <el-tree
