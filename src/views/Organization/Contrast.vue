@@ -200,7 +200,7 @@ export default {
             return !_.isEmpty(this.organizationTree);
         },
         num () {
-            if (this.cidObjArr.length && this.cidObjBackArr.length) {
+            if (this.cidObjArr.length || this.cidObjBackArr.length) {
                 return this.cidObjArr.length + this.cidObjBackArr.length;
             } else {
                 return 0;
@@ -326,7 +326,7 @@ export default {
                 }
                 if (obj.children) {
                     for (let i of obj.children){
-                        if (res.data.hasOwnProperty(i.cid)){
+                        if (_.has(res.data, i.cid)) {
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
                         }
