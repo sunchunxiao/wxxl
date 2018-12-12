@@ -10,7 +10,7 @@
 <script>
 import echarts from 'plugins/echarts';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率
-const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR'];
+const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
 export default {
     props: {
         id: String,
@@ -42,21 +42,35 @@ export default {
     methods: {
         //多位数字加逗号
         formatNumber(num) {
-            var str = (num || 0).toString();
+            var str = (Math.abs(num) || 0).toString();
             var result = '';
-            while (str.length > 3){
-                result = ','+str.slice(-3) + result;
-                str = str.slice(0,str.length - 3);
+            const valueParts = str.split(".");//有小数时
+            if (valueParts[0].length < 3) {
+                return str;
+            } else {
+                while (valueParts[0].length > 3) {
+                    result = ',' + valueParts[0].slice(-3) + result;
+                    valueParts[0] = valueParts[0].slice(0, valueParts[0].length - 3);
+                }
+                if (valueParts[0]) {
+                    if (num < 0) {//如果是负数添加负号
+                        result = "-" + valueParts[0] + result;
+                    } else {
+                        result = valueParts[0] + result;
+                    }
+                }
+                return result;
             }
-            if(str){
-                result = str +result;
-            }
-            return result;
+
         },
         calculateToShow (val) {
             const { subject } = this.data;
-            if (_.includes(SUBJECT, subject)){
-                return val;
+            if (_.includes(SUBJECT, subject)){//显示原值超过万显示w
+                if ((val / 10000) >= 1) {
+                    return parseInt(val / 10000) + 'w';
+                } else {
+                    return val;
+                }
             }
             let tenThousand = parseInt(val / 10000);
             if (tenThousand >= 1) {

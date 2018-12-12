@@ -104,7 +104,7 @@
               v-else
               class="please_select">请选择要对比的项目</el-row>
           </Card>
-          <Card v-if="type==2||type==3">
+          <Card v-if="orgcompareArrback.length > 0 && (type === 2 || type === 3)">
             <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
             <el-row v-if="orgcompareArrback.length > 0">
               <el-col :span="6">
@@ -115,7 +115,7 @@
                     @click.native="clickIndex(1 ,index)">
                     <ConOrgComparisonAverage
                       :title="item.subject_name"
-                      :id="`${index+orgcompareArr.length}`"
+                      :id="`orgcompareArrback${index}`"
                       :data="item" />
                   </el-col>
                 </template>
@@ -238,7 +238,7 @@ export default {
             let arr = [];
             let arrback = [];
             for (let i = 0; i < this.treeClone.children.length; i++) {
-                if (this.treeClone.children[i].type == 1) {
+                if (this.treeClone.children[i].type === 1 || this.treeClone.children[i].type ===3) {
                     this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
                 } else if (this.treeClone.children[i].type == 2) {
                     this.treeClone.children[i] && arrback.push(this.treeClone.children[i]);
@@ -267,7 +267,7 @@ export default {
                 let arr = [];
                 let arrback = [];
                 for (let i = 0; i < children.length; i++) {
-                    if (children[i].type == 1) {
+                    if (children[i].type == 1 || children[i].type == 3) {
                         children[i] && arr.push(children[i]);
                     } else if (children[i].type == 2) {
                         children[i] && arrback.push(children[i]);
