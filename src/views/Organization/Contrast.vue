@@ -196,7 +196,14 @@ export default {
         ...mapGetters(['organizationTree', 'orgprogressArr', 'orgprogressbackArr', 'orgcompareArr', 'orgcompareArrback']),
         hasTree () {
             return !_.isEmpty(this.organizationTree);
-        }
+        },
+        num () {
+            if (this.cidObjArr.length || this.cidObjBackArr.length) {
+                return this.cidObjArr.length + this.cidObjBackArr.length;
+            } else {
+                return 0;
+            }
+        },
     },
     watch: {
         cidObjArr (val) {
@@ -315,11 +322,12 @@ export default {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }
-                for (let i of obj.children){
-                    if (res.data.hasOwnProperty(i.cid)){
-                        i.real_total = res.data[i.cid].real;
-                        i.target_total = res.data[i.cid].target;
-
+                if (obj.children) {
+                    for (let i of obj.children){
+                        if (_.has(res.data, i.cid)) {
+                            i.real_total = res.data[i.cid].real;
+                            i.target_total = res.data[i.cid].target;
+                        }
                     }
                 }
                 this.$store.dispatch('SaveProductTreePrograss', res.data);

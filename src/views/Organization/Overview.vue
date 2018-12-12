@@ -175,7 +175,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
-          v-if="type==2||type==3"
+          v-if="orgstructureArr2&&(type==2||type==3)"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -189,7 +189,7 @@
                       :span="6"
                       @click.native="clickIndex(4 ,index)">
                       <ProportionalStructureAverageComparison
-                        :id="`${index+orgstructureArr1.length}`"
+                        :id="`orgstructureArr2${index}`"
                         :data="item1" />
                     </el-col>
                   </template>
@@ -198,7 +198,7 @@
                   :span="8"
                   class="border-left-2-gray">
                   <ProportionalStructureAverageComparisonBig
-                    v-if="orgstructureArr2.length>0"
+                    v-if="orgstructureArr2"
                     id="ProportionalStructureAverageComparisonBig1"
                     :data="orgstructureArr2[index4]" />
                 </el-col>
@@ -463,7 +463,7 @@ export default {
                 }
                 if (obj.children) {
                     for (let i of obj.children){
-                        if (res.data.hasOwnProperty(i.cid)){
+                        if (_.has(res.data, i.cid)) {
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
                         }
