@@ -11,24 +11,6 @@
         align-items: center;
         justify-content: space-between;
     }
-    .padding_top {
-        padding-top: 10px;
-    }
-    .clean_btn {
-        overflow: hidden;
-        .clean_select {
-            display: inline-block;
-            width: 80px;
-            height: 40px;
-            line-height: 40px;
-            font-size: 14px;
-            text-align: center;
-            color: #fcb448;
-            cursor: pointer;
-            background-color: #3c80ad;
-            box-shadow: 0 3px 5px 0 rgba(113, 113, 114, 0.5);
-        }
-    }
     .please_select {
         min-height: 300px;
         text-align: center;

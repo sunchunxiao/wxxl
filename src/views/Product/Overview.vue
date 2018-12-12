@@ -244,12 +244,11 @@ import IntelligentSelection from 'components/IntelligentSelection';
 import { calculatePercent } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {
         Card,
@@ -428,7 +427,7 @@ export default {
             };
             API.GetProductTreeProduct(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], this.cid);
-                if(obj.cid === this.cid){
+                if (obj.cid === this.cid) {
                     obj.real_total = res.data[this.cid].real;
                     obj.target_total = res.data[this.cid].target;
                 }

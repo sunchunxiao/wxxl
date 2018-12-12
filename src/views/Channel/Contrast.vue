@@ -16,12 +16,14 @@
       <el-col
         :span="5"
         class="tree_container">
-        <div class="padding_top">
-          <el-button
-            @click="cleanChecked"
-            size="mini"
-            class="clean_btn">清空选择</el-button>
+        <div
+          @click="cleanChecked"
+          size="mini"
+          class="clean_btn">
+          <span
+            class="clean_select">取消全部</span>
         </div>
+        <div class="title_target">当前选中目标数:{{ num }}</div>
         <div class="title">毛利目标达成率</div>
         <div class="company">
           <span class="left">{{ treeClone.name }}</span>
@@ -167,7 +169,14 @@ export default {
         ...mapGetters(['channelTree','channelProgressArr','channelCompareArr']),
         hasTree() {
             return !_.isEmpty(this.channelTree);
-        }
+        },
+        num () {
+            if (this.cidObjArr.length) {
+                return this.cidObjArr.length;
+            } else {
+                return 0;
+            }
+        },
     },
     watch: {
         cidObjArr(val) {
