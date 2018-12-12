@@ -58,8 +58,8 @@ export default {
             if (_.includes(SUBJECT, subject)){
                 return val;
             }
-            let Tenthousand = parseInt(val / 10000);
-            if (Tenthousand >= 1) {
+            let tenThousand = parseInt(val / 10000);
+            if (tenThousand >= 1) {
                 return parseInt(val / 10000) + 'w';
             } else {
                 return parseInt(val);

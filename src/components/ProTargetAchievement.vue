@@ -69,17 +69,17 @@ export default {
             } else {
                 if (_.includes(SUBJECT, subject)){
                     if ((val / 10000) >= 1){
-                        return (val / 10000).toFixed(2)+'w';
+                        return (val / 10000).toFixed(2) + 'w';
                     } else {
                         return val;
                     }
                 }
-                let Tenthousand = val / 10000 / 100;
-                if (Tenthousand / 10000 >= 1) {
-                    return (val / 10000 / 10000 / 100).toFixed(2)+'亿';
-                } else if (Tenthousand >= 1){
-                    return (val / 10000 / 100).toFixed(2)+'w';
-                } else if (Tenthousand < 1 && Tenthousand > 0){
+                let tenThousand = val / 10000 / 100;
+                if (tenThousand / 10000 >= 1) {
+                    return (val / 10000 / 10000 / 100).toFixed(2) + '亿';
+                } else if (tenThousand >= 1){
+                    return (val / 10000 / 100).toFixed(2) + 'w';
+                } else if (tenThousand < 1 && tenThousand > 0){
                     return (val / 100).toFixed(2);
                 }else{
                     return val;
