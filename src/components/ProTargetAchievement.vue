@@ -67,8 +67,8 @@ export default {
             if (val === null){
                 return "未设定";
             } else {
-                if (_.includes(SUBJECT, subject)){
-                    if ((val / 10000) >= 1){
+                if (_.includes(SUBJECT, subject)) {
+                    if ((val / 10000) >= 1) {
                         return (val / 10000).toFixed(2) + 'w';
                     } else {
                         return val;
@@ -109,7 +109,7 @@ export default {
                 tooltip: {
                     trigger: 'item',
                     formatter: function(params){
-                        var result = [];
+                        let result = [];
                         if(params.value === null){
                             return;
                         }
@@ -183,12 +183,20 @@ export default {
                         },
                         label: {
                             normal: {
+                                formatter: function(data){
+                                    if(data.name.length < 8){//显示字体过长换行显示
+                                        return data.name;
+                                    }else{
+                                        return data.name = data.name.slice(0,4) + '\n' + data.name.slice(4,data.name.length);
+                                    }
+                                },
                                 textStyle: {
                                     fontSize: FONTSIZE2,
                                     fontWeight: FONTWEIGHT,
                                     color: color
                                 }
-                            }
+                            },
+                            position:['50%','0%']
                         }
                     }, {
                         value: 0,

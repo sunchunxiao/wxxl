@@ -42,8 +42,8 @@ export default {
     methods: {
         //多位数字加逗号
         formatNumber(num) {
-            var str = (Math.abs(num) || 0).toString();
-            var result = '';
+            let str = (Math.abs(num) || 0).toString();
+            let result = '';
             const valueParts = str.split(".");//有小数时
             if (valueParts[0].length < 3) {
                 return str;
@@ -80,11 +80,11 @@ export default {
             }
         },
         renderChart (data) {
-            var _this = this;
+            let _this = this;
             const { real, target, timeLabels,subject,hasTarget } = data;
-            var arr = [];
+            let arr = [];
             const diff = [];
-            var realItem, targetItem;
+            let realItem, targetItem;
             const bottom = [];
             const underTarget = [];
             const realClone = _.cloneDeep(real);
@@ -140,7 +140,7 @@ export default {
                         return { left:pos[0] - 100, top: pos[1] };
                     },
                     formatter: function (params) {
-                        var result = params[0].axisValue + "<br />";
+                        let result = params[0].axisValue + "<br />";
                         const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
                             const value = _this.formatNumber(item.value);
