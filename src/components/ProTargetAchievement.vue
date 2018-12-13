@@ -64,7 +64,7 @@ export default {
         calculateToShow(val) {
             const { subject } = this.data;
             //目标值为null,是未设定,为数值显示数值(0显示0)
-            if (val === null){
+            if (val == null){
                 return "未设定";
             } else {
                 if (_.includes(SUBJECT, subject)) {
@@ -87,9 +87,9 @@ export default {
             }
         },
         renderChart(data) {
-            const { subject, subject_name, progress ,real } = data;
+            const { subject, subject_name, progress, real } = data;
             let valuePercent;
-            if (progress === null){
+            if (progress == null){
                 valuePercent = this.calculateToShow(real);
                 if(valuePercent < 0){
                     valuePercent = null;
@@ -110,7 +110,7 @@ export default {
                     trigger: 'item',
                     formatter: function(params){
                         let result = [];
-                        if(params.value === null){
+                        if(params.value == null){
                             return;
                         }
                         if (!progress){
@@ -151,13 +151,13 @@ export default {
                             normal: {
                                 formatter: function(data){
                                     //progress为null时显示实际值,0和数值都显示百分比
-                                    if (progress === null){
-                                        if(data.value === null){
+                                    if (progress == null){
+                                        if(data.value == null){
                                             return '';
                                         }
                                         return data.value;
                                     } else {
-                                        if(data.value === null){
+                                        if(data.value == null){
                                             return '';
                                         }
                                         return data.value + "%";

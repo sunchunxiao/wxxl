@@ -9,7 +9,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
-
+const SUBJECT = ['ROI','POR','ITO','RY'];
 export default {
     props: {
         id: String,
@@ -82,13 +82,13 @@ export default {
                     },
                     formatter: function(params){
                         let result =[];
-                        if (_.includes(['ROI','POR','ITO','RY'],subject)){
+                        if (_.includes(SUBJECT, subject)){
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + " : " + item.value +"</br>";
                             });
                         } else {
                             params.forEach(function (item) {
-                                result += item.marker + " " + item.name  + " : " + parseInt(item.value/100 )+"</br>";
+                                result += item.marker + " " + item.name  + " : " + parseInt(item.value / 100 )+"</br>";
                             });
                         }
                         return result;
@@ -159,7 +159,7 @@ export default {
                                     if (average==0){
                                         return `平均值${average}`;
                                     } else {
-                                        return `平均值${(average/nodes.total*100).toFixed(2)}%`;
+                                        return `平均值${(average / nodes.total*100).toFixed(2)}%`;
                                     }
                                 }
                             }

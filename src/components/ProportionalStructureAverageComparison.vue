@@ -76,7 +76,7 @@ export default {
                     },
                     formatter: function(params){
                         let result = [];
-                        if (_.includes(SUBJECT,subject)){
+                        if (_.includes(SUBJECT, subject)){
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + " : " + item.value + "</br>";
                             });
@@ -161,7 +161,7 @@ export default {
                                     if (average==0){
                                         return `平均值${average}`;
                                     } else {
-                                        return `平均值${(average/nodes.total*100).toFixed(2)}%`;
+                                        return `平均值${(average / nodes.total*100).toFixed(2)}%`;
                                     }
                                 }
                             }

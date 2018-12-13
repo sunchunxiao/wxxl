@@ -32,7 +32,7 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
-            if (_.includes(SUBJECT,subject)) { // ROI投入产出比需要,ITO库存周转率不需要单位
+            if (_.includes(SUBJECT, subject)) { // ROI投入产出比需要,ITO库存周转率不需要单位
                 return val;
             } else {
                 let tenThousand = parseInt(val / 10000);
@@ -46,7 +46,7 @@ export default {
             }
         },
         renderChart(data) {
-            const { series,timeLabels,subject } = data;
+            const { series, timeLabels, subject } = data;
             const seriesClone = _.cloneDeep(series);
             let _this = this;
             for(let i = 0;i < seriesClone.length; i++) {
