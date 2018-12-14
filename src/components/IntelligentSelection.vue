@@ -95,12 +95,20 @@ export default {
                             fontWeight: 400
                         }
                     },
+                    tooltip: {
+                        formatter: function(params){
+                            const name = params.seriesName.split(",");
+                            let result = params.marker + name[params.value[1]] + "<br />";
+                            result += params.name + " : " + _this.getRank(params.value[2]) + "</br>";
+                            return result;
+                        }
+                    },
                     animation: true,
                     grid: {
                         width:'auto',
                         height: '70%',
                         y: '8%',
-                        x: '10%'
+                        x: '15%'
                     },
                     custom: {
                         categoryIds: item.categoryIds,
@@ -140,7 +148,7 @@ export default {
                         text: ['优', '差']
                     },
                     series: [{
-                        name: '',
+                        name: item.categoryNames,
                         type: 'heatmap',
                         data: seriesData,
                         id: item.timeLabel,
@@ -176,7 +184,7 @@ export default {
                             borderColor: 'rgba(4, 165, 261, .5)'
                         },
                     },
-                    tooltip: {}
+
                 },
                 options: options
             };
