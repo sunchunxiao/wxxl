@@ -9,7 +9,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
-
+const SUBJECT = ['ROI','POR','ITO','RY'];
 export default {
     props: {
         id: String,
@@ -37,17 +37,16 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
-
             //日销，投入产出比和库存周转率是显示原值
             if (subject === 'SD'){//日销
                 let tenThousand = (val / 10000 / 100).toFixed(2);
-                if (tenThousand >= 1){
+                if (tenThousand && tenThousand >= 1) {
                     return tenThousand + 'w';
                 } else {
                     return val / 100;
                 }
-            } else if (subject === 'ROI'){//投入产出比
-                if (val >= 10000){
+            } else if (subject === 'ROI') {//投入产出比
+                if (val && val >= 10000) {
                     return (val / 10000).toFixed(2) + 'w';
                 } else {
                     return val;
@@ -58,7 +57,7 @@ export default {
 
         },
         renderChart(nodes) {
-            var _this = this;
+            let _this = this;
             const {
                 subject,
                 nodes: pData
@@ -76,14 +75,14 @@ export default {
                         type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                     },
                     formatter: function(params){
-                        var result =[];
-                        if (_.includes(['ROI','POR','ITO'],subject)){
+                        let result = [];
+                        if (_.includes(SUBJECT, subject)){
                             params.forEach(function (item) {
-                                result += item.marker + " " + item.name + " : " + item.value +"</br>";
+                                result += item.marker + " " + item.name + " : " + item.value + "</br>";
                             });
                         } else {
                             params.forEach(function (item) {
-                                result += item.marker + " " + item.name  + " : " + parseInt(item.value/100 )+"</br>";
+                                result += item.marker + " " + item.name  + " : " + parseInt(item.value/100 ) + "</br>";
                             });
                         }
                         return result;
@@ -139,13 +138,13 @@ export default {
                             position: [5, 6],
                             color: "#000",
                             formatter: function(params) {
-                                if (nodes.display_rate == 0) {
+                                if (!params.data || !nodes.display_rate) {
                                     return `${pData[params.dataIndex]} : ${ _this.calculateToShow(params.data)}`;
                                 } else {
-                                    if (nodes.total==0){
+                                    if (nodes.total === 0) {//总和为0
                                         return `${pData[params.dataIndex]} : ${params.data}`;
                                     } else {
-                                        return `${pData[params.dataIndex]} : ${(params.data/nodes.total*100).toFixed(2)}%`;
+                                        return `${pData[params.dataIndex]} : ${(params.data / nodes.total * 100).toFixed(2)}%`;
                                     }
                                 }
                             },
@@ -162,7 +161,7 @@ export default {
                                     if (average==0){
                                         return `平均值${average}`;
                                     } else {
-                                        return `平均值${(average/nodes.total*100).toFixed(2)}%`;
+                                        return `平均值${(average / nodes.total*100).toFixed(2)}%`;
                                     }
                                 }
                             }

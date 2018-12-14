@@ -55,9 +55,9 @@ export default {
             return RANK[score] || '';
         },
         renderChart(data) {
-            var _this =this;
+            let _this = this;
             const { transSubjects,radarValues } = data;
-            var arr= [];
+            let arr = [];
             for(let i of transSubjects){
                 arr.push({
                     name:i,
@@ -70,7 +70,7 @@ export default {
                 },
                 tooltip: {
                     formatter: function(params){
-                        var result =[];
+                        let result =[];
                         for(let i=0;i<params.name.length;i++){
                             result += params.name[i] + " : " + _this.getRank(params.value[i]) +"</br>";
                         }

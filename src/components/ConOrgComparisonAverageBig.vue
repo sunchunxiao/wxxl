@@ -9,7 +9,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
-
+const SUBJECT = ['ROI','ITO','RY'];
 export default {
     props: {
         id: String,
@@ -32,7 +32,7 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
-            if (_.includes(['ROI','ITO'],subject)) { // ROI投入产出比需要,ITO库存周转率不需要单位
+            if (_.includes(SUBJECT, subject)) { // ROI投入产出比需要,ITO库存周转率不需要单位
                 return val;
             } else {
                 let tenThousand = parseInt(val / 10000);
@@ -46,11 +46,11 @@ export default {
             }
         },
         renderChart(data) {
-            const { series,timeLabels,subject } = data;
+            const { series, timeLabels, subject } = data;
             const seriesClone = _.cloneDeep(series);
             let _this = this;
             for(let i = 0;i < seriesClone.length; i++) {
-                if (_.includes(['ROI','ITO'],subject)){
+                if (_.includes(SUBJECT,subject)){
                     _.forEach(seriesClone[i], (v,k) => {
                         seriesClone[i][k] = v;
                     });

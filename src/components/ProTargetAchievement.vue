@@ -64,11 +64,11 @@ export default {
         calculateToShow(val) {
             const { subject } = this.data;
             //目标值为null,是未设定,为数值显示数值(0显示0)
-            if (val === null){
+            if (val == null){
                 return "未设定";
             } else {
-                if (_.includes(SUBJECT, subject)){
-                    if ((val / 10000) >= 1){
+                if (_.includes(SUBJECT, subject)) {
+                    if ((val / 10000) >= 1) {
                         return (val / 10000).toFixed(2) + 'w';
                     } else {
                         return val;
@@ -87,9 +87,9 @@ export default {
             }
         },
         renderChart(data) {
-            const { subject, subject_name, progress ,real } = data;
+            const { subject, subject_name, progress, real } = data;
             let valuePercent;
-            if (progress === null){
+            if (progress == null){
                 valuePercent = this.calculateToShow(real);
                 if(valuePercent < 0){
                     valuePercent = null;
@@ -109,8 +109,8 @@ export default {
                 tooltip: {
                     trigger: 'item',
                     formatter: function(params){
-                        var result = [];
-                        if(params.value === null){
+                        let result = [];
+                        if(params.value == null){
                             return;
                         }
                         if (!progress){
@@ -151,13 +151,13 @@ export default {
                             normal: {
                                 formatter: function(data){
                                     //progress为null时显示实际值,0和数值都显示百分比
-                                    if (progress === null){
-                                        if(data.value === null){
+                                    if (progress == null){
+                                        if(data.value == null){
                                             return '';
                                         }
                                         return data.value;
                                     } else {
-                                        if(data.value === null){
+                                        if(data.value == null){
                                             return '';
                                         }
                                         return data.value + "%";
@@ -183,12 +183,20 @@ export default {
                         },
                         label: {
                             normal: {
+                                formatter: function(data){
+                                    if(data.name.length < 8){//显示字体过长换行显示
+                                        return data.name;
+                                    }else{
+                                        return data.name = data.name.slice(0,4) + '\n' + data.name.slice(4,data.name.length);
+                                    }
+                                },
                                 textStyle: {
                                     fontSize: FONTSIZE2,
                                     fontWeight: FONTWEIGHT,
                                     color: color
                                 }
-                            }
+                            },
+                            position:['50%','0%']
                         }
                     }, {
                         value: 0,
