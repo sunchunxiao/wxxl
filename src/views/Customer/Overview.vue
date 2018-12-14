@@ -235,7 +235,7 @@ import ProportionalStructureAverageComparisonBig from '../../components/Proporti
 // 智能评选和智能策略
 import IntelligentSelection from '../../components/IntelligentSelection';
 //tree 百分比计算
-import { calculatePercent } from 'utils/common';
+import { calculatePercent, error } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
 
@@ -267,6 +267,7 @@ export default {
             cid:'',
             loading: false,
             calculatePercent:calculatePercent,
+            error:error,
             defaultProps: TREE_PROPS,
             // index
             index0: 0,
@@ -390,11 +391,7 @@ export default {
                     });
                 });
             }else{
-                this.$message({
-                    type: 'error',
-                    message: '无应用策略',
-                    duration: 2000
-                });
+                this.error('无应用策略');
             }
         },
         getTree() {
@@ -572,11 +569,7 @@ export default {
                 }
             } else {
                 this.highlight = false;
-                this.$message({
-                    type: 'error',
-                    message: '请选择日期',
-                    duration: 2000
-                });
+                this.error('请选择日期');
             }
         },
         clickIndex(i, idx) {

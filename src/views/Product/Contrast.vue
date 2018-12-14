@@ -122,7 +122,7 @@ import Card from '../../components/Card';
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
-import { calculatePercent } from 'utils/common';
+import { calculatePercent, error } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
 
@@ -147,6 +147,7 @@ export default {
             },
             cid:'',
             calculatePercent:calculatePercent,
+            error:error,
             defaultProps: TREE_PROPS,
             index0: 0,
             loading:false,
@@ -402,6 +403,13 @@ export default {
                 return;
             }
             if (checked) { // 如果选中
+                if (!this.searchBarValue.sDate || !this.searchBarValue.eDate) {
+                    this.cancelKey = data.cid;
+                    const checkKeys = this.cidObjArr.map(i => i.cid);
+                    this.$refs.tree.setCheckedKeys(checkKeys);
+                    this.error('请选择日期');
+                    return;
+                }
                 // 如果有选中的节点 并且此次选择了不同pid的节点
                 if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
                     this.warn('请选择相同父级下的进行对比');
@@ -424,6 +432,7 @@ export default {
                 const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
                 this.cidObjArr.splice(index, 1);
             }
+
         },
         warn (msg) {
             this.$message({

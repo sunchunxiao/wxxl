@@ -15,3 +15,11 @@ export function calculatePercent(a, b) {
         };
     }
 }
+
+export function error(msg) {
+    this.$message({
+        type: 'error',
+        message: msg,
+        duration: 2000
+    });
+}
