@@ -188,7 +188,7 @@ export default {
                 },
                 options: options
             };
-            this.chart.setOption(heatMapOption,true);
+            this.chart.setOption(heatMapOption, true);
         }
     }
 };

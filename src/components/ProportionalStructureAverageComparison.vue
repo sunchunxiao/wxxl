@@ -82,7 +82,7 @@ export default {
                             });
                         } else {
                             params.forEach(function (item) {
-                                result += item.marker + " " + item.name  + " : " + parseInt(item.value/100 ) + "</br>";
+                                result += item.marker + " " + item.name  + " : " + parseInt(item.value / 100 ) + "</br>";
                             });
                         }
                         return result;

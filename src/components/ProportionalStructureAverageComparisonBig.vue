@@ -159,7 +159,7 @@ export default {
                                     if (average==0){
                                         return `平均值${average}`;
                                     } else {
-                                        return `平均值${(average / nodes.total*100).toFixed(2)}%`;
+                                        return `平均值${(average / nodes.total * 100).toFixed(2)}%`;
                                     }
                                 }
                             }
