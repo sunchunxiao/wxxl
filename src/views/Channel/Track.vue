@@ -61,7 +61,7 @@
                   label="策略应用前" />
                 <el-table-column
                   prop="rank_after"
-                  label="策略应用前" />
+                  label="策略应用后" />
               </el-table>
               <div
                 slot="reference"
@@ -98,12 +98,12 @@
                   label="策略应用前" />
                 <el-table-column
                   prop='rank_after'
-                  label="策略应用前" />
+                  label="策略应用后" />
               </el-table>
               <div
                 slot="reference"
                 class="name-wrapper cell_count_use">
-                {{ scope.row.rate }}
+                {{ scope.row.count_eff }}
               </div>
             </el-popover>
           </template>
