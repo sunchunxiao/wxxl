@@ -147,6 +147,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
+          v-if="structureArr && structureArr.length"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -270,8 +271,8 @@ export default {
             },
             cid: '',
             //tree
-            calculatePercent:calculatePercent,
-            error:error,
+            calculatePercent: calculatePercent,
+            error: error,
             defaultProps: TREE_PROPS,
             loading: false,
             // index
@@ -568,7 +569,6 @@ export default {
                     this.highlight = false;
                 }
             }
-
         },
         nodeExpand(data) {
             this.cid = data.cid;
@@ -582,9 +582,8 @@ export default {
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {
                     return;
-                } else if (data.children) {
-                    this.cid = data.cid;
                 }
+                this.cid = data.cid;
             } else {
                 this.highlight = false;
                 this.error('请选择日期');

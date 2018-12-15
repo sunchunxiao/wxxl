@@ -143,7 +143,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
-          v-if="type==1 || type==3"
+          v-if="orgstructureArr1 && (type==1 || type==3)"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -297,8 +297,8 @@ export default {
             },
             cid: 0,
             loading: false,
-            calculatePercent:calculatePercent,
-            error:error,
+            calculatePercent: calculatePercent,
+            error: error,
             defaultProps: TREE_PROPS,
             // index
             index0: 0,
@@ -626,9 +626,9 @@ export default {
                 this.type = data.type;
                 if (this.cid === data.cid){
                     return ;
-                } else if (data.children) {
-                    this.cid = data.cid;
                 }
+                this.cid = data.cid;
+
             } else {
                 this.highlight = false;
                 this.error('请选择日期');

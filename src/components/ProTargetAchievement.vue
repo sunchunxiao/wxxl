@@ -196,7 +196,7 @@ export default {
                                     color: color
                                 }
                             },
-                            position:['50%','0%']
+                            position:['50%', '0%']
                         }
                     }, {
                         value: 0,

@@ -137,7 +137,7 @@ export default {
                         type: 'line',
                     },
                     position: function(pos){ // point: 鼠标位置
-                        return { left:pos[0] - 100, top: pos[1] };
+                        return { left:pos[0] - 80, top: pos[1] };
                     },
                     formatter: function (params) {
                         let result = params[0].axisValue + "<br />";

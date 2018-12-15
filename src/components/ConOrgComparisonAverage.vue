@@ -9,7 +9,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
-const SUBJECT = ['ROI','ITO','RY'];
+const SUBJECT = ['ROI', 'ITO', 'RY'];
 export default {
     props: {
         id: String,
