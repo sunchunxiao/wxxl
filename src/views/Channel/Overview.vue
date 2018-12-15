@@ -144,7 +144,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
-          v-if="channelStructureArr && channelStructureArr.length"
+          v-if="hasStructure"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -301,6 +301,9 @@ export default {
         ...mapGetters(['channelTree', 'channelProgressArr', 'channelTrendArr', 'channelRankArr', 'channelStructureArr']),
         hasTree () {
             return !_.isEmpty(this.channelTree);
+        },
+        hasStructure () {
+            return !_.isEmpty(this.channelStructureArr);
         }
     },
     watch: {

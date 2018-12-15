@@ -143,7 +143,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
-          v-if="fundstructureArr1 && (type === 1||type === 3)"
+          v-if="hasStructure"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -175,7 +175,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
-          v-if="fundstructureArr2 && (type === 2 || type === 3)"
+          v-if="hasStructureBack"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -329,6 +329,12 @@ export default {
         ...mapGetters(['fundTree','fundprogressArr','fundtrendArr','fundstructureArr1','fundstructureArr2','fundrankArr']),
         hasTree() {
             return !_.isEmpty(this.fundTree);
+        },
+        hasStructure () {
+            return !_.isEmpty(this.fundstructureArr1);
+        },
+        hasStructureBack () {
+            return !_.isEmpty(this.fundstructureArr2);
         }
     },
     watch: {

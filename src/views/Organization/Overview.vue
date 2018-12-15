@@ -143,7 +143,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
-          v-if="orgstructureArr1 && (type==1 || type==3)"
+          v-if="hasStructure"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -175,7 +175,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
-          v-if="orgstructureArr2 && (type === 2 || type === 3)"
+          v-if="hasStructureBack"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -332,6 +332,12 @@ export default {
         ]),
         hasTree() {
             return !_.isEmpty(this.organizationTree);
+        },
+        hasStructure () {
+            return !_.isEmpty(this.orgstructureArr1);
+        },
+        hasStructureBack () {
+            return !_.isEmpty(this.orgstructureArr2);
         }
     },
     mounted() {

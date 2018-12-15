@@ -147,7 +147,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
-          v-if="structureArr && structureArr.length"
+          v-if="hasStructure"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -304,6 +304,9 @@ export default {
         ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr', 'productDateArr','treePrograss']),
         hasTree () {
             return !_.isEmpty(this.productTree);
+        },
+        hasStructure () {
+            return !_.isEmpty(this.structureArr);
         }
     },
     mounted () {
