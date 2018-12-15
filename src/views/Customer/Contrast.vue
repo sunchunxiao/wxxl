@@ -5,6 +5,7 @@
         ref="child"
         @input="input"
         @search="handleSearch"
+        v-model="searchBarValue"
         url="/cus/search"
         placeholder="客户编号/客户名称"
         :pt-options="['日', '周', '月', '季', '年']" />
@@ -118,7 +119,7 @@ import SearchBar from 'components/SearchBar';
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
-import { calculatePercent } from 'utils/common';
+import { calculatePercent, error } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
@@ -142,6 +143,7 @@ export default {
             },
             cid:'',
             calculatePercent:calculatePercent,
+            error:error,
             defaultProps: TREE_PROPS,
             index0: 0,
             loading:false,
@@ -151,6 +153,11 @@ export default {
             cidTarget:[10,20,30],
             cidObjArr:[],
             cancelKey: '',
+            searchBarValue: {
+                pt: '',
+                sDate: '',
+                eDate: ''
+            },
             debounce: null,
             treeClone:{},
         };
@@ -273,10 +280,10 @@ export default {
             return API.GetCusProgress(params);
         },
         getCompare() {
-            this.loading = true;
             if(!this.cidObjArr.length){
                 return;
             }
+            this.loading = true;
             const promises = _.map(this.cusprogressArr, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
@@ -346,10 +353,6 @@ export default {
             this.nodeArr.push(val.cid);
             this.val = val;
             if (!val.cid){
-                if (this.cid!=this.customerTree.cid){
-                    this.cid = this.customerTree.cid;
-                    this.treeClone = _.cloneDeep(this.customerTree);
-                }
                 this.getCompare();
             } else {
                 this.cid = val.cid;
@@ -370,6 +373,13 @@ export default {
                 return;
             }
             if (checked) { // 如果选中
+                if (!this.searchBarValue.sDate || !this.searchBarValue.eDate) {
+                    this.cancelKey = data.cid;
+                    const checkKeys = this.cidObjArr.map(i => i.cid);
+                    this.$refs.tree.setCheckedKeys(checkKeys);
+                    this.error('请选择日期');
+                    return;
+                }
                 // 如果有选中的节点 并且此次选择了不同pid的节点
                 if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
                     this.warn('请选择相同父级下的进行对比');
