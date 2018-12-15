@@ -74,6 +74,9 @@ export default {
                 },
                 tooltip: {
                     trigger: 'axis',
+                    position: function(pos){ // point: 鼠标位置
+                        return { left:pos[0], top: pos[1] };
+                    },
                 },
                 xAxis: {
                     type: 'category',

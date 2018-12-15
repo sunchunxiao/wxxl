@@ -82,7 +82,7 @@ export default {
                             });
                         } else {
                             params.forEach(function (item) {
-                                result += item.marker + " " + item.name  + " : " + parseInt(item.value/100 ) + "</br>";
+                                result += item.marker + " " + item.name  + " : " + parseInt(item.value / 100 ) + "</br>";
                             });
                         }
                         return result;
@@ -135,7 +135,7 @@ export default {
                     label: {
                         normal: {
                             show: true,
-                            position: [5, 6],
+                            position:['0%',"30%"],
                             color: "#000",
                             formatter: function(params) {
                                 if (!params.data || !nodes.display_rate) {

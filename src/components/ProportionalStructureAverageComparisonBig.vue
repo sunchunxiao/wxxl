@@ -133,7 +133,7 @@ export default {
                     label: {
                         normal: {
                             show: true,
-                            position: [5, 6],
+                            position:["0%","35%"],
                             color: "#000",
                             formatter: function(params) {
                                 if (!params.data || !nodes.display_rate) {
@@ -146,7 +146,7 @@ export default {
                                     }
                                 }
                             },
-                        }
+                        },
                     },
                     data: percentArr,
                     markLine: {
@@ -159,7 +159,7 @@ export default {
                                     if (average==0){
                                         return `平均值${average}`;
                                     } else {
-                                        return `平均值${(average / nodes.total*100).toFixed(2)}%`;
+                                        return `平均值${(average / nodes.total * 100).toFixed(2)}%`;
                                     }
                                 }
                             }

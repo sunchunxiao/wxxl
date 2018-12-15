@@ -17,7 +17,8 @@ export default {
     },
     data() {
         return {
-            color: '#000'
+            color: '#000',
+            debounce:null
         };
     },
     computed: {
@@ -41,6 +42,8 @@ export default {
     mounted() {
         this.chart = echarts.init(document.getElementById(`pie-${this.id}`));
         this.renderChart(this.data);
+        this.debounce = _.debounce(this.chart.resize, 1000);
+        window.addEventListener('resize', this.debounce);
     },
     watch: {
         data: {
@@ -87,7 +90,7 @@ export default {
                     },
                     indicator: arr,
                     radius: 100,
-                    center: ['48%','50%'],
+                    center: ['47%','50%'],
                     splitArea: {
                         areaStyle: {
                             color: ['#eee','#a7dcfc', '#70bcde','#23a9cc','#007eb0'],
@@ -116,8 +119,9 @@ export default {
 <style lang="scss" scoped>
 .pie-container {
     .pie {
-        width: 330px;
-        height: 330px;
+        min-width: 330px;
+        width: 100%;
+        height: 320px;
         margin: 0 auto;
     }
     .detail {
