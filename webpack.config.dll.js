@@ -17,13 +17,18 @@ module.exports = {
     mode: 'development',
     plugins: [
         new webpack.DllPlugin({
-            path: 'manifest.json',
             name: '[name]',
-            context: __dirname,
+            path: path.join(__dirname, './public/build/dll/manifest.json'),
+            context: path.join(__dirname, './public/build/dll')
         }),
         new webpack.ProvidePlugin({
             moment: 'moment',
             _: 'lodash',
         }),
+        //解决moment打包的时候把所有的语言都打包进去的问题
+        new webpack.ContextReplacementPlugin(
+            /moment[\\/]locale$/,
+            /^\.\/(zh-cn)$/
+        ),
     ]
 };

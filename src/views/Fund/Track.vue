@@ -61,7 +61,7 @@
                   label="策略应用前" />
                 <el-table-column
                   prop="rank2"
-                  label="策略应用前" />
+                  label="策略应用后" />
               </el-table>
               <div
                 slot="reference"
@@ -102,7 +102,7 @@
                   label="策略应用前" />
                 <el-table-column
                   prop="rank2"
-                  label="策略应用前" />
+                  label="策略应用后" />
               </el-table>
               <div
                 slot="reference"
