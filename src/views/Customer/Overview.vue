@@ -144,6 +144,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
+          v-if="hasStructure"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -266,8 +267,8 @@ export default {
             },
             cid:'',
             loading: false,
-            calculatePercent:calculatePercent,
-            error:error,
+            calculatePercent: calculatePercent,
+            error: error,
             defaultProps: TREE_PROPS,
             // index
             index0: 0,
@@ -297,6 +298,9 @@ export default {
         ...mapGetters(['customerTree','cusprogressArr','custrendArr','cusstructureArr','cusrankArr']),
         hasTree() {
             return !_.isEmpty(this.customerTree);
+        },
+        hasStructure () {
+            return !_.isEmpty(this.cusstructureArr);
         }
     },
     mounted() {
@@ -564,9 +568,8 @@ export default {
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid){
                     return ;
-                } else if (data.children) {
-                    this.cid = data.cid;
                 }
+                this.cid = data.cid;
             } else {
                 this.highlight = false;
                 this.error('请选择日期');

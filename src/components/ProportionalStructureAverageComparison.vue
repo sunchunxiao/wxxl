@@ -135,7 +135,7 @@ export default {
                     label: {
                         normal: {
                             show: true,
-                            position:['0%',"30%"],
+                            position:['0%', "30%"],
                             color: "#000",
                             formatter: function(params) {
                                 if (!params.data || !nodes.display_rate) {

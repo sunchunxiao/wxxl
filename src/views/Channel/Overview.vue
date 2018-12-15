@@ -144,6 +144,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
+          v-if="hasStructure"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -167,7 +168,6 @@
                   v-if="channelStructureArr.length>0"
                   class="border-left-2-gray">
                   <ProportionalStructureAverageComparisonBig
-
                     id="ProportionalStructureAverageComparisonBig"
                     :data="channelStructureArr[index3]" />
                 </el-col>
@@ -270,8 +270,8 @@ export default {
             },
             cid: '',
             loading: false,
-            calculatePercent:calculatePercent,
-            error:error,
+            calculatePercent: calculatePercent,
+            error: error,
             defaultProps: TREE_PROPS,
             // index
             index0: 0,
@@ -301,6 +301,9 @@ export default {
         ...mapGetters(['channelTree', 'channelProgressArr', 'channelTrendArr', 'channelRankArr', 'channelStructureArr']),
         hasTree () {
             return !_.isEmpty(this.channelTree);
+        },
+        hasStructure () {
+            return !_.isEmpty(this.channelStructureArr);
         }
     },
     watch: {
@@ -579,9 +582,8 @@ export default {
                 this.$refs.child.clearKw();
                 if (this.cid === data.nid) {
                     return;
-                } else if (data.children) {
-                    this.cid = data.nid;
                 }
+                this.cid = data.nid;
             } else {
                 this.highlight = false;
                 this.error('请选择日期');
