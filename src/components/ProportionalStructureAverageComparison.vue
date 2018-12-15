@@ -78,11 +78,13 @@ export default {
                         let result = [];
                         if (_.includes(SUBJECT, subject)){
                             params.forEach(function (item) {
-                                result += item.marker + " " + item.name + " : " + item.value + "</br>";
+                                result += item.marker + " " + item.name + " : " + item.value +"</br>";
                             });
                         } else {
                             params.forEach(function (item) {
-                                result += item.marker + " " + item.name  + " : " + parseInt(item.value / 100 ) + "</br>";
+                                result += item.marker + " " + item.name + "</br>" +
+                                `占比 : ${(item.value / nodes.total * 100).toFixed(2)}%` + "</br>" +
+                                `额 : ${parseInt(item.value / 100)}`;
                             });
                         }
                         return result;
@@ -135,7 +137,7 @@ export default {
                     label: {
                         normal: {
                             show: true,
-                            position:['0%', "30%"],
+                            position: 'insideLeft',
                             color: "#000",
                             formatter: function(params) {
                                 if (!params.data || !nodes.display_rate) {
