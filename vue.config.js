@@ -6,7 +6,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 let plugins = [
     new webpack.DllReferencePlugin({
         context: __dirname,
-        manifest: require('./manifest.json'),
+        manifest: require('./public/build/dll/manifest.json'),
     }),
     new webpack.ProvidePlugin({
         moment: 'moment',

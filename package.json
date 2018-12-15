@@ -6,7 +6,8 @@
         "serve": "yarn dll && vue-cli-service serve --open",
         "build": "yarn dll && vue-cli-service build",
         "lint": "vue-cli-service lint",
-        "dll": "webpack --config ./webpack.config.dll.js"
+        "dll": "yarn tool:rm && webpack --config ./webpack.config.dll.js",
+        "tool:rm": "rm -rf public/build/dll "
     },
     "dependencies": {
         "@xunlei/vue-lazy-component": "1.1.3",
