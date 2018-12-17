@@ -81,14 +81,16 @@ export default {
                         type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                     },
                     formatter: function(params){
-                        let result =[];
+                        let result = [];
                         if (_.includes(SUBJECT, subject)){
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + " : " + item.value +"</br>";
                             });
                         } else {
                             params.forEach(function (item) {
-                                result += item.marker + " " + item.name  + " : " + parseInt(item.value / 100 )+"</br>";
+                                result += item.marker + " " + item.name + "</br>" +
+                                `占比 : ${(item.value / nodes.total * 100).toFixed(2)}%` + "</br>" +
+                                `额 : ${parseInt(item.value / 100)}`;
                             });
                         }
                         return result;
@@ -133,7 +135,7 @@ export default {
                     label: {
                         normal: {
                             show: true,
-                            position:["0%", "35%"],
+                            position: 'insideLeft',
                             color: "#000",
                             formatter: function(params) {
                                 if (!params.data || !nodes.display_rate) {
@@ -142,7 +144,7 @@ export default {
                                     if (nodes.total === 0) {//总和为0
                                         return `${pData[params.dataIndex]} : ${params.data}`;
                                     } else {
-                                        return `${pData[params.dataIndex]} : ${(params.data / nodes.total * 100).toFixed(2)}%`;
+                                        return `${pData[params.dataIndex]} : ${(params.data / nodes.total * 100).toFixed(2)}% ` ;
                                     }
                                 }
                             },
