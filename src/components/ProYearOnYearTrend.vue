@@ -69,7 +69,7 @@ export default {
                 series: [
                     {
                         data: ring,
-                        name:'环比增长率',
+                        name: '环比增长率',
                         type: 'line',
                         lineStyle: {
                             color: '#b12725'
@@ -77,7 +77,7 @@ export default {
                     },
                     {
                         data: yoy,
-                        name:'同比增长率',
+                        name: '同比增长率',
                         type: 'line',
                         lineStyle: {
                             color: '#338cb6',

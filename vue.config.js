@@ -46,17 +46,17 @@ module.exports = {
     //         .use(require('webpack/lib/ProvidePlugin'), ProvidePluginOptions);
     // },
     // 同时需要把 .env.development 文件中的环境变量 修改为 /api
-    devServer: {
-        historyApiFallback: true
-        //  proxy: {
-        //    '/api': {
-        //      target: 'http://wxxldev.gyxr.cn/eff/v1/',
-        //      changeOrigin: true,
-        //      ws: true,
-        //      pathRewrite: {
-        //        '^/api': ''
-        //      }
-        //    }
-        //  }
-    }
+    // devServer: {
+    // historyApiFallback: true,
+    //  proxy: {
+    //    '/api': {
+    //      target: 'http://wxxldev.gyxr.cn/eff/v1/',
+    //      changeOrigin: true,
+    //      ws: true,
+    //      pathRewrite: {
+    //        '^/api': ''
+    //      }
+    //    }
+    //  }
+    // }
 };

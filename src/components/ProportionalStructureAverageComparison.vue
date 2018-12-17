@@ -9,6 +9,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
+import { formatNumber } from 'utils/common';
 const SUBJECT = ['ROI','POR','ITO','RY'];
 export default {
     props: {
@@ -17,9 +18,10 @@ export default {
     },
     data(){
         return {
-            val:[],
-            sum28:0,
-            color:[]
+            val: [],
+            sum28: 0,
+            color: [],
+            formatNumber: formatNumber
         };
     },
     mounted() {
@@ -78,13 +80,13 @@ export default {
                         let result = [];
                         if (_.includes(SUBJECT, subject)){
                             params.forEach(function (item) {
-                                result += item.marker + " " + item.name + " : " + item.value +"</br>";
+                                result += item.marker + " " + item.name + " : " + _this.formatNumber(item.value) +"</br>";
                             });
                         } else {
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + "</br>" +
                                 `占比 : ${(item.value / nodes.total * 100).toFixed(2)}%` + "</br>" +
-                                `额 : ${parseInt(item.value / 100)}`;
+                                `额 : ${_this.formatNumber(parseInt(item.value / 100))}`;
                             });
                         }
                         return result;

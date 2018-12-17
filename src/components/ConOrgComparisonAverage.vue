@@ -37,12 +37,11 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
-
             if (_.includes(SUBJECT, subject)) { // ROI投入产出比需要,ITO库存周转率不需要单位
                 return val;
             } else {
                 let tenThousand = parseInt(val / 10000);
-                if (tenThousand >= 1){
+                if (tenThousand >= 1 || tenThousand <= -1) {
                     return parseInt(val / 10000) + 'w';
                 } else {
                     return parseInt(val);
@@ -60,7 +59,7 @@ export default {
                     });
                 } else {
                     _.forEach(seriesClone[i], (v,k) => {
-                        seriesClone[i][k] = parseInt(v/100);
+                        seriesClone[i][k] = parseInt(v / 100);
                     });
                 }
             }
@@ -74,7 +73,7 @@ export default {
                 },
                 tooltip: {
                     trigger: 'axis',
-                    position: function(pos){ // point: 鼠标位置
+                    position: function (pos) { // point: 鼠标位置
                         return { left:pos[0], top: pos[1] };
                     },
                 },
@@ -94,7 +93,7 @@ export default {
                 },
                 series: []
             };
-            for(let i = 0; i < seriesClone.length; i++) {
+            for (let i = 0; i < seriesClone.length; i++) {
                 options.series.push({
                     name: this.data.nodes[i],
                     type: 'line',
