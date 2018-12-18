@@ -232,7 +232,6 @@ export default {
 
 <style lang="scss" scoped>
 .pie-container {
-    min-width: 170px;
     width: 100%;
     .pie {
         width: 140px;
@@ -240,8 +239,7 @@ export default {
         margin: 0 auto;
     }
     .detail {
-        margin-left: 30px;
-        // text-align: center;
+        text-align: center;
         .value {
             font-size: 120%;
         }
