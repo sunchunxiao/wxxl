@@ -228,7 +228,8 @@ export default {
             type: Array,
             default: function () { return ['日', '周', '月', '季', '年']; }
         },
-        hasSearch: { type: Boolean, default: true }
+        hasSearch: { type: Boolean, default: true },
+        version: String
     },
     created () {
         // store 中有日期
@@ -466,12 +467,18 @@ export default {
             }
         },
         searchKw (kw, cb) {
-            if (this.url) {
-                FetchGet(this.url, { kw }).then(res => {
+            if (this.version === '0') {
+                FetchGet(this.url, { kw: kw, version: this.version }).then(res => {
                     cb(res.suggestions || []);
                 });
             } else {
-                cb([]);
+                if (this.url) {
+                    FetchGet(this.url, { kw: kw }).then(res => {
+                        cb(res.suggestions || []);
+                    });
+                } else {
+                    cb([]);
+                }
             }
         },
         handleKwSelect (obj) {

@@ -28,8 +28,8 @@ export function formatNumber(num) {
     let str = (Math.abs(num) || 0).toString();
     let result = '';
     const valueParts = str.split(".");//有小数时
-    if (valueParts[0].length < 3) {
-        return str;
+    if (valueParts[0].length <= 3) {
+        return num;
     } else {
         while (valueParts[0].length > 3) {
             result = ',' + valueParts[0].slice(-3) + result;

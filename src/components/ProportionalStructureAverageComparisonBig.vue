@@ -55,6 +55,13 @@ export default {
             } else {
                 return val;
             }
+        },
+        radius(value) {
+            if (value >= 0) {
+                return [0, 20, 20, 0];
+            } else {
+                return [20, 0, 0, 20];
+            }
 
         },
         renderChart(nodes) {
@@ -67,7 +74,14 @@ export default {
             this.color = nodes["28nodes"];
             const average = nodes.avg;
             for(let i in pData) {
-                percentArr.push(nodes.values[i]);
+                percentArr.push({
+                    value:nodes.values[i],
+                    itemStyle: {
+                        normal: {
+                            barBorderRadius:this.radius(nodes.values[i])
+                        }
+                    }
+                });
             }
             const options = {
                 grid: {
@@ -131,7 +145,7 @@ export default {
                             color: function(params) {
                                 return _this.color[`${params.dataIndex}`] === params.dataIndex ? '#318cb8' : '#b0afad';
                             },
-                            barBorderRadius: [0, 20, 20, 0],
+                            // barBorderRadius: [0, 20, 20, 0],
                         },
                     },
                     label: {
@@ -140,13 +154,13 @@ export default {
                             position: 'insideLeft',
                             color: "#000",
                             formatter: function(params) {
-                                if (!params.data || !nodes.display_rate) {
-                                    return `${pData[params.dataIndex]} : ${ _this.calculateToShow(params.data)}`;
+                                if (!params.value || !nodes.display_rate) {
+                                    return `${pData[params.dataIndex]} : ${ _this.calculateToShow(params.value)}`;
                                 } else {
                                     if (nodes.total === 0) {//总和为0
-                                        return `${pData[params.dataIndex]} : ${params.data}`;
+                                        return `${pData[params.dataIndex]} : ${params.value}`;
                                     } else {
-                                        return `${pData[params.dataIndex]} : ${(params.data / nodes.total * 100).toFixed(2)}% ` ;
+                                        return `${pData[params.dataIndex]} : ${(params.value / nodes.total * 100).toFixed(2)}% ` ;
                                     }
                                 }
                             },

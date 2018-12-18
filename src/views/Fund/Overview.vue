@@ -2,13 +2,14 @@
   <div class="overview">
     <el-row>
       <search-bar
-        @search="handleSearch"
-        placeholder="客户编号/客户名称"
-        @input="input"
-        v-model="searchBarValue"
         ref="child"
-        :pt-options="['月', '季', '年']"
-        url="/fund/search" />
+        version='0'
+        @input="input"
+        url="/fund/search"
+        @search="handleSearch"
+        v-model="searchBarValue"
+        placeholder="客户编号/客户名称"
+        :pt-options="['月', '季', '年']" />
     </el-row>
     <el-row
       class="content_row"
