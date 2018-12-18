@@ -7,7 +7,7 @@ import { getToken, removeToken } from './auth';
 import router from '../router/index';
 // import qs from 'qs';
 // import store from 'store';
-
+axios.defaults.withCredentials = true;
 // 创建axios实例
 // const SUCCESS_CODE = 0;
 const AUTH_FAILED = 401;
@@ -50,7 +50,7 @@ service.interceptors.response.use(response => {
 },
 error => {
     // eslint-disable-next-line no-console
-    console.log('AFTER_RESPONSE_RETURN_ERROR', error.response); // for debug
+    // console.log('AFTER_RESPONSE_RETURN_ERROR', error.response); // for debug
     if (error.code === "ECONNABORTED") {
         Message({ message: '请求超时', type: 'error', duration: MESSAGEDURATION });
     } else {

@@ -23,3 +23,26 @@ export function error(msg) {
         duration: 2000
     });
 }
+//多位数字加逗号
+export function formatNumber(num) {
+    let str = (Math.abs(num) || 0).toString();
+    let result = '';
+    const valueParts = str.split(".");//有小数时
+    if (valueParts[0].length < 3) {
+        return str;
+    } else {
+        while (valueParts[0].length > 3) {
+            result = ',' + valueParts[0].slice(-3) + result;
+            valueParts[0] = valueParts[0].slice(0, valueParts[0].length - 3);
+        }
+        if (valueParts[0]) {
+            if (num < 0) {//如果是负数添加负号
+                result = "-" + valueParts[0] + result;
+            } else {
+                result = valueParts[0] + result;
+            }
+        }
+        return result;
+    }
+
+}

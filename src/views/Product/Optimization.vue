@@ -7,7 +7,8 @@
         v-model="searchBarValue"
         placeholder="产品编号/产品名称"
         @input="input"
-        url="/product/search" />
+        url="/product/search"
+        :pt-options="['周', '月', '季', '年']" />
     </el-row>
     <el-row
       v-if="productTree"

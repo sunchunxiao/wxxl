@@ -20,7 +20,7 @@ export default {
             cid: 0,
             name: '',
             brand: '',
-            debounce:null
+            debounce: null
         };
     },
     mounted() {

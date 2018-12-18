@@ -41,5 +41,8 @@ export default {
     },
     GetOrgStrategiesTrack(params) {
         return FetchGet('/org/strategiesTrack', params);
+    },
+    GetOrgSearch(params) {
+        return FetchGet('/org/test', params);
     }
 };

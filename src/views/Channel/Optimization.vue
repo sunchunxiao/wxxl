@@ -7,7 +7,8 @@
         placeholder="渠道编号/渠道名称"
         @search="handleSearch"
         v-model="searchBarValue"
-        url="/channel/search" />
+        url="/channel/search"
+        :pt-options="['周', '月', '季', '年']" />
     </el-row>
     <el-row
       v-if="channelTree"

@@ -18,7 +18,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
-
+import { formatNumber } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 NIR净利率 CTR资金周转率
 const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
@@ -35,7 +35,8 @@ export default {
     },
     data() {
         return {
-            color: '#000'
+            color: '#000',
+            formatNumber: formatNumber
         };
     },
     computed: {
@@ -77,16 +78,17 @@ export default {
                 let tenThousand = val / 10000 / 100;
                 if (tenThousand / 10000 >= 1) {
                     return (val / 10000 / 10000 / 100).toFixed(2) + '亿';
-                } else if (tenThousand >= 1){
+                } else if (tenThousand >= 1 || tenThousand <= -1) {
                     return (val / 10000 / 100).toFixed(2) + 'w';
-                } else if (tenThousand < 1 && tenThousand > 0){
+                } else if (tenThousand < 1 && tenThousand > 0) {
                     return (val / 100).toFixed(2);
-                }else{
+                } else {
                     return val;
                 }
             }
         },
         renderChart(data) {
+            let  _this = this;
             const { subject, subject_name, progress, real } = data;
             let valuePercent;
             if (progress == null){
@@ -113,8 +115,8 @@ export default {
                         if(params.value == null){
                             return;
                         }
-                        if (!progress){
-                            result += params.marker + " " + params.name + " : " + params.value + "</br>";
+                        if (!progress) {
+                            result += params.marker + " " + params.name + " : " + _this.formatNumber(real) + "</br>";
                         } else {
                             result += params.marker + " " + params.name + " : " + params.value + '%' + "</br>";
                         }
@@ -230,13 +232,16 @@ export default {
 
 <style lang="scss" scoped>
 .pie-container {
+    min-width: 170px;
+    width: 100%;
     .pie {
         width: 140px;
         height: 140px;
         margin: 0 auto;
     }
     .detail {
-        text-align: center;
+        margin-left: 30px;
+        // text-align: center;
         .value {
             font-size: 120%;
         }

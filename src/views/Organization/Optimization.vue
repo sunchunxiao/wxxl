@@ -8,7 +8,7 @@
         @search="handleSearch"
         v-model="searchBarValue"
         placeholder="组织编号/组织名称"
-        :pt-options="['月', '季', '年']" />
+        :pt-options="['周', '月', '季', '年']" />
     </el-row>
     <el-row
       class="content_row"
