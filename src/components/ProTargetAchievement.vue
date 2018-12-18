@@ -240,8 +240,7 @@ export default {
         margin: 0 auto;
     }
     .detail {
-        margin-left: 30px;
-        // text-align: center;
+        text-align: center;
         .value {
             font-size: 120%;
         }
