@@ -28,6 +28,7 @@ const FONTSIZE1 = 28;
 const FONTSIZE3 = 22;
 const FONTSIZE2 = 15;
 const FONTWEIGHT = 600;
+const maxLength = 7;
 
 export default {
     props: {
@@ -100,8 +101,8 @@ export default {
                     } else {
                         toolTipValue = (real / 100).toFixed(2);
                     }
-                    if (realValue.length >= 7) {
-                        fontSize = FONTSIZE3;//无百分比显示实际值 超过圆环时 字体变小
+                    if (realValue.length >= maxLength) {//无百分比显示实际值 超过圆环时 字体变小
+                        fontSize = FONTSIZE3;
                     } else {
                         fontSize = FONTSIZE1;
                     }

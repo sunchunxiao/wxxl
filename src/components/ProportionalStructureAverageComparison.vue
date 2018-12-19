@@ -148,8 +148,6 @@ export default {
                             color: function(params) {
                                 return _this.color[`${params.dataIndex}`] === params.dataIndex ? '#318cb8' : '#b0afad';
                             },
-                            // barBorderRadius: [0, 20, 20, 0],
-                            // barBorderRadius: _this.borderRadius,
                         },
                     },
                     label: {
