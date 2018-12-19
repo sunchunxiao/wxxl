@@ -41,5 +41,7 @@ export default {
     GetFundStrategiesTrack(params) {
         return FetchGet('/fund/strategiesTrack', params);
     },
-
+    GetFundApplog(params) {
+        return FetchGet('/fund/strategy/app_log', params);
+    },
 };

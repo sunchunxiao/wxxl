@@ -271,7 +271,6 @@ export default {
         //获取百分比数据
         getTreePrograss () {
             this.loading = true;
-            this.loading = true;
             const params = {
                 subject: SUBJECT,
                 ...this.getPeriodByPt(),

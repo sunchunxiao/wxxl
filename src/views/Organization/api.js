@@ -42,7 +42,7 @@ export default {
     GetOrgStrategiesTrack(params) {
         return FetchGet('/org/strategiesTrack', params);
     },
-    GetOrgSearch(params) {
-        return FetchGet('/org/test', params);
-    }
+    GetOrgApplog(params) {
+        return FetchGet('/org/strategy/app_log', params);
+    },
 };

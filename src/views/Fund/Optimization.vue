@@ -16,7 +16,7 @@
       <el-col
         :span="5"
         class="tree_container">
-        <div class="title">毛利目标达成率</div>
+        <div class="title">净利润额目标达成率</div>
         <div
           @click="click"
           v-if="fundTree.children"

@@ -24,7 +24,7 @@
             class="clean_select">取消全部</span>
         </div>
         <div class="title_target">当前选中目标数:{{ num }}</div>
-        <div class="title">毛利目标达成率</div>
+        <div class="title">渠道营业利润额目标达成率</div>
         <div class="company">
           <span class="left">{{ treeClone.name }}</span>
           <span
