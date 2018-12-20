@@ -16,7 +16,7 @@
       <el-col
         :span="4"
         class="tree_container">
-        <div class="title">毛利目标达成率</div>
+        <div class="title">客户利润额目标达成率</div>
         <div
           @click="click"
           :class="{bac:isbac}"

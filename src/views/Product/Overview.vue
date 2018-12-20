@@ -270,6 +270,8 @@ export default {
                 search: '', // 暂时没有接口 先这样
             },
             cid: '',
+            showStragetyId:'',
+            subject:'',
             //tree
             calculatePercent: calculatePercent,
             error: error,
@@ -616,6 +618,11 @@ export default {
                 rank: rank,
                 time_label: time_label,
             };
+            if (this.showStragetyId === cid && this.subject === subject) {
+                return;
+            }
+            this.showStragetyId = cid;
+            this.subject = subject;
             API.GetProductMatch(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];
