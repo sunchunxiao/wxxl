@@ -22,11 +22,13 @@ import { formatNumber } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 NIR净利率 CTR资金周转率
 const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
-const COLORMAP = { over: '#b12725', below: '#308db9' };
+const COLORMAP = { over: '#b12725', below: '#308db9' }; // #b12725红色
 const colorLeft = '#E0E3E9';
 const FONTSIZE1 = 28;
+const FONTSIZE3 = 22;
 const FONTSIZE2 = 15;
 const FONTWEIGHT = 600;
+const maxLength = 7;
 
 export default {
     props: {
@@ -89,17 +91,29 @@ export default {
         },
         renderChart(data) {
             let  _this = this;
-            const { subject, subject_name, progress, real } = data;
-            let valuePercent;
+            const { subject, subject_name, progress, real, target } = data;
+            let valuePercent, realValue, toolTipValue, fontSize;
             if (progress == null){
-                valuePercent = this.calculateToShow(real);
-                if(valuePercent < 0){
-                    valuePercent = null;
+                if (!target) {
+                    realValue = this.calculateToShow(real).toString();
+                    if (_.includes(SUBJECT, subject)) { //tooltip显示每三位,分隔
+                        toolTipValue = real;
+                    } else {
+                        toolTipValue = (real / 100).toFixed(2);
+                    }
+                    if (realValue.length >= maxLength) {//无百分比显示实际值 超过圆环时 字体变小
+                        fontSize = FONTSIZE3;
+                    } else {
+                        fontSize = FONTSIZE1;
+                    }
                 }
+                valuePercent = null;
             } else {
                 valuePercent = (progress * 100).toFixed(0);
+                fontSize = FONTSIZE1;//显示百分比的数据字体大小都为FONTSIZE1
             }
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
+
             // 反向指标 颜色需要相反
             if (_.includes(REVERSE_TARGET, subject)) {
                 color = valuePercent >= 100 ? COLORMAP.over : COLORMAP.below;
@@ -112,11 +126,8 @@ export default {
                     trigger: 'item',
                     formatter: function(params){
                         let result = [];
-                        if(params.value == null){
-                            return;
-                        }
                         if (!progress) {
-                            result += params.marker + " " + params.name + " : " + _this.formatNumber(real) + "</br>";
+                            result += params.marker + " " + params.name + " : " + _this.formatNumber(toolTipValue) + "</br>";
                         } else {
                             result += params.marker + " " + params.name + " : " + params.value + '%' + "</br>";
                         }
@@ -153,11 +164,8 @@ export default {
                             normal: {
                                 formatter: function(data){
                                     //progress为null时显示实际值,0和数值都显示百分比
-                                    if (progress == null){
-                                        if(data.value == null){
-                                            return '';
-                                        }
-                                        return data.value;
+                                    if (progress == null) {
+                                        return realValue;
                                     } else {
                                         if(data.value == null){
                                             return '';
@@ -166,7 +174,7 @@ export default {
                                     }
                                 },
                                 textStyle: {
-                                    fontSize: FONTSIZE1,
+                                    fontSize: fontSize,
                                     color: color,
                                 }
                             },

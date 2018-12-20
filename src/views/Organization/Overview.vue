@@ -3,6 +3,7 @@
     <el-row>
       <search-bar
         ref="child"
+        version='0'
         @input="input"
         url="/org/search"
         @search="handleSearch"

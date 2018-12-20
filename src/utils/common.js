@@ -24,14 +24,15 @@ export function error(msg) {
     });
 }
 //多位数字加逗号
+const minLength = 3;
 export function formatNumber(num) {
     let str = (Math.abs(num) || 0).toString();
     let result = '';
     const valueParts = str.split(".");//有小数时
-    if (valueParts[0].length < 3) {
-        return str;
+    if (valueParts[0].length <= minLength) {
+        return num;
     } else {
-        while (valueParts[0].length > 3) {
+        while (valueParts[0].length > minLength) {
             result = ',' + valueParts[0].slice(-3) + result;
             valueParts[0] = valueParts[0].slice(0, valueParts[0].length - 3);
         }
@@ -44,5 +45,4 @@ export function formatNumber(num) {
         }
         return result;
     }
-
 }
