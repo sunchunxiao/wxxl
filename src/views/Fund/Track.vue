@@ -141,10 +141,10 @@ export default {
             },
             loading: false,
             currentPage: 1,
-            trackList:[],
-            total:0,
-            arr:[],
-            trackListAll:[]
+            trackList: [],
+            total: 0,
+            trackListAll: [],
+            trackListEff: [],
         };
     },
 
@@ -165,21 +165,27 @@ export default {
                 return o;
             });
         },
+        showEff(val) {
+            this.trackListEff = [];
+            const effRecord = 1;//是否只返回有效的应用记录 1是 0否
+            const params = {
+                strategyId: val.id,
+                goodOnly: effRecord
+            };
+            API.GetFundApplog(params).then(res => {
+                this.trackListEff = res.data;
+            });
+        },
         show(val) {
             this.trackListAll = [];
-            if(val){
-                this.trackListAll.push({
-                    level:"事业部A-部门A",
-                    time:'2018.1.2',
-                    rank1:'差',
-                    rank2:'优'
-                },{
-                    level:"事业部A-部门B",
-                    time:'2018.1.2',
-                    rank1:'中',
-                    rank2:'差'
-                });
-            }
+            const unEffRecord = 0;//是否只返回有效的应用记录 1是 0否(全部)
+            const params = {
+                strategyId: val.id,
+                goodOnly: unEffRecord
+            };
+            API.GetFundApplog(params).then(res => {
+                this.trackListAll = res.data;
+            });
         },
         getProductStrategy() {
             this.loading = true;

@@ -31,7 +31,8 @@ import {
     Loading,
     MessageBox,
     Message,
-    Notification
+    Notification,
+    Scrollbar
 } from 'element-ui';
 
 Vue.use(VueLazyComponent);
@@ -62,6 +63,7 @@ Vue.use(Icon);
 Vue.use(Row);
 Vue.use(Col);
 Vue.use(Carousel);
+Vue.use(Scrollbar);
 Vue.use(CarouselItem);
 Vue.use(Loading.directive);
 

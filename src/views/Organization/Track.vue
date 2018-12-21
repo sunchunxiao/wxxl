@@ -6,6 +6,7 @@
       <div class="title">策略跟踪和策略应用</div>
       <el-table
         @sort-change="sortChange"
+        @filter-change="filterChange"
         :data="trackList"
         stripe>
         <el-table-column
@@ -14,23 +15,23 @@
         <el-table-column
           prop="level_name"
           label="组织层级"
-          :filters="[{text: '全公司', value: '全公司'},{text: '事业部', value: '事业部'},{text: '部门', value: '部门'},{text: '小组', value: '小组'}]"
-          :filter-method="filterA" />
+          column-key="level_name"
+          :filters="[{text: '全公司', value: '全公司'},{text: '事业部', value: '事业部'},{text: '部门', value: '部门'},{text: '小组', value: '小组'}]" />
         <el-table-column
           prop="subject_name"
           label="指标"
-          :filters="[{text: '销售额', value: '销售额'}, {text: '利润', value: '利润'},{text: '成本', value: '成本'},{text: '日销', value: '日销'},{text: '投入产出比', value: '投入产出比'},{text: '人员冗余值', value: '人员冗余值'}]"
-          :filter-method="filterB" />
+          column-key="subject_name"
+          :filters="[{text: '销售额', value: '销售额'}, {text: '利润', value: '利润'},{text: '成本', value: '成本'},{text: '日销', value: '日销'},{text: '投入产出比', value: '投入产出比'},{text: '人员冗余值', value: '人员冗余值'}]" />
         <el-table-column
           prop="rank_name"
           label="评选等级"
-          :filters="[{text: '优', value: '优'},{text: '良', value: '良'},{text: '中', value: '中'},{text: '差', value: '差'}]"
-          :filter-method="filterC" />
+          column-key="rank_name"
+          :filters="[{text: '优', value: '优'},{text: '良', value: '良'},{text: '中', value: '中'},{text: '差', value: '差'}]" />
         <el-table-column
           prop="inf_name"
           label="影响因素"
-          :filters="[{text: '薪酬规划', value: '薪酬规划'},{text: '人员业务能力', value: '人员业务能力'},{text: '总的成本费用', value: '总的成本费用'},{text: '总销售收入', value: '总销售收入'},{text: '治理方式', value: '治理方式'},{text: '员工个人能力', value: '员工个人能力'},{text: '人力资源规划', value: '人力资源规划'},{text: '企业架构', value: '企业架构'},{text: '客单', value: '客单'}]"
-          :filter-method="filterD" />
+          column-key="inf_name"
+          :filters="[{text: '薪酬规划', value: '薪酬规划'},{text: '人员业务能力', value: '人员业务能力'},{text: '总的成本费用', value: '总的成本费用'},{text: '总销售收入', value: '总销售收入'},{text: '治理方式', value: '治理方式'},{text: '员工个人能力', value: '员工个人能力'},{text: '人力资源规划', value: '人力资源规划'},{text: '企业架构', value: '企业架构'},{text: '客单', value: '客单'}]" />
         <el-table-column
           prop="strategy"
           label="策略" />
@@ -140,10 +141,19 @@ export default {
                 version: '0'
             },
             loading: false,
-            trackList:[],
-            total:0,
+            trackList: [],
+            total: 0,
+            level: '',
+            inf_id: '',
+            rank: '',
+            subject: '',
+            acc_soft: '',
+            use_soft: '',
+            suc_soft: '',
+            filterArr: [],
             currentPage: 1,
-            trackListAll:[]
+            trackListAll: [],
+            trackListEff: [],
         };
     },
     computed: {
@@ -153,7 +163,7 @@ export default {
         }
     },
     mounted() {
-        this.getProductStrategy();
+        this.getOrgStrategy();
     },
     methods: {
         sortChange() {
@@ -163,29 +173,56 @@ export default {
                 return o;
             });
         },
+        showEff(val) {
+            this.trackListEff = [];
+            const effRecord = 1;//是否只返回有效的应用记录 1是 0否
+            const params = {
+                strategyId: val.id,
+                goodOnly: effRecord
+            };
+            API.GetOrgApplog(params).then(res => {
+                this.trackListEff = res.data;
+            });
+        },
         show(val) {
             this.trackListAll = [];
-            if(val){
-                this.trackListAll.push({
-                    level:"事业部A-部门A",
-                    time:'2018.1.2',
-                    rank1:'差',
-                    rank2:'优'
-                },{
-                    level:"事业部A-部门B",
-                    time:'2018.1.2',
-                    rank1:'中',
-                    rank2:'差'
-                });
-            }
+            const unEffRecord = 0;//是否只返回有效的应用记录 1是 0否(全部)
+            const params = {
+                strategyId: val.id,
+                goodOnly: unEffRecord
+            };
+            API.GetOrgApplog(params).then(res => {
+                this.trackListAll = res.data;
+            });
         },
-        getProductStrategy() {
+        filterChange(filter){
+            this.filterArr.push(filter);
+            for (let i of this.filterArr) {
+                if (Object.keys(i)[0] === "level") {
+                    this.level = i.level.join();
+                } else if (Object.keys(i)[0] === "subject") {
+                    this.subject = i.subject.join();
+                } else if (Object.keys(i)[0] === "rank") {
+                    this.rank = i.rank.join();
+                } else if (Object.keys(i)[0] === "package") {
+                    this.package = i.package.join();
+                }
+            }
+            this.currentPage = 1,//更改筛选条件时从第一页查找
+            this.getOrgStrategy();
+        },
+        getOrgStrategy() {
             this.loading = true;
             const params = {
-                subject: SUBJECT,
                 page: this.currentPage,
                 limit: 10,
-                package: '供应商',
+                level: this.level,
+                subject: this.subject,
+                rank: this.rank,
+                inf_id: this.inf_id,
+                acc_soft: this.acc_soft,
+                use_soft: this.use_soft,
+                suc_soft: this.suc_soft,
             };
             API.GetOrgStrategiesTrack(params).then(res => {
                 this.trackList = res.data.map(o => {
@@ -197,34 +234,6 @@ export default {
             }).finally(() => {
                 this.loading = false;
             });
-        },
-        filterA(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterB(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterC(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterD(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterF(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterG(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterH(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
         },
         handleCurrentChange(val) {
             this.loading = true;
