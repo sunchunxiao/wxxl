@@ -26,6 +26,7 @@
         prop="dayRange">
         <el-date-picker
           key="day"
+          :clearable='false'
           v-model="form.dayRange"
           type="daterange"
           :picker-options="dayRangeOptions"
@@ -44,6 +45,7 @@
             prop="weekStart">
             <el-date-picker
               key="weekStart"
+              :clearable='false'
               v-model="form.weekStart"
               type="week"
               format="yyyy 第 WW 周"
@@ -56,6 +58,7 @@
               prop="weekEnd">
               <el-date-picker
                 key="weekEnd"
+                :clearable='false'
                 v-model="form.weekEnd"
                 type="week"
                 format="yyyy 第 WW 周"
@@ -71,6 +74,7 @@
           prop="monthStart">
           <el-date-picker
             key="monthStart"
+            :clearable='false'
             v-model="form.monthStart"
             type="month"
             format="yyyy MM 月"
@@ -83,6 +87,7 @@
             prop="monthEnd">
             <el-date-picker
               key="monthEnd"
+              :clearable='false'
               v-model="form.monthEnd"
               type="month"
               format="yyyy MM 月"
@@ -117,6 +122,7 @@
           prop="yearStart">
           <el-date-picker
             key="yearStart"
+            :clearable='false'
             v-model="form.yearStart"
             type="year"
             :picker-options="yearStartOptions"
@@ -128,6 +134,7 @@
             prop="yearEnd">
             <el-date-picker
               key="yearEnd"
+              :clearable='false'
               v-model="form.yearEnd"
               type="year"
               :picker-options="yearEndOptions"

@@ -299,7 +299,8 @@ export default {
             },
             treeClone:{},
             changeDate:{},
-
+            findFatherId:'',
+            arr:[]
         };
     },
     computed: {
@@ -321,6 +322,7 @@ export default {
         } else {
             this.treeClone = _.cloneDeep(this.productTree);
             this.cid = this.productTree.cid;
+            this.addProperty([this.treeClone]);
         }
     },
     watch: {
@@ -404,6 +406,45 @@ export default {
                 this.error('无应用策略');
             }
         },
+        addProperty(data) {//树结构添加属性
+            for (let i of data) {
+                data.map(o => {
+                    o.hasData = false;
+                });
+                if (i.children && i.children.length) {
+                    if (this.addProperty(i.children)) {
+                        return this.addProperty(i.children);
+                    }
+                }
+            }
+        },
+        find(cid, data, arr) {
+            for (let i of data) {
+                if (i.cid == cid) {
+                    return true;
+                }
+                if (i.children && i.children.length) {
+                    if (!i.hasData) {
+                        arr.push(i.cid);
+                    }
+                    let bool = this.find(cid, i.children, arr);
+                    if (!bool) {
+                        if(!i.hasData){
+                            arr.pop();
+                        }
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        },
+        findParent(node,cid) {//找父节点id
+            let hasfatherCid = [];
+            this.find(cid, node, hasfatherCid);
+            for (let i of hasfatherCid) {
+                this.getTreePrograss(i);
+            }
+        },
         //树结构
         getTree() {
             const params = {
@@ -417,22 +458,30 @@ export default {
                         this.cid = res.tree.cid;
                     }
                     this.treeClone = _.cloneDeep(res.tree);
+                    this.addProperty([this.treeClone]);
                 }
                 this.$store.dispatch('SaveProductTree', res.tree);
             });
         },
         //获取百分比数据
-        getTreePrograss() {
+        getTreePrograss(cid) {
+            let id;
+            if (cid) {
+                id = cid;
+            } else {
+                id = this.cid;
+            }
             const params = {
                 subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid: this.cid
+                nid: id
             };
-            API.GetProductTreeProduct(params).then(res=>{
-                let obj = this.preOrder([this.treeClone], this.cid);
-                if (obj.cid === this.cid) {
-                    obj.real_total = res.data[this.cid].real;
-                    obj.target_total = res.data[this.cid].target;
+            API.GetProductTreeProduct(params).then(res => {
+                let obj = this.preOrder([this.treeClone], id);
+                if (obj.cid === id) {
+                    obj.hasData = true;//插入数据的hasData为true
+                    obj.real_total = res.data[id].real;
+                    obj.target_total = res.data[id].target;
                 }
                 if (obj.children) {
                     for (let i of obj.children) {
@@ -539,26 +588,27 @@ export default {
             }
         },
         handleSearch(val) {
+            this.findFatherId = val.cid;
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
             if (!val.cid){
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid){//数据tree不为null时
+                if (this.cid) {//数据tree不为null时
                     if (this.cid !== this.productTree.cid){
                         this.cid = this.productTree.cid;
                         this.treeClone = _.cloneDeep(this.productTree);
                     } else {
-                    //公司根节点
+                        //公司根节点
                         this.allRequest();
                     }
-                }else{
+                } else {
                     this.getTree();//数据tree为空时,没有id
                 }
-            } else {
+            } else {//精确搜索
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     this.allRequest();
                 }
                 this.changeDate = this.searchBarValue;
@@ -568,8 +618,9 @@ export default {
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
+                this.findParent([this.treeClone], this.findFatherId);
                 //如果是根节点
-                if (this.cid === this.productTree.cid){
+                if (this.cid === this.productTree.cid) {
                     this.isbac = true;
                     this.highlight = false;
                 }
@@ -623,6 +674,7 @@ export default {
             }
             this.showStragetyId = cid;
             this.subject = subject;
+            this.stragety = [];
             API.GetProductMatch(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];

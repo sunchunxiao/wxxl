@@ -6,6 +6,7 @@
       <div class="title">策略跟踪和策略应用</div>
       <el-table
         @sort-change='sortChange'
+        @filter-change="filterChange"
         :data="trackList"
         stripe>
         <el-table-column
@@ -14,23 +15,23 @@
         <el-table-column
           prop="level"
           label="产品层级"
-          :filters="[{text: '公司', value: '公司'},{text: '平台', value: '平台'},{text: '店铺', value: '店铺'}]"
-          :filter-method="filterA" />
+          column-key="level"
+          :filters="filtersLevel" />
         <el-table-column
           prop="subject"
           label="指标"
-          :filters="[{text: '销售额', value: '销售额'}, {text: '日销', value: '日销'},{text: '毛利额', value: '毛利额'},{text: '成本', value: '成本'},{text: '投入产出比', value: '投入产出比'},{text: '冗余', value: '冗余'}]"
-          :filter-method="filterB" />
+          column-key="subject"
+          :filters="filtersSubject" />
         <el-table-column
           prop="rank"
           label="评选等级"
-          :filters="[{text: '优', value: '优'},{text: '良', value: '良'},{text: '中', value: '中'},{text: '差', value: '差'}]"
-          :filter-method="filterC" />
+          column-key="rank"
+          :filters="filtersRank" />
         <el-table-column
           prop="package"
           label="影响因素"
-          :filters="[{text: '推广', value: '推广'},{text: '活动', value: '活动'},{text: '发货', value: '发货'},{text: '流量', value: '流量'},{text: '转化', value: '转化'},{text: '客单', value: '客单'},{text: '渠道规划', value: '渠道规划'},{text: '渠道运营', value: '渠道运营'}]"
-          :filter-method="filterD" />
+          column-key="package"
+          :filters="filtersPackage" />
         <el-table-column
           prop="strategy"
           label="策略" />
@@ -160,7 +161,7 @@
 
 <script>
 import API from './api';
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
+
 export default {
     components: {},
     data() {
@@ -171,32 +172,53 @@ export default {
                 search: '', // 暂时没有接口 先这样
             },
             loading: false,
-            trackList:[],
-            total:0,
+            trackList: [],
+            filtersLevel: [],
+            filtersSubject: [],
+            filtersRank: [],
+            filtersPackage: [],
+            total: 0,
+            level: '',
+            package: '',
+            rank: '',
+            subject: '',
+            sort: '',
+            filterArr: [],
             currentPage: 1,
-            trackListAll:[],
-            trackListEff:[],
+            trackListAll: [],
+            trackListEff: [],
         };
     },
 
     mounted(){
         this.getChannelStrategy();
+        this.getFliters();
     },
     methods: {
-        sortChange() {
+        sortChange(val) {
             this.trackList = this.trackList.map(o => {
                 o.visible = false;
                 o.visibleEff = false;
                 o.visibleRate = false;
                 return o;
             });
+            let order;
+            if (val.prop && val.order) {
+                if (val.order === "ascending") {
+                    order = 'asc';
+                } else {
+                    order = 'desc';
+                }
+                this.sort = val.prop + ':' + order;
+                this.getChannelStrategy();
+            }
         },
         showEff(val) {
             this.trackListEff = [];
             const effRecord = 1;//是否只返回有效的应用记录 1是 0否
             const params = {
                 strategyId: val.id,
-                goodOnly:effRecord
+                goodOnly: effRecord
             };
             API.GetChannelApplog(params).then(res => {
                 this.trackListEff = res.data;
@@ -207,21 +229,46 @@ export default {
             const unEffRecord = 0;//是否只返回有效的应用记录 1是 0否(全部)
             const params = {
                 strategyId: val.id,
-                goodOnly:unEffRecord
+                goodOnly: unEffRecord
             };
             API.GetChannelApplog(params).then(res => {
                 this.trackListAll = res.data;
             });
+        },
+        getFliters() {
+            API.GetChannelFilter().then(res => {
+                this.filtersLevel = res.level;
+                this.filtersSubject = res.subject;
+                this.filtersRank = res.rank;
+                this.filtersPackage = res.package;
+            });
+        },
+        filterChange(filter) {
+            this.filterArr.push(filter);
+            for (let i of this.filterArr) {
+                if (Object.keys(i)[0] === "level") {
+                    this.level = i.level.join();
+                } else if (Object.keys(i)[0] === "subject") {
+                    this.subject = i.subject.join();
+                } else if (Object.keys(i)[0] === "rank") {
+                    this.rank = i.rank.join();
+                } else if (Object.keys(i)[0] === "package") {
+                    this.package = i.package.join();
+                }
+            }
+            this.currentPage = 1,//更改筛选条件时从第一页查找
+            this.getChannelStrategy();
         },
         getChannelStrategy() {
             this.loading = true;
             const params = {
                 page: this.currentPage,
                 per_page: 10,
-                level: '',
-                package:'供应商',
-                subject: SUBJECT,
-                sort:''
+                level: this.level,
+                rank: this.rank,
+                package: this.package,
+                subject: this.subject,
+                sort: this.sort
             };
             API.GetChannelStrategy(params).then(res => {
                 this.trackList = res.data.map(o => {
@@ -235,43 +282,16 @@ export default {
                 this.loading = false;
             });
         },
-        filterA(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterB(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterC(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterD(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterF(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterG(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterH(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
         handleCurrentChange(val) {
             this.loading = true;
             this.currentPage = val;
             const params = {
                 page: this.currentPage,
                 per_page: 10,
-                level: 1,
-                package:'供应商',
-                subject: SUBJECT,
+                level: this.level,
+                package: this.package,
+                subject: this.subject,
+                sort: this.sort
             };
             API.GetChannelStrategy(params).then(res => {
                 this.trackList = res.data;

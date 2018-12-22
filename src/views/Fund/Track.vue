@@ -172,10 +172,10 @@ export default {
             },
             loading: false,
             currentPage: 1,
-            trackList:[],
-            total:0,
-            trackListAll:[],
-            trackListEff:[],
+            trackList: [],
+            total: 0,
+            trackListAll: [],
+            trackListEff: [],
         };
     },
 
@@ -202,7 +202,7 @@ export default {
             const effRecord = 1;//是否只返回有效的应用记录 1是 0否
             const params = {
                 strategyId: val.id,
-                goodOnly:effRecord
+                goodOnly: effRecord
             };
             API.GetFundApplog(params).then(res => {
                 this.trackListEff = res.data;
@@ -213,7 +213,7 @@ export default {
             const unEffRecord = 0;//是否只返回有效的应用记录 1是 0否(全部)
             const params = {
                 strategyId: val.id,
-                goodOnly:unEffRecord
+                goodOnly: unEffRecord
             };
             API.GetFundApplog(params).then(res => {
                 this.trackListAll = res.data;

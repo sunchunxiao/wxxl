@@ -6,6 +6,7 @@
       <div class="title">策略跟踪和策略应用</div>
       <el-table
         @sort-change='sortChange'
+        @filter-change="filterChange"
         :data="trackList"
         stripe>
         <el-table-column
@@ -14,13 +15,13 @@
         <el-table-column
           prop="level_name"
           label="客户层级"
-          :filters="[{text: '平台', value: '平台'},{text: '店铺', value: '店铺'},{text: '城市', value: '城市'}]"
-          :filter-method="filterA" />
+          column-key="level"
+          :filters="[{text: '平台', value: '平台'},{text: '店铺', value: '店铺'},{text: '城市', value: '城市'}]" />
         <el-table-column
           prop="subject_name"
           label="指标"
-          :filters="[{text: '销售额', value: '销售额'}, {text: '利润', value: '利润'},{text: '成本', value: '成本'},{text: '日销', value: '日销'},{text: '投入产出比', value: '投入产出比'},{text: '人员冗余值', value: '人员冗余值'}]"
-          :filter-method="filterB" />
+          column-key="subject_name"
+          :filters="[{text: '销售额', value: 'S'}, {text: '利润额', value: 'P'},{text: '成本', value: 'C'}]" />
         <el-table-column
           prop="rank_name"
           label="评选等级"
@@ -171,10 +172,18 @@ export default {
             },
             loading: false,
             currentPage: 1,
-            trackList:[],
-            total:0,
-            trackListAll:[],
-            trackListEff:[],
+            trackList: [],
+            total: 0,
+            level: '',
+            package: '',
+            rank: '',
+            subject: '',
+            acc_soft: '',
+            use_soft: '',
+            suc_soft: '',
+            filterArr: [],
+            trackListAll: [],
+            trackListEff: [],
         };
     },
     mounted(){
@@ -194,7 +203,7 @@ export default {
             const effRecord = 1;//是否只返回有效的应用记录 1是 0否
             const params = {
                 strategyId: val.id,
-                goodOnly:effRecord
+                goodOnly: effRecord
             };
             API.GetCusApplog(params).then(res => {
                 this.trackListEff = res.data;
@@ -205,17 +214,40 @@ export default {
             const unEffRecord = 0;//是否只返回有效的应用记录 1是 0否(全部)
             const params = {
                 strategyId: val.id,
-                goodOnly:unEffRecord
+                goodOnly: unEffRecord
             };
             API.GetCusApplog(params).then(res => {
                 this.trackListAll = res.data;
             });
+        },
+        filterChange(filter){
+            this.filterArr.push(filter);
+            for (let i of this.filterArr) {
+                if (Object.keys(i)[0] === "level") {
+                    this.level = i.level.join();
+                } else if (Object.keys(i)[0] === "subject") {
+                    this.subject = i.subject.join();
+                } else if (Object.keys(i)[0] === "rank") {
+                    this.rank = i.rank.join();
+                } else if (Object.keys(i)[0] === "package") {
+                    this.package = i.package.join();
+                }
+            }
+            this.currentPage = 1,//更改筛选条件时从第一页查找
+            this.getProductStrategy();
         },
         getProductStrategy() {
             this.loading = true;
             const params = {
                 page: this.currentPage,
                 limit: 10,
+                level: this.level,
+                subject: this.subject,
+                rank : this.rank,
+                package: this.package,
+                acc_soft: this.acc_soft,
+                use_soft: this.use_soft,
+                suc_soft: this.suc_soft
             };
             API.GetCusStrategiesTrack(params).then(res => {
                 this.trackList = res.data.map(o => {
@@ -263,6 +295,13 @@ export default {
             const params = {
                 page: this.currentPage,
                 limit: 10,
+                level: this.level,
+                subject: this.subject,
+                rank : this.rank,
+                package: this.package,
+                acc_soft: this.acc_soft,
+                use_soft: this.use_soft,
+                suc_soft: this.suc_soft
             };
             API.GetCusStrategiesTrack(params).then(res => {
                 this.trackList = res.data;

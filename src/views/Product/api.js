@@ -41,4 +41,7 @@ export default {
     GetProductApplog(params) {
         return FetchGet('/product/strategy/app_log', params);
     },
+    GetProductFilter(params) {
+        return FetchGet('/product/strategy/filter', params);
+    },
 };
