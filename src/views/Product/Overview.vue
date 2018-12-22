@@ -179,6 +179,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
+          v-if="rankArr.length"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -270,6 +271,7 @@ export default {
                 search: '', // 暂时没有接口 先这样
             },
             cid: '',
+            pt:'',
             showStragetyId:'',
             subject:'',
             //tree
@@ -449,6 +451,7 @@ export default {
         getTree() {
             const params = {
                 subject: SUBJECT,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
             API.GetProductTree(params).then(res => {
@@ -473,6 +476,7 @@ export default {
             }
             const params = {
                 subject: SUBJECT,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
                 nid: id
             };
@@ -497,6 +501,7 @@ export default {
             this.loading = true;
             const params = {
                 cid: this.cid,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
             API.GetProductProgress(params).then(res => {
@@ -517,6 +522,7 @@ export default {
             this.loading = true;
             const params = {
                 cid: this.cid,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
                 subject: subject
             };
@@ -526,6 +532,7 @@ export default {
             this.loading = true;
             const params = {
                 cid: this.cid,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
             API.GetProductStructure(params).then(res => {
@@ -535,9 +542,15 @@ export default {
             });
         },
         getRank() {
+            if (this.getPt() === '日') {
+                this.pt = '周';
+            }else{
+                this.pt = this.getPt();
+            }
             this.loading = true;
             const params = {
                 cid: this.cid,
+                pt: this.pt,
                 ...this.getPeriodByPt(),
             };
             API.GetProductRank(params).then(res => {
@@ -546,19 +559,28 @@ export default {
                 this.loading = false;
             });
         },
+        getPt() {
+            const {
+                date
+            } = this.form;
+            if (this.val.sDate && this.val.eDate) {
+                this.pt = this.val.pt;
+            }else{
+                this.pt = date.pt;
+            }
+            return this.pt;
+        },
         getDateObj() {
             const {
                 date
             } = this.form;
             if (this.val.sDate && this.val.eDate) {
                 return {
-                    pt: this.val.pt,
                     sDate: this.val.sDate,
                     eDate: this.val.eDate,
                 };
             } else {
                 return {
-                    pt: date.pt,
                     sDate: date.sDate,
                     eDate: date.eDate,
                 };
@@ -566,13 +588,13 @@ export default {
         },
         getPeriodByPt() {
             const {
-                pt,
+                // pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
-                    pt: pt,
+                    // pt: pt,
                     sDate: sDate,
                     eDate: eDate,
                 };

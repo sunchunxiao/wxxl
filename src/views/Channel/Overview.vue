@@ -176,6 +176,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
+          v-if="channelRankArr.length"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -263,12 +264,12 @@ export default {
     data () {
         return {
             form: {
-                pt: '日',
                 date: [],
                 search: '',
                 version: '0'
             },
             cid: '',
+            pt: '',
             showStragetyId:'',
             subject:'',
             loading: false,
@@ -360,7 +361,6 @@ export default {
                 this.highlight = false;
                 this.cid = this.channelTree.nid;
             }
-
         },
         change() {
             this.idArr = [];
@@ -408,6 +408,7 @@ export default {
         getTree() {
             const params = {
                 subject: SUBJECT,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
                 version: this.form.version
             };
@@ -425,6 +426,7 @@ export default {
         getTreePrograss() {
             const params = {
                 subject: SUBJECT,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
                 nid: this.cid
             };
@@ -448,6 +450,7 @@ export default {
             this.loading = true;
             const params = {
                 chId: this.cid,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
             API.GetChannelProgress(params).then(res => {
@@ -467,6 +470,7 @@ export default {
         getTrend(subject) {
             const params = {
                 chId: this.cid,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
                 subject: subject
             };
@@ -476,6 +480,7 @@ export default {
             this.loading = true;
             const params = {
                 chId: this.cid,
+                pt: this.getPt(),
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
             };
@@ -486,9 +491,15 @@ export default {
             });
         },
         getRank() {
+            if (this.getPt() === '日') {
+                this.pt = '周';
+            }else{
+                this.pt = this.getPt();
+            }
             this.loading = true;
             const params = {
                 chId: this.cid,
+                pt: this.pt,
                 ...this.getPeriodByPt(),
             };
             API.GetChannelRank(params).then(res => {
@@ -497,19 +508,28 @@ export default {
                 this.loading = false;
             });
         },
+        getPt() {
+            const {
+                date
+            } = this.form;
+            if (this.val.sDate && this.val.eDate) {
+                this.pt = this.val.pt;
+            }else{
+                this.pt = date.pt;
+            }
+            return this.pt;
+        },
         getDateObj() {
             const {
                 date
             } = this.form;
             if (this.val.sDate && this.val.eDate ) {
                 return {
-                    pt: this.val.pt,
                     sDate: this.val.sDate,
                     eDate: this.val.eDate,
                 };
             } else {
                 return {
-                    pt: date.pt,
                     sDate: date.sDate,
                     eDate: date.eDate,
                 };
@@ -517,19 +537,16 @@ export default {
         },
         getPeriodByPt() {
             const {
-                pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
-                    pt: pt,
                     sDate: sDate,
                     eDate: eDate,
                 };
             } else {
                 return {
-                    pt: '日',
                     sDate: '2018-01-01',
                     eDate: '2018-01-31',
                 };

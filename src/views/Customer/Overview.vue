@@ -176,6 +176,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
+          v-if="cusrankArr.length"
           v-loading="loading"
           class="margin-top-10 ">
           <vue-lazy-component>
@@ -266,6 +267,7 @@ export default {
                 search: '',
             },
             cid:'',
+            pt: '',
             showStragetyId:'',
             subject:'',
             loading: false,
@@ -403,6 +405,7 @@ export default {
         getTree() {
             const params = {
                 subject: SUBJECT,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
             API.GetCusTree(params).then(res => {
@@ -416,6 +419,7 @@ export default {
         getTreePrograss() {
             const params = {
                 subject: SUBJECT,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
                 nid: this.cid,
             };
@@ -440,6 +444,7 @@ export default {
             this.loading = true;
             const params = {
                 cid: this.cid,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
             API.GetCusProgress(params).then(res => {
@@ -459,6 +464,7 @@ export default {
         getTrend(subject) {
             const params = {
                 cid: this.cid,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
                 subject: subject,
             };
@@ -468,6 +474,7 @@ export default {
             this.loading = true;
             const params = {
                 cid: this.cid,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
             API.GetCusStructure(params).then(res => {
@@ -477,9 +484,15 @@ export default {
             });
         },
         getRank() {
+            if (this.getPt() === '日') {
+                this.pt = '周';
+            }else{
+                this.pt = this.getPt();
+            }
             this.loading = true;
             const params = {
                 cid: this.cid,
+                pt: this.pt,
                 ...this.getPeriodByPt(),
             };
             API.GetCusRank(params).then(res => {
@@ -488,19 +501,28 @@ export default {
                 this.loading = false;
             });
         },
+        getPt() {
+            const {
+                date
+            } = this.form;
+            if (this.val.sDate && this.val.eDate) {
+                this.pt = this.val.pt;
+            }else{
+                this.pt = date.pt;
+            }
+            return this.pt;
+        },
         getDateObj() {
             const {
                 date
             } = this.form;
             if (this.val.sDate && this.val.eDate) {
                 return {
-                    pt: this.val.pt,
                     sDate: this.val.sDate,
                     eDate: this.val.eDate,
                 };
             } else {
                 return {
-                    pt: date.pt,
                     sDate: date.sDate,
                     eDate: date.eDate,
                 };
@@ -508,19 +530,16 @@ export default {
         },
         getPeriodByPt() {
             const {
-                pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
-                    pt: pt,
                     sDate: sDate,
                     eDate: eDate,
                 };
             } else {
                 return {
-                    pt: '日',
                     sDate: '2018-05-01',
                     eDate: '2018-06-30',
                 };
