@@ -41,5 +41,7 @@ export default {
     GetCusStrategiesTrack(params) {
         return FetchGet('/cus/strategiesTrack', params);
     },
-
+    GetCusApplog(params) {
+        return FetchGet('/cus/strategy/app_log', params);
+    },
 };

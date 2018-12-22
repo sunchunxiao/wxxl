@@ -17,7 +17,7 @@
       <el-col
         :span="5"
         class="tree_container">
-        <div class="title">毛利目标达成率</div>
+        <div class="title">净利润额目标达成率</div>
         <div
           @click="click"
           v-if="fundTree.children"
@@ -296,6 +296,8 @@ export default {
                 version:'0'
             },
             cid:'',
+            showStragetyId:'',
+            subject:'',
             loading: false,
             calculatePercent: calculatePercent,
             error: error,
@@ -656,6 +658,11 @@ export default {
                 subject: subject,
                 time_label: time_label,
             };
+            if (this.showStragetyId === cid && this.subject === subject) {
+                return;
+            }
+            this.showStragetyId = cid;
+            this.subject = subject;
             API.GetFundStrategy(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];

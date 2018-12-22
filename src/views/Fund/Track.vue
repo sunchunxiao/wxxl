@@ -51,16 +51,16 @@
                   type="index"
                   label="序号" />
                 <el-table-column
-                  prop="level"
+                  prop="node_name"
                   label="应用产品" />
                 <el-table-column
-                  prop="time"
+                  prop="period"
                   label="时间" />
                 <el-table-column
-                  prop="rank1"
+                  prop="rank_before"
                   label="策略应用前" />
                 <el-table-column
-                  prop="rank2"
+                  prop="rank_after"
                   label="策略应用后" />
               </el-table>
               <div
@@ -74,7 +74,39 @@
         <el-table-column
           prop="suc_num"
           label="有效次数"
-          sortable />
+          sortable>
+          <template slot-scope="scope">
+            <el-popover
+              @show = 'show(scope.row)'
+              v-model="scope.row.visibleEff"
+              trigger="click"
+              placement="top">
+              <el-table
+                :data="trackListEff">
+                <el-table-column
+                  type="index"
+                  label="序号" />
+                <el-table-column
+                  prop="node_name"
+                  label="应用产品" />
+                <el-table-column
+                  prop="period"
+                  label="时间" />
+                <el-table-column
+                  prop="rank_before"
+                  label="策略应用前" />
+                <el-table-column
+                  prop="rank_after"
+                  label="策略应用后" />
+              </el-table>
+              <div
+                slot="reference"
+                class="name-wrapper cell_count_use">
+                {{ scope.row.suc_num }}
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="acc_rate"
           label="策略准确度/适用度"
@@ -92,16 +124,16 @@
                   type="index"
                   label="序号" />
                 <el-table-column
-                  prop="level"
+                  prop="node_name"
                   label="应用产品" />
                 <el-table-column
-                  prop="time"
+                  prop="period"
                   label="时间" />
                 <el-table-column
-                  prop="rank1"
+                  prop="rank_before"
                   label="策略应用前" />
                 <el-table-column
-                  prop="rank2"
+                  prop="rank_after"
                   label="策略应用后" />
               </el-table>
               <div
@@ -128,7 +160,6 @@
 <script>
 import API from './api';
 import { mapGetters } from 'vuex';
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {},
     data() {
@@ -161,6 +192,7 @@ export default {
         sortChange() {
             this.trackList = this.trackList.map(o => {
                 o.visible = false;
+                o.visibleEff = false;
                 o.visibleRate = false;
                 return o;
             });
@@ -190,13 +222,13 @@ export default {
         getProductStrategy() {
             this.loading = true;
             const params = {
-                subject: SUBJECT,
                 page: this.currentPage,
                 limit: 10,
             };
             API.GetFundStrategiesTrack(params).then(res => {
                 this.trackList = res.data.map(o => {
                     o.visible = false;
+                    o.visibleEff = false;
                     o.visibleRate = false;
                     return o;
                 });
@@ -239,7 +271,6 @@ export default {
             const params = {
                 page: this.currentPage,
                 limit: 10,
-                subject: SUBJECT,
             };
             API.GetFundStrategiesTrack(params).then(res => {
                 this.trackList = res.data;

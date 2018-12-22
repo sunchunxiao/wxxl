@@ -17,7 +17,7 @@
       <el-col
         :span="5"
         class="tree_container">
-        <div class="title">毛利目标达成率</div>
+        <div class="title">组织净利润额目标达成率</div>
         <div
           @click="click"
           v-if="organizationTree.children"
@@ -296,7 +296,9 @@ export default {
                 search: '',
                 version: '0'
             },
-            cid: 0,
+            cid: '',
+            showStragetyId:'',
+            subject:'',
             loading: false,
             calculatePercent: calculatePercent,
             error: error,
@@ -625,7 +627,7 @@ export default {
             this.highlight = true;
         },
         handleNodeClick (data) {
-            if (this.searchBarValue.sDate&&this.searchBarValue.eDate){
+            if (this.searchBarValue.sDate && this.searchBarValue.eDate){
                 this.val = this.searchBarValue;
                 this.isbac = false;
                 this.highlight = true;
@@ -665,6 +667,11 @@ export default {
                 subject: subject,
                 time_label: time_label,
             };
+            if (this.showStragetyId === cid && this.subject === subject) {
+                return;
+            }
+            this.showStragetyId = cid;
+            this.subject = subject;
             API.GetOrgStrategy(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];

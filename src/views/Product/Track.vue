@@ -16,22 +16,22 @@
           prop="level"
           label="产品层级"
           column-key="level"
-          :filters="[{text: '品牌', value: 1},{text: '品类', value: 2},{text: '品种', value: 3},{text: '单品', value: 4}]" />
+          :filters="filtersLevel" />
         <el-table-column
           prop="subject"
           label="指标"
           column-key="subject"
-          :filters="[{text: '成本', value: 'C'}, {text: '日销', value: 'SD'},{text: '库存额', value: 'SA'}]" />
+          :filters="filtersSubject" />
         <el-table-column
           prop="rank"
           label="评选等级"
           column-key="rank"
-          :filters="[{text: '优', value: '1'},{text: '良', value: '2'},{text: '中', value: '3'},{text: '差', value: '4'}]" />
+          :filters="filtersRank" />
         <el-table-column
           prop="package"
           label="影响因素"
           column-key="package"
-          :filters="[{text: '供应商', value: '供应商'},{text: '采购', value: '采购'},{text: '预算', value: '预算'},{text: '包装', value: '包装'},{text: '摄影', value: '摄影'},{text: '流量', value: '流量'},{text: '转化', value: '转化'},{text: '客单', value: '客单'}]" />
+          :filters="filtersPackage" />
         <el-table-column
           prop="strategy"
           label="策略" />
@@ -174,6 +174,10 @@ export default {
             },
             loading: false,
             trackList: [],
+            filtersLevel: [],
+            filtersSubject: [],
+            filtersRank: [],
+            filtersPackage: [],
             total: 0,
             level: '',
             package: '',
@@ -188,6 +192,7 @@ export default {
     },
     mounted() {
         this.getProductStrategy();
+        this.getFliters();
     },
     methods: {
         sortChange(val) {
@@ -230,7 +235,7 @@ export default {
                 this.trackListAll = res.data;
             });
         },
-        filterChange(filter){
+        filterChange(filter) {
             this.filterArr.push(filter);
             for (let i of this.filterArr) {
                 if (Object.keys(i)[0] === "level") {
@@ -245,6 +250,14 @@ export default {
             }
             this.currentPage = 1,//更改筛选条件时从第一页查找
             this.getProductStrategy();
+        },
+        getFliters() {
+            API.GetProductFilter().then(res => {
+                this.filtersLevel = res.level;
+                this.filtersSubject = res.subject;
+                this.filtersRank = res.rank;
+                this.filtersPackage = res.package;
+            });
         },
         getProductStrategy() {
             this.loading = true;

@@ -15,18 +15,18 @@
         <el-table-column
           prop="level_name"
           label="组织层级"
-          column-key="level_name"
-          :filters="[{text: '全公司', value: '全公司'},{text: '事业部', value: '事业部'},{text: '部门', value: '部门'},{text: '小组', value: '小组'}]" />
+          column-key="level"
+          :filters="[{text: '全公司', value: '1'},{text: '事业部', value: '2'},{text: '部门', value: '3'},{text: '小组', value: '4'}]" />
         <el-table-column
           prop="subject_name"
           label="指标"
-          column-key="subject_name"
-          :filters="[{text: '销售额', value: '销售额'}, {text: '利润', value: '利润'},{text: '成本', value: '成本'},{text: '日销', value: '日销'},{text: '投入产出比', value: '投入产出比'},{text: '人员冗余值', value: '人员冗余值'}]" />
+          column-key="subject"
+          :filters="[{text: '销售额', value: 'S'}, {text: '净利润额', value: 'P'},{text: '成本额', value: 'C'}]" />
         <el-table-column
           prop="rank_name"
           label="评选等级"
-          column-key="rank_name"
-          :filters="[{text: '优', value: '优'},{text: '良', value: '良'},{text: '中', value: '中'},{text: '差', value: '差'}]" />
+          column-key="rank"
+          :filters="[{text: '优', value: '1'},{text: '2', value: '良'},{text: '中', value: '3'},{text: '差', value: '4'}]" />
         <el-table-column
           prop="inf_name"
           label="影响因素"
@@ -42,7 +42,7 @@
           <!-- 点击策略准确度,弹出下面这个窗口的所有策略应用情况 -->
           <template slot-scope="scope">
             <el-popover
-              @show = 'show(scope.row)'
+              @show='show(scope.row)'
               v-model="scope.row.visible"
               trigger="click"
               placement="top">
@@ -52,16 +52,16 @@
                   type="index"
                   label="序号" />
                 <el-table-column
-                  prop="level"
+                  prop="node_name"
                   label="应用产品" />
                 <el-table-column
-                  prop="time"
+                  prop="period"
                   label="时间" />
                 <el-table-column
-                  prop="rank1"
+                  prop="rank_before"
                   label="策略应用前" />
                 <el-table-column
-                  prop="rank2"
+                  prop="rank_after"
                   label="策略应用后" />
               </el-table>
               <div
@@ -75,7 +75,39 @@
         <el-table-column
           prop="suc_num"
           label="有效次数"
-          sortable />
+          sortable>
+          <template slot-scope="scope">
+            <el-popover
+              @show='showEff(scope.row)'
+              v-model="scope.row.visibleEff"
+              trigger="click"
+              placement="top">
+              <el-table
+                :data="trackListEff">
+                <el-table-column
+                  type="index"
+                  label="序号" />
+                <el-table-column
+                  prop="node_name"
+                  label="应用产品" />
+                <el-table-column
+                  prop="period"
+                  label="时间" />
+                <el-table-column
+                  prop="rank_before"
+                  label="策略应用前" />
+                <el-table-column
+                  prop="rank_after"
+                  label="策略应用后" />
+              </el-table>
+              <div
+                slot="reference"
+                class="name-wrapper cell_count_use">
+                {{ scope.row.suc_num }}
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="acc_rate"
           label="策略准确度/适用度"
@@ -83,7 +115,7 @@
           <!-- 点击策略准确度,弹出下面这个窗口的所有策略应用情况 -->
           <template slot-scope="scope">
             <el-popover
-              @show = 'show(scope.row)'
+              @show='show(scope.row)'
               v-model="scope.row.visibleRate"
               trigger="click"
               placement="top">
@@ -93,16 +125,16 @@
                   type="index"
                   label="序号" />
                 <el-table-column
-                  prop="level"
+                  prop="node_name"
                   label="应用产品" />
                 <el-table-column
-                  prop="time"
+                  prop="period"
                   label="时间" />
                 <el-table-column
-                  prop="rank1"
+                  prop="rank_before"
                   label="策略应用前" />
                 <el-table-column
-                  prop="rank2"
+                  prop="rank_after"
                   label="策略应用后" />
               </el-table>
               <div
@@ -129,7 +161,7 @@
 <script>
 import API from './api';
 import { mapGetters } from 'vuex';
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
+// const DESC = 1, ASC = 2;
 export default {
     components: {},
     data() {
@@ -147,9 +179,7 @@ export default {
             inf_id: '',
             rank: '',
             subject: '',
-            acc_soft: '',
-            use_soft: '',
-            suc_soft: '',
+            sort: '',
             filterArr: [],
             currentPage: 1,
             trackListAll: [],
@@ -166,12 +196,23 @@ export default {
         this.getOrgStrategy();
     },
     methods: {
-        sortChange() {
+        sortChange(val) {
             this.trackList = this.trackList.map(o => {
                 o.visible = false;
+                o.visibleEff = false;
                 o.visibleRate = false;
                 return o;
             });
+            let order;
+            if (val.prop && val.order) {
+                if (val.order === "ascending") {
+                    order = 'asc';
+                } else {
+                    order = 'desc';
+                }
+                this.sort = val.prop + ':' + order;
+                this.getOrgStrategy();
+            }
         },
         showEff(val) {
             this.trackListEff = [];
@@ -220,13 +261,12 @@ export default {
                 subject: this.subject,
                 rank: this.rank,
                 inf_id: this.inf_id,
-                acc_soft: this.acc_soft,
-                use_soft: this.use_soft,
-                suc_soft: this.suc_soft,
+                sort: this.sort
             };
             API.GetOrgStrategiesTrack(params).then(res => {
                 this.trackList = res.data.map(o => {
                     o.visible = false;
+                    o.visibleEff = false;
                     o.visibleRate = false;
                     return o;
                 });
@@ -241,7 +281,11 @@ export default {
             const params = {
                 page: this.currentPage,
                 limit: 10,
-                subject: SUBJECT,
+                level: this.level,
+                subject: this.subject,
+                rank: this.rank,
+                inf_id: this.inf_id,
+                sort: this.sort
             };
             API.GetOrgStrategiesTrack(params).then(res => {
                 this.trackList = res.data;

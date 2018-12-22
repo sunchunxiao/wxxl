@@ -41,4 +41,7 @@ export default {
     GetChannelApplog(params) {
         return FetchGet('/channel/strategy/app_log', params);
     },
+    GetChannelFilter(params) {
+        return FetchGet('/channel/strategy/filter', params);
+    },
 };

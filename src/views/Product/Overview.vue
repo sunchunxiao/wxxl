@@ -270,6 +270,8 @@ export default {
                 search: '', // 暂时没有接口 先这样
             },
             cid: '',
+            showStragetyId:'',
+            subject:'',
             //tree
             calculatePercent: calculatePercent,
             error: error,
@@ -297,7 +299,8 @@ export default {
             },
             treeClone:{},
             changeDate:{},
-            searchId:''
+            findFatherId:'',
+            arr:[]
         };
     },
     computed: {
@@ -319,6 +322,7 @@ export default {
         } else {
             this.treeClone = _.cloneDeep(this.productTree);
             this.cid = this.productTree.cid;
+            this.addProperty([this.treeClone]);
         }
     },
     watch: {
@@ -414,44 +418,32 @@ export default {
                 }
             }
         },
-        forProperty(data,cid) {//树结构变换属性
+        find(cid, data, arr) {
             for (let i of data) {
-                // console.log(i,cid);
                 if (i.cid == cid) {
-                    i.hasData = true;
-                    return i;
+                    return true;
                 }
                 if (i.children && i.children.length) {
-                    if (this.forProperty(i.children, cid)) {
-                        return this.forProperty(i.children, cid);
+                    if (!i.hasData) {
+                        arr.push(i.cid);
+                    }
+                    let bool = this.find(cid, i.children, arr);
+                    if (!bool) {
+                        if(!i.hasData){
+                            arr.pop();
+                        }
+                    } else {
+                        return true;
                     }
                 }
             }
         },
-        parentId(node,cid) {//找父节点id
-            for (let i of node){
-                // console.log(i);
-                if (i.cid == cid) {
-                    if(i.hasData == false){
-                        this.parentId(node,i.parent_id);
-                        return i.parent_id;
-                    }
-                }
-                if (i.children && i.children.length) {
-                    if (this.parentId(i.children, cid)) {
-                        return this.parentId(i.children,cid);
-                    }
-                }
+        findParent(node,cid) {//找父节点id
+            let hasfatherCid = [];
+            this.find(cid, node, hasfatherCid);
+            for (let i of hasfatherCid) {
+                this.getTreePrograss(i);
             }
-        },
-        dataRequest(cid) {
-            this.getTreePrograss(cid);
-            // let obj = this.parentId([this.treeClone], this.searchId);
-            // console.log(obj);
-            // this.parentId([this.treeClone], obj.parent_id);
-            // this.getTreePrograss(obj.parent_id);
-            // let obj1 = this.parentId([this.treeClone], obj.parent_id);
-            // console.log(obj1,obj1.parent_id);
         },
         //树结构
         getTree() {
@@ -467,14 +459,12 @@ export default {
                     }
                     this.treeClone = _.cloneDeep(res.tree);
                     this.addProperty([this.treeClone]);
-                    // console.log(this.treeClone);
                 }
                 this.$store.dispatch('SaveProductTree', res.tree);
             });
         },
         //获取百分比数据
         getTreePrograss(cid) {
-            // console.log(cid);
             let id;
             if (cid) {
                 id = cid;
@@ -488,21 +478,19 @@ export default {
             };
             API.GetProductTreeProduct(params).then(res => {
                 let obj = this.preOrder([this.treeClone], id);
-                this.forProperty([this.treeClone], id);//插入数据的hasData为true
                 if (obj.cid === id) {
+                    obj.hasData = true;//插入数据的hasData为true
                     obj.real_total = res.data[id].real;
                     obj.target_total = res.data[id].target;
                 }
                 if (obj.children) {
                     for (let i of obj.children) {
                         if (_.has(res.data, i.cid)) {
-                            this.forProperty([this.treeClone], i.cid);
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
                         }
                     }
                 }
-                // console.log(this.treeClone);
             });
         },
         getProgress() {
@@ -600,8 +588,7 @@ export default {
             }
         },
         handleSearch(val) {
-            this.searchId = val.cid;
-            // console.log(this.searchId);
+            this.findFatherId = val.cid;
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
@@ -631,7 +618,7 @@ export default {
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
-                this.dataRequest(this.searchId);
+                this.findParent([this.treeClone], this.findFatherId);
                 //如果是根节点
                 if (this.cid === this.productTree.cid) {
                     this.isbac = true;
@@ -682,6 +669,12 @@ export default {
                 rank: rank,
                 time_label: time_label,
             };
+            if (this.showStragetyId === cid && this.subject === subject) {
+                return;
+            }
+            this.showStragetyId = cid;
+            this.subject = subject;
+            this.stragety = [];
             API.GetProductMatch(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];

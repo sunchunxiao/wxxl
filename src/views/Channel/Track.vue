@@ -16,22 +16,22 @@
           prop="level"
           label="产品层级"
           column-key="level"
-          :filters="[{text: '平台', value: '1'},{text: '店铺', value: '2'},{text: '页面', value: '3'},{text: '坑位', value: '4'}]" />
+          :filters="filtersLevel" />
         <el-table-column
           prop="subject"
           label="指标"
           column-key="subject"
-          :filters="[{text: '费用额 ', value: 'C'}, {text: '日销', value: 'SD'},{text: '冗余值', value: 'RY'}]" />
+          :filters="filtersSubject" />
         <el-table-column
           prop="rank"
           label="评选等级"
           column-key="rank"
-          :filters="[{text: '优', value: '1'},{text: '良', value: '2'},{text: '中', value: '3'},{text: '差', value: '4'}]" />
+          :filters="filtersRank" />
         <el-table-column
           prop="package"
           label="影响因素"
           column-key="package"
-          :filters="[{text: '推广', value: '推广'},{text: '活动', value: '活动'},{text: '发货', value: '发货'},{text: '流量', value: '流量'},{text: '转化', value: '转化'},{text: '客单', value: '客单'},{text: '渠道规划', value: '渠道规划'},{text: '渠道运营', value: '渠道运营'}]" />
+          :filters="filtersPackage" />
         <el-table-column
           prop="strategy"
           label="策略" />
@@ -161,7 +161,7 @@
 
 <script>
 import API from './api';
-// const SUBJECT = 'P'; // S: 销售额 P: 利润额
+
 export default {
     components: {},
     data() {
@@ -173,6 +173,10 @@ export default {
             },
             loading: false,
             trackList: [],
+            filtersLevel: [],
+            filtersSubject: [],
+            filtersRank: [],
+            filtersPackage: [],
             total: 0,
             level: '',
             package: '',
@@ -188,6 +192,7 @@ export default {
 
     mounted(){
         this.getChannelStrategy();
+        this.getFliters();
     },
     methods: {
         sortChange(val) {
@@ -230,7 +235,15 @@ export default {
                 this.trackListAll = res.data;
             });
         },
-        filterChange(filter){
+        getFliters() {
+            API.GetChannelFilter().then(res => {
+                this.filtersLevel = res.level;
+                this.filtersSubject = res.subject;
+                this.filtersRank = res.rank;
+                this.filtersPackage = res.package;
+            });
+        },
+        filterChange(filter) {
             this.filterArr.push(filter);
             for (let i of this.filterArr) {
                 if (Object.keys(i)[0] === "level") {
@@ -252,6 +265,7 @@ export default {
                 page: this.currentPage,
                 per_page: 10,
                 level: this.level,
+                rank: this.rank,
                 package: this.package,
                 subject: this.subject,
                 sort: this.sort
