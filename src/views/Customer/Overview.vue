@@ -237,7 +237,7 @@ import ProportionalStructureAverageComparisonBig from '../../components/Proporti
 // 智能评选和智能策略
 import IntelligentSelection from '../../components/IntelligentSelection';
 //tree 百分比计算
-import { calculatePercent, error } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
 
@@ -268,11 +268,14 @@ export default {
             },
             cid:'',
             pt: '',
+            error: error,
+            find: find,
+            preOrder: preOrder,
+            addProperty: addProperty,
+            calculatePercent: calculatePercent,
             showStragetyId:'',
             subject:'',
             loading: false,
-            calculatePercent: calculatePercent,
-            error: error,
             defaultProps: TREE_PROPS,
             // index
             index0: 0,
@@ -283,19 +286,20 @@ export default {
             stragetyCheckList: [],
             stragetyTitle: '',
             stragety: [],
-            idArr:[],
-            val:{},
-            post:1,
-            nodeArr:[],
-            isbac:true,
-            highlight:true,
+            idArr: [],
+            val: {},
+            post: 1,
+            nodeArr: [],
+            isbac: true,
+            highlight: true,
             searchBarValue: {
                 pt: '',
                 sDate: '',
                 eDate: ''
             },
-            treeClone:{},
-            changeDate:{}
+            treeClone: {},
+            changeDate: {},
+            findFatherId: '',
         };
     },
     computed: {
@@ -315,6 +319,7 @@ export default {
         } else {
             this.treeClone = _.cloneDeep(this.customerTree);
             this.cid = this.customerTree.cid;
+            this.addProperty([this.treeClone]);
         }
     },
     watch: {
@@ -333,18 +338,6 @@ export default {
             this.getProgress();
             this.getStructure();
             this.getRank();
-        },
-        preOrder(node,cid) {
-            for (let i of node){
-                if (i.cid == cid) {
-                    return i;
-                }
-                if (i.children && i.children.length){
-                    if (this.preOrder(i.children, cid)) {
-                        return this.preOrder(i.children,cid);
-                    }
-                }
-            }
         },
         input (val) {
             this.form.date = val;
@@ -402,6 +395,13 @@ export default {
                 this.error('无应用策略');
             }
         },
+        findParent(node,cid) {//找父节点id
+            let hasfatherCid = [];
+            this.find(cid, node, hasfatherCid);
+            for (let i of hasfatherCid) {
+                this.getTreePrograss(i);
+            }
+        },
         getTree() {
             const params = {
                 subject: SUBJECT,
@@ -413,21 +413,29 @@ export default {
                     this.cid = res.tree.cid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);
+                this.addProperty([this.treeClone]);
                 this.$store.dispatch('SaveCusTree', res.tree);
             });
         },
-        getTreePrograss() {
+        getTreePrograss(cid) {
+            let id;
+            if (cid) {
+                id = cid;
+            } else {
+                id = this.cid;
+            }
             const params = {
                 subject: SUBJECT,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                nid: this.cid,
+                nid: id,
             };
             API.GetCusTreePrograss(params).then(res=>{
-                let obj = this.preOrder([this.treeClone], this.cid);
-                if (obj.cid === this.cid){
-                    obj.real_total = res.data[this.cid].real;
-                    obj.target_total = res.data[this.cid].target;
+                let obj = this.preOrder([this.treeClone], id);
+                if (obj.cid === id) {
+                    obj.hasData = true;//插入数据的hasData为true
+                    obj.real_total = res.data[id].real;
+                    obj.target_total = res.data[id].target;
                 }
                 if (obj.children) {
                     for (let i of obj.children){
@@ -546,14 +554,15 @@ export default {
             }
         },
         handleSearch(val) {
+            this.findFatherId = val.cid;
             // 默认公司的背景色
             this.isbac = false;
             this.nodeArr = [];
             this.val = val;
-            if (!val.cid){
+            if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid !== this.customerTree.cid){
+                if (this.cid !== this.customerTree.cid) {
                     this.cid = this.customerTree.cid;
                     this.treeClone = _.cloneDeep(this.customerTree);
                 } else {
@@ -561,16 +570,18 @@ export default {
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     this.allRequest();
+                    this.treeClone = _.cloneDeep(this.customerTree);
                 }
                 this.changeDate = this.searchBarValue;
+                this.cid = val.cid;
+                this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref
                 });
-                this.cid = val.cid;
-                if (this.cid === this.customerTree.cid){
+                if (this.cid === this.customerTree.cid) {
                     this.isbac = true;
                     this.highlight = false;
                 }

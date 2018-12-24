@@ -134,7 +134,7 @@ import Card from '../../components/Card';
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
-import { calculatePercent } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
 
 import { mapGetters } from 'vuex';
 const SUBJECT = 'P'; // S: 销售额 P: 利润额
@@ -166,7 +166,11 @@ export default {
             },
             cid: 0,
             loading: false,
-            calculatePercent:calculatePercent,
+            error: error,
+            find: find,
+            preOrder: preOrder,
+            addProperty: addProperty,
+            calculatePercent: calculatePercent,
             defaultProps: TREE_PROPS,
             index0: 0,
             val: {},
@@ -180,7 +184,8 @@ export default {
                 eDate: ''
             },
             treeClone: {},
-            changeDate:{}
+            changeDate: {},
+            findFatherId: '',
         };
     },
     computed: {
@@ -208,20 +213,13 @@ export default {
         } else {
             this.treeClone = _.cloneDeep(this.productTree);
             this.cid = this.productTree.cid;
+            this.addProperty([this.treeClone]);
         }
     },
     methods: {
-        preOrder (node, cid) {
-            for (let i of node) {
-                if (i.cid == cid) {
-                    return i;
-                }
-                if (i.children && i.children.length) {
-                    if (this.preOrder(i.children, cid)) {
-                        return this.preOrder(i.children, cid);
-                    }
-                }
-            }
+        allRequest() {
+            this.getTreePrograss();
+            this.getHistory();
         },
         input (val) {
             this.form.date = val;
@@ -250,6 +248,13 @@ export default {
                 this.loading = false;
             });
         },
+        findParent(node,cid) {//找父节点id
+            let hasfatherCid = [];
+            this.find(cid, node, hasfatherCid);
+            for (let i of hasfatherCid) {
+                this.getTreePrograss(i);
+            }
+        },
         getTree () {
             this.loading = true;
             const params = {
@@ -257,11 +262,12 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetProductTree(params).then(res => {
-                if(res.tree){
+                if (res.tree) {
                     if (!this.productTree || !this.productTree.cid) {
                         this.cid = res.tree.cid;
                     }
                     this.treeClone = _.cloneDeep(res.tree);
+                    this.addProperty([this.treeClone]);
                 }
                 this.$store.dispatch('SaveProductTree', res.tree);
             }).finally(() => {
@@ -269,18 +275,24 @@ export default {
             });
         },
         //获取百分比数据
-        getTreePrograss () {
-            this.loading = true;
+        getTreePrograss (cid) {
+            let id;
+            if (cid) {
+                id = cid;
+            } else {
+                id = this.cid;
+            }
             const params = {
                 subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid: this.cid
+                nid: id
             };
             API.GetProductTreeProduct(params).then(res => {
-                let obj = this.preOrder([this.treeClone], this.cid);
-                if (obj.cid === this.cid) {
-                    obj.real_total = res.data[this.cid].real;
-                    obj.target_total = res.data[this.cid].target;
+                let obj = this.preOrder([this.treeClone], id);
+                if (obj.cid === id) {
+                    obj.hasData = true; //插入数据的hasData为true
+                    obj.real_total = res.data[id].real;
+                    obj.target_total = res.data[id].target;
                 }
                 if (obj.children) {
                     for (let i of obj.children) {
@@ -291,8 +303,6 @@ export default {
                     }
                 }
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
-            }).finally(() => {
-                this.loading = false;
             });
         },
         getDateObj () {
@@ -372,7 +382,8 @@ export default {
                 }
             };
         },
-        handleSearch (val) {
+        handleSearch(val) {
+            this.findFatherId = val.cid;
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
@@ -385,25 +396,25 @@ export default {
                         this.cid = this.productTree.cid;
                         this.treeClone = _.cloneDeep(this.productTree);
                     } else {
-                        this.getTreePrograss();
-                        this.getHistory();
+                        this.allRequest();
                     }
                 }else{
                     this.getTree();
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
-                    this.getTreePrograss();
-                    this.getHistory();
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
+                    this.allRequest();
+                    this.treeClone = _.cloneDeep(this.productTree);
                 }
                 this.changeDate = this.searchBarValue;
+                this.cid = val.cid;
+                this.findParent([this.treeClone], this.findFatherId);
                 this.isbac = false;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
-                this.cid = val.cid;
                 if (this.cid == this.productTree.cid) {
                     this.isbac = true;
                     this.highlight = false;
@@ -427,11 +438,7 @@ export default {
                     this.cid = data.cid;
                 }
             } else {
-                this.$message({
-                    type: 'error',
-                    message: '请选择日期',
-                    duration: 2000
-                });
+                this.error('请选择日期');
             }
         },
         clickIndex (i, idx) {

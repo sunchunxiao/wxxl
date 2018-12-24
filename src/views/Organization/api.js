@@ -45,4 +45,7 @@ export default {
     GetOrgApplog(params) {
         return FetchGet('/org/strategy/app_log', params);
     },
+    GetOrgFilter(params) {
+        return FetchGet('/org/strategy/filter', params);
+    },
 };

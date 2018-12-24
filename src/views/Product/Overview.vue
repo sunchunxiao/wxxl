@@ -243,7 +243,7 @@ import ProportionalStructureAverageComparisonBig from 'components/ProportionalSt
 // 智能评选和智能策略
 import IntelligentSelection from 'components/IntelligentSelection';
 //tree 百分比计算
-import { calculatePercent, error } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
@@ -270,13 +270,16 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
-            cid: '',
-            pt:'',
-            showStragetyId:'',
-            subject:'',
             //tree
-            calculatePercent: calculatePercent,
+            cid: '',
+            pt: '',
             error: error,
+            find: find,
+            preOrder: preOrder,
+            addProperty: addProperty,
+            calculatePercent: calculatePercent,
+            showStragetyId: '',
+            subject:'',
             defaultProps: TREE_PROPS,
             loading: false,
             // index
@@ -299,10 +302,9 @@ export default {
                 sDate: '',
                 eDate: ''
             },
-            treeClone:{},
-            changeDate:{},
-            findFatherId:'',
-            arr:[]
+            treeClone: {},
+            changeDate: {},
+            findFatherId: '',
         };
     },
     computed: {
@@ -339,18 +341,6 @@ export default {
             this.getProgress();
             this.getStructure();
             this.getRank();
-        },
-        preOrder(node,cid) {
-            for (let i of node){
-                if (i.cid == cid) {
-                    return i;
-                }
-                if (i.children && i.children.length){
-                    if (this.preOrder(i.children, cid)) {
-                        return this.preOrder(i.children,cid);
-                    }
-                }
-            }
         },
         input(val) {
             this.form.date = val;
@@ -406,38 +396,6 @@ export default {
                 });
             }else{
                 this.error('无应用策略');
-            }
-        },
-        addProperty(data) {//树结构添加属性
-            for (let i of data) {
-                data.map(o => {
-                    o.hasData = false;
-                });
-                if (i.children && i.children.length) {
-                    if (this.addProperty(i.children)) {
-                        return this.addProperty(i.children);
-                    }
-                }
-            }
-        },
-        find(cid, data, arr) {
-            for (let i of data) {
-                if (i.cid == cid) {
-                    return true;
-                }
-                if (i.children && i.children.length) {
-                    if (!i.hasData) {
-                        arr.push(i.cid);
-                    }
-                    let bool = this.find(cid, i.children, arr);
-                    if (!bool) {
-                        if(!i.hasData){
-                            arr.pop();
-                        }
-                    } else {
-                        return true;
-                    }
-                }
             }
         },
         findParent(node,cid) {//找父节点id
@@ -614,11 +572,11 @@ export default {
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
-            if (!val.cid){
+            if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
                 if (this.cid) {//数据tree不为null时
-                    if (this.cid !== this.productTree.cid){
+                    if (this.cid !== this.productTree.cid) {
                         this.cid = this.productTree.cid;
                         this.treeClone = _.cloneDeep(this.productTree);
                     } else {
@@ -632,15 +590,16 @@ export default {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     this.allRequest();
+                    this.treeClone = _.cloneDeep(this.productTree);
                 }
                 this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
+                this.findParent([this.treeClone], this.findFatherId);
                 this.isbac = false;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
-                this.findParent([this.treeClone], this.findFatherId);
                 //如果是根节点
                 if (this.cid === this.productTree.cid) {
                     this.isbac = true;

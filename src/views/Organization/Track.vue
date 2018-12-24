@@ -16,22 +16,22 @@
           prop="level_name"
           label="组织层级"
           column-key="level"
-          :filters="[{text: '全公司', value: '1'},{text: '事业部', value: '2'},{text: '部门', value: '3'},{text: '小组', value: '4'}]" />
+          :filters="filtersLevel" />
         <el-table-column
           prop="subject_name"
           label="指标"
           column-key="subject"
-          :filters="[{text: '销售额', value: 'S'}, {text: '净利润额', value: 'P'},{text: '成本额', value: 'C'}]" />
+          :filters="filtersSubject" />
         <el-table-column
           prop="rank_name"
           label="评选等级"
           column-key="rank"
-          :filters="[{text: '优', value: '1'},{text: '2', value: '良'},{text: '中', value: '3'},{text: '差', value: '4'}]" />
+          :filters="filtersRank" />
         <el-table-column
           prop="inf_name"
           label="影响因素"
-          column-key="inf_name"
-          :filters="[{text: '薪酬规划', value: '薪酬规划'},{text: '人员业务能力', value: '人员业务能力'},{text: '总的成本费用', value: '总的成本费用'},{text: '总销售收入', value: '总销售收入'},{text: '治理方式', value: '治理方式'},{text: '员工个人能力', value: '员工个人能力'},{text: '人力资源规划', value: '人力资源规划'},{text: '企业架构', value: '企业架构'},{text: '客单', value: '客单'}]" />
+          column-key="inf_id"
+          :filters="filtersInfo" />
         <el-table-column
           prop="strategy"
           label="策略" />
@@ -174,6 +174,10 @@ export default {
             },
             loading: false,
             trackList: [],
+            filtersLevel: [],
+            filtersSubject: [],
+            filtersRank: [],
+            filtersInfo: [],
             total: 0,
             level: '',
             inf_id: '',
@@ -194,6 +198,7 @@ export default {
     },
     mounted() {
         this.getOrgStrategy();
+        this.getFliters();
     },
     methods: {
         sortChange(val) {
@@ -236,6 +241,14 @@ export default {
                 this.trackListAll = res.data;
             });
         },
+        getFliters() {
+            API.GetOrgFilter().then(res => {
+                this.filtersLevel = res.level;
+                this.filtersSubject = res.subject;
+                this.filtersRank = res.rank;
+                this.filtersInfo = res.package;
+            });
+        },
         filterChange(filter){
             this.filterArr.push(filter);
             for (let i of this.filterArr) {
@@ -245,8 +258,8 @@ export default {
                     this.subject = i.subject.join();
                 } else if (Object.keys(i)[0] === "rank") {
                     this.rank = i.rank.join();
-                } else if (Object.keys(i)[0] === "package") {
-                    this.package = i.package.join();
+                } else if (Object.keys(i)[0] === "inf_id") {
+                    this.inf_id = i.inf_id.join();
                 }
             }
             this.currentPage = 1,//更改筛选条件时从第一页查找

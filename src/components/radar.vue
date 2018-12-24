@@ -61,10 +61,10 @@ export default {
             let _this = this;
             const { transSubjects,radarValues } = data;
             let arr = [];
-            for(let i of transSubjects){
+            for (let i of transSubjects) {
                 arr.push({
-                    name:i,
-                    max:4
+                    name: i,
+                    max: 4
                 });
             }
             const options = {

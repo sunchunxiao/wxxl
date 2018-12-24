@@ -33,7 +33,7 @@
         </div>
         <el-tree
           ref="tree"
-          node-key="cid"
+          node-key="nid"
           empty-text="正在加载"
           :expand-on-click-node="false"
           :highlight-current="highlight"
@@ -135,7 +135,7 @@ import SearchBar from 'components/SearchBar';
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
-import { calculatePercent } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
@@ -160,9 +160,12 @@ export default {
             },
             cid: '',
             loading: false,
-            calculatePercent:calculatePercent,
+            error: error,
+            find: find,
+            preOrder: preOrder,
+            addProperty: addProperty,
+            calculatePercent: calculatePercent,
             defaultProps: TREE_PROPS,
-            time: '7.30 - 8.05',
             index0: 0,
             val: {},
             post: 1,
@@ -175,7 +178,8 @@ export default {
                 eDate: ''
             },
             treeClone: {},
-            changeDate:{}
+            changeDate: {},
+            findFatherId: '',
         };
     },
     computed: {
@@ -203,23 +207,16 @@ export default {
         } else {
             this.treeClone = _.cloneDeep(this.channelTree);
             this.cid = this.channelTree.nid;
+            this.addProperty([this.treeClone]);
         }
     },
     methods: {
+        allRequest() {
+            this.getTreePrograss();
+            this.getHistory();
+        },
         input (val) {
             this.form.date = val;
-        },
-        preOrder (node, cid) {
-            for (let i of node) {
-                if (i.nid == cid) {
-                    return i;
-                }
-                if (i.children && i.children.length) {
-                    if (this.preOrder(i.children, cid)) {
-                        return this.preOrder(i.children, cid);
-                    }
-                }
-            }
         },
         click () {
             if (this.cid === this.channelTree.nid) {
@@ -246,6 +243,13 @@ export default {
                 this.loading = false;
             });
         },
+        findParent(node,cid) {//找父节点id
+            let hasfatherCid = [];
+            this.find(cid, node, hasfatherCid);
+            for (let i of hasfatherCid) {
+                this.getTreePrograss(i);
+            }
+        },
         getTree () {
             const params = {
                 pt: this.form.pt,
@@ -259,28 +263,37 @@ export default {
                         this.cid = res.tree.nid;
                     }
                     this.treeClone = _.cloneDeep(res.tree);
+                    this.addProperty([this.treeClone]);
                 }
                 this.$store.dispatch('SaveChannelTree', res.tree);
             });
         },
         //获取百分比数据
-        getTreePrograss () {
+        getTreePrograss (cid) {
+            let id;
+            if (cid) {
+                id = cid;
+            } else {
+                id = this.cid;
+            }
             const params = {
                 subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid: this.cid
+                nid: id
             };
             API.GetChannelTreePrograss(params).then(res => {
-                let obj = this.preOrder([this.treeClone], this.cid);
-                if (obj.nid === this.cid) {
-                    obj.real_total = res.data[this.cid].real;
-                    obj.target_total = res.data[this.cid].target;
+                let obj = this.preOrder([this.treeClone], id);
+                if (obj.nid === id) {
+                    obj.hasData = true;//插入数据的hasData为true
+                    obj.real_total = res.data[id].real;
+                    obj.target_total = res.data[id].target;
                 }
-                for (let i of obj.children) {
-                    if (_.has(res.data, i.nid)) {
-                        i.real_total = res.data[i.nid].real;
-                        i.target_total = res.data[i.nid].target;
-
+                if (obj.children) {
+                    for (let i of obj.children) {
+                        if (_.has(res.data, i.nid)) {
+                            i.real_total = res.data[i.nid].real;
+                            i.target_total = res.data[i.nid].target;
+                        }
                     }
                 }
             });
@@ -363,6 +376,7 @@ export default {
             };
         },
         handleSearch (val) {
+            this.findFatherId = val.cid;
             // 默认公司的背景色
             this.highlight = true;
             this.nodeArr = [];
@@ -371,42 +385,42 @@ export default {
                 this.isbac = true;
                 this.highlight = false;
                 //数据为空时,没有id
-                if(this.cid){
+                if (this.cid) {
                     if (this.cid !== this.channelTree.nid) {
                         this.cid = this.channelTree.nid;
                         this.treeClone = _.cloneDeep(this.channelTree);
                     } else {
-                        this.getTreePrograss();
-                        this.getHistory();
+                        this.allRequest();
                     }
-                }else{
+                } else {
                     this.getTree();
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
-                    this.getTreePrograss();
-                    this.getHistory();
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
+                    this.allRequest();
+                    this.treeClone = _.cloneDeep(this.channelTree);
                 }
                 this.changeDate = this.searchBarValue;
                 this.isbac = false;
+                this.cid = val.cid;
+                this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
-                this.cid = val.cid;
                 if (this.cid === this.channelTree.nid) {
                     this.isbac = true;
                     this.highlight = false;
                 }
             }
         },
-        nodeExpand (data) {
+        nodeExpand(data) {
             this.cid = data.nid;
             this.isbac = false;
             this.highlight = true;
         },
-        handleNodeClick (data) {
+        handleNodeClick(data) {
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.val = this.searchBarValue;
                 this.isbac = false;
