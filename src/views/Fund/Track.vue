@@ -6,6 +6,7 @@
       <div class="title">策略跟踪和策略应用</div>
       <el-table
         @sort-change='sortChange'
+        @filter-change="filterChange"
         :data="trackList"
         stripe>
         <el-table-column
@@ -14,23 +15,23 @@
         <el-table-column
           prop="level_name"
           label="资金层级"
-          :filters="[{text: '全公司', value: '全公司'},{text: '事业部', value: '事业部'},{text: '部门', value: '部门'},{text: '小组', value: '小组'}]"
-          :filter-method="filterA" />
+          :filters="filtersLevel"
+          column-key="level" />
         <el-table-column
           prop="subject_name"
           label="指标"
-          :filters="[{text: '销售额', value: '销售额'}, {text: '利润', value: '利润'},{text: '成本', value: '成本'},{text: '回款额', value: '回款额'},{text: '投资回报率', value: '投资回报率'},{text: '净利率', value: '净利率'},{text: '净现金流', value: '净现金流'},{text: '资金周转率', value: '资金周转率'},{text: '资金冗余值', value: '资金冗余值'}]"
-          :filter-method="filterB" />
+          :filters="filtersSubject"
+          column-key="subject" />
         <el-table-column
           prop="rank_name"
           label="评选等级"
-          :filters="[{text: '优', value: '优'},{text: '良', value: '良'},{text: '中', value: '中'},{text: '差', value: '差'}]"
-          :filter-method="filterC" />
+          :filters="filtersRank"
+          column-key="rank" />
         <el-table-column
           prop="inf_name"
           label="影响因素"
-          :filters="[{text: '经营规划', value: '经营规划'},{text: '预算管控', value: '预算管控'},{text: '总销售量', value: '总销售量'},{text: '应收能力', value: '应收能力'},{text: '资产结构规划', value: '资产结构规划'},{text: '流动资金使用', value: '流动资金使用'},{text: '主营业务收入', value: '主营业务收入'},{text: '营运资金管理', value: '营运资金管理'}]"
-          :filter-method="filterD" />
+          :filters="filtersInfo"
+          column-key="inf_id" />
         <el-table-column
           prop="strategy"
           label="策略" />
@@ -173,7 +174,17 @@ export default {
             loading: false,
             currentPage: 1,
             trackList: [],
+            filtersLevel: [],
+            filtersSubject: [],
+            filtersRank: [],
+            filtersInfo: [],
             total: 0,
+            level: '',
+            inf_id: '',
+            rank: '',
+            subject: '',
+            sort: '',
+            filterArr: [],
             trackListAll: [],
             trackListEff: [],
         };
@@ -186,16 +197,27 @@ export default {
         }
     },
     mounted(){
-        this.getProductStrategy();
+        this.getFundStrategy();
+        this.getFliters();
     },
     methods: {
-        sortChange() {
+        sortChange(val) {
             this.trackList = this.trackList.map(o => {
                 o.visible = false;
                 o.visibleEff = false;
                 o.visibleRate = false;
                 return o;
             });
+            let order;
+            if (val.prop && val.order) {
+                if (val.order === "ascending") {
+                    order = 'asc';
+                } else {
+                    order = 'desc';
+                }
+                this.sort = val.prop + ':' + order;
+                this.getFundStrategy();
+            }
         },
         showEff(val) {
             this.trackListEff = [];
@@ -219,11 +241,40 @@ export default {
                 this.trackListAll = res.data;
             });
         },
-        getProductStrategy() {
+        getFliters() {
+            API.GetFundFilter().then(res => {
+                this.filtersLevel = res.level;
+                this.filtersSubject = res.subject;
+                this.filtersRank = res.rank;
+                this.filtersInfo = res.package;
+            });
+        },
+        filterChange (filter) {
+            this.filterArr.push(filter);
+            for (let i of this.filterArr) {
+                if (Object.keys(i)[0] === "level") {
+                    this.level = i.level.join();
+                } else if (Object.keys(i)[0] === "subject") {
+                    this.subject = i.subject.join();
+                } else if (Object.keys(i)[0] === "rank") {
+                    this.rank = i.rank.join();
+                } else if (Object.keys(i)[0] === "inf_id") {
+                    this.inf_id = i.inf_id.join();
+                }
+            }
+            this.currentPage = 1,//更改筛选条件时从第一页查找
+            this.getFundStrategy();
+        },
+        getFundStrategy() {
             this.loading = true;
             const params = {
                 page: this.currentPage,
                 limit: 10,
+                level: this.level,
+                subject: this.subject,
+                rank: this.rank,
+                inf_id: this.inf_id,
+                sort: this.sort
             };
             API.GetFundStrategiesTrack(params).then(res => {
                 this.trackList = res.data.map(o => {
@@ -237,40 +288,17 @@ export default {
                 this.loading = false;
             });
         },
-        filterA(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterB(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterC(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterD(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterF(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterG(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterH(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
         handleCurrentChange(val) {
             this.loading= true;
             this.currentPage = val;
             const params = {
                 page: this.currentPage,
                 limit: 10,
+                level: this.level,
+                subject: this.subject,
+                rank: this.rank,
+                inf_id: this.inf_id,
+                sort: this.sort
             };
             API.GetFundStrategiesTrack(params).then(res => {
                 this.trackList = res.data;

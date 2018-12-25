@@ -44,4 +44,7 @@ export default {
     GetFundApplog(params) {
         return FetchGet('/fund/strategy/app_log', params);
     },
+    GetFundFilter(params) {
+        return FetchGet('/fund/strategy/filter', params);
+    },
 };

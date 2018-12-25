@@ -176,6 +176,7 @@
           </vue-lazy-component>
         </el-row>
         <el-row
+          v-if="channelRankArr.length"
           v-loading="loading"
           class="margin-top-10 min-height-400">
           <vue-lazy-component>
@@ -240,7 +241,7 @@ import ProportionalStructureAverageComparisonBig from '../../components/Proporti
 // 智能评选和智能策略
 import IntelligentSelection from '../../components/IntelligentSelection';
 //tree 百分比计算
-import { calculatePercent, error } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty  } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
@@ -263,17 +264,20 @@ export default {
     data () {
         return {
             form: {
-                pt: '日',
                 date: [],
                 search: '',
                 version: '0'
             },
             cid: '',
+            pt: '',
+            error: error,
+            find: find,
+            preOrder: preOrder,
+            addProperty: addProperty,
+            calculatePercent: calculatePercent,
             showStragetyId:'',
             subject:'',
             loading: false,
-            calculatePercent: calculatePercent,
-            error: error,
             defaultProps: TREE_PROPS,
             // index
             index0: 0,
@@ -296,7 +300,8 @@ export default {
                 eDate: ''
             },
             treeClone: {},
-            changeDate:{}
+            changeDate: {},
+            findFatherId: '',
         };
     },
     computed: {
@@ -326,6 +331,7 @@ export default {
         } else {
             this.treeClone = _.cloneDeep(this.channelTree);
             this.cid = this.channelTree.nid;
+            this.addProperty([this.treeClone]);
         }
     },
     methods: {
@@ -334,18 +340,6 @@ export default {
             this.getProgress();
             this.getStructure();
             this.getRank();
-        },
-        preOrder(node, cid) {
-            for (let i of node) {
-                if (i.nid == cid) {
-                    return i;
-                }
-                if (i.children && i.children.length) {
-                    if (this.preOrder(i.children, cid)) {
-                        return this.preOrder(i.children, cid);
-                    }
-                }
-            }
         },
         input(val) {
             this.form.date = val;
@@ -360,7 +354,6 @@ export default {
                 this.highlight = false;
                 this.cid = this.channelTree.nid;
             }
-
         },
         change() {
             this.idArr = [];
@@ -405,9 +398,17 @@ export default {
                 this.error('无应用策略');
             }
         },
+        findParent(node,cid) {//找父节点id
+            let hasfatherCid = [];
+            this.find(cid, node, hasfatherCid);
+            for (let i of hasfatherCid) {
+                this.getTreePrograss(i);
+            }
+        },
         getTree() {
             const params = {
                 subject: SUBJECT,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
                 version: this.form.version
             };
@@ -417,22 +418,31 @@ export default {
                         this.cid = res.tree.nid;
                     }
                     this.treeClone = _.cloneDeep(res.tree);
+                    this.addProperty([this.treeClone]);
                 }
                 this.$store.dispatch('SaveChannelTree', res.tree);
             });
         },
         //获取百分比数据
-        getTreePrograss() {
+        getTreePrograss(cid) {
+            let id;
+            if (cid) {
+                id = cid;
+            } else {
+                id = this.cid;
+            }
             const params = {
                 subject: SUBJECT,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                nid: this.cid
+                nid: id
             };
             API.GetChannelTreePrograss(params).then(res => {
-                let obj = this.preOrder([this.treeClone], this.cid);
-                if (obj.nid === this.cid) {
-                    obj.real_total = res.data[this.cid].real;
-                    obj.target_total = res.data[this.cid].target;
+                let obj = this.preOrder([this.treeClone], id);
+                if (obj.nid === id) {
+                    obj.hasData = true;//插入数据的hasData为true
+                    obj.real_total = res.data[id].real;
+                    obj.target_total = res.data[id].target;
                 }
                 if (obj.children) {
                     for (let i of obj.children) {
@@ -448,6 +458,7 @@ export default {
             this.loading = true;
             const params = {
                 chId: this.cid,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
             API.GetChannelProgress(params).then(res => {
@@ -467,6 +478,7 @@ export default {
         getTrend(subject) {
             const params = {
                 chId: this.cid,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
                 subject: subject
             };
@@ -476,6 +488,7 @@ export default {
             this.loading = true;
             const params = {
                 chId: this.cid,
+                pt: this.getPt(),
                 subject: this.form.subject,
                 ...this.getPeriodByPt(),
             };
@@ -486,9 +499,15 @@ export default {
             });
         },
         getRank() {
+            if (this.getPt() === '日') {
+                this.pt = '周';
+            }else{
+                this.pt = this.getPt();
+            }
             this.loading = true;
             const params = {
                 chId: this.cid,
+                pt: this.pt,
                 ...this.getPeriodByPt(),
             };
             API.GetChannelRank(params).then(res => {
@@ -497,19 +516,28 @@ export default {
                 this.loading = false;
             });
         },
+        getPt() {
+            const {
+                date
+            } = this.form;
+            if (this.val.sDate && this.val.eDate) {
+                this.pt = this.val.pt;
+            }else{
+                this.pt = date.pt;
+            }
+            return this.pt;
+        },
         getDateObj() {
             const {
                 date
             } = this.form;
             if (this.val.sDate && this.val.eDate ) {
                 return {
-                    pt: this.val.pt,
                     sDate: this.val.sDate,
                     eDate: this.val.eDate,
                 };
             } else {
                 return {
-                    pt: date.pt,
                     sDate: date.sDate,
                     eDate: date.eDate,
                 };
@@ -517,32 +545,30 @@ export default {
         },
         getPeriodByPt() {
             const {
-                pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
-                    pt: pt,
                     sDate: sDate,
                     eDate: eDate,
                 };
             } else {
                 return {
-                    pt: '日',
                     sDate: '2018-01-01',
                     eDate: '2018-01-31',
                 };
             }
         },
         handleSearch(val) {
+            this.findFatherId = val.cid;
             this.highlight = true;
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
-                if(this.cid){//数据tree不为null时
+                if(this.cid) {//数据tree不为null时
                     if (this.cid !== this.channelTree.nid) {
                         this.cid = this.channelTree.nid;
                         this.treeClone = _.cloneDeep(this.channelTree);
@@ -555,16 +581,18 @@ export default {
 
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     this.allRequest();
+                    this.treeClone = _.cloneDeep(this.channelTree);
                 }
                 this.changeDate = this.searchBarValue;
                 this.isbac = false;
+                this.cid = val.cid;
+                this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
-                this.cid = val.cid;
                 if (this.cid === this.channelTree.nid) {
                     this.isbac = true;
                     this.highlight = false;

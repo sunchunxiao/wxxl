@@ -44,4 +44,7 @@ export default {
     GetCusApplog(params) {
         return FetchGet('/cus/strategy/app_log', params);
     },
+    GetCusFilter(params) {
+        return FetchGet('/cus/strategy/filter', params);
+    },
 };

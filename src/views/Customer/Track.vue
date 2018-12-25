@@ -16,22 +16,22 @@
           prop="level_name"
           label="客户层级"
           column-key="level"
-          :filters="[{text: '平台', value: '平台'},{text: '店铺', value: '店铺'},{text: '城市', value: '城市'}]" />
+          :filters="filtersLevel" />
         <el-table-column
           prop="subject_name"
           label="指标"
-          column-key="subject_name"
-          :filters="[{text: '销售额', value: 'S'}, {text: '利润额', value: 'P'},{text: '成本', value: 'C'}]" />
+          column-key="subject"
+          :filters="filtersSubject" />
         <el-table-column
           prop="rank_name"
           label="评选等级"
-          :filters="[{text: '优', value: '优'},{text: '良', value: '良'},{text: '中', value: '中'},{text: '差', value: '差'}]"
-          :filter-method="filterC" />
+          column-key="rank"
+          :filters="filtersRank" />
         <el-table-column
           prop="inf_name"
           label="影响因素"
-          :filters="[{text: '推广计划', value: '推广计划'},{text: '费用预算管控', value: '费用预算管控'},{text: '客户结构', value: '客户结构'},{text: '流量', value: '流量'},{text: '客群定位', value: '客群定位'},{text: '客单', value: '客单'},{text: '客户运营', value: '客户运营'},{text: '品牌竞争力', value: '品牌竞争力'}]"
-          :filter-method="filterD" />
+          column-key="inf_id"
+          :filters="filtersInfo" />
         <el-table-column
           prop="strategy"
           label="策略" />
@@ -74,8 +74,7 @@
         </el-table-column>
         <el-table-column
           prop="suc_num"
-          label="有效次数"
-          sortable>
+          label="有效次数">
           <template slot-scope="scope">
             <el-popover
               @show = 'show(scope.row)'
@@ -115,7 +114,7 @@
           <!-- 点击策略准确度,弹出下面这个窗口的所有策略应用情况 -->
           <template slot-scope="scope">
             <el-popover
-              @show = 'show(scope.row)'
+              @show='show(scope.row)'
               v-model="scope.row.visibleRate"
               trigger="click"
               placement="top">
@@ -173,30 +172,43 @@ export default {
             loading: false,
             currentPage: 1,
             trackList: [],
+            filtersLevel: [],
+            filtersSubject: [],
+            filtersRank: [],
+            filtersInfo: [],
             total: 0,
             level: '',
-            package: '',
+            inf_id: '',
             rank: '',
             subject: '',
-            acc_soft: '',
-            use_soft: '',
-            suc_soft: '',
+            sort: '',
             filterArr: [],
             trackListAll: [],
             trackListEff: [],
         };
     },
     mounted(){
-        this.getProductStrategy();
+        this.getCusStrategy();
+        this.getFliters();
     },
     methods: {
-        sortChange() {
+        sortChange(val) {
             this.trackList = this.trackList.map(o => {
                 o.visible = false;
                 o.visibleEff = false;
                 o.visibleRate = false;
                 return o;
             });
+            let order;
+            if (val.prop && val.order) {
+                if (val.order === "ascending") {
+                    order = 'asc';
+                } else {
+                    order = 'desc';
+                }
+                this.sort = val.prop + ':' + order;
+                this.getCusStrategy();
+            }
         },
         showEff(val) {
             this.trackListEff = [];
@@ -220,6 +232,14 @@ export default {
                 this.trackListAll = res.data;
             });
         },
+        getFliters() {
+            API.GetCusFilter().then(res => {
+                this.filtersLevel = res.level;
+                this.filtersSubject = res.subject;
+                this.filtersRank = res.rank;
+                this.filtersInfo = res.package;
+            });
+        },
         filterChange(filter){
             this.filterArr.push(filter);
             for (let i of this.filterArr) {
@@ -229,14 +249,14 @@ export default {
                     this.subject = i.subject.join();
                 } else if (Object.keys(i)[0] === "rank") {
                     this.rank = i.rank.join();
-                } else if (Object.keys(i)[0] === "package") {
-                    this.package = i.package.join();
+                } else if (Object.keys(i)[0] === "inf_id") {
+                    this.inf_id = i.inf_id.join();
                 }
             }
             this.currentPage = 1,//更改筛选条件时从第一页查找
-            this.getProductStrategy();
+            this.getCusStrategy();
         },
-        getProductStrategy() {
+        getCusStrategy() {
             this.loading = true;
             const params = {
                 page: this.currentPage,
@@ -244,10 +264,8 @@ export default {
                 level: this.level,
                 subject: this.subject,
                 rank : this.rank,
-                package: this.package,
-                acc_soft: this.acc_soft,
-                use_soft: this.use_soft,
-                suc_soft: this.suc_soft
+                inf_id: this.inf_id,
+                sort: this.sort
             };
             API.GetCusStrategiesTrack(params).then(res => {
                 this.trackList = res.data.map(o => {
@@ -261,34 +279,6 @@ export default {
                 this.loading = false;
             });
         },
-        filterA(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterB(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterC(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterD(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterF(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterG(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
-        filterH(value, row, column) {
-            const property = column['property'];
-            return row[property] === value;
-        },
         handleCurrentChange(val) {
             this.loading= true;
             this.currentPage = val;
@@ -298,10 +288,8 @@ export default {
                 level: this.level,
                 subject: this.subject,
                 rank : this.rank,
-                package: this.package,
-                acc_soft: this.acc_soft,
-                use_soft: this.use_soft,
-                suc_soft: this.suc_soft
+                inf_id: this.inf_id,
+                sort: this.sort
             };
             API.GetCusStrategiesTrack(params).then(res => {
                 this.trackList = res.data;

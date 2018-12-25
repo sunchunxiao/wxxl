@@ -123,7 +123,7 @@ import SearchBar from 'components/SearchBar';
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
-import { calculatePercent, error } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
@@ -146,24 +146,28 @@ export default {
                 search: '',
                 version: '0'
             },
-            cid:'',
-            loading:false,
-            calculatePercent:calculatePercent,
-            error:error,
+            cid: '',
+            loading: false,
+            error: error,
+            find: find,
+            preOrder: preOrder,
+            addProperty: addProperty,
+            calculatePercent: calculatePercent,
             defaultProps: TREE_PROPS,
             index0: 0,
-            val:{},
-            post:1,
-            nodeArr:[],
-            cidObjArr:[],
+            val: {},
+            post: 1,
+            nodeArr: [],
+            cidObjArr: [],
             cancelKey: '',
-            highlight:true,
+            highlight: true,
             searchBarValue: {
                 pt: '',
                 sDate: '',
                 eDate: ''
             },
-            treeClone:{},
+            treeClone: {},
+            findFatherId: '',
         };
     },
     computed: {
@@ -201,6 +205,7 @@ export default {
         if (this.channelCompareArr.length){
             this.cid = this.channelTree.nid;
             this.treeClone = _.cloneDeep(this.channelTree);
+            this.addProperty([this.treeClone]);
             let arr = [];
             for (let i = 0; i < 3; i++) {
                 this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
@@ -221,6 +226,7 @@ export default {
                 if(treeData.tree){
                     this.cid = treeData.tree.nid;
                     this.treeClone = _.cloneDeep(treeData.tree);
+                    this.addProperty([this.treeClone]);
                     const children = treeData.tree.children;
                     let arr = [];
                     for (let i = 0; i < 3; i++) {
@@ -236,20 +242,19 @@ export default {
                 }
             });
         },
-        preOrder(node,cid){
-            for (let i of node){
-                if (i.nid == cid) {
-                    return i;
-                }
-                if (i.children && i.children.length){
-                    if (this.preOrder(i.children, cid)) {
-                        return this.preOrder(i.children,cid);
-                    }
-                }
-            }
+        allRequest() {
+            this.getTreePrograss();
+            this.getCompare();
         },
         input(val){
             this.form.date = val;
+        },
+        findParent(node,cid) {//找父节点id
+            let hasfatherCid = [];
+            this.find(cid, node, hasfatherCid);
+            for (let i of hasfatherCid) {
+                this.getTreePrograss(i);
+            }
         },
         getTree() {
             const params = {
@@ -259,17 +264,24 @@ export default {
             return API.GetChannelTree(params);
         },
         //获取百分比数据
-        getTreePrograss(){
+        getTreePrograss(cid) {
+            let id;
+            if (cid) {
+                id = cid;
+            } else {
+                id = this.cid;
+            }
             const params = {
                 subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid: this.cid
+                nid: id
             };
             API.GetChannelTreePrograss(params).then(res=>{
-                let obj = this.preOrder([this.treeClone], this.cid);
-                if (obj.nid === this.cid){
-                    obj.real_total = res.data[this.cid].real;
-                    obj.target_total = res.data[this.cid].target;
+                let obj = this.preOrder([this.treeClone], id);
+                if (obj.nid === id) {
+                    obj.hasData = true;//插入数据的hasData为true
+                    obj.real_total = res.data[id].real;
+                    obj.target_total = res.data[id].target;
                 }
                 if (obj.children) {
                     for (let i of obj.children){
@@ -356,23 +368,24 @@ export default {
             }
         },
         handleSearch(val) {
+            this.findFatherId = val.cid;
             this.nodeArr = [];
             this.val = val;
-            if (!val.cid){
-                this.getTreePrograss();
-                this.getCompare();
+            if (!val.cid) {
+                this.allRequest();
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
-                    this.getTreePrograss();
-                    this.getCompare();
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
+                    this.allRequest();
+                    this.treeClone = _.cloneDeep(this.channelTree);
                 }
                 this.changeDate = this.searchBarValue;
+                this.cid = val.cid;
+                this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
-                this.cid = val.cid;
             }
         },
         cleanChecked() {

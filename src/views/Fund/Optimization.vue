@@ -130,7 +130,7 @@ import SearchBar from 'components/SearchBar';
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
-import { calculatePercent } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
@@ -153,24 +153,28 @@ export default {
                 search: '',
                 version: '0'
             },
-            cid:'',
-            loading:false,
-            calculatePercent:calculatePercent,
+            cid: '',
+            loading: false,
+            error: error,
+            find: find,
+            preOrder: preOrder,
+            addProperty: addProperty,
+            calculatePercent: calculatePercent,
             defaultProps: TREE_PROPS,
-            time: '7.30 - 8.05',
             index0: 0,
-            val:{},
-            post:1,
-            nodeArr:[],
-            isbac:true,
-            highlight:true,
+            val: {},
+            post: 1,
+            nodeArr: [],
+            isbac: true,
+            highlight: true,
             searchBarValue: {
                 pt: '',
                 sDate: '',
                 eDate: ''
             },
-            treeClone:{},
-            changeDate:{}
+            treeClone: {},
+            changeDate: {},
+            findFatherId: '',
         };
     },
     computed: {
@@ -198,33 +202,26 @@ export default {
         } else {
             this.treeClone = _.cloneDeep(this.fundTree);
             this.cid = this.fundTree.cid;
+            this.addProperty([this.treeClone]);
         }
     },
     methods: {
-        preOrder(node,cid){
-            for (let i of node){
-                if (i.cid == cid) {
-                    return i;
-                }
-                if (i.children && i.children.length){
-                    if (this.preOrder(i.children, cid)) {
-                        return this.preOrder(i.children,cid);
-                    }
-                }
-            }
+        allRequest() {
+            this.getTreePrograss();
+            this.getHistory();
         },
         input (val) {
             this.form.date = val;
         },
         click(){
-            if (this.cid === this.fundTree.cid){
+            if (this.cid === this.fundTree.cid) {
                 return;
             } else {
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.isbac = true;
                 this.highlight = false;
-                this.cid=this.fundTree.cid;
+                this.cid = this.fundTree.cid;
             }
         },
         getHistory() {
@@ -240,6 +237,13 @@ export default {
                 this.loading = false;
             });
         },
+        findParent(node,cid) {//找父节点id
+            let hasfatherCid = [];
+            this.find(cid, node, hasfatherCid);
+            for (let i of hasfatherCid) {
+                this.getTreePrograss(i);
+            }
+        },
         getTree() {
             const params = {
                 subject: SUBJECT,
@@ -251,25 +255,33 @@ export default {
                     this.cid = res.tree.cid;
                 }
                 this.treeClone = _.cloneDeep(res.tree);
+                this.addProperty([this.treeClone]);
                 this.$store.dispatch('SaveFundTree', res.tree);
             });
         },
         //获取百分比数据
-        getTreePrograss(){
+        getTreePrograss(cid) {
+            let id;
+            if (cid) {
+                id = cid;
+            } else {
+                id = this.cid;
+            }
             const params = {
                 subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid: this.cid,
+                nid: id,
                 version: this.form.version
             };
             API.GetFundTreePrograss(params).then(res=>{
-                let obj = this.preOrder([this.treeClone], this.cid);
-                if (obj.cid === this.cid){
-                    obj.real_total = res.data[this.cid].real;
-                    obj.target_total = res.data[this.cid].target;
+                let obj = this.preOrder([this.treeClone], id);
+                if (obj.cid === id) {
+                    obj.hasData = true;//插入数据的hasData为true
+                    obj.real_total = res.data[id].real;
+                    obj.target_total = res.data[id].target;
                 }
                 if (obj.children) {
-                    for (let i of obj.children){
+                    for (let i of obj.children) {
                         if (_.has(res.data, i.cid)) {
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
@@ -356,6 +368,7 @@ export default {
             };
         },
         handleSearch(val) {
+            this.findFatherId = val.cid;
             // 默认公司的背景色
             this.isbac = false;
             this.nodeArr = [];
@@ -364,32 +377,32 @@ export default {
                 this.changeDate = this.searchBarValue;
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid !== this.fundTree.cid){
+                if (this.cid !== this.fundTree.cid) {
                     this.cid = this.fundTree.cid;
                     this.treeClone = _.cloneDeep(this.fundTree);
                 } else {
-                    this.getTreePrograss();
-                    this.getHistory();
+                    this.allRequest();
                 }
             } else {
                 //搜索相同的id,改变时间
-                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate){
-                    this.getTreePrograss();
-                    this.getHistory();
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
+                    this.allRequest();
+                    this.treeClone = _.cloneDeep(this.fundTree);
                 }
                 this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
+                this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree 元素的ref  绑定的node-key
                 });
-                if (this.cid === this.fundTree.cid){
+                if (this.cid === this.fundTree.cid) {
                     this.isbac = true;
                     this.highlight = false;
                 }
             }
         },
-        nodeExpand(data){
+        nodeExpand(data) {
             this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;

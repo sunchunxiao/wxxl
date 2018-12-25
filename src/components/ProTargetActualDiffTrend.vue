@@ -109,6 +109,18 @@ export default {
                     top: 40,
                     containLabel: true
                 },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        mark : { show: true },
+                        dataView : { show: true, readOnly: false },
+                        // magicType : { show: true, type: ['line', 'bar'] },
+                        restore : { show: true },
+                        saveAsImage : { show: true }
+                    },
+                    right: '25%',
+                    top: '-5%'
+                },
                 tooltip: {
                     show: true,
                     trigger: 'axis',
