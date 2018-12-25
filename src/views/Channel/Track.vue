@@ -38,7 +38,7 @@
         <el-table-column
           prop="count_use"
           label="采纳次数"
-          sortable>
+          sortable='custom'>
           <!-- 点击策略准确度,弹出下面这个窗口的所有策略应用情况 -->
           <template slot-scope="scope">
             <el-popover
@@ -75,7 +75,7 @@
         <el-table-column
           prop="count_eff"
           label="有效次数"
-          sortable>
+          sortable='custom'>
           <template
             slot-scope="scope">
             <el-popover
@@ -112,7 +112,7 @@
         <el-table-column
           prop="rate"
           label="策略准确度/适用度"
-          sortable>
+          sortable='custom'>
           <!-- 点击策略准确度,弹出下面这个窗口的所有策略应用情况 -->
           <template slot-scope="scope">
             <el-popover
