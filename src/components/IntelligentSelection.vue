@@ -96,11 +96,17 @@ export default {
                         }
                     },
                     tooltip: {
-                        formatter: function(params){
-                            const name = params.seriesName.split(",");
-                            let result = params.marker + name[params.value[1]] + "<br />";
-                            result += params.name + " : " + _this.getRank(params.value[2]) + "</br>";
-                            return result;
+                        formatter: function(params) {
+                            if (params.componentType == 'timeline') {
+                                let result = params.marker + params.name;
+                                return result;
+                            } else {
+                                const name = params.seriesName.split(",");
+                                let result = params.marker + name[params.value[1]] + "<br />";
+                                result += params.name + " : " + _this.getRank(params.value[2]) + "</br>";
+                                return result;
+                            }
+
                         }
                     },
                     animation: true,

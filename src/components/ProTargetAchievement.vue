@@ -28,7 +28,7 @@ const FONTSIZE1 = 28;
 const FONTSIZE3 = 22;
 const FONTSIZE2 = 15;
 const FONTWEIGHT = 600;
-const maxLength = 7;
+const maxLength = 6;
 
 export default {
     props: {
@@ -204,9 +204,10 @@ export default {
                                     fontSize: FONTSIZE2,
                                     fontWeight: FONTWEIGHT,
                                     color: color
-                                }
+                                },
+                                position: 'center'
                             },
-                            position:['50%', '0%']
+
                         }
                     }, {
                         value: 0,
