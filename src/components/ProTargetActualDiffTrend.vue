@@ -52,7 +52,7 @@ export default {
                 }
             }
             let tenThousand = parseInt(val / 10000);
-            if (tenThousand >= 1) {
+            if (tenThousand >= 1 || tenThousand <= -1) {
                 return parseInt(val / 10000) + 'w';
             } else {
                 return parseInt(val);
@@ -65,6 +65,7 @@ export default {
             const diff = [];
             let realItem, targetItem;
             const bottom = [];
+            const under = [];
             const underTarget = [];
             const realClone = _.cloneDeep(real);
             const targetClone = _.cloneDeep(target);
@@ -72,18 +73,19 @@ export default {
                 //POR人员冗余
                 if (_.includes(SUBJECT,subject)) {
                     arr.push({
-                        value:targetClone[i],
-                        hasTarget:hasTarget[i]
+                        value: targetClone[i],
+                        hasTarget: hasTarget[i]
                     });
                 } else {
                     realClone[i] = parseInt(realClone[i] / 100);
                     arr.push({
-                        value:parseInt(targetClone[i] / 100),
-                        hasTarget:hasTarget[i]
+                        value: parseInt(targetClone[i] / 100),
+                        hasTarget: hasTarget[i]
                     });
                 }
                 realItem = realClone[i];
                 targetItem = arr[i].value;
+
                 if (realItem < 0 && targetItem < 0) {
                     bottom.push(realItem < targetItem ? targetItem : realItem);
                     if (_.isInteger(realItem - targetItem)){
@@ -93,10 +95,17 @@ export default {
                     }
                 } else if (realItem >= 0 && targetItem >= 0) {
                     bottom.push(realItem < targetItem ? realItem : targetItem);
-                    if (_.isInteger(realItem - targetItem)){
+                    if (_.isInteger(realItem - targetItem)) {
                         diff.push(Math.abs(realItem - targetItem));
                     } else {
                         diff.push(Math.abs(realItem - targetItem).toFixed(2));
+                    }
+                } else {
+                    if (realItem > 0 || targetItem > 0) {
+                        bottom.push(realItem);
+                    }
+                    if( targetItem < 0 || realItem < 0) {
+                        under.push(targetItem);
                     }
                 }
                 realItem < targetItem && underTarget.push(i);
@@ -114,11 +123,11 @@ export default {
                     feature : {
                         mark : { show: true },
                         dataView : { show: true, readOnly: false },
-                        // magicType : { show: true, type: ['line', 'bar'] },
+                        magicType : { show: true, type: ['line', 'bar'] },
                         restore : { show: true },
                         saveAsImage : { show: true }
                     },
-                    right: '25%',
+                    right: '150',
                     top: '-5%'
                 },
                 tooltip: {
@@ -191,13 +200,26 @@ export default {
                         stack: 1,
                         barWidth: 8,
                         itemStyle: {
-                            normal: {
-                                color: 'rgba(0,0,0,0)'
-                            },
-                            emphasis: {
-                                color: 'rgba(0,0,0,0)'
+                            color: function (params) {
+                                if (under.length) {
+                                    return -1 == underTarget.indexOf(params.dataIndex) ? '#318cb8' : '#b12725';
+                                } else {
+                                    return 'rgba(255,255,255,0)';
+                                }
                             }
                         },
+                    },
+                    {
+                        name: '负值显示',
+                        type: 'bar',
+                        stack: 1,
+                        barWidth: 8,
+                        itemStyle: {
+                            color: function (params) {
+                                return -1 == underTarget.indexOf(params.dataIndex) ? '#318cb8' : '#b12725';
+                            }
+                        },
+                        data: under
                     },
                     {
                         data: diff,
