@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const isProduction = process.env.NODE_ENV === 'production';
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 let plugins = [
     new webpack.DllReferencePlugin({
@@ -12,8 +12,13 @@ let plugins = [
         moment: 'moment',
         _: 'lodash',
     }),
+    //解决moment打包的时候把所有的语言都打包进去的问题
+    new webpack.ContextReplacementPlugin(
+        /moment[\\/]locale$/,
+        /^\.\/(zh-cn)$/
+    ),
 ];
-!isProduction && plugins.push(new BundleAnalyzerPlugin());
+// !isProduction && plugins.push(new BundleAnalyzerPlugin());
 
 module.exports = {
     css: {
@@ -25,7 +30,6 @@ module.exports = {
     outputDir: 'dist',
     runtimeCompiler: true,
     productionSourceMap: false,
-    parallel: false,
     lintOnSave: undefined,
     configureWebpack: {
         resolve: {

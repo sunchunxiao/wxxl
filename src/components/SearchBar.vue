@@ -239,46 +239,12 @@ export default {
         version: String
     },
     created () {
-        // store 中有日期
-        if (!_.isEmpty(this.date)) {
-            // units 为非空数组
-            if (_.isArray(this.units) && this.units.length) {
-                // store 中的单位在 units 中 直接设置
-                if (_.includes(this.units, this.date.pt)) {
-                    this.form = _.cloneDeep(this.date);
-                } else {
-                    let obj = _.cloneDeep(this.date);
-                    obj.pt = this.units[0];
-                    this.form = obj;
-                }
-            }
+        if (_.includes(this.units, this.date.pt)) {
+            this.form = _.cloneDeep(this.date);
         } else {
-            // store 中没有日期
-            if (_.includes(this.units, '日')) {
-                this.form.pt = '日';
-            } else {
-                this.form.pt = '月';
-            }
-            // 如果有环境变量设置的截止时间
-            const endTimeSet = process.env.VUE_APP_END_TIME_SET;
-            if (endTimeSet && _.isDate(new Date(endTimeSet))) {
-                this.form.dayRange = [
-                    moment(endTimeSet).subtract(1, 'M').format('YYYY-MM-DD'),
-                    moment(endTimeSet).format('YYYY-MM-DD')
-                ];
-                this.form.monthStart = new Date(moment(endTimeSet).startOf('month').subtract(4, 'M').format('YYYY-MM'));
-                this.form.monthEnd = new Date(moment(endTimeSet).startOf('month').subtract(1, 'M').format('YYYY-MM'));
-            } else {
-                // 如果没有设置环境变量
-                // 日: 前一个月 - 昨天
-                // 月: 前四个月 - 上个月
-                this.form.dayRange = [
-                    moment().subtract(1, 'd').subtract(1, 'M').format('YYYY-MM-DD'),
-                    moment().subtract(1, 'd').format('YYYY-MM-DD')
-                ];
-                this.form.monthStart = new Date(moment().startOf('month').subtract(4, 'M').format('YYYY-MM'));
-                this.form.monthEnd = new Date(moment().startOf('month').subtract(1, 'M').format('YYYY-MM'));
-            }
+            let obj = _.cloneDeep(this.date);
+            obj.pt = this.units[0];
+            this.form = obj;
         }
         this.handleFormChange(this.form);
     },
@@ -424,7 +390,6 @@ export default {
             if (!obj.eDate || obj.eDate === 'Invalid date') {
                 obj.eDate = '';
             }
-            this.$store.dispatch('SaveProductDate', obj);
             this.$emit('input', obj);
         },
         clearKw () {
