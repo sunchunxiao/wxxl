@@ -1,5 +1,5 @@
 {
   "hooks": {
-    "pre-commit": "yarn dll && yarn lint --max-warnings=0"
+    "pre-commit": "yarn lint --max-warnings=0"
   }
 }
