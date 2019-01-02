@@ -21,6 +21,22 @@ let plugins = [
 // !isProduction && plugins.push(new BundleAnalyzerPlugin());
 
 module.exports = {
+    // pages: {
+    //     index: {
+    //         // entry for the page
+    //         entry: 'src/index.js',
+    //         template: 'public/index.html',
+    //         // output as dist/index.html
+    //         filename: 'index.html',
+    //         chunks: ['index']
+    //     },
+    //     main: {
+    //         entry: 'src/main.js',
+    //         template: 'public/main.html',
+    //         filename: 'main.html',
+    //         chunks: ['main']
+    //     }
+    // },
     css: {
         extract: isProduction,
         sourceMap: true
@@ -50,17 +66,20 @@ module.exports = {
     //         .use(require('webpack/lib/ProvidePlugin'), ProvidePluginOptions);
     // },
     // 同时需要把 .env.development 文件中的环境变量 修改为 /api
-    // devServer: {
-    // historyApiFallback: true,
-    //  proxy: {
-    //    '/api': {
-    //      target: 'http://wxxldev.gyxr.cn/eff/v1/',
-    //      changeOrigin: true,
-    //      ws: true,
-    //      pathRewrite: {
-    //        '^/api': ''
-    //      }
-    //    }
-    //  }
-    // }
+    devServer: {
+        port:8080,//端口号
+        host:'localhost',
+        open:true,
+        historyApiFallback: true,
+        // proxy: {
+        //     '/api': {
+        //         target: 'http://wxxldev.gyxr.cn/eff/v1/',
+        //         changeOrigin: true,
+        //         ws: true,
+        //         pathRewrite: {
+        //             '^/api': ''
+        //         }
+        //     }
+        // }
+    }
 };

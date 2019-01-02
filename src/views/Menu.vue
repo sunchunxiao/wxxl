@@ -3,6 +3,15 @@
     :default-active="activePath"
     router
     :collapse="isCollapse">
+    <el-menu-item
+      class="home"
+      index="/home"
+      @click="home">
+      <img
+        class="menu_icon"
+        src="../assets/3.png">
+      <span slot="title">首页</span>
+    </el-menu-item>
     <template v-for="item in menuData">
       <el-submenu
         :index="item.path"
@@ -170,25 +179,34 @@ export default {
     },
     mounted () {
         this.activePath = this.$route.fullPath;
+    },
+    methods:{
+        home(){
+            this.$router.push('/home');
+        }
     }
 };
 </script>
 
 <style lang="scss">
-$bgcolor: #224e6b;
+$bgcolor:#333;
 $white: #fff;
-$bg-color-active: #26354c;
-$border-color-active: #16abe3;
+$bg-color-active: #1a1a1a;
+$border-color-active: #F2C811;
 
-$subtitle-height: 60px;
+$subtitle-height: 50px;
 $menu-item-height: 33px;
 $title-font-size: 18px;
 $subtitle-font-size: 16px;
 $scale: 1.8;
 
+.home{
+    font-size: 18px
+}
 .el-menu-item:focus,
 .el-menu-item {
-  background-color: rgba(64, 158, 255, 0.2);
+//   background-color: rgba(64, 158, 255, 0.2);
+    background-color: #333;
 }
 .el-menu-item:focus,
 .el-menu-item:hover {
@@ -199,6 +217,7 @@ $scale: 1.8;
 .el-menu-item.is-active {
   color: $white;
   background-color: $bg-color-active;
+  border-left: 5px solid #F2C811;
 }
 
 .menu_icon {
@@ -209,7 +228,10 @@ $scale: 1.8;
   border-left: 5px solid $bgcolor;
   color: $white;
 }
-
+.el-menu-item, .el-submenu__title{
+    height: $subtitle-height;
+    line-height: $subtitle-height;
+}
 ul.el-menu {
   background-color: $bgcolor;
   border-right: none;
@@ -257,7 +279,7 @@ ul.el-menu {
         position: relative;
         left: -8px;
         top: -1px;
-        background-color: $border-color-active;
+        background-color: #fff;
       }
     }
   }

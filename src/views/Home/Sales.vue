@@ -10,31 +10,6 @@
         url="/home/search"
         :pt-options="['月', '季', '年']" />
     </el-row>
-    <div class="home_menu">
-      <div class="menu_output">外部评估</div>
-      <el-menu
-        class="el-menu-demo"
-        mode="horizontal">
-        <el-menu-item index="1">销售</el-menu-item>
-        <el-menu-item index="2">利润</el-menu-item>
-        <el-submenu index="3">
-          <template slot="title">五项效率</template>
-          <el-menu-item index="2-1">选项1</el-menu-item>
-          <el-menu-item index="2-2">选项2</el-menu-item>
-          <el-menu-item index="2-3">选项3</el-menu-item>
-          <el-submenu index="2-4">
-            <template slot="title">选项4</template>
-            <el-menu-item index="2-4-1">选项1</el-menu-item>
-            <el-menu-item index="2-4-2">选项2</el-menu-item>
-            <el-menu-item index="2-4-3">选项3</el-menu-item>
-          </el-submenu>
-        </el-submenu>
-        <el-menu-item index="4">品牌价值</el-menu-item>
-        <el-menu-item index="5">
-          订单管理
-        </el-menu-item>
-      </el-menu>
-    </div>
     <div class="overview">
       <el-row
         class="content_row padding_top "

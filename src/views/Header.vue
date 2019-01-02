@@ -1,17 +1,13 @@
 <template>
   <div :class="{header: true, header_collapse: isCollapse}">
     <div class="greet">
-      欢迎您, <span class="blue">{{ username }}</span> ! 请开始处理您的业务, 祝您工作愉快!
-      <el-dropdown class="logoutMenu">
-        <span class="el-dropdown-link">
-          菜单<i class="el-icon-arrow-down el-icon--right" />
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item><el-button
-            @click="logout"
-            type="text">退出登录</el-button></el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+      <img
+        class="greet_img"
+        src="../assets/logo2.png"
+        alt="五">
+      <img
+        src="../assets/logo1.png"
+        alt="五项效率">
     </div>
   </div>
 </template>
@@ -39,18 +35,22 @@ export default {
 
 <style lang="scss" scoped>
 .header {
-    width: calc(100% - 200px);
+    // width: calc(100% - 200px);
+	width: 100%;
     min-width: 1000px;
-    height: 60px;
-    line-height: 60px;
+    height: 55px;
+    line-height: 55px;
     padding-right: 50px;
     position: fixed;
-    z-index: 999;
+    z-index: 999999999;
     color: #858585;
-    background: #fff;
+    background: #2d2929;
     .greet {
-        float: right;
-        margin-right: 50px;
+        // float: right;
+        // margin-right: 50px;
+        .greet_img {
+            width: 55px;
+            }
         .blue {
             color: #2d90b0;
             font-weight: bold;
@@ -61,6 +61,7 @@ export default {
     }
 }
 .header_collapse {
-    width: calc(100% - 64px);
+    // width: calc(100% - 64px);
+    width:100%;
 }
 </style>

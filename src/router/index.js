@@ -27,7 +27,9 @@ export default new Router({
             ...fundRoute,
             ...channelRoute,
             ...homeRoute
-        ] }, {
+        ]
+    },
+    {
         path: '/index',
         name: 'index',
         component: () => import('views/Index.vue')

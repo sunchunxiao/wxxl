@@ -494,9 +494,21 @@ export default {
     margin-left: 40px !important;
         button {
             width: 140px;
-            background-color: #3090c0;
-            box-shadow: 0 3px 5px 0 rgba(204, 204, 204, 0.8);
+            background-color: #F2C811;
+            border-color: #F2C811;
+            color: #484646;
+            font-weight: bolder;
+            font-size: 14px;
+            padding: 5px 0;
+            // box-shadow: 0 3px 5px 0 rgba(204, 204, 204, 0.8);
         }
     }
+}
+
+.el-form-item__label{
+	color: #cecaca;
+}
+.el-form-item--mini.el-form-item, .el-form-item--small.el-form-item{
+	margin-bottom: 0;
 }
 </style>

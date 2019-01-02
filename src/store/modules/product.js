@@ -1,6 +1,7 @@
 const product = {
     state: {
         tree: {},
+        tree1: false,
         treePrograss: [],
         progressArr: [],
         trendArr: [],
@@ -14,6 +15,9 @@ const product = {
     mutations: {
         SAVE_PRODUCT_TREE: (state, tree) => {
             state.tree = tree;
+        },
+        SAVE_PRODUCT_TREE1: (state, tree1) => {
+            state.tree1 = tree1;
         },
         SAVE_TREEPRODUCT_TREE: (state, arr) => {
             state.treePrograss = arr;
@@ -49,6 +53,9 @@ const product = {
     actions: {
         SaveProductTree({ commit }, tree) {
             commit('SAVE_PRODUCT_TREE', tree);
+        },
+        SaveProductTree1({ commit }, tree1) {
+            commit('SAVE_PRODUCT_TREE1', tree1);
         },
         SaveProductTreePrograss({ commit }, arr) {
             commit('SAVE_TREEPRODUCT_TREE', arr);

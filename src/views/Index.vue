@@ -82,7 +82,7 @@
             <el-dropdown
               v-else
               size="medium">
-              <a href="/home">进入系统</a>
+              <a href="/home/sales">进入系统</a>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>
                   <el-button
