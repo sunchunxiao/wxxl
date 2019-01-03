@@ -119,7 +119,7 @@ $width_collapse: 55px;
         }
         .content {
             padding: 0px 0px 16px;
-            height: calc(100% - 100px);
+            height: calc(100% - 150px);
             background-color: #eee;
         }
     }

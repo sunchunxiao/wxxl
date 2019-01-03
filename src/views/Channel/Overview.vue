@@ -1,6 +1,7 @@
 <template>
-  <div class="overview">
-    <el-row>
+  <div class="container">
+    <el-row
+      class="time_header">
       <search-bar
         @search="handleSearch"
         @input="input"
@@ -9,217 +10,219 @@
         v-model="searchBarValue"
         url="/channel/search" />
     </el-row>
-    <el-row
-      v-if="channelTree"
-      class="content_row"
-      :gutter="20">
-      <el-col
-        :span="5"
-        class="tree_container">
-        <div class="title">渠道营业利润额目标达成率</div>
-        <div
-          @click="click"
-          v-if="channelTree.children"
-          :class="{bac:isbac}"
-          class="company">
-          <span class="left label">{{ treeClone.name }}</span>
-          <span
-            :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-            class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
+    <div class="overview">
+      <el-row
+        v-if="channelTree"
+        class="content_row"
+        :gutter="20">
+        <el-col
+          :span="5"
+          class="tree_container">
+          <div class="title">渠道营业利润额目标达成率</div>
           <div
-            :class="{comprogress: true, 'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-            :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
-        </div>
-        <el-tree
-          :data="treeClone.children"
-          ref="tree"
-          empty-text="正在加载"
-          :props="defaultProps"
-          :expand-on-click-node="false"
-          node-key="nid"
-          @node-expand="nodeExpand"
-          :default-expanded-keys="nodeArr"
-          :highlight-current="highlight"
-          @node-click="handleNodeClick">
-          <span
-            class="custom-tree-node"
-            slot-scope="{ node, data }">
-            <el-tooltip
-              class="item"
-              effect="dark"
-              placement="right">
-              <div slot="content">
-                <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
-                <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
-                <div
-                  v-if="data.children"
-                  class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
-                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
-              </div>
-              <span class="label">
-                <span class="label_left">{{ data.name }}</span>
-                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
-              </span>
-            </el-tooltip>
-
+            @click="click"
+            v-if="channelTree.children"
+            :class="{bac:isbac}"
+            class="company">
+            <span class="left label">{{ treeClone.name }}</span>
+            <span
+              :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+              class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
             <div
-              :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
-              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
-          </span>
-        </el-tree>
-      </el-col>
-      <el-col
-        :span="18"
-        class="overflow">
-        <el-row
-          class="min-height-400"
-          v-loading="loading">
-          <vue-lazy-component>
-            <Card>
-              <el-row class="margin-bottom-20">目标达成情况总览</el-row>
-              <el-row>
-                <el-col :span="15">
-                  <template v-for="(item, index) in channelProgressArr">
+              :class="{comprogress: true, 'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+              :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
+          </div>
+          <el-tree
+            :data="treeClone.children"
+            ref="tree"
+            empty-text="正在加载"
+            :props="defaultProps"
+            :expand-on-click-node="false"
+            node-key="nid"
+            @node-expand="nodeExpand"
+            :default-expanded-keys="nodeArr"
+            :highlight-current="highlight"
+            @node-click="handleNodeClick">
+            <span
+              class="custom-tree-node"
+              slot-scope="{ node, data }">
+              <el-tooltip
+                class="item"
+                effect="dark"
+                placement="right">
+                <div slot="content">
+                  <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
+                  <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                  <div
+                    v-if="data.children"
+                    class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
+                  <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                </div>
+                <span class="label">
+                  <span class="label_left">{{ data.name }}</span>
+                  <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+                </span>
+              </el-tooltip>
+
+              <div
+                :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+                :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
+            </span>
+          </el-tree>
+        </el-col>
+        <el-col
+          :span="18"
+          class="overflow">
+          <el-row
+            class="min-height-400"
+            v-loading="loading">
+            <vue-lazy-component>
+              <Card>
+                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
+                <el-row>
+                  <el-col :span="15">
+                    <template v-for="(item, index) in channelProgressArr">
+                      <el-col
+                        :key="index"
+                        :span="6">
+                        <ProTargetAchievement
+                          :id="`${index}`"
+                          :data="item" />
+                      </el-col>
+                    </template>
+                  </el-col>
+                  <el-col
+                    :span="9"
+                    v-if="channelRankArr.length > 0"
+                    class="border-left-2-gray">
+                    <Radar
+                      :id="'select'"
+                      :data="channelRankArr[channelRankArr.length-1]" />
+                  </el-col>
+                </el-row>
+              </Card>
+            </vue-lazy-component>
+          </el-row>
+          <el-row
+            v-loading="loading"
+            class="margin-top-10 min-height-400">
+            <vue-lazy-component>
+              <Card>
+                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
+                <el-row>
+                  <template v-for="(item, index) in channelTrendArr">
                     <el-col
                       :key="index"
-                      :span="6">
-                      <ProTargetAchievement
+                      :span="12"
+                      @click.native="clickIndex(1 ,index)">
+                      <ProTargetActualDiffTrend
                         :id="`${index}`"
                         :data="item" />
                     </el-col>
                   </template>
-                </el-col>
-                <el-col
-                  :span="9"
-                  v-if="channelRankArr.length > 0"
-                  class="border-left-2-gray">
-                  <Radar
-                    :id="'select'"
-                    :data="channelRankArr[channelRankArr.length-1]" />
-                </el-col>
-              </el-row>
-            </Card>
-          </vue-lazy-component>
-        </el-row>
-        <el-row
-          v-loading="loading"
-          class="margin-top-10 min-height-400">
-          <vue-lazy-component>
-            <Card>
-              <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
-              <el-row>
-                <template v-for="(item, index) in channelTrendArr">
-                  <el-col
-                    :key="index"
-                    :span="12"
-                    @click.native="clickIndex(1 ,index)">
-                    <ProTargetActualDiffTrend
-                      :id="`${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </el-row>
-            </Card>
-          </vue-lazy-component>
-        </el-row>
-        <el-row
-          v-loading="loading"
-          class="margin-top-10 min-height-400">
-          <vue-lazy-component>
-            <Card>
-              <el-row class="margin-bottom-20">同比环比趋势分析</el-row>
-              <el-row>
-                <template v-for="(item, index) in channelTrendArr">
-                  <el-col
-                    :key="index"
-                    :span="12"
-                    @click.native="clickIndex(2 ,index)">
-                    <ProYearOnYearTrend
-                      :id="`${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </el-row>
-            </Card>
-          </vue-lazy-component>
-        </el-row>
-        <el-row
-          v-if="hasStructure"
-          v-loading="loading"
-          class="margin-top-10 min-height-400">
-          <vue-lazy-component>
-            <Card>
-              <el-row class="margin-bottom-20">比例结构与平均值对比分析</el-row>
-              <el-row>
-                <el-col :span="16">
-                  <template v-for="(item, index) in channelStructureArr">
+                </el-row>
+              </Card>
+            </vue-lazy-component>
+          </el-row>
+          <el-row
+            v-loading="loading"
+            class="margin-top-10 min-height-400">
+            <vue-lazy-component>
+              <Card>
+                <el-row class="margin-bottom-20">同比环比趋势分析</el-row>
+                <el-row>
+                  <template v-for="(item, index) in channelTrendArr">
                     <el-col
                       :key="index"
-                      :span="6"
-                      @click.native="clickIndex(3 ,index)">
-                      <ProportionalStructureAverageComparison
+                      :span="12"
+                      @click.native="clickIndex(2 ,index)">
+                      <ProYearOnYearTrend
                         :id="`${index}`"
                         :data="item" />
                     </el-col>
                   </template>
-                </el-col>
-                <el-col
-                  :span="8"
-                  v-if="channelStructureArr.length>0"
-                  class="border-left-2-gray">
-                  <ProportionalStructureAverageComparisonBig
-                    id="ProportionalStructureAverageComparisonBig"
-                    :data="channelStructureArr[index3]" />
-                </el-col>
-              </el-row>
-            </Card>
-          </vue-lazy-component>
-        </el-row>
-        <el-row
-          v-if="channelRankArr.length"
-          v-loading="loading"
-          class="margin-top-10 min-height-400">
-          <vue-lazy-component>
-            <Card>
-              <el-row class="margin-bottom-20">智能评选和智能策略</el-row>
-              <el-row>
-                <el-col :span="14">
-                  <IntelligentSelection
-                    id="heatmap"
-                    @changeTime="changeTime"
-                    @showStragety="showStragety"
-                    :data="channelRankArr" />
-                </el-col>
-                <el-col :span="10">
-                  <div class="stragety">
-                    <div class="stragety-title">智能策略</div>
-                    <div class="stragety-box">
-                      <div class="margin-bottom-10">{{ stragetyTitle }}</div>
-                      <el-checkbox-group v-model="stragetyCheckList">
-                        <el-checkbox
-                          v-for="(item,index) in stragety"
-                          :key="index"
-                          :label="item.id"
-                          @change="change">{{ item.strategy }}</el-checkbox>
-                      </el-checkbox-group>
-                      <el-button
-                        type="primary"
-                        @click="submit"
-                        class="center">确 认</el-button>
+                </el-row>
+              </Card>
+            </vue-lazy-component>
+          </el-row>
+          <el-row
+            v-if="hasStructure"
+            v-loading="loading"
+            class="margin-top-10 min-height-400">
+            <vue-lazy-component>
+              <Card>
+                <el-row class="margin-bottom-20">比例结构与平均值对比分析</el-row>
+                <el-row>
+                  <el-col :span="16">
+                    <template v-for="(item, index) in channelStructureArr">
+                      <el-col
+                        :key="index"
+                        :span="6"
+                        @click.native="clickIndex(3 ,index)">
+                        <ProportionalStructureAverageComparison
+                          :id="`${index}`"
+                          :data="item" />
+                      </el-col>
+                    </template>
+                  </el-col>
+                  <el-col
+                    :span="8"
+                    v-if="channelStructureArr.length>0"
+                    class="border-left-2-gray">
+                    <ProportionalStructureAverageComparisonBig
+                      id="ProportionalStructureAverageComparisonBig"
+                      :data="channelStructureArr[index3]" />
+                  </el-col>
+                </el-row>
+              </Card>
+            </vue-lazy-component>
+          </el-row>
+          <el-row
+            v-if="channelRankArr.length"
+            v-loading="loading"
+            class="margin-top-10 min-height-400">
+            <vue-lazy-component>
+              <Card>
+                <el-row class="margin-bottom-20">智能评选和智能策略</el-row>
+                <el-row>
+                  <el-col :span="14">
+                    <IntelligentSelection
+                      id="heatmap"
+                      @changeTime="changeTime"
+                      @showStragety="showStragety"
+                      :data="channelRankArr" />
+                  </el-col>
+                  <el-col :span="10">
+                    <div class="stragety">
+                      <div class="stragety-title">智能策略</div>
+                      <div class="stragety-box">
+                        <div class="margin-bottom-10">{{ stragetyTitle }}</div>
+                        <el-checkbox-group v-model="stragetyCheckList">
+                          <el-checkbox
+                            v-for="(item,index) in stragety"
+                            :key="index"
+                            :label="item.id"
+                            @change="change">{{ item.strategy }}</el-checkbox>
+                        </el-checkbox-group>
+                        <el-button
+                          type="primary"
+                          @click="submit"
+                          class="center">确 认</el-button>
+                      </div>
                     </div>
-                  </div>
-                </el-col>
-              </el-row>
-            </Card>
-          </vue-lazy-component>
-        </el-row>
-      </el-col>
-    </el-row>
-    <el-row
-      v-else
-      class="overview_select">
-      暂无数据
-    </el-row>
+                  </el-col>
+                </el-row>
+              </Card>
+            </vue-lazy-component>
+          </el-row>
+        </el-col>
+      </el-row>
+      <el-row
+        v-else
+        class="overview_select">
+        暂无数据
+      </el-row>
+    </div>
   </div>
 </template>
 

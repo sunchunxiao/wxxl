@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    利润
+  <div>
+    组织效率
   </div>
 </template>
 

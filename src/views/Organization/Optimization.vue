@@ -1,6 +1,7 @@
 <template>
-  <div class="optimization">
-    <el-row>
+  <div class="container">
+    <el-row
+      class="time_header">
       <search-bar
         ref="child"
         @input="input"
@@ -10,115 +11,117 @@
         placeholder="组织编号/组织名称"
         :pt-options="['周', '月', '季', '年']" />
     </el-row>
-    <el-row
-      class="content_row"
-      :gutter="20">
-      <el-col
-        :span="5"
-        class="tree_container">
-        <div class="title">组织净利润额目标达成率</div>
-        <div
-          @click="click"
-          v-if="organizationTree.children"
-          :class="{bac:isbac}"
-          class="company">
-          <span class="left label">{{ treeClone.name }}</span>
-          <span
-            :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-            class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
+    <div class="optimization">
+      <el-row
+        class="content_row"
+        :gutter="20">
+        <el-col
+          :span="5"
+          class="tree_container">
+          <div class="title">组织净利润额目标达成率</div>
           <div
-            :class="{comprogress: true, 'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-            :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
-        </div>
-        <el-tree
-          ref="tree"
-          empty-text="正在加载"
-          node-key="cid"
-          :highlight-current="highlight"
-          :expand-on-click-node="false"
-          :data="treeClone.children"
-          :props="defaultProps"
-          :default-expanded-keys="nodeArr"
-          @node-expand="nodeExpand"
-          @node-click="handleNodeClick">
-          <span
-            class="custom-tree-node"
-            slot-scope="{ node, data }">
-            <el-tooltip
-              class="item"
-              effect="dark"
-              placement="right">
-              <div slot="content">
-                <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
-                <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
-                <div
-                  v-if="data.children"
-                  class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
-                <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
-              </div>
-              <span class="label">
-                <span class="label_left">{{ data.name }}</span>
-                <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
-              </span>
-            </el-tooltip>
-            <!-- <span class="label">{{ data.name }}</span> -->
+            @click="click"
+            v-if="organizationTree.children"
+            :class="{bac:isbac}"
+            class="company">
+            <span class="left label">{{ treeClone.name }}</span>
+            <span
+              :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+              class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
             <div
-              :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
-              :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
-          </span>
-        </el-tree>
-      </el-col>
-      <el-col
-        :span="19"
-        v-loading="loading"
-        class="overflow">
-        <Card>
-          <el-row :gutter="10">
-            <template v-for="(item,index) in orghistoryArr">
-              <el-col
-                :span="12"
-                :key="index">
-                <el-table
-                  :data="item.strategies"
-                  size="mini"
-                  :span-method="arraySpanMethod(item.strategies)">
-                  <el-table-column :label="`${item.start_date} - ${item.end_date}`">
-                    <el-table-column
-                      prop="subject_name"
-                      label="指标" />
-                    <el-table-column
-                      prop="inf_name"
-                      label="影响因素" />
-                    <el-table-column
-                      prop="strategy"
-                      label="应用策略" />
-                    <el-table-column
-                      prop="rank_name"
-                      label="评选结果" />
-                    <el-table-column
-                      prop="ring_rate"
-                      label="环比增长率">
-                      <template slot-scope="scope">
-                        <img
-                          v-if="largerThanZero(scope.row.ring_rate)"
-                          src="../../assets/opt1.png"
-                          alt="">
-                        <img
-                          v-if="lessThanZero(scope.row.ring_rate)"
-                          src="../../assets/opt2.png"
-                          alt="">
-                        <span style="margin-left: 10px">{{ scope.row.ring_rate + '%' }}</span>
-                      </template>
+              :class="{comprogress: true, 'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+              :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
+          </div>
+          <el-tree
+            ref="tree"
+            empty-text="正在加载"
+            node-key="cid"
+            :highlight-current="highlight"
+            :expand-on-click-node="false"
+            :data="treeClone.children"
+            :props="defaultProps"
+            :default-expanded-keys="nodeArr"
+            @node-expand="nodeExpand"
+            @node-click="handleNodeClick">
+            <span
+              class="custom-tree-node"
+              slot-scope="{ node, data }">
+              <el-tooltip
+                class="item"
+                effect="dark"
+                placement="right">
+                <div slot="content">
+                  <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
+                  <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                  <div
+                    v-if="data.children"
+                    class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
+                  <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                </div>
+                <span class="label">
+                  <span class="label_left">{{ data.name }}</span>
+                  <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
+                </span>
+              </el-tooltip>
+              <!-- <span class="label">{{ data.name }}</span> -->
+              <div
+                :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+                :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
+            </span>
+          </el-tree>
+        </el-col>
+        <el-col
+          :span="19"
+          v-loading="loading"
+          class="overflow">
+          <Card>
+            <el-row :gutter="10">
+              <template v-for="(item,index) in orghistoryArr">
+                <el-col
+                  :span="12"
+                  :key="index">
+                  <el-table
+                    :data="item.strategies"
+                    size="mini"
+                    :span-method="arraySpanMethod(item.strategies)">
+                    <el-table-column :label="`${item.start_date} - ${item.end_date}`">
+                      <el-table-column
+                        prop="subject_name"
+                        label="指标" />
+                      <el-table-column
+                        prop="inf_name"
+                        label="影响因素" />
+                      <el-table-column
+                        prop="strategy"
+                        label="应用策略" />
+                      <el-table-column
+                        prop="rank_name"
+                        label="评选结果" />
+                      <el-table-column
+                        prop="ring_rate"
+                        label="环比增长率">
+                        <template slot-scope="scope">
+                          <img
+                            v-if="largerThanZero(scope.row.ring_rate)"
+                            src="../../assets/opt1.png"
+                            alt="">
+                          <img
+                            v-if="lessThanZero(scope.row.ring_rate)"
+                            src="../../assets/opt2.png"
+                            alt="">
+                          <span style="margin-left: 10px">{{ scope.row.ring_rate + '%' }}</span>
+                        </template>
+                      </el-table-column>
                     </el-table-column>
-                  </el-table-column>
-                </el-table>
-              </el-col>
-            </template>
-          </el-row>
+                  </el-table>
+                </el-col>
+              </template>
+            </el-row>
 
-        </Card>
-      </el-col>
-    </el-row>
+          </Card>
+        </el-col>
+      </el-row>
+    </div>
   </div>
 </template>
 
