@@ -34,7 +34,8 @@
               style="margin-left:100px">
               <Card>
                 <div class="card_company_target">
-                  <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
+                  <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
+                  <span class="card_title">销售额 ( 万元 ) </span></el-row>
                   <template v-for="(item, index) in dataSales">
                     <el-col
                       v-if="dataSales.length>0"
@@ -68,7 +69,7 @@ import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 //mock
-import { pieDataSales } from './mock/pieData';
+import { pieSales } from './mock/pieData';
 import { dataSales } from './mock/trendData';
 import { mapGetters } from 'vuex';
 
@@ -118,7 +119,8 @@ export default {
                 search: '', // 暂时没有接口 先这样
             },
             menuData: MENUDATA,
-            pieSales: pieDataSales,
+            // pieSales: pieDataSales,
+            pieSales:pieSales(),
             dataSales: dataSales(),
             cid: '',
             defaultProps: TREE_PROPS,

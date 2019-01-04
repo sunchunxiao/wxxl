@@ -57,7 +57,6 @@
     </div>
     <div class="overview">
       <el-row
-        class="content_row "
         :gutter="20">
         <router-view />
       </el-row>

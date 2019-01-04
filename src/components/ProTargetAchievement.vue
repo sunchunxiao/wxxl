@@ -22,7 +22,7 @@ import { formatNumber } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 NIR净利率 CTR资金周转率
 const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
-const MAIN_SUNBJECT = ['S', 'P','C', 'ROI', 'ITO'];
+const MAIN_SUNBJECT = ['S', 'P','C', 'ROI', 'ITO', 'PP'];//PP净利润率
 const COLORMAP = { over: '#FD625E', below: '#01B8AA' }; // #FD625E粉红色
 const colorLeft = '#E0E3E9';
 const FONTSIZE1 = 28;
@@ -115,12 +115,12 @@ export default {
             }
             let radiusInside, radiusOutside, center;
             if (_.includes(MAIN_SUNBJECT, subject)) {
-                radiusInside = ['64', '70'];  //内环大小
-                radiusOutside = ['72', '78']; //外环大小
+                radiusInside = ['67', '73'];  //内环大小
+                radiusOutside = ['75', '81']; //外环大小
                 center = ['50%', '50%'];
             } else {
-                radiusInside = ['50', '56'];
-                radiusOutside = ['58', '63'];
+                radiusInside = ['55', '61'];
+                radiusOutside = ['63', '68'];
                 center = ['50%', '60%'];
             }
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
@@ -190,7 +190,6 @@ export default {
                         name: subject_name,
                         itemStyle: {
                             normal: {
-                                borderWidth: 5,
                                 color: color,
                             }
                         },
@@ -209,7 +208,7 @@ export default {
                                 },
                                 textStyle: {
                                     fontSize: fontSize,
-                                    color: color,
+                                    color: '#4d4d4d',
                                 }
                             },
                         }
@@ -237,7 +236,7 @@ export default {
                                 textStyle: {
                                     fontSize: FONTSIZE2,
                                     fontWeight: FONTWEIGHT,
-                                    color: color
+                                    color: '#4d4d4d'
                                 },
                                 position: 'center'
                             },

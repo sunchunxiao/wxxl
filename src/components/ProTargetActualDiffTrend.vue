@@ -161,7 +161,7 @@ export default {
                         return result;
                     },
                 },
-                color: ['#318cb8', '#fcb448', '#b12725'],
+                color: ['#26A6D7', '#Fcb448'],//折线颜色 #Fcb448黄色
                 legend: {
                     data: ['目标', '实际'],
                     left: 'right',
@@ -202,7 +202,7 @@ export default {
                         itemStyle: {
                             color: function (params) {
                                 if (under.length) {
-                                    return -1 == underTarget.indexOf(params.dataIndex) ? '#318cb8' : '#b12725';
+                                    return -1 == underTarget.indexOf(params.dataIndex) ? '#01B8AA' : '#FD625E';//#01B8AA绿色
                                 } else {
                                     return 'rgba(255,255,255,0)';
                                 }
@@ -210,25 +210,23 @@ export default {
                         },
                     },
                     {
-                        name: '负值显示',
                         type: 'bar',
                         stack: 1,
                         barWidth: 8,
                         itemStyle: {
                             color: function (params) {
-                                return -1 == underTarget.indexOf(params.dataIndex) ? '#318cb8' : '#b12725';
+                                return -1 == underTarget.indexOf(params.dataIndex) ? '#01B8AA' : '#FD625E';
                             }
                         },
                         data: under
                     },
                     {
                         data: diff,
-                        name: '差异',
                         type: 'bar',
                         stack: 1,
                         itemStyle: {
                             color: function (params) {
-                                return -1 == underTarget.indexOf(params.dataIndex) ? '#318cb8' : '#b12725';
+                                return -1 == underTarget.indexOf(params.dataIndex) ? '#01B8AA' : '#FD625E';
                             }
                         },
                     }
