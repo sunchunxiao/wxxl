@@ -118,4 +118,20 @@ const dataFund = function mockTrendData4() {
     return arr;
 };
 
-export { dataProduce,dataChannel,dataCustomer,dataOrganization,dataFund };
+//销售
+const dataSales = function mockTrendData5() {
+    let arr = [];
+    let subject = ["净利润额"];
+    for(let i = 0; i < 1; i++) {
+        arr.push(_.cloneDeep(data));
+        arr[i].hasTarget = getRandomNumArr(16, 2);
+        arr[i].subject_name = subject[i];
+        arr[i].real = getRandomNumArr(16, 1000);
+        arr[i].target  = getRandomNumArr(16, 1000);
+        arr[i].ring = getRandomNumArr(16, 20, -10);
+        arr[i].yoy = getRandomNumArr(16, 20, -10);
+    }
+    return arr;
+};
+
+export { dataProduce,dataChannel,dataCustomer,dataOrganization,dataFund, dataSales };

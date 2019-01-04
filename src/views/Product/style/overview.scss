@@ -1,7 +1,7 @@
 .overview {
     // min-width: 1200px;
     padding: 30px 16px;
-    background-color: #eee;
+    background-color: #fff;
     height: 100%;
     .overview_select {
         width: 100%;
@@ -163,6 +163,7 @@
         }
     }
     .overflow {
+        width: 76%;
         height: 100%;
         overflow-y: auto;
         overflow-x: hidden;

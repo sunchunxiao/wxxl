@@ -128,7 +128,7 @@ export default {
                         saveAsImage : { show: true }
                     },
                     right: '150',
-                    top: '-5%'
+                    top: '-2%'
                 },
                 tooltip: {
                     show: true,
@@ -198,7 +198,7 @@ export default {
                         data: bottom,
                         type: 'bar',
                         stack: 1,
-                        barWidth: 8,
+                        barWidth: 20,
                         itemStyle: {
                             color: function (params) {
                                 if (under.length) {
@@ -242,9 +242,10 @@ export default {
 
 <style lang="scss" scoped>
 .bar-container {
+    width: 100%;
   .bar {
     width: 100%;
-    height: 160px;
+    height: 260px;
     margin: 0 auto;
   }
   .detail {

@@ -74,7 +74,7 @@
           </el-tree>
         </el-col>
         <el-col
-          :span="18"
+          :span="17"
           class="overflow">
           <el-row
             v-loading="loading"

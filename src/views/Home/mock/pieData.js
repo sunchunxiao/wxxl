@@ -189,6 +189,21 @@ const pieDataFund = [{
     target: 3901248815.31
 }];
 
+//销售
+const pieDataSales = [{
+    progress: 1.80,
+    real: 1510734926,
+    subject: 'P',
+    subject_name: '净利润额',
+    target: 1480520227.48
+},{
+    progress: 0.8,
+    real: 1510734926,
+    subject: 'PR',
+    subject_name: '净利润增长额',
+    target: 1480520227.48
+}];
+
 const pieDataProduce = function mockPieproduce1() {
     let arr1 = _.cloneDeep(pieProduce);
     for(let i = 0; i < 7; i++) {
@@ -248,5 +263,10 @@ const pieFund = function mockPieData5() {
     }
     return arr;
 };
+//销售
+// const pieSales = function mockPieData6() {
+//     let arr = _.cloneDeep(pieDataSales);
+//     return arr;
+// };
 
-export { pieChannel,pieDataProduce,pieCustomer,pieOrganization,pieFund };
+export { pieChannel,pieDataProduce,pieCustomer,pieOrganization,pieFund, pieDataSales };

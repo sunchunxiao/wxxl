@@ -44,6 +44,8 @@
         router
         class="el-menu-demo"
         mode="horizontal">
+        <!-- <el-menu-item index="/home/profitSpace"><span class="dot" />盈利空间</el-menu-item>
+        <el-menu-item index="/home/profitability"><span class="dot" />盈利能力</el-menu-item> -->
         <template v-for="item in menuDataInput">
           <el-menu-item
             :key="item.path"
@@ -85,11 +87,11 @@ const menuDataInput = [
     },
     {
         title: "盈利能力",
-        path: "/home/profit",
+        path: "/home/profitability",
     },
     {
         title: "支付能力",
-        path: "/home/profitability",
+        path: "/home/pay",
     }
 ];
 const MENUDATA = [

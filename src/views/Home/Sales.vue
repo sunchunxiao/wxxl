@@ -2,59 +2,56 @@
   <div class="container">
     <div>
       <el-row
-        class="content_row "
         :gutter="20">
         <el-col
           :span="25"
-          class="overflow common">
+          class="home_overflow common">
           <el-row
             id="produce"
-            class="min-height-400">
-            <span class="common-title">
-              产品效率-单品平均效率
-            </span>
-            <el-row v-if="productArr.length>0">
+            class="">
+            <el-row v-if="pieSales.length>0">
               <el-row
                 v-loading="loading">
-                <vue-lazy-component>
-                  <Card>
-                    <div class="card_company">
-                      <el-row class="margin-bottom-20">目标达成情况总览</el-row>
-                      <el-row>
-                        <el-col>
-                          <template v-for="(item, index) in productArr">
-                            <el-col
-                              v-if="productArr.length>0"
-                              :key="index">
-                              <ProTargetAchievement
-                                :id="`product${index}`"
-                                :data="item" />
-                            </el-col>
-                          </template>
-                        </el-col>
-                      </el-row>
-                    </div>
-                    <div class="card_company_target">
-                      <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
-                      <template v-for="(item, index) in productTrendArr">
+                <Card>
+                  <el-row>
+                    <el-col>
+                      <template v-for="(item, index) in pieSales">
                         <el-col
-                          v-if="productTrendArr.length>0"
-                          :key="index">
-                          <ProTargetActualDiffTrend
-                            :id="`product${index}`"
+                          v-if="pieSales.length>0"
+                          :key="index"
+                          :span="4">
+                          <ProTargetAchievement
+                            :id="`${index}`"
                             :data="item" />
                         </el-col>
                       </template>
-                    </div>
-                  </Card>
-                </vue-lazy-component>
+                    </el-col>
+                  </el-row>
+                </Card>
               </el-row>
             </el-row>
             <el-row
+              style="margin-left:100px">
+              <Card>
+                <div class="card_company_target">
+                  <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
+                  <template v-for="(item, index) in dataSales">
+                    <el-col
+                      v-if="dataSales.length>0"
+                      :key="index">
+                      <ProTargetActualDiffTrend
+                        :id="`product${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </div>
+              </Card>
+            </el-row>
+            <!-- <el-row
               v-else
               class="home_select">
               加载中
-            </el-row>
+            </el-row> -->
           </el-row>
         </el-col>
       </el-row>
@@ -70,7 +67,9 @@ import SearchBar from 'components/SearchBar';
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-
+//mock
+import { pieDataSales } from './mock/pieData';
+import { dataSales } from './mock/trendData';
 import { mapGetters } from 'vuex';
 
 const TREE_PROPS = {
@@ -119,6 +118,8 @@ export default {
                 search: '', // 暂时没有接口 先这样
             },
             menuData: MENUDATA,
+            pieSales: pieDataSales,
+            dataSales: dataSales(),
             cid: '',
             defaultProps: TREE_PROPS,
             loading: false,

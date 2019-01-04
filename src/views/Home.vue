@@ -66,7 +66,7 @@ $width_collapse: 55px;
     height: 100%;
     .container_wrap{
         padding-top: 55px;
-        height: calc(100% - 56px);
+        height: calc(100% - 55px);
         .left {
             width: $width;
             height: 100%;
@@ -109,7 +109,7 @@ $width_collapse: 55px;
         .right {
             height: 100%;
             margin-left: $width;
-            background: #eee;
+            background: #fff;
         }
         .left_collapse {
             width: $width_collapse;
@@ -119,7 +119,7 @@ $width_collapse: 55px;
         }
         .content {
             padding: 0px 0px 16px;
-            height: calc(100% - 150px);
+            height: calc(100% - 100px);
             background-color: #eee;
         }
     }

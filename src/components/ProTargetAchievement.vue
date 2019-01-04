@@ -22,7 +22,8 @@ import { formatNumber } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 NIR净利率 CTR资金周转率
 const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
-const COLORMAP = { over: '#b12725', below: '#308db9' }; // #b12725红色
+const MAIN_SUNBJECT = ['S', 'P','C', 'ROI', 'ITO'];
+const COLORMAP = { over: '#FD625E', below: '#01B8AA' }; // #FD625E粉红色
 const colorLeft = '#E0E3E9';
 const FONTSIZE1 = 28;
 const FONTSIZE3 = 22;
@@ -67,7 +68,7 @@ export default {
         calculateToShow(val) {
             const { subject } = this.data;
             //目标值为null,是未设定,为数值显示数值(0显示0)
-            if (val == null){
+            if (val == null) {
                 return "未设定";
             } else {
                 if (_.includes(SUBJECT, subject)) {
@@ -92,8 +93,8 @@ export default {
         renderChart(data) {
             let  _this = this;
             const { subject, subject_name, progress, real, target } = data;
-            let valuePercent, realValue, toolTipValue, fontSize;
-            if (progress == null){
+            let valuePercent, realValue, toolTipValue, fontSize, valueOutside, valueLeft1;
+            if (progress == null) {//目标未设定
                 if (!target) {
                     realValue = this.calculateToShow(real).toString();
                     if (_.includes(SUBJECT, subject)) { //tooltip显示每三位,分隔
@@ -108,9 +109,19 @@ export default {
                     }
                 }
                 valuePercent = null;
-            } else {
+            } else {//目标设定
                 valuePercent = (progress * 100).toFixed(0);
                 fontSize = FONTSIZE1;//显示百分比的数据字体大小都为FONTSIZE1
+            }
+            let radiusInside, radiusOutside, center;
+            if (_.includes(MAIN_SUNBJECT, subject)) {
+                radiusInside = ['64', '70'];  //内环大小
+                radiusOutside = ['72', '78']; //外环大小
+                center = ['50%', '50%'];
+            } else {
+                radiusInside = ['50', '56'];
+                radiusOutside = ['58', '63'];
+                center = ['50%', '60%'];
             }
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
 
@@ -119,7 +130,28 @@ export default {
                 color = valuePercent >= 100 ? COLORMAP.over : COLORMAP.below;
             }
             this.color = color;
+            //内环
             const valueLeft = valuePercent >= 100 ? 0 : 100 - valuePercent;
+            //外环
+            if (valuePercent > 100) {
+                valueOutside = valuePercent - 100;
+                valueLeft1 = valueOutside > 100 ? 0 : 100 - valueOutside;
+                // console.log(valueLeft, valueOutside, valueLeft1);
+            }
+            let placeHolderStyle = {
+                normal: {
+                    color: colorLeft,//未完成的圆环的颜色
+                    label: {
+                        show: false
+                    },
+                    labelLine: {
+                        show: false
+                    }
+                },
+                emphasis: {
+                    color: colorLeft//未完成的圆环的颜色
+                }
+            };
             const options = {
                 backgroundColor: '#fff',
                 tooltip: {
@@ -145,7 +177,8 @@ export default {
                 series: [{
                     type: 'pie',
                     name:'目标达成情况',
-                    radius: ['56', '60'],
+                    radius: radiusInside,
+                    center: center,
                     hoverAnimation: false,
                     label: {
                         normal: {
@@ -157,6 +190,7 @@ export default {
                         name: subject_name,
                         itemStyle: {
                             normal: {
+                                borderWidth: 5,
                                 color: color,
                             }
                         },
@@ -193,7 +227,7 @@ export default {
                         },
                         label: {
                             normal: {
-                                formatter: function(data){
+                                formatter: function(data) {
                                     if(data.name.length < 8){//显示字体过长换行显示
                                         return data.name;
                                     }else{
@@ -231,7 +265,41 @@ export default {
                         }
                     },
                     ]
-                }]
+                },
+                {
+                    name: 'Line 2',
+                    type: 'pie',
+                    center: center,
+                    radius: radiusOutside,
+                    tooltip: {
+                        show: false
+                    },
+                    label: {
+                        normal: {
+                            position: 'center'
+                        }
+                    },
+                    // itemStyle: dataStyle,
+                    hoverAnimation: false,
+                    data: [{
+                        value: valueOutside,
+                        // name: '02',
+                        itemStyle: {
+                            emphasis: {
+                                color: color
+                            },
+                            normal: {
+                                color: color
+                            }
+                        }
+                    }, {
+                        value: valueLeft1,
+                        // name: 'invisible',
+                        itemStyle: placeHolderStyle
+                    }
+                    ]
+                },
+                ]
             };
             this.chart.setOption(options);
         }
@@ -243,8 +311,8 @@ export default {
 .pie-container {
     width: 100%;
     .pie {
-        width: 140px;
-        height: 140px;
+        width: 198px;
+        height: 198px;
         margin: 0 auto;
     }
     .detail {
