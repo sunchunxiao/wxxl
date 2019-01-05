@@ -92,12 +92,15 @@ export default {
             let firstSliderItem = this.sliderItems[0];
             let nextNum;
             this.sliderItems.forEach((el,index) => {
+                if (nextNum != undefined) {
+                    return;
+                }
                 let num = this.getTranslateX(el);
                 if (num < 0) {
                     nextNum = num;
-                }
-                if (index > 0 && Math.abs(nextNum) < this.minMoveNum) {
-                    nextNum = nextNum - this.sliderItems[index - 1].offsetWidth;
+                    if (index > 0 && Math.abs(nextNum) < this.minMoveNum) {
+                        nextNum = nextNum - this.sliderItems[index - 1].offsetWidth;
+                    }
                 }
             });
             if (!nextNum) {
