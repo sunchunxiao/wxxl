@@ -84,7 +84,7 @@ export default {
         return {
             form: {
                 pt: '', // 周期类型
-                date: [], // date
+                date: {}, // date
                 search: '', // 暂时没有接口 先这样
             },
             cid: '',
@@ -101,17 +101,23 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['channelArr','channelTrendArr']),
+        ...mapGetters(['channelArr', 'channelTrendArr', 'searchDate']),
         hasSubjectName() {
             if (this.channelTrendArr.length) {
                 return this.channelTrendArr[this.index].subject_name;
             }
         }
     },
+    created() {
+        this.form.date = this.searchDate;
+    },
     mounted() {
         this.getChannelProgress();
     },
     watch: {
+        searchDate() {
+            this.val = this.searchDate;
+        },
         val() {
             this.getChannelProgress();
         }

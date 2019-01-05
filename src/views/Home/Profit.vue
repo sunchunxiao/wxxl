@@ -21,6 +21,7 @@
                           :key="index"
                           :span="4">
                           <ProTargetAchievement
+                            @click.native="clickIndex(index)"
                             :id="`${index}`"
                             :data="item" />
                         </el-col>
@@ -36,13 +37,13 @@
                 <div class="card_company_target">
                   <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
                   <span class="card_title">净利润额 ( 万元 ) </span></el-row>
-                  <template v-for="(item, index) in dataSales">
+                  <template>
                     <el-col
-                      v-if="dataSales.length>0"
+                      v-if="dataProfitTrend.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
                         :id="`product${index}`"
-                        :data="item" />
+                        :data="dataProfitTrend[index]" />
                     </el-col>
                   </template>
                 </div>
@@ -70,7 +71,7 @@ import ProTargetAchievement from 'components/ProTargetAchievement';
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 //mock
 import { pieProfit } from './mock/pieData';
-import { dataSales } from './mock/trendData';
+import { dataProfitTrend } from './mock/trendData';
 import { mapGetters } from 'vuex';
 
 const TREE_PROPS = {
@@ -120,15 +121,12 @@ export default {
             },
             menuData: MENUDATA,
             pieProfit: pieProfit(),
-            dataSales: dataSales(),
+            dataProfitTrend: dataProfitTrend(),
             cid: '',
             defaultProps: TREE_PROPS,
             loading: false,
             //index
-            index0: 0,
-            index1: 0,
-            index2: 0,
-            index3: 0,
+            index: 0,
             // stragety
             val: {},
             post: 1,
@@ -143,20 +141,17 @@ export default {
         }
     },
     mounted() {
-        this.allRequest();
+        this.getProductProgress();
     },
     watch: {
         val() {
-            this.allRequest();
+            this.getProductProgress();
         }
     },
     methods: {
-        open(i) {
-            this[`is${i}DefalutShow`] = !this[`is${i}DefalutShow`];
-            this[`showMore${i}`] = !this[`showMore${i}`];
-        },
-        allRequest() {
-            this.getProductProgress();
+        clickIndex(idx) {
+            this.index = idx;
+            this.style = idx;
         },
         input(val) {
             this.form.date = val;

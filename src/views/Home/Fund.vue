@@ -101,17 +101,23 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['fundHomeArr','fundHomeTrendArr']),
+        ...mapGetters(['fundHomeArr', 'fundHomeTrendArr', 'searchDate']),
         hasSubjectName() {
             if (this.fundHomeTrendArr.length) {
                 return this.fundHomeTrendArr[this.index].subject_name;
             }
         }
     },
+    created() {
+        this.form.date = this.searchDate;
+    },
     mounted() {
         this.getFundProgress();
     },
     watch: {
+        searchDate() {
+            this.val = this.searchDate;
+        },
         val() {
             this.getFundProgress();
         }

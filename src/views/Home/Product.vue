@@ -9,28 +9,27 @@
           <el-row
             id="produce"
             class="">
-            <el-row v-if="productArr.length>0">
-              <el-row
-                v-loading="loading">
-                <Card>
-                  <el-row>
-                    <el-col>
-                      <template v-for="(item, index) in productArr">
-                        <el-col
-                          v-if="productArr.length>0"
-                          :key="index"
-                          :span="4">
-                          <ProTargetAchievement
-                            :class="{'menu_list_opciaty':style==index}"
-                            @click.native="clickIndex(index)"
-                            :id="`${index}`"
-                            :data="item" />
-                        </el-col>
-                      </template>
+            <el-row
+              v-loading="loading"
+              v-if="productArr.length>0">
+              <Card>
+                <slider
+                  height="296px"
+                  :min-move-num="50">
+                  <template v-for="(item, index) in productArr">
+                    <el-col
+                      v-if="productArr.length>0"
+                      :key="index"
+                      style="width:198px">
+                      <ProTargetAchievement
+                        :class="{'menu_list_opciaty':style==index}"
+                        @click.native="clickIndex(index)"
+                        :id="`${index}`"
+                        :data="item" />
                     </el-col>
-                  </el-row>
-                </Card>
-              </el-row>
+                  </template>
+                </slider>
+              </Card>
             </el-row>
             <el-row
               style="margin-left:100px">
@@ -66,6 +65,7 @@
 import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
+import Slider from 'components/Slider';
 // 目标达成情况总览
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
@@ -80,6 +80,7 @@ export default {
         SearchBar,
         ProTargetAchievement,
         ProTargetActualDiffTrend,
+        Slider
     },
     data() {
         return {

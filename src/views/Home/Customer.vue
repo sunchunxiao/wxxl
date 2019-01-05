@@ -101,17 +101,23 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['cusHomeArr','cusHomeTrendArr']),
+        ...mapGetters(['cusHomeArr', 'cusHomeTrendArr', 'searchDate']),
         hasSubjectName() {
             if (this.cusHomeTrendArr.length) {
                 return this.cusHomeTrendArr[this.index].subject_name;
             }
         }
     },
+    created() {
+        this.form.date = this.searchDate;
+    },
     mounted() {
         this.getCusProgress();
     },
     watch: {
+        searchDate() {
+            this.val = this.searchDate;
+        },
         val() {
             this.getCusProgress();
         }
