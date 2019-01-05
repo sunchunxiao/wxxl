@@ -94,7 +94,7 @@ export default {
             let  _this = this;
             const { subject, subject_name, progress, real, target } = data;
             let valuePercent, realValue, toolTipValue, fontSize, valueOutside, valueLeft1;
-            if (progress == null) {//目标未设定
+            if (progress == null || progress < 0) {//目标未设定或者进度为负值
                 if (!target) {
                     realValue = this.calculateToShow(real).toString();
                     if (_.includes(SUBJECT, subject)) { //tooltip显示每三位,分隔
@@ -197,8 +197,8 @@ export default {
                             normal: {
                                 formatter: function(data){
                                     //progress为null时显示实际值,0和数值都显示百分比
-                                    if (progress == null) {
-                                        return realValue;
+                                    if (progress == null || progress < 0) {
+                                        return '-';
                                     } else {
                                         if(data.value == null){
                                             return '';
@@ -227,11 +227,15 @@ export default {
                         label: {
                             normal: {
                                 formatter: function(data) {
+                                    // if (progress == null || progress < 0) {
+                                    //     return '-';
+                                    // }else{
                                     if(data.name.length < 8){//显示字体过长换行显示
                                         return data.name;
                                     }else{
                                         return data.name = data.name.slice(0, 4) + '\n' + data.name.slice(4, data.name.length);
                                     }
+                                    // }
                                 },
                                 textStyle: {
                                     fontSize: FONTSIZE2,
@@ -312,10 +316,12 @@ export default {
     .pie {
         width: 198px;
         height: 198px;
-        margin: 0 auto;
+        // margin: 0 auto;
     }
     .detail {
-        text-align: center;
+        width: 60%;
+        margin: 0 auto;
+        text-align: left;
         .value {
             font-size: 120%;
         }
