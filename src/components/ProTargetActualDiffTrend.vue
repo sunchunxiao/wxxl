@@ -136,13 +136,11 @@ export default {
                     axisPointer: {
                         type: 'line',
                     },
-                    position: function(pos){ // point: 鼠标位置
-                        return { left: pos[0] - 80, top: pos[1] };
-                    },
                     formatter: function (params) {
                         let result = params[0].axisValue + "<br />";
                         const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
+                            // console.log(item,item.seriesIndex);
                             const value = _this.formatNumber(item.value);
                             if (hasTarget==0){
                                 if (item.seriesIndex != 2&&item.seriesIndex != 3) {
@@ -222,6 +220,7 @@ export default {
                     },
                     {
                         data: diff,
+                        name: '差异',
                         type: 'bar',
                         stack: 1,
                         itemStyle: {
