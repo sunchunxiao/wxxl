@@ -87,7 +87,7 @@
                     <template v-for="(item, index) in progressArr">
                       <el-col
                         :key="index"
-                        :span="6">
+                        :span="8">
                         <ProTargetAchievement
                           :id="`${index}`"
                           :data="item" />

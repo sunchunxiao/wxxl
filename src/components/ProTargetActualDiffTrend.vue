@@ -198,7 +198,7 @@ export default {
                         data: bottom,
                         type: 'bar',
                         stack: 1,
-                        barWidth: 20,
+                        barMaxWidth: 20,
                         itemStyle: {
                             color: function (params) {
                                 if (under.length) {
@@ -212,7 +212,7 @@ export default {
                     {
                         type: 'bar',
                         stack: 1,
-                        barWidth: 8,
+                        barMaxWidth: 20,
                         itemStyle: {
                             color: function (params) {
                                 return -1 == underTarget.indexOf(params.dataIndex) ? '#01B8AA' : '#FD625E';

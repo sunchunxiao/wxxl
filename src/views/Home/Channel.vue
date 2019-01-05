@@ -21,6 +21,7 @@
                           :key="index"
                           :span="4">
                           <ProTargetAchievement
+                            @click.native="clickIndex(index)"
                             :id="`${index}`"
                             :data="item" />
                         </el-col>
@@ -35,14 +36,14 @@
               <Card>
                 <div class="card_company_target">
                   <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-                  <span class="card_title">销售额 ( 万元 ) </span></el-row>
-                  <template v-for="(item, index) in dataSales">
+                  <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+                  <template>
                     <el-col
-                      v-if="dataSales.length>0"
+                      v-if="channelTrendArr.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
-                        :id="`product${index}`"
-                        :data="item" />
+                        :id="`channel${index}`"
+                        :data="channelTrendArr[index]" />
                     </el-col>
                   </template>
                 </div>
@@ -86,15 +87,12 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
+            cid: '',
             // mock
             dataSales: dataSales(),
-            cid: '',
             loading: false,
             //index
-            index0: 0,
-            index1: 0,
-            index2: 0,
-            index3: 0,
+            index: 0,
             // stragety
             val: {},
             post: 1,
@@ -104,21 +102,24 @@ export default {
     },
     computed: {
         ...mapGetters(['channelArr','channelTrendArr']),
-        hasTree() {
-            return !_.isEmpty(this.productArr);
+        hasSubjectName() {
+            if (this.channelTrendArr.length) {
+                return this.channelTrendArr[this.index].subject_name;
+            }
         }
     },
     mounted() {
-        this.allRequest();
+        this.getChannelProgress();
     },
     watch: {
         val() {
-            this.allRequest();
+            this.getChannelProgress();
         }
     },
     methods: {
-        allRequest() {
-            this.getChannelProgress();
+        clickIndex(idx) {
+            this.index = idx;
+            this.style = idx;
         },
         input(val) {
             this.form.date = val;

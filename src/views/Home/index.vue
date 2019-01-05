@@ -8,6 +8,7 @@
         :has-search="false"
         ref="child"
         url="/home/search"
+        v-model="searchBarValue"
         :pt-options="['月', '季', '年']" />
     </el-row>
     <div class="home_menu">
@@ -56,8 +57,7 @@
       </el-menu>
     </div>
     <div class="overview">
-      <el-row
-        :gutter="20">
+      <el-row>
         <router-view />
       </el-row>
     </div>
@@ -65,13 +65,8 @@
 </template>
 
 <script>
-import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
-// 目标达成情况总览
-import ProTargetAchievement from 'components/ProTargetAchievement';
-// 目标-实际-差异趋势分析
-import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 
 import { mapGetters } from 'vuex';
 
@@ -126,8 +121,6 @@ export default {
     components: {
         Card,
         SearchBar,
-        ProTargetAchievement,
-        ProTargetActualDiffTrend,
     },
     data() {
         return {
@@ -136,13 +129,19 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
+            cid: '',
             menuData: MENUDATA,
             menuDataInput: menuDataInput,
-            cid: '',
             defaultProps: TREE_PROPS,
             loading: false,
             activePath: "/home",
-            val: {}
+            val: {},
+            changeDate: {},
+            searchBarValue: {
+                pt: '',
+                sDate: '',
+                eDate: ''
+            },
         };
     },
     computed: {
@@ -152,15 +151,12 @@ export default {
         }
     },
     mounted() {
-        // this.getProductProgress();
+        //获取初始时间
+        this.changeDate = this.searchBarValue;
+        this.$store.dispatch('SaveSearchDate', this.changeDate);
+        // console.log(this.changeDate);
         this.activePath = this.$route.fullPath;
     },
-    // watch: {
-    //     val() {
-    //         // this.getProductProgress();
-    //     }
-
-    // },
     watch: {
         ['$route.fullPath']: function (val) {
             if (val === '/home') {
@@ -171,139 +167,7 @@ export default {
         }
     },
     methods: {
-        input(val) {
-            this.form.date = val;
-        },
-        select(index) {
-            this.style = index;
-        },
-
-        //产品
-        getProductProgress() {
-            this.loading = true;
-            const params = {
-                ...this.getPeriodByPt(),
-            };
-            API.GetProductProgress(params).then(res => {
-                this.$store.dispatch('SaveProductProgressData', res.data);
-                const promises = _.map(res.data, o => this.getProductTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveProductTrendArr', resultList);
-                });
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
-        getProductTrend(subject) {
-            const params = {
-                ...this.getPeriodByPt(),
-                subject: subject
-            };
-            return API.GetProductTrend(params);
-        },
-        //渠道
-        getChannelProgress() {
-            const params = {
-                ...this.getPeriodByPt(),
-            };
-            API.GetChannelProgress(params).then(res=>{
-                this.$store.dispatch('SaveChannelProgressData', res.data);
-                const promises = _.map(res.data, o => this.getChannelTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveChannelTrendArr', resultList);
-                });
-            });
-        },
-        getChannelTrend(subject) {
-            const params = {
-                ...this.getPeriodByPt(),
-                subject: subject
-            };
-            return API.GetChannelTrend(params);
-        },
-        //组织
-        getOrgProgress() {
-            const params = {
-                ...this.getPeriodByPt(),
-                version:0
-            };
-            API.GetOrgProgress(params).then(res=>{
-                this.$store.dispatch('SaveOrgHomeProgress', res.data);
-                const promises = _.map(res.data, o => this.getOrgTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveOrgHomeTrendArr', resultList);
-                });
-            });
-        },
-        getOrgTrend(subject) {
-            const params = {
-                ...this.getPeriodByPt(),
-                subject: subject,
-                version:0
-            };
-            return API.GetOrgTrend(params);
-        },
-        //资金
-        getFundProgress() {
-            const params = {
-                ...this.getPeriodByPt(),
-                version:0
-            };
-            API.GetFundProgress(params).then(res=>{
-                this.$store.dispatch('SaveFundHomeProgress', res.data);
-                const promises = _.map(res.data, o => this.getFundTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveFundHomeTrendArr', resultList);
-                });
-            });
-        },
-        getFundTrend(subject) {
-            const params = {
-                ...this.getPeriodByPt(),
-                subject: subject,
-                version:0
-            };
-            return API.GetFundTrend(params);
-        },
-        //客户
-        getCusProgress() {
-            const params = {
-                ...this.getPeriodByPt(),
-            };
-            API.GetCusProgress(params).then(res=>{
-                this.$store.dispatch('SaveCusHomeProgress', res.data);
-                const promises = _.map(res.data, o => this.getCusTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveCusHomeTrendArr', resultList);
-                });
-            });
-        },
-        getCusTrend(subject) {
-            const params = {
-                ...this.getPeriodByPt(),
-                subject: subject
-            };
-            return API.GetCusTrend(params);
+        input() {
         },
         getDateObj () {
             const {
@@ -347,8 +211,8 @@ export default {
             }
         },
         handleSearch(val) {
-            // 默认公司的背景色
-            this.val = val;
+            // 时间改变
+            this.$store.dispatch('SaveSearchDate', val);
         },
 
     }
