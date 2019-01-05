@@ -21,6 +21,7 @@
                           :key="index"
                           :span="4">
                           <ProTargetAchievement
+                            @click.native="clickIndex(index)"
                             :id="`${index}`"
                             :data="item" />
                         </el-col>
@@ -35,14 +36,14 @@
               <Card>
                 <div class="card_company_target">
                   <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-                  <span class="card_title">销售额 ( 万元 ) </span></el-row>
-                  <template v-for="(item, index) in dataSales">
+                  <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+                  <template>
                     <el-col
-                      v-if="dataSales.length>0"
+                      v-if="orgTrendArr.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
-                        :id="`product${index}`"
-                        :data="item" />
+                        :id="`org${index}`"
+                        :data="orgTrendArr[index]" />
                     </el-col>
                   </template>
                 </div>
@@ -86,32 +87,36 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
+            cid: '',
             // mock
             dataSales: dataSales(),
-            cid: '',
             loading: false,
             //index
-            index0: 0,
-            index1: 0,
-            index2: 0,
-            index3: 0,
+            index: 0,
             // stragety
             val: {},
             post: 1,
             style: 0,
-
         };
     },
     computed: {
-        ...mapGetters(['orgHomeArr','orgTrendArr']),
-        hasTree() {
-            return !_.isEmpty(this.productArr);
+        ...mapGetters(['orgHomeArr','orgTrendArr', 'searchDate']),
+        hasSubjectName() {
+            if (this.orgTrendArr.length) {
+                return this.orgTrendArr[this.index].subject_name;
+            }
         }
+    },
+    created() {
+        this.form.date = this.searchDate;
     },
     mounted() {
         this.allRequest();
     },
     watch: {
+        searchDate() {
+            this.val = this.searchDate;
+        },
         val() {
             this.allRequest();
         }
@@ -119,6 +124,10 @@ export default {
     methods: {
         allRequest() {
             this.getOrgProgress();
+        },
+        clickIndex(idx) {
+            this.index = idx;
+            this.style = idx;
         },
         input(val) {
             this.form.date = val;

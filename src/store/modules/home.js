@@ -12,6 +12,7 @@ const home = {
         fundHomeTrendArr: [],
         cusHomeArr: [],
         cusHomeTrendArr: [],
+        searchDate: {}
     },
     mutations: {
         SAVE_OVERVIEW_ARR: (state, arr) => {
@@ -50,6 +51,9 @@ const home = {
         SAVE_CUSHOMETREND_ARR: (state, arr) => {
             state.cusHomeTrendArr = arr;
         },
+        SAVE_SEARCH_DATE: (state, date) => {
+            state.searchDate = date;
+        }
     },
     actions: {
         SaveOverviewProgressData({ commit }, arr) {
@@ -88,6 +92,9 @@ const home = {
         SaveCusHomeTrendArr({ commit }, arr) {
             commit('SAVE_CUSHOMETREND_ARR', arr);
         },
+        SaveSearchDate({ commit }, date) {
+            commit('SAVE_SEARCH_DATE', date);
+        }
     }
 };
 

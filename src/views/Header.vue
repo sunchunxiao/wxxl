@@ -24,6 +24,9 @@ export default {
             username: getUsername()
         };
     },
+    mounted() {
+        // console.log(this.$route.path);
+    },
     methods: {
         logout() {
             removeToken();
@@ -46,8 +49,7 @@ export default {
     color: #858585;
     background: #2d2929;
     .greet {
-        // float: right;
-        // margin-right: 50px;
+        height: 55px;
         .greet_img {
             width: 55px;
             }
