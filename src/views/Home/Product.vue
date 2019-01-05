@@ -22,7 +22,7 @@
                       :key="index"
                       style="width:198px">
                       <ProTargetAchievement
-                        :class="{'menu_list_opciaty':style==index}"
+                        :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
                         @click.native="clickIndex(index)"
                         :id="`${index}`"
                         :data="item" />
@@ -98,6 +98,7 @@ export default {
             val: {},
             post: 1,
             style: undefined,
+            opciatyBool: false
         };
     },
     computed: {
@@ -126,6 +127,7 @@ export default {
         clickIndex(idx) {
             this.index = idx;
             this.style = idx;
+            this.opciatyBool = true;
         },
         // input(val) {
         //     this.form.date = val;

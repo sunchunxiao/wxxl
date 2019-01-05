@@ -21,6 +21,7 @@
                           :key="index"
                           :span="4">
                           <ProTargetAchievement
+                            :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
                             @click.native="clickIndex(index)"
                             :id="`${index}`"
                             :data="item" />
@@ -131,8 +132,8 @@ export default {
             index: 0,
             // stragety
             val: {},
-            style: 0,
-
+            style: undefined,
+            opciatyBool: false
         };
     },
     computed: {
@@ -156,6 +157,7 @@ export default {
         clickIndex(idx) {
             this.index = idx;
             this.style = idx;
+            this.opciatyBool = true;
         },
         select(index) {
             this.style = index;

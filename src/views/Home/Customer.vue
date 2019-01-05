@@ -21,6 +21,7 @@
                           :key="index"
                           :span="4">
                           <ProTargetAchievement
+                            :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
                             @click.native="clickIndex(index)"
                             :id="`${index}`"
                             :data="item" />
@@ -96,8 +97,8 @@ export default {
             // stragety
             val: {},
             post: 1,
-            style: 0,
-
+            style: undefined,
+            opciatyBool: false
         };
     },
     computed: {
@@ -126,6 +127,7 @@ export default {
         clickIndex(idx) {
             this.index = idx;
             this.style = idx;
+            this.opciatyBool = true;
         },
         input(val) {
             this.form.date = val;
@@ -135,6 +137,7 @@ export default {
         },
         //客户
         getCusProgress() {
+            this.loading = true;
             const params = {
                 ...this.getPeriodByPt(),
             };
@@ -148,6 +151,8 @@ export default {
                     });
                     this.$store.dispatch('SaveCusHomeTrendArr', resultList);
                 });
+            }).finally(() => {
+                this.loading = false;
             });
         },
         getCusTrend(subject) {
