@@ -3,9 +3,11 @@
     class="slider"
     :style="{height:height}">
     <div
-      class="prev_wrap"
-      @click="goPrev">
-      <div :class="{is_click: hasLeft}">
+      class="prev_wrap">
+      <div
+        @click="goPrev"
+        :class="{is_click: hasLeft}"
+        v-show="hasLeft || hasRight">
         <i class="el-icon-arrow-left" />
       </div>
     </div>
@@ -13,9 +15,11 @@
       <slot />
     </div>
     <div
-      class="next_wrap"
-      @click="goNext">
-      <div :class="{is_click: hasRight}">
+      class="next_wrap">
+      <div
+        @click="goNext"
+        :class="{is_click: hasRight}"
+        v-show="hasLeft || hasRight">
         <i class="el-icon-arrow-right" />
       </div>
     </div>
@@ -68,6 +72,7 @@ export default {
                     firstNum = 0;
                 }
                 let translateXNum = firstNum + this.sliderWrap.offsetWidth - lastNum - lastSliderItem.offsetWidth;
+                translateXNum > 0 && (translateXNum =0);
                 this.sliderItems[0].style.transform = "translateX(" + translateXNum + "px)";
                 this.clearTransition();
                 this.setTranslateX();
@@ -92,9 +97,6 @@ export default {
             let firstSliderItem = this.sliderItems[0];
             let nextNum;
             this.sliderItems.forEach((el,index) => {
-                if (nextNum != undefined) {
-                    return;
-                }
                 let num = this.getTranslateX(el);
                 if (num < 0) {
                     nextNum = num;
@@ -144,7 +146,8 @@ export default {
             if (!firstnum) {
                 firstnum = 0;
             }
-            firstSliderItem.style.transform = "translateX(" + (firstnum - nextNum) + "px)";
+            let newNum = firstnum - nextNum;
+            firstSliderItem.style.transform = `translateX(${newNum}px)`;
             this.setTranslateX();
             this.judgeCanClick();
         },
