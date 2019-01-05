@@ -104,4 +104,20 @@ const pieProfit = function mockPieData7() {
     return arr;
 };
 
-export { pieSales, pieProfit };
+//利润
+const pieEquity = function mockPieData7() {
+    let arr = [];
+    let subject = ["ROI", 'PC', 'PR', 'RR'];
+    let subject_name = ["传播的投入产出比", '品质合格率', '传播网点数', '传播成本'];
+    for(let i = 0; i < 4; i++) {
+        arr.push(_.cloneDeep(pieDataSales));
+        arr[i].progress = getRandomNumArr(1, 2);
+        arr[i].subject = subject[i];
+        arr[i].subject_name = subject_name[i];
+        arr[i].real = getRandomNumArr(1, 10000000);
+        arr[i].target  = getRandomNumArr(1, 10000000);
+    }
+    return arr;
+};
+
+export { pieSales, pieProfit, pieEquity };
