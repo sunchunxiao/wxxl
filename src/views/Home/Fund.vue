@@ -31,8 +31,7 @@
                 </slider>
               </Card>
             </el-row>
-            <el-row
-              style="margin-left:100px">
+            <el-row>
               <Card>
                 <div class="card_company_target">
                   <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
