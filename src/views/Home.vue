@@ -8,7 +8,6 @@
           @click="handleClick">
           <img
             v-if="isCollapse"
-
             src="../assets/collapse1.png"
             alt="">
           <img
@@ -16,14 +15,13 @@
             src="../assets/collapse.png"
             alt="">
         </div>
+        <!-- 右侧菜单栏 -->
         <div class="menu_container">
           <Menu :isCollapse="isCollapse" />
         </div>
       </div>
       <div :class="['right', {'right_collapse': isCollapse} ]">
-        <div class="content">
-          <router-view />
-        </div>
+        <router-view />
       </div>
     </div>
   </div>
@@ -64,13 +62,15 @@ $width_collapse: 55px;
 
 .container {
     height: 100%;
+    display: flex;
+    flex-direction: column;
     .container_wrap{
-        padding-top: 55px;
-        height: calc(100% - 55px);
+        display: flex;
+        flex: 1;
         .left {
+            flex-shrink: 0;
             width: $width;
             height: 100%;
-            position: fixed;
             z-index: 2;
             overflow: hidden;
             background-color: $bgcolor;
@@ -92,7 +92,7 @@ $width_collapse: 55px;
             }
             .menu_container {
                 width: 217px;
-                height: calc(100vh - 245px);
+                height: calc(100vh - 95px);
                 overflow-y: scroll;
                 overflow-x: hidden;
             }
@@ -108,19 +108,19 @@ $width_collapse: 55px;
         }
         .right {
             height: 100%;
-            margin-left: $width;
+            flex: 1;
+            display: flex;
             background: #fff;
+            overflow: auto;
+            >div:first-child {
+                flex: 1;
+                overflow-x: auto;
+                overflow-y: hidden;
+                min-width: 1200px;
+            }
         }
         .left_collapse {
             width: $width_collapse;
-        }
-        .right_collapse {
-            margin-left: $width_collapse;
-        }
-        .content {
-            padding: 0px 0px 16px;
-            height: calc(100% - 100px);
-            background-color: #eee;
         }
     }
 }

@@ -10,7 +10,8 @@ export default Vue.component('Card', {
 
 <style lang="scss" scoped>
 .card {
-    width: 96%;
+    width: 100%;
+    box-sizing: border-box;
     // min-height: 400px;
     border: 1px solid #fff;
     border-radius: 5px;
