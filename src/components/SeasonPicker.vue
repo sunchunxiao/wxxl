@@ -149,7 +149,7 @@ export default {
 
 <style lang="scss">
 .season_picker {
-  width: 140px;
+  width: 155px;
   position: relative;
   .year_select {
     height: 28px;

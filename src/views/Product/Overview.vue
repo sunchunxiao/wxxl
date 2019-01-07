@@ -26,9 +26,6 @@
               :class="{bac:isbac}"
               class="company">
               <span class="left label">{{ treeClone.name }}</span>
-              <!-- <span
-                :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-                class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span> -->
               <div
                 :class="{comprogress: true, 'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
                 :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
@@ -62,8 +59,6 @@
                 </div>
                 <span class="label">
                   <span class="label_left">{{ data.name }}</span>
-                  <!-- <span
-                    :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span> -->
                 </span>
               </el-tooltip>
               <div
@@ -73,7 +68,7 @@
           </el-tree>
         </el-col>
         <el-row
-          class="overflow1"
+          class="common-overflow"
           :span="18">
           <div class="common-wrap">
             <span
@@ -84,7 +79,9 @@
               @click="currView=item.id"><span class="dot" />{{ item.value }}</span>
           </div>
           <keep-alive>
-            <component :is="currentTabComponent" />
+            <component
+              :cid="cid"
+              :is="currentTabComponent" />
           </keep-alive>
         </el-row>
       </el-row>
@@ -106,18 +103,7 @@ import Diff from './Diff.vue';
 import Trend from './Trend.vue';
 import Structure from './Structure.vue';
 import Rank from './Rank.vue';
-// 目标达成情况总览
-import ProTargetAchievement from 'components/ProTargetAchievement';
-import Radar from 'components/radar';
-// 目标-实际-差异趋势分析
-import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-// 同比环比趋势分析
-import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
-// 比例结构与平均值对比分析
-import ProportionalStructureAverageComparison from 'components/ProportionalStructureAverageComparison';
-import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
-// 智能评选和智能策略
-import IntelligentSelection from 'components/IntelligentSelection';
+
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
 //vuex
@@ -152,13 +138,6 @@ export default {
         "rank": Rank,
         Card,
         SearchBar,
-        ProYearOnYearTrend,
-        ProportionalStructureAverageComparison,
-        ProportionalStructureAverageComparisonBig,
-        IntelligentSelection,
-        ProTargetAchievement,
-        Radar,
-        ProTargetActualDiffTrend,
     },
     data () {
         return {
@@ -170,27 +149,16 @@ export default {
             //tree
             cid: '',
             pt: '',
+            //js
             error: error,
             find: find,
             preOrder: preOrder,
             addProperty: addProperty,
             calculatePercent: calculatePercent,
-            showStragetyId: '',
-            subject:'',
             defaultProps: TREE_PROPS,
             loading: false,
-            // index
-            index0: 0,
-            index1: 0,
-            index2: 0,
-            index3: 0,
             // stragety
-            stragetyCheckList: [],
-            stragetyTitle: '',
-            stragety: [],
-            idArr: [],
             val: {},
-            post: 1,
             nodeArr: [],
             isbac: true,
             highlight: true,
@@ -202,26 +170,22 @@ export default {
             treeClone: {},
             changeDate: {},
             findFatherId: '',
+            //views
             tabs: OVER_TABS,
             currView: 'reach',
             style: 0,
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'rankArr', 'structureArr', 'productDateArr','treePrograss']),
+        ...mapGetters(['productTree']),
         hasTree () {
             return !_.isEmpty(this.productTree);
-        },
-        hasStructure () {
-            return !_.isEmpty(this.structureArr);
         },
         currentTabComponent: function() {
             return this.currView;
         }
     },
-    tempalte:`111`,
     mounted () {
-        // console.log(this.$store.state.product.tree1)
         //获取初始时间
         this.changeDate = this.searchBarValue;
         if (!this.hasTree) {
@@ -234,18 +198,9 @@ export default {
             this.addProperty([this.treeClone]);
         }
     },
-    watch: {
-        cid() {
-            // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            this.allRequest();
-        }
-    },
     methods: {
         allRequest() {
             this.getTreePrograss();
-            this.getProgress();
-            this.getStructure();
-            this.getRank();
         },
         input(val) {
             this.form.date = val;
@@ -259,48 +214,6 @@ export default {
                 this.isbac = true;
                 this.highlight = false;
                 this.cid = this.productTree.cid;
-            }
-        },
-        change() {
-            this.idArr = [];
-            for (let i of this.stragetyCheckList) {
-                let stragetyObj = this.stragety.find(el => {
-                    return el.id == i;
-                });
-                this.idArr.push(stragetyObj.id);
-            }
-        },
-        submit() {
-            let data1 = JSON.parse(localStorage.data);
-            if(this.stragety.length){
-                this.$confirm('确认?', {
-                    confirmButtonText: '保存',
-                    cancelButtonText: '取消',
-                    type: 'warning',
-                    center: true
-                }).then(() => {
-                    const data = {
-                        cid: data1.cid,
-                        rank: data1.rank,
-                        subject: data1.subject,
-                        time_label: data1.time_label,
-                        strategies: this.idArr.join(',')
-                    };
-                    API.PostProductSave(data).then(() => {
-                        this.$message({
-                            showClose: true,
-                            message: '保存成功'
-                        });
-                    });
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消',
-                        duration: 1500
-                    });
-                });
-            }else{
-                this.error('无应用策略');
             }
         },
         findParent(node,cid) {//找父节点id
@@ -360,68 +273,7 @@ export default {
                 }
             });
         },
-        getProgress() {
-            this.loading = true;
-            const params = {
-                cid: this.cid,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-            };
-            API.GetProductProgress(params).then(res => {
-                this.$store.dispatch('SaveProgressData', res.data);
-                const promises = _.map(res.data, o => this.getTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveTrendArr', resultList);
-                });
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
-        getTrend(subject) {
-            this.loading = true;
-            const params = {
-                cid: this.cid,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-                subject: subject
-            };
-            return API.GetProductTrend(params);
-        },
-        getStructure() {
-            this.loading = true;
-            const params = {
-                cid: this.cid,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-            };
-            API.GetProductStructure(params).then(res => {
-                this.$store.dispatch('SaveStructureArr', res.data);
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
-        getRank() {
-            if (this.getPt() === '日') {
-                this.pt = '周';
-            }else{
-                this.pt = this.getPt();
-            }
-            this.loading = true;
-            const params = {
-                cid: this.cid,
-                pt: this.pt,
-                ...this.getPeriodByPt(),
-            };
-            API.GetProductRank(params).then(res => {
-                this.$store.dispatch('SaveRankArr', res.data);
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
+
         getPt() {
             const {
                 date
@@ -531,49 +383,6 @@ export default {
                 this.error('请选择日期');
             }
         },
-        clickIndex(i, idx) {
-            this[`index${i}`] = idx;
-        },
-        changeTime() {
-            this.stragetyTitle = '';
-            this.stragety = [];
-        },
-        showStragety(data) {
-            localStorage.setItem("data", JSON.stringify(data));
-            const {
-                cid,
-                brand,
-                name,
-                subject,
-                time_label,
-                rank
-            } = data;
-            this.stragetyTitle = `${brand} - ${name} - ${rank}`;
-            const params = {
-                cid: cid,
-                subject: subject,
-                rank: rank,
-                time_label: time_label,
-            };
-            if (this.showStragetyId === cid && this.subject === subject) {
-                return;
-            }
-            this.showStragetyId = cid;
-            this.subject = subject;
-            this.stragety = [];
-            API.GetProductMatch(params).then(res => {
-                this.stragetyCheckList = [];
-                this.idArr = [];
-                this.stragety = res.data;
-                const checked = 1;//1是选中,0是不选中
-                for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].is_selected === checked) {
-                        this.stragetyCheckList.push(res.data[i].id);
-                        this.idArr.push(res.data[i].id);
-                    }
-                }
-            });
-        }
     }
 };
 </script>
