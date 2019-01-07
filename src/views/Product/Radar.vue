@@ -1,99 +1,48 @@
 <template>
-  <div class="container">
+  <div class="radar">
     <el-row
-      class="time_header">
-      <search-bar
-        ref="child"
-        @input="input"
-        @search="handleSearch"
-        url="/product/search"
-        placeholder="产品编号/产品名称"
-        v-model="searchBarValue"
-        :pt-options="['日', '周', '月', '季', '年']" />
-    </el-row>
-    <div class="overview">
-      <el-row
-        v-if="productTree"
-        class="content_row">
-        <el-col
-          :span="5"
-          class="tree_container">
-          <div v-if="hasTree">
-            <div class="title">毛利目标达成率</div>
-            <div
-              @click="click"
-              v-if="productTree.children"
-              :class="{bac:isbac}"
-              class="company">
-              <span class="left label">{{ treeClone.name }}</span>
-              <!-- <span
-                :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-                class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span> -->
-              <div
-                :class="{comprogress: true, 'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-                :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
-            </div>
-          </div>
-          <el-tree
-            ref="tree"
-            :data="treeClone.children"
-            empty-text="正在加载"
-            node-key="cid"
-            :expand-on-click-node="false"
-            :highlight-current="highlight"
-            :props="defaultProps"
-            :default-expanded-keys="nodeArr"
-            @node-expand="nodeExpand"
-            @node-click="handleNodeClick">
-            <span
-              class="custom-tree-node"
-              slot-scope="{ node, data }">
-              <el-tooltip
-                class="item"
-                effect="dark"
-                placement="right">
-                <div slot="content">
-                  <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
-                  <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
-                  <div
-                    v-if="data.children"
-                    class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
-                  <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
-                </div>
-                <span class="label">
-                  <span class="label_left">{{ data.name }}</span>
-                  <!-- <span
-                    :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span> -->
-                </span>
-              </el-tooltip>
-              <div
-                :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
-                :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
-            </span>
-          </el-tree>
-        </el-col>
+      v-if="productTree"
+      class="content_radar-row"
+      :gutter="20">
+      <el-col
+        :span="17"
+        class="overflow">
         <el-row
-          class="overflow1"
-          :span="18">
-          <div class="common-wrap">
-            <span
-              class="span"
-              :key="item.id"
-              v-for="item in tabs"
-              :class="{'bacground':currView==item.id}"
-              @click="currView=item.id"><span class="dot" />{{ item.value }}</span>
-          </div>
-          <keep-alive>
-            <component :is="currentTabComponent" />
-          </keep-alive>
+          v-if="progressArr.length>0"
+          v-loading="loading"
+          class="">
+          <Card>
+            <el-row class="margin-bottom-20">目标达成情况总览</el-row>
+            <slider
+              height="250px"
+              :min-move-num="50">
+              <template v-for="(item, index) in progressArr">
+                <el-col
+                  :key="index"
+                  :span="8">
+                  <ProTargetAchievement
+                    :id="`${index}`"
+                    :data="item" />
+                </el-col>
+              </template>
+            </slider>
+            <el-col
+              v-if="rankArr.length > 0"
+              :span="9"
+              class="">
+              <Radar
+                :id="'select'"
+                :data="rankArr[rankArr.length-1]" />
+            </el-col>
+          </Card>
         </el-row>
-      </el-row>
-      <el-row
-        v-else
-        class="overview_select">
-        暂无数据
-      </el-row>
-    </div>
+      </el-col>
+    </el-row>
+    <el-row
+      v-else
+      class="overview_select">
+      暂无数据
+    </el-row>
   </div>
 </template>
 
@@ -101,11 +50,7 @@
 import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
-import viewRadar from './Radar.vue';
-import Diff from './Diff.vue';
-import Trend from './Trend.vue';
-import Structure from './Structure.vue';
-import Rank from './Rank.vue';
+import Slider from 'components/Slider';
 // 目标达成情况总览
 import ProTargetAchievement from 'components/ProTargetAchievement';
 import Radar from 'components/radar';
@@ -122,22 +67,6 @@ import IntelligentSelection from 'components/IntelligentSelection';
 import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
-const OVER_TABS = [{
-    id: 'reach',
-    value: '目标达成情况总览'
-},{
-    id: 'diff',
-    value: '目标-实际-差异趋势分析'
-},{
-    id: 'trend',
-    value: '同比环比趋势分析'
-},{
-    id: 'structure',
-    value: '比例结构与平均值对比分析'
-},{
-    id: 'rank',
-    value: '智能评选和智能策略'
-}];
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
@@ -145,12 +74,14 @@ const TREE_PROPS = {
 const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {
-        "reach": viewRadar,
-        "diff": Diff,
-        "trend": Trend,
-        "structure": Structure,
-        "rank": Rank,
+        "home":{
+            template:`<div>111</div>`
+        },
+        "post":{
+            template:`<div>222</div>`
+        },
         Card,
+        Slider,
         SearchBar,
         ProYearOnYearTrend,
         ProportionalStructureAverageComparison,
@@ -202,9 +133,8 @@ export default {
             treeClone: {},
             changeDate: {},
             findFatherId: '',
-            tabs: OVER_TABS,
-            currView: 'reach',
-            style: 0,
+            tabs: ['home','post'],
+            currView: 'home',
         };
     },
     computed: {

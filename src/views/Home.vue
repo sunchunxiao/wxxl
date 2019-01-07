@@ -118,8 +118,9 @@ $width_collapse: 55px;
             margin-left: $width_collapse;
         }
         .content {
-            padding: 0px 0px 16px;
-            height: calc(100% - 100px);
+            // padding: 0px 0px 16px;
+            height: 100%;
+            // height: calc(100% - 55px);
             background-color: #eee;
         }
     }
