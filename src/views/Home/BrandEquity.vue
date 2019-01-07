@@ -1,10 +1,9 @@
 <template>
   <div class="container">
     <div>
-      <el-row
-        :gutter="20">
+      <el-row>
         <el-col
-          :span="25"
+          :span="24"
           class="home_overflow common">
           <el-row
             id="produce"
