@@ -12,51 +12,118 @@
         :pt-options="['月', '季', '年']" />
     </el-row>
     <div class="home_menu">
-      <div class="menu_output">外部评估</div>
-      <el-menu
-        router
-        :default-active="activePath"
-        class="el-menu-demo"
-        mode="horizontal">
-        <el-menu-item index="/home/sales"><span class="dot" />销售</el-menu-item>
-        <el-menu-item index="/home/profit"><span class="dot" />利润</el-menu-item>
-        <template v-for="item in menuData">
-          <el-submenu
-            :index="item.path"
-            :key="item.path">
-            <template slot="title">
+      <div class="collapse_outernal">
+        <el-menu
+          router
+          class="el-menu-demo"
+          mode="horizontal">
+          <template v-for="item in outernalAssessment">
+            <el-submenu
+              :index="item.path"
+              :key="item.path">
+              <template slot="title">
+                <span class="dot" />{{ item.title }}
+              </template>
+              <template v-for="itm in item.children">
+                <el-menu-item
+                  :index="`${item.path}${itm.path}`"
+                  :key="`${item.path}${itm.path}`">
+                  <span>
+                    <span class="dot" /> {{ itm.title }}
+                  </span>
+                </el-menu-item>
+              </template>
+            </el-submenu>
+          </template>
+        </el-menu>
+      </div>
+      <div class="outernal">
+        <div class="menu_output">外部评估</div>
+        <el-menu
+          router
+          class="el-menu-demo"
+          mode="horizontal">
+          <el-menu-item index="/home/sales"><span class="dot" />销售</el-menu-item>
+          <el-menu-item index="/home/profit"><span class="dot" />利润</el-menu-item>
+        </el-menu>
+      </div>
+      <div>
+        <el-menu
+          router
+          :default-active="activePath"
+          class="el-menu-demo"
+          mode="horizontal">
+          <template v-for="item in menuData">
+            <el-submenu
+              :index="item.path"
+              :key="item.path">
+              <template slot="title">
+                <span class="dot" />{{ item.title }}
+              </template>
+              <template v-for="itm in item.children">
+                <el-menu-item
+                  :index="`${item.path}${itm.path}`"
+                  :key="`${item.path}${itm.path}`">
+                  <span>
+                    <span class="dot" /> {{ itm.title }}
+                  </span>
+                </el-menu-item>
+              </template>
+            </el-submenu>
+          </template>
+        </el-menu>
+      </div>
+      <div>
+        <el-menu
+          router
+          class="el-menu-demo"
+          mode="horizontal">
+          <el-menu-item index="/home/equity">品牌价值</el-menu-item>
+        </el-menu>
+      </div>
+      <div class="internal">
+        <div class="menu_output">内部评估</div>
+        <el-menu
+          router
+          class="el-menu-demo"
+          mode="horizontal">
+          <template v-for="item in menuDataInput">
+            <el-menu-item
+              :key="item.path"
+              :index="item.path">
               <span class="dot" />{{ item.title }}
-            </template>
-            <template v-for="itm in item.children">
-              <el-menu-item
-                :index="`${item.path}${itm.path}`"
-                :key="`${item.path}${itm.path}`">
-                <span>
-                  <span class="dot" /> {{ itm.title }}
-                </span>
-              </el-menu-item>
-            </template>
-          </el-submenu>
-        </template>
-        <el-menu-item index="/home/equity">品牌价值</el-menu-item>
-      </el-menu>
-      <div class="menu_output">内部评估</div>
-      <el-menu
-        router
-        class="el-menu-demo"
-        mode="horizontal">
-        <!-- <el-menu-item index="/home/profitSpace"><span class="dot" />盈利空间</el-menu-item>
-        <el-menu-item index="/home/profitability"><span class="dot" />盈利能力</el-menu-item> -->
-        <template v-for="item in menuDataInput">
-          <el-menu-item
-            :key="item.path"
-            :index="item.path">
-            <span class="dot" />{{ item.title }}
-          </el-menu-item>
-        </template>
-      </el-menu>
+            </el-menu-item>
+          </template>
+        </el-menu>
+      </div>
+      <div class="collapse_internal">
+        <el-menu
+          router
+          class="el-menu-demo"
+          mode="horizontal">
+          <template v-for="item in internalAssessment">
+            <el-submenu
+              :index="item.path"
+              :key="item.path">
+              <template slot="title">
+                <span class="dot" />{{ item.title }}
+              </template>
+              <template v-for="itm in item.children">
+                <el-menu-item
+                  :index="`${item.path}${itm.path}`"
+                  :key="`${item.path}${itm.path}`">
+                  <span>
+                    <span class="dot" /> {{ itm.title }}
+                  </span>
+                </el-menu-item>
+              </template>
+            </el-submenu>
+          </template>
+        </el-menu>
+      </div>
     </div>
-    <div class="overview">
+    <div
+      class="overview">
       <el-row>
         <router-view />
       </el-row>
@@ -88,6 +155,31 @@ const menuDataInput = [
         path: "/home/pay",
     }
 ];
+const internalAssessment = [
+    {
+        title: "内部评估",
+        path: "",
+        children: menuDataInput
+    }
+];
+const menuDataInput2 = [
+    {
+        title: "销售",
+        path: "/home/sales",
+    },
+    {
+        title: "利润",
+        path: "/home/profit",
+    }
+];
+const outernalAssessment = [
+    {
+        title: "外部评估",
+        path: "",
+        children: menuDataInput2
+    }
+];
+
 const MENUDATA = [
     {
         title: "五项效率",
@@ -132,6 +224,8 @@ export default {
             cid: '',
             menuData: MENUDATA,
             menuDataInput: menuDataInput,
+            internalAssessment: internalAssessment,
+            outernalAssessment: outernalAssessment,
             defaultProps: TREE_PROPS,
             loading: false,
             activePath: "/home",
@@ -221,5 +315,5 @@ export default {
 
 <style lang="scss">
    @import '../Product/style/overview.scss';
-	@import './style/home.scss'
+   @import './style/home.scss';
 </style>

@@ -38,14 +38,10 @@ export default {
 
 <style lang="scss" scoped>
 .header {
-    // width: calc(100% - 200px);
 	width: 100%;
-    min-width: 1000px;
     height: 55px;
     line-height: 55px;
-    padding-right: 50px;
-    position: fixed;
-    z-index: 999999999;
+    z-index: 100;
     color: #858585;
     background: #2d2929;
     .greet {
@@ -63,7 +59,6 @@ export default {
     }
 }
 .header_collapse {
-    // width: calc(100% - 64px);
     width:100%;
 }
 </style>
