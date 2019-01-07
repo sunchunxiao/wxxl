@@ -27,14 +27,16 @@
                 </el-col>
               </template>
             </slider>
-            <el-col
-              :span="9"
-              class="">
-              <Radar
-                v-if="rankArr.length"
-                :id="'select'"
-                :data="rankArr[rankArr.length-1]" />
-            </el-col>
+            <Card>
+              <el-col
+                class="">
+                <el-row class="margin-bottom-20">综合评估</el-row>
+                <Radar
+                  v-if="rankArr.length"
+                  :id="'select'"
+                  :data="rankArr[rankArr.length-1]" />
+              </el-col>
+            </Card>
           </Card>
         </el-row>
       </el-col>
