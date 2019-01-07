@@ -164,17 +164,17 @@ export default {
         getRank() {
             if (this.getPt() === '日') {
                 this.pt = '周';
-            }else{
+            } else {
                 this.pt = this.getPt();
             }
             this.loading = true;
             const params = {
-                chId: this.cid,
+                cid: this.cid,
                 pt: this.pt,
                 ...this.getPeriodByPt(),
             };
             API.GetProductRank(params).then(res => {
-                this.$store.dispatch('SaveProductRankArr', res.data);
+                this.$store.dispatch('SaveRankArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -208,19 +208,17 @@ export default {
         },
         getPeriodByPt() {
             const {
-                // pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
-                    // pt: pt,
                     sDate: sDate,
                     eDate: eDate,
                 };
             } else {
                 return {
-                    pt: '日',
+                    pt: '周',
                     sDate: '2018-01-01',
                     eDate: '2018-01-31',
                     // 先写死个时间
