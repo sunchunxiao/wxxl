@@ -116,7 +116,7 @@ export default {
         width: 100%;
         .ConOrgComparisonAverage {
             width: 100%;
-            height: 560px;
+            height: 520px;
             margin: 0 auto;
         }
         .detail {

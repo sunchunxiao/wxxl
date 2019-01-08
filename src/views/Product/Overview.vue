@@ -25,9 +25,13 @@
               v-if="productTree.children"
               :class="{bac:isbac}"
               class="company">
-              <span class="left label">{{ treeClone.name }}</span>
+              <span
+                :class="['left','label',
+                         {'is-active-zero':!(calculatePercent(treeClone.real_total, treeClone.target_total).percent) && activeCid == treeClone.cid}]">
+                {{ treeClone.name }}
+              </span>
               <div
-                :class="{comprogress: true, 'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+                :class="{comprogress: true, 'is-active': activeCid == treeClone.cid,'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
                 :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
             </div>
           </div>
@@ -58,11 +62,13 @@
                   <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
                 </div>
                 <span class="label">
-                  <span class="label_left">{{ data.name }}</span>
+                  <span
+                    :class="['label-left',
+                             {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.cid}]">{{ data.name }}</span>
                 </span>
               </el-tooltip>
               <div
-                :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+                :class="{progress: true, 'is-active': activeCid === data.cid, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
                 :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
             </span>
           </el-tree>
@@ -182,6 +188,9 @@ export default {
         },
         currentTabComponent: function() {
             return this.currView;
+        },
+        activeCid() {
+            return this.cid;
         }
     },
     watch: {
@@ -396,4 +405,5 @@ export default {
 
 <style lang="scss">
 @import './style/overview.scss';
+@import '../../style/tree.scss';
 </style>

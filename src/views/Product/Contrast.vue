@@ -40,14 +40,11 @@
             size="mini"
             class="clean_btn">
             <span
-              v-for="(item,index) in btn"
-              :key="index"
-              @click="click(index)"
-              :class="{'start_btn':style==index}"
-              class="clean_select">{{ item }}</span>
-              <!-- <span
+              @click="startChecked"
+              class="select start_select ">开始对比</span>
+            <span
               @click="cleanChecked"
-              class="clean_select">取消全部</span> -->
+              class="select clean_select">取消全部</span>
           </div>
           <div class="title_target">
             <span>当前目标: <span class="title">{{ num }}</span></span>
@@ -55,9 +52,6 @@
           </div>
           <div class="company">
             <span class="left">{{ treeClone.name }}</span>
-            <span
-              :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-              class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
           </div>
           <el-tree
             ref="tree"
@@ -88,7 +82,6 @@
                 </div>
                 <span class="label">
                   <span class="label_left">{{ data.name }}</span>
-                  <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
                 </span>
               </el-tooltip>
               <div
@@ -105,16 +98,16 @@
           <Card>
             <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
             <el-row>
-              <!-- <el-col :span="6"> -->
               <slider
-                height="150px"
+                height="170px"
                 :min-move-num="50">
                 <template v-for="(item, index) in compareArr">
                   <el-col
                     :key="index"
-                    :span="3"
-                    @click.native="clickIndex(0 ,index)">
+                    style="width:200px">
                     <ConOrgComparisonAverage
+                      :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
+                      @click.native="clickIndex(index)"
                       :id="`${index}`"
                       :data="item" />
                   </el-col>
@@ -127,23 +120,14 @@
                   id="ConOrgComparisonAverage"
                   :index="index0" />
               </Card>
-              <!-- </el-col> -->
-              <!-- <el-col
-                :span="18">
-                <ConOrgComparisonAverageBig
-                  :title="compareArr[index0].subject_name"
-                  :data="compareArr[index0]"
-                  id="ConOrgComparisonAverage"
-                  :index="index0" />
-              </el-col> -->
             </el-row>
-            <!-- <el-row
-              v-else
-              class="please_select">
-              请选择要对比的项目
-            </el-row> -->
           </Card>
         </el-col>
+        <!-- <el-row
+          v-else
+          class="please_select">
+          请选择要对比的项目
+        </el-row> -->
       </el-row>
       <el-row
         v-else
@@ -200,9 +184,7 @@ export default {
             cidObjArr: [],
             cancelKey: '',
             debounce: null,
-            isFirstLoad: true,
             val: {},
-            post: 1,
             nodeArr: [],
             highlight: true,
             searchBarValue: {
@@ -214,6 +196,8 @@ export default {
             changeDate: {},
             findFatherId: '',
             style: 0,
+            opcityIndex: undefined,
+            opciatyBool: false,
             isCollapse: false,
         };
     },
@@ -244,7 +228,7 @@ export default {
     },
     created() {
     // 防抖函数 减少发请求次数
-        this.debounce = _.debounce(this.getCompare, 100);
+        this.debounce = _.debounce(this.getCompare, 0);
     },
     mounted() {
         //获取初始时间
@@ -266,19 +250,7 @@ export default {
         }
     },
     methods: {
-        click(index){
-            this.style = index;
-            if(index == '1'){
-                this.cidObjArr = [];
-                this.$refs.tree.setCheckedKeys([]);
-            }else{
-                this.debounce();
-            }
-        },
-        handleClick () {
-            this.isCollapse = !this.isCollapse;
-        },
-        promise(){
+        promise() {
             Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
@@ -302,6 +274,16 @@ export default {
                 this.debounce();
             });
 
+        },
+        startChecked() {
+            this.debounce();
+        },
+        cleanChecked () {
+            this.cidObjArr = [];
+            this.$refs.tree.setCheckedKeys([]);
+        },
+        handleClick () {
+            this.isCollapse = !this.isCollapse;
         },
         allRequest() {
             this.getTreePrograss();
@@ -462,10 +444,6 @@ export default {
             this.isbac = false;
             this.highlight = true;
         },
-        cleanChecked () {
-            this.cidObjArr = [];
-            this.$refs.tree.setCheckedKeys([]);
-        },
         handleCheckChange (data, checked) {
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             if (!checked && this.cancelKey && data.cid === this.cancelKey) {
@@ -509,8 +487,10 @@ export default {
                 type: 'warning'
             });
         },
-        clickIndex (i, idx) {
-            this[`index${i}`] = idx;
+        clickIndex (idx) {
+            this.index0 = idx;
+            this.opcityIndex = idx;
+            this.opciatyBool = true;
         },
     }
 };
