@@ -1,5 +1,5 @@
 <template>
-  <div class="view_container">
+  <div class="container">
     <el-row
       class="time_header">
       <search-bar
