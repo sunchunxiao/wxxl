@@ -1,7 +1,23 @@
 <template>
-  <div class="container">
+  <div class="con_container">
     <el-row
       class="time_header">
+      <el-col
+        :span="5"
+        class="">
+        <div
+          class="contrast_btn"
+          @click="handleClick">
+          <img
+            v-if="isCollapse"
+            src="../../assets/collapse1.png"
+            alt="">
+          <img
+            v-else
+            src="../../assets/collapse.png"
+            alt="">
+        </div>
+      </el-col>
       <search-bar
         ref="child"
         @input="input"
@@ -17,12 +33,16 @@
         :gutter="20">
         <el-col
           :span="5"
+          :class="{'tree_block_none':isCollapse}"
           class="tree_container">
           <div
-            @click="cleanChecked"
             size="mini"
             class="clean_btn">
             <span
+              @click="startChecked"
+              class="clean_select">开始对比</span>
+            <span
+              @click="cleanChecked"
               class="clean_select">取消全部</span>
           </div>
           <div class="title_target">当前选中目标数:{{ num }}</div>
@@ -65,7 +85,6 @@
                   <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
                 </span>
               </el-tooltip>
-
               <div
                 :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
                 :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
@@ -128,7 +147,7 @@ import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverage
 import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
-
+const BTN = ['开始对比','取消选择'];
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
@@ -149,6 +168,7 @@ export default {
                 date: [],
             },
             cid: '',
+            btn: BTN,
             error: error,
             find: find,
             preOrder: preOrder,
@@ -172,7 +192,8 @@ export default {
             },
             treeClone: {},
             changeDate: {},
-            findFatherId: ''
+            findFatherId: '',
+            isCollapse: false,
         };
     },
     computed: {
@@ -225,6 +246,9 @@ export default {
         }
     },
     methods: {
+        handleClick () {
+            this.isCollapse = !this.isCollapse;
+        },
         promise(){
             Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
