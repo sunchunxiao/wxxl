@@ -49,7 +49,7 @@ const MENUDATA = [
         children: [
             {
                 title: "全景分析",
-                path: "/overview"
+                path: "/overview/reach"
             },
             {
                 title: "产品对比",

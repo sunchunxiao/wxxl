@@ -109,6 +109,7 @@ export default {
 
 <style lang="scss" scoped>
     .ConOrgComparisonAverage-container {
+        width: 100%;
         .ConOrgComparisonAverage {
             width: 140px;
             height: 140px;

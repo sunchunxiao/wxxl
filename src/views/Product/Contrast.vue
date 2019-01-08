@@ -2,6 +2,7 @@
   <div class="con_container">
     <el-row
       class="time_header">
+      <!-- 展开按钮 -->
       <el-col
         :span="5"
         class="">
@@ -39,14 +40,19 @@
             size="mini"
             class="clean_btn">
             <span
-              @click="startChecked"
-              class="clean_select">开始对比</span>
-            <span
+              v-for="(item,index) in btn"
+              :key="index"
+              @click="click(index)"
+              :class="{'start_btn':style==index}"
+              class="clean_select">{{ item }}</span>
+              <!-- <span
               @click="cleanChecked"
-              class="clean_select">取消全部</span>
+              class="clean_select">取消全部</span> -->
           </div>
-          <div class="title_target">当前选中目标数:{{ num }}</div>
-          <div class="title">毛利目标达成率</div>
+          <div class="title_target">
+            <span>当前目标: <span class="title">{{ num }}</span></span>
+            <span>毛利目标达成率</span>
+          </div>
           <div class="company">
             <span class="left">{{ treeClone.name }}</span>
             <span
@@ -93,37 +99,49 @@
         </el-col>
         <el-col
           :span="19"
+          v-if="compareArr.length > 0"
           v-loading="loading"
           class="overflow">
           <Card>
             <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
-            <el-row v-if="compareArr.length > 0">
-              <el-col :span="6">
+            <el-row>
+              <!-- <el-col :span="6"> -->
+              <slider
+                height="150px"
+                :min-move-num="50">
                 <template v-for="(item, index) in compareArr">
                   <el-col
                     :key="index"
-                    :span="12"
+                    :span="3"
                     @click.native="clickIndex(0 ,index)">
                     <ConOrgComparisonAverage
                       :id="`${index}`"
                       :data="item" />
                   </el-col>
                 </template>
-              </el-col>
-              <el-col
+              </slider>
+              <Card>
+                <ConOrgComparisonAverageBig
+                  :title="compareArr[index0].subject_name"
+                  :data="compareArr[index0]"
+                  id="ConOrgComparisonAverage"
+                  :index="index0" />
+              </Card>
+              <!-- </el-col> -->
+              <!-- <el-col
                 :span="18">
                 <ConOrgComparisonAverageBig
                   :title="compareArr[index0].subject_name"
                   :data="compareArr[index0]"
                   id="ConOrgComparisonAverage"
                   :index="index0" />
-              </el-col>
+              </el-col> -->
             </el-row>
-            <el-row
+            <!-- <el-row
               v-else
               class="please_select">
               请选择要对比的项目
-            </el-row>
+            </el-row> -->
           </Card>
         </el-col>
       </el-row>
@@ -139,6 +157,7 @@
 <script>
 import API from './api';
 import SearchBar from 'components/SearchBar';
+import Slider from 'components/Slider';
 import Card from '../../components/Card';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
@@ -158,6 +177,7 @@ const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {
         Card,
+        Slider,
         SearchBar,
         ConOrgComparisonAverage,
         ConOrgComparisonAverageBig
@@ -193,6 +213,7 @@ export default {
             treeClone: {},
             changeDate: {},
             findFatherId: '',
+            style: 0,
             isCollapse: false,
         };
     },
@@ -212,23 +233,23 @@ export default {
     watch: {
         cidObjArr(val) {
             if (val.length > 0) {
-                this.debounce();
+                // this.debounce();
             } else if (val.length === 0) {
                 this.$store.dispatch('ClearCompareArr');
             }
         },
-        cid(){
+        cid() {
             this.getTreePrograss();
         }
     },
     created() {
     // 防抖函数 减少发请求次数
-        this.debounce = _.debounce(this.getCompare, 500);
+        this.debounce = _.debounce(this.getCompare, 100);
     },
     mounted() {
         //获取初始时间
         this.changeDate = this.searchBarValue;
-        if (this.compareArr.length){
+        if (this.compareArr.length) {
             this.cid = this.productTree.cid;
             this.treeClone = _.cloneDeep(this.productTree);
             this.addProperty([this.treeClone]);
@@ -240,12 +261,20 @@ export default {
             this.$store.dispatch('SaveProductTree', this.productTree).then(() => {
                 this.$refs.tree.setCheckedKeys(checkKeys);
             });
-
         } else {
             this.promise();
         }
     },
     methods: {
+        click(index){
+            this.style = index;
+            if(index == '1'){
+                this.cidObjArr = [];
+                this.$refs.tree.setCheckedKeys([]);
+            }else{
+                this.debounce();
+            }
+        },
         handleClick () {
             this.isCollapse = !this.isCollapse;
         },
@@ -270,8 +299,9 @@ export default {
                     const progressData = res[1];
                     this.$store.dispatch('SaveProgressData', progressData.data);
                 }
-
+                this.debounce();
             });
+
         },
         allRequest() {
             this.getTreePrograss();
@@ -427,7 +457,7 @@ export default {
                 });
             }
         },
-        nodeExpand(data){
+        nodeExpand(data) {
             this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;

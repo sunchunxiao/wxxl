@@ -42,37 +42,3 @@ html, body {
 .bold{
   font-weight: bolder;
 }
-/* btn */
-.clean_btn {
-    overflow: hidden;
-    // text-align: right;
-    border-bottom: 1px solid#c9c9c9;
-    .clean_select {
-        display: inline-block;
-        flex: 1;
-        // width: 90px;
-        height: 40px;
-        padding: 0 10px;
-        line-height: 40px;
-        font-size: 14px;
-        text-align: center;
-        color: #fcb448;
-        cursor: pointer;
-        background-color: #3c80ad;
-        box-shadow: 0 3px 5px 0 rgba(113, 113, 114, 0.5);
-    }
-}
-.title_target {
-    margin: 10px 20px 18px 14px;
-    font-size: 15px;
-    text-align: left;
-    color: #312d2d
-}
-
-.card_title{
-    color: #000;
-
-}
-.align{
-    text-align: center
-}

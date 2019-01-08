@@ -1,6 +1,6 @@
 export default [
     {
-        path: '/product/overview',
+        path: '/product/overview/:name',
         name: 'productOverview',
         component: () => import('views/Product/Overview.vue')
     },

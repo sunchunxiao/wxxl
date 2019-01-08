@@ -17,9 +17,19 @@ export default {
         title: String,
         index: Number
     },
+    data () {
+        return {
+            debounce: null,
+        };
+    },
     mounted() {
         this.chart = echarts.init(document.getElementById(`ConOrgComparisonAverage-${this.id}`));
         this.renderChart(this.data);
+        this.debounce = _.debounce(this.chart.resize, 1000);
+        window.addEventListener('resize', this.debounce);
+    },
+    beforeDestroy () {
+        window.removeEventListener('resize', this.debounce);
     },
     watch: {
         data: {
@@ -103,8 +113,9 @@ export default {
 
 <style lang="scss" scoped>
     .ConOrgComparisonAverage-container {
+        width: 100%;
         .ConOrgComparisonAverage {
-            width: 840px;
+            width: 100%;
             height: 560px;
             margin: 0 auto;
         }
