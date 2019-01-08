@@ -69,7 +69,7 @@ export default {
             }
             const options = {
                 title:{
-                    text:"综合评估"
+                    // text:"综合评估"
                 },
                 tooltip: {
                     formatter: function(params){
@@ -88,14 +88,15 @@ export default {
                             padding: [3, 5]
                         }
                     },
+                    shape: 'circle',
                     indicator: arr,
                     radius: 100,
                     center: ['47%','50%'],
                     splitArea: {
                         areaStyle: {
-                            color: ['#eee','#a7dcfc', '#70bcde','#23a9cc','#007eb0'],
-                            shadowColor: 'rgba(0, 0, 0, 0.3)',
-                            shadowBlur: 10
+                            color: ['#fff'],
+                            // shadowColor: 'rgba(0, 0, 0, 0.3)',
+                            // shadowBlur: 10
                         }
                     },
                 },
@@ -105,7 +106,12 @@ export default {
                     data : [
                         {
                             value : radarValues,
-                            name:transSubjects
+                            name:transSubjects,
+                            areaStyle: {
+                                normal: {
+                                    color: 'rgba(1, 184, 170, 0.8)'
+                                }
+                            }
                         },
                     ]
                 }]
