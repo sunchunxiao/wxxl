@@ -95,7 +95,9 @@ export default {
                 this.allRequest();
             },
             immediate: true
-            // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+        },
+        val() {
+            this.allRequest();
         }
     },
     methods: {
