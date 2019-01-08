@@ -81,6 +81,9 @@ export default {
                 this.allRequest();
             },
             immediate: true
+        },
+        val() {
+            this.allRequest();
         }
     },
     methods: {
