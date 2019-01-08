@@ -50,6 +50,7 @@ import { mapGetters } from 'vuex';
 export default {
     props: {
         cid: String,
+        val: Object
     },
     components: {
         Card,
@@ -65,40 +66,43 @@ export default {
             //tree
             pt: '',
             loading: false,
-            val: {},
-            changeDate: {},
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr']),
+        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'lastParams']),
         hasTree () {
             return !_.isEmpty(this.productTree);
         },
     },
-    mounted () {
-        // console.log(this.cid);
-        // console.log(this.$store.state.product.tree1)
-        //获取初始时间
-        this.changeDate = this.searchBarValue;
-        this.getProgress();
-    },
     watch: {
-        cid() {
+        cid: {
+            handler() {
+                this.allRequest();
+            },
+            immediate: true
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            this.allRequest();
         }
     },
     methods: {
         allRequest() {
+            if (!this.cid) {
+                return;
+            }
             this.getProgress();
+            this.$store.dispatch("SaveLastParams", this.newParams);
         },
         getProgress() {
-            this.loading = true;
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
+            this.newParams.diff = params;
+            if (JSON.stringify(this.lastParams.diff) == JSON.stringify(params)) {
+                return;
+            }
+            this.loading = true;
             API.GetProductProgress(params).then(res => {
                 this.$store.dispatch('SaveProgressData', res.data);
                 const promises = _.map(res.data, o => this.getTrend(o.subject));
@@ -124,31 +128,16 @@ export default {
             return API.GetProductTrend(params);
         },
         getPt() {
-            const {
-                date
-            } = this.form;
             if (this.val.sDate && this.val.eDate) {
                 this.pt = this.val.pt;
-            }else{
-                this.pt = date.pt;
             }
             return this.pt;
         },
         getDateObj() {
-            const {
-                date
-            } = this.form;
-            if (this.val.sDate && this.val.eDate) {
-                return {
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-            } else {
-                return {
-                    sDate: date.sDate,
-                    eDate: date.eDate,
-                };
-            }
+            return {
+                sDate: this.val.sDate,
+                eDate: this.val.eDate,
+            };
         },
         getPeriodByPt() {
             const {

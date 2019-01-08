@@ -10,7 +10,8 @@ const product = {
         compareArr: [],
         historyArr: [],
         strategyArr: [],
-        productDateArr: {}
+        productDateArr: {},
+        lastParams: {}
     },
     mutations: {
         SAVE_PRODUCT_TREE: (state, tree) => {
@@ -48,7 +49,10 @@ const product = {
         },
         SAVE_PRODUCEDATE_ARR: (state, arr) => {
             state.productDateArr = arr;
-        }
+        },
+        SAVE_LAST_PARAMS: (state, lastParams) => {
+            state.lastParams = Object.assign({}, state.lastParams, lastParams);
+        },
     },
     actions: {
         SaveProductTree({ commit }, tree) {
@@ -86,7 +90,10 @@ const product = {
         },
         SaveProductDate({ commit }, arr) {
             commit('SAVE_PRODUCEDATE_ARR', arr);
-        }
+        },
+        SaveLastParams({ commit }, lastParams) {
+            commit('SAVE_LAST_PARAMS', lastParams);
+        },
     }
 };
 

@@ -62,8 +62,11 @@ import Radar from 'components/radar';
 import { mapGetters } from 'vuex';
 
 export default {
+    name: "RadarWrap",
     props: {
         cid: String,
+        date: Object,
+        val: Object
     },
     components: {
         Card,
@@ -80,37 +83,45 @@ export default {
             },
             pt: '',
             loading: false,
-            val: {},
+            // val: {},
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'rankArr']),
+        ...mapGetters(['productTree', 'progressArr', 'rankArr', 'lastParams']),
         hasTree () {
             return !_.isEmpty(this.productTree);
-        },
-    },
-    mounted () {
-
+        }
     },
     watch: {
-        cid() {
-            // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            this.allRequest();
+        cid: {
+            handler () {
+                this.allRequest();
+            },
+            immediate: true
         }
     },
     methods: {
         allRequest() {
+            if (!this.cid) {
+                return;
+            }
             this.getProgress();
             this.getRank();
+            this.$store.dispatch("SaveLastParams", this.newParams);
         },
         //目标达成
         getProgress() {
-            this.loading = true;
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
+            this.newParams.progress = params;
+            if (JSON.stringify(this.lastParams.progress) == JSON.stringify(params)) {
+                return;
+            }
+            this.loading = true;
             API.GetProductProgress(params).then(res => {
                 this.$store.dispatch('SaveProgressData', res.data);
             }).finally(() => {
@@ -124,12 +135,16 @@ export default {
             }else{
                 this.pt = this.getPt();
             }
-            this.loading = true;
             const params = {
                 cid: this.cid,
                 pt: this.pt,
                 ...this.getPeriodByPt(),
             };
+            this.newParams.rank = params;
+            if (JSON.stringify(this.lastParams.rank) == JSON.stringify(params)) {
+                return;
+            }
+            this.loading = true;
             API.GetProductRank(params).then(res => {
                 this.$store.dispatch('SaveRankArr', res.data);
             }).finally(() => {
@@ -137,31 +152,16 @@ export default {
             });
         },
         getPt() {
-            const {
-                date
-            } = this.form;
             if (this.val.sDate && this.val.eDate) {
                 this.pt = this.val.pt;
-            }else{
-                this.pt = date.pt;
             }
             return this.pt;
         },
         getDateObj() {
-            const {
-                date
-            } = this.form;
-            if (this.val.sDate && this.val.eDate) {
-                return {
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-            } else {
-                return {
-                    sDate: date.sDate,
-                    eDate: date.eDate,
-                };
-            }
+            return {
+                sDate: this.val.sDate,
+                eDate: this.val.eDate,
+            };
         },
         getPeriodByPt() {
             const {

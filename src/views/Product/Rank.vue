@@ -72,6 +72,7 @@ import { mapGetters } from 'vuex';
 export default {
     props: {
         cid: String,
+        val: Object
     },
     components: {
         Card,
@@ -92,13 +93,13 @@ export default {
             stragetyTitle: '',
             stragety: [],
             idArr: [],
-            val: {},
             post: 1,
             changeDate: {},
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'rankArr']),
+        ...mapGetters(['productTree', 'rankArr','lastParams']),
         hasTree () {
             return !_.isEmpty(this.productTree);
         },
@@ -106,16 +107,12 @@ export default {
             return !_.isEmpty(this.structureArr);
         },
     },
-    tempalte:`111`,
-    mounted () {
-        //获取初始时间
-        this.changeDate = this.searchBarValue;
-        this.getRank();
-    },
     watch: {
-        cid() {
-            // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            this.getRank();
+        cid: {
+            handler () {
+                this.allRequest();
+            },
+            immediate: true
         }
     },
     methods: {
@@ -161,18 +158,29 @@ export default {
                 this.error('无应用策略');
             }
         },
+        allRequest() {
+            if (!this.cid) {
+                return;
+            }
+            this.getRank();
+            this.$store.dispatch("SaveLastParams", this.newParams);
+        },
         getRank() {
             if (this.getPt() === '日') {
                 this.pt = '周';
             } else {
                 this.pt = this.getPt();
             }
-            this.loading = true;
             const params = {
                 cid: this.cid,
                 pt: this.pt,
                 ...this.getPeriodByPt(),
             };
+            this.newParams.rank = params;
+            if (JSON.stringify(this.lastParams.rank) == JSON.stringify(params)) {
+                return;
+            }
+            this.loading = true;
             API.GetProductRank(params).then(res => {
                 this.$store.dispatch('SaveRankArr', res.data);
             }).finally(() => {
@@ -180,31 +188,16 @@ export default {
             });
         },
         getPt() {
-            const {
-                date
-            } = this.form;
             if (this.val.sDate && this.val.eDate) {
                 this.pt = this.val.pt;
-            }else{
-                this.pt = date.pt;
             }
             return this.pt;
         },
         getDateObj() {
-            const {
-                date
-            } = this.form;
-            if (this.val.sDate && this.val.eDate) {
-                return {
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-            } else {
-                return {
-                    sDate: date.sDate,
-                    eDate: date.eDate,
-                };
-            }
+            return {
+                sDate: this.val.sDate,
+                eDate: this.val.eDate,
+            };
         },
         getPeriodByPt() {
             const {

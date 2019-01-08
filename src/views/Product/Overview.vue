@@ -4,7 +4,6 @@
       class="time_header">
       <search-bar
         ref="child"
-        @input="input"
         @search="handleSearch"
         url="/product/search"
         placeholder="产品编号/产品名称"
@@ -76,13 +75,12 @@
               :key="item.id"
               v-for="item in tabs"
               :class="{'bacground':currView==item.id}"
-              @click="currView=item.id"><span class="dot" />{{ item.value }}</span>
+              @click="handleClick(item.id)"><span class="dot" />{{ item.value }}</span>
           </div>
-          <keep-alive>
-            <component
-              :cid="cid"
-              :is="currentTabComponent" />
-          </keep-alive>
+          <component
+            :cid="cid"
+            :val="val"
+            :is="currentTabComponent" />
         </el-row>
       </el-row>
       <el-row
@@ -172,8 +170,8 @@ export default {
             findFatherId: '',
             //views
             tabs: OVER_TABS,
-            currView: 'reach',
-            style: 0,
+            currView: '',
+            style: 0
         };
     },
     computed: {
@@ -185,7 +183,14 @@ export default {
             return this.currView;
         }
     },
+    watch: {
+        cid() {
+            this.allRequest();
+        }
+    },
     mounted () {
+        this.val = this.searchBarValue;
+        this.currView = this.$route.params.name;
         //获取初始时间
         this.changeDate = this.searchBarValue;
         if (!this.hasTree) {
@@ -199,11 +204,12 @@ export default {
         }
     },
     methods: {
+        handleClick(id) {
+            this.currView = id;
+            this.$router.push(`/product/overview/${id}`);
+        },
         allRequest() {
             this.getTreePrograss();
-        },
-        input(val) {
-            this.form.date = val;
         },
         click() {
             if (this.cid === this.productTree.cid) {

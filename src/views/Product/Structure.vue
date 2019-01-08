@@ -61,6 +61,7 @@ import { mapGetters } from 'vuex';
 export default {
     props: {
         cid: String,
+        val: Object
     },
     components: {
         Card,
@@ -78,26 +79,23 @@ export default {
             index3: 0,
             pt: '',
             loading: false,
-            val: {},
             changeDate: {},
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'structureArr']),
+        ...mapGetters(['productTree', 'structureArr','lastParams']),
         hasTree () {
             return !_.isEmpty(this.productTree);
         },
     },
-    mounted () {
-        // console.log(this.$store.state.product.tree1)
-        //获取初始时间
-        this.changeDate = this.searchBarValue;
-        this.getStructure();
-    },
     watch: {
-        cid() {
+        cid: {
+            handler () {
+                this.allRequest();
+            },
+            immediate: true
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            this.allRequest();
         }
     },
     methods: {
@@ -112,15 +110,23 @@ export default {
             this.highlight = true;
         },
         allRequest() {
+            if (!this.cid) {
+                return;
+            }
             this.getStructure();
+            this.$store.dispatch("SaveLastParams", this.newParams);
         },
         getStructure() {
-            this.loading = true;
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
+            this.newParams.structure = params;
+            if (JSON.stringify(this.lastParams.structure) == JSON.stringify(params)) {
+                return;
+            }
+            this.loading = true;
             API.GetProductStructure(params).then(res => {
                 this.$store.dispatch('SaveStructureArr', res.data);
             }).finally(() => {
@@ -128,31 +134,16 @@ export default {
             });
         },
         getPt() {
-            const {
-                date
-            } = this.form;
             if (this.val.sDate && this.val.eDate) {
                 this.pt = this.val.pt;
-            }else{
-                this.pt = date.pt;
             }
             return this.pt;
         },
         getDateObj() {
-            const {
-                date
-            } = this.form;
-            if (this.val.sDate && this.val.eDate) {
-                return {
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-            } else {
-                return {
-                    sDate: date.sDate,
-                    eDate: date.eDate,
-                };
-            }
+            return {
+                sDate: this.val.sDate,
+                eDate: this.val.eDate,
+            };
         },
         getPeriodByPt() {
             const {

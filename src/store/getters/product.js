@@ -9,6 +9,7 @@ const product = {
     historyArr: state => state.product.historyArr,
     strategyArr: state => state.product.strategyArr,
     productDateArr: state => state.product.productDateArr,
+    lastParams: state => state.product.lastParams,
 };
 
 export default product;
