@@ -122,9 +122,6 @@ $width_collapse: 55px;
         .left_collapse {
             width: $width_collapse;
         }
-        .right_collapse {
-            margin-left: $width_collapse;
-        }
         .content {
             // padding: 0px 0px 16px;
             height: 100%;

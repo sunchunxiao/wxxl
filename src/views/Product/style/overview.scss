@@ -1,7 +1,7 @@
 .overview {
     background-color: #fff;
-    height: calc(100% - 48px);
-    // overflow: auto;
+    flex: 1;
+    overflow: auto;
     color: #4d4d4d;
     .overview_select {
         width: 100%;
@@ -17,22 +17,28 @@
     .content_row {
         height: 100%;
         .common-overflow {
-            height: calc(100% - 100px);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+            height: 100%;
             .common-wrap{
-                min-width: 1310px;
                 .bacground{
                     background-color: #1a1a1a!important;
                 }
                 .span {
                     display: inline-block;
-                    width: 250px;
-                    height: 40px;
+                    width: 20%;
+                    height: 50px;
                     line-height: 40px;
                     background-color: gray;
                     text-align: center;
+                    box-sizing: border-box;
                     padding: 5px;
                     color: #fff;
-                    border-right: 1px solid #a29e9e;
+                    & +.span {
+                        border-left: 1px solid #a29e9e;
+                    }
                     cursor: pointer;
                     .dot {
                         display: inline-block;
@@ -45,7 +51,20 @@
                         background-color: #fff;
                     }
                 }
+                @media screen and (max-width: 1550px){
+                    .span {
+                        width: 25%;
+                        &:last-child {
+                            border-left: none;
+                        }
+                    }
+                }
 
+            }
+            .nav-content {
+                flex: 1;
+                overflow-y: auto;
+                overflow-x: hidden;
             }
         }
         .overflow::-webkit-scrollbar {
@@ -74,7 +93,7 @@
             border-left: 1px solid rgba(0, 0, 0, 0);
         }
         .tree_container {
-            height: 100%;
+            box-sizing: border-box;
             min-width: 280px;
             max-width: 320px;
             // padding-bottom: 18px;
@@ -255,21 +274,4 @@
     background: rgba(0, 0, 0, 0.5)!important;
     font-size: 16px;
     font-weight: 500;
-}
-
-//全景分析各路由
-.nav-content {
-    height: 100%;
-    .nav-content-row {
-        height: 100%;
-        overflow-y: scroll;
-        overflow: hidden;
-        margin: 0!important;
-        .overflow {
-            width: 93%;
-            height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-    }
 }

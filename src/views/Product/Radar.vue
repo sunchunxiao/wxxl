@@ -2,10 +2,8 @@
   <div class="nav-content">
     <el-row
       v-if="productTree"
-      class="nav-content-row"
-      :gutter="20">
+      class="nav-content-row">
       <el-col
-        :span="17"
         class="overflow">
         <el-row
           v-if="progressArr.length>0"

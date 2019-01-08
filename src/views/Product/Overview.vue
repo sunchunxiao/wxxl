@@ -13,6 +13,7 @@
     <div class="overview">
       <el-row
         v-if="productTree"
+        type="flex"
         class="content_row">
         <el-col
           :span="5"
@@ -66,9 +67,9 @@
             </span>
           </el-tree>
         </el-col>
-        <el-row
+        <el-col
           class="common-overflow"
-          :span="18">
+          :span="19">
           <div class="common-wrap">
             <span
               class="span"
@@ -81,7 +82,7 @@
             :cid="cid"
             :val="val"
             :is="currentTabComponent" />
-        </el-row>
+        </el-col>
       </el-row>
       <el-row
         v-else
