@@ -143,6 +143,20 @@
                     background: #F2C811;
                     box-shadow: 0 3px 5px 0 rgba(204, 204, 204, 0.8);
                 }
+                @media screen and (max-width: 1550px){
+                    .span {
+                        width: 25%;
+                        &:last-child {
+                            border-left: none;
+                        }
+                    }
+                }
+
+            }
+            .nav-content {
+                flex: 1;
+                overflow-y: auto;
+                overflow-x: hidden;
             }
         }
         .el-tree {
@@ -265,21 +279,4 @@
     background: rgba(0, 0, 0, 0.5)!important;
     font-size: 16px;
     font-weight: 500;
-}
-
-//全景分析各路由
-.nav-content {
-    height: 100%;
-    .nav-content-row {
-        height: 100%;
-        overflow-y: scroll;
-        overflow: hidden;
-        margin: 0!important;
-        .overflow {
-            width: 93%;
-            height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-    }
 }

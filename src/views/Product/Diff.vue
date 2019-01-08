@@ -2,10 +2,8 @@
   <div class="nav-content">
     <el-row
       v-if="productTree"
-      class="nav-content-row"
-      :gutter="20">
+      class="nav-content-row">
       <el-col
-        :span="17"
         class="overflow">
         <el-row
           v-if="trendArr.length>0"
@@ -81,7 +79,9 @@ export default {
                 this.allRequest();
             },
             immediate: true
-            // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
+        },
+        val() {
+            this.allRequest();
         }
     },
     methods: {
