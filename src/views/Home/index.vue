@@ -12,115 +12,86 @@
         :pt-options="['月', '季', '年']" />
     </el-row>
     <div class="home_menu">
-      <div class="collapse_outernal">
-        <el-menu
-          router
-          class="el-menu-demo"
-          mode="horizontal">
-          <template v-for="item in outernalAssessment">
-            <el-submenu
-              :index="item.path"
-              :key="item.path">
-              <template slot="title">
-                <span class="dot" />{{ item.title }}
-              </template>
-              <template v-for="itm in item.children">
-                <el-menu-item
-                  :index="`${item.path}${itm.path}`"
-                  :key="`${item.path}${itm.path}`">
-                  <span>
-                    <span class="dot" /> {{ itm.title }}
-                  </span>
-                </el-menu-item>
-              </template>
-            </el-submenu>
-          </template>
-        </el-menu>
-      </div>
-      <div class="outernal">
-        <div class="menu_output">外部评估</div>
-        <el-menu
-          router
-          class="el-menu-demo"
-          mode="horizontal">
-          <el-menu-item index="/home/sales"><span class="dot" />销售</el-menu-item>
-          <el-menu-item index="/home/profit"><span class="dot" />利润</el-menu-item>
-        </el-menu>
-      </div>
-      <div>
-        <el-menu
-          router
-          :default-active="activePath"
-          class="el-menu-demo"
-          mode="horizontal">
-          <template v-for="item in menuData">
-            <el-submenu
-              :index="item.path"
-              :key="item.path">
-              <template slot="title">
-                <span class="dot" />{{ item.title }}
-              </template>
-              <template v-for="itm in item.children">
-                <el-menu-item
-                  :index="`${item.path}${itm.path}`"
-                  :key="`${item.path}${itm.path}`">
-                  <span>
-                    <span class="dot" /> {{ itm.title }}
-                  </span>
-                </el-menu-item>
-              </template>
-            </el-submenu>
-          </template>
-        </el-menu>
-      </div>
-      <div>
-        <el-menu
-          router
-          class="el-menu-demo"
-          mode="horizontal">
-          <el-menu-item index="/home/equity"><span class="dot" />品牌价值</el-menu-item>
-        </el-menu>
-      </div>
-      <div class="internal">
-        <div class="menu_output">内部评估</div>
-        <el-menu
-          router
-          class="el-menu-demo"
-          mode="horizontal">
-          <template v-for="item in menuDataInput">
-            <el-menu-item
-              :key="item.path"
-              :index="item.path">
+      <el-menu
+        router
+        :default-active="activePath"
+        class="el-menu-demo"
+        mode="horizontal">
+        <template v-for="item in outernalAssessment">
+          <el-submenu
+            class="collapse_outernal"
+            :index="item.path"
+            :key="'collapse_outernal'+item.path">
+            <template slot="title">
               <span class="dot" />{{ item.title }}
-            </el-menu-item>
-          </template>
-        </el-menu>
-      </div>
-      <div class="collapse_internal">
-        <el-menu
-          router
-          class="el-menu-demo"
-          mode="horizontal">
-          <template v-for="item in internalAssessment">
-            <el-submenu
-              :index="item.path"
-              :key="item.path">
-              <template slot="title">
-                <span class="dot" />{{ item.title }}
-              </template>
-              <template v-for="itm in item.children">
-                <el-menu-item
-                  :index="`${item.path}${itm.path}`"
-                  :key="`${item.path}${itm.path}`">
-                  <span>
-                    <span class="dot" /> {{ itm.title }}
-                  </span>
-                </el-menu-item>
-              </template>
-            </el-submenu>
-          </template>
-        </el-menu>
-      </div>
+            </template>
+            <template v-for="itm in item.children">
+              <el-menu-item
+                :index="`${item.path}${itm.path}`"
+                :key="`${item.path}${itm.path}`">
+                <span>
+                  <span class="dot" /> {{ itm.title }}
+                </span>
+              </el-menu-item>
+            </template>
+          </el-submenu>
+        </template>
+        <div
+          class="menu_output outernal">外部评估</div>
+        <el-menu-item
+          index="/home/sales"
+          class="outernal"><span class="dot" />销售</el-menu-item>
+        <el-menu-item
+          index="/home/profit"
+          class="outernal"><span class="dot" />利润</el-menu-item>
+        <template v-for="item in menuData">
+          <el-submenu
+            :index="item.path"
+            :key="item.path">
+            <template slot="title">
+              <span class="dot" />{{ item.title }}
+            </template>
+            <template v-for="itm in item.children">
+              <el-menu-item
+                :index="`${item.path}${itm.path}`"
+                :key="`${item.path}${itm.path}`">
+                <span>
+                  <span class="dot" /> {{ itm.title }}
+                </span>
+              </el-menu-item>
+            </template>
+          </el-submenu>
+        </template>
+        <el-menu-item index="/home/equity"><span class="dot" />品牌价值</el-menu-item>
+        <div class="menu_output internal">内部评估</div>
+        <template v-for="item in menuDataInput">
+          <el-menu-item
+            class="internal"
+            :key="'internal'+item.path"
+            :index="item.path">
+            <span class="dot" />{{ item.title }}
+          </el-menu-item>
+        </template>
+        <template v-for="item in internalAssessment">
+          <el-submenu
+            class="collapse_internal"
+            :index="item.path"
+            :key="'collapse_internal'+item.path">
+            <template slot="title">
+              <span class="dot" />{{ item.title }}
+            </template>
+            <template v-for="itm in item.children">
+              <el-menu-item
+                :index="`${item.path}${itm.path}`"
+                :key="`${item.path}${itm.path}`">
+                <span>
+                  <span class="dot" /> {{ itm.title }}
+                </span>
+              </el-menu-item>
+            </template>
+          </el-submenu>
+        </template>
+      </el-menu>
     </div>
     <div
       class="overview">
