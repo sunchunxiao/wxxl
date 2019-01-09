@@ -17,25 +17,27 @@ $border-right: #7F7F7F;
         color: rgb(255, 255, 255);
         background-color: #333;
         border-top: 1px solid $border-right;
-        >div{
-            display: flex;
-            &.collapse_internal {
-                display: none;
-            }
-            &.collapse_outernal {
-                display: none;
+        .el-menu {
+            >li,>div {
+                float: left;
             }
         }
+        .collapse_internal {
+            display: none;
+        }
+        .collapse_outernal {
+            display: none;
+        }
         @media screen and (min-width: 1660px) {
-            >div.collapse_internal,>div.collapse_outernal {
+            .collapse_internal,.collapse_outernal {
                 display: none;
             }
         }
         @media screen and (max-width: 1660px) {
-            >div.internal {
+            .internal {
                 display: none;
             }
-            >div.collapse_internal {
+            .collapse_internal {
                 display: block;
             }
         }
