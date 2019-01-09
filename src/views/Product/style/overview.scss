@@ -2,6 +2,18 @@
     background-color:#504b4b;
     height: 40px;
     padding:5px 0;
+    display: flex;
+    align-items: center;
+    >div:not(.search_bar) {
+        flex-shrink: 0;
+    }
+    .contrast_btn {
+        padding: 0 15px;
+        line-height: 30px;
+    }
+    .search_bar {
+        flex: 1;
+    }
 }
 .overview {
     background-color: #fff;
