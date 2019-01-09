@@ -170,7 +170,7 @@ export default {
     },
     watch: {
         ['$route.fullPath']: function (val) {
-            if (val === '/home') {
+            if (val === '/home/sales') {
                 this.activePath = 'placeholder';
                 return;
             }
