@@ -62,15 +62,15 @@ export default {
             let _this = this;
             const { real, target, timeLabels,subject,hasTarget } = data;
             let arr = [];
-            const diff = [];
             let realItem, targetItem;
-            const bottom = [];
-            const under = [];
-            const underTarget = [];
+            // goodBottom badBottom 正负差异辅助柱子
+            // transparentBottom 透明辅助柱子
+            // good bad 正负差异
+            const good = [], goodBottom = [], bad = [], badBottom = [], transparentBottom = [];
             const realClone = _.cloneDeep(real);
             const targetClone = _.cloneDeep(target);
-            for (let i = 0;i < hasTarget.length;i++){
-                //POR人员冗余
+            for (let i = 0;i < hasTarget.length;i++) {
+                // value值转换为元
                 if (_.includes(SUBJECT,subject)) {
                     arr.push({
                         value: targetClone[i],
@@ -85,30 +85,30 @@ export default {
                 }
                 realItem = realClone[i];
                 targetItem = arr[i].value;
-
-                if (realItem < 0 && targetItem < 0) {
-                    bottom.push(realItem < targetItem ? targetItem : realItem);
-                    if (_.isInteger(realItem - targetItem)){
-                        diff.push(-Math.abs(realItem - targetItem));
+                if (realItem >=0 && targetItem >= 0) {
+                    if (realItem >= targetItem) {
+                        // timeLabels[i]为x轴的name,锁定位置
+                        good.push([timeLabels[i],realItem - targetItem]);
+                        transparentBottom.push([timeLabels[i],targetItem]);
+                    } else if (realItem < targetItem) {
+                        bad.push([timeLabels[i],targetItem - realItem]);
+                        transparentBottom.push([timeLabels[i],realItem]);
+                    }
+                } else if (realItem > 0 && targetItem < 0) {
+                    good.push([timeLabels[i], realItem]);
+                    goodBottom.push([timeLabels[i], targetItem]);
+                } else if (targetItem > 0 && realItem < 0) {
+                    bad.push([timeLabels[i], targetItem]);
+                    badBottom.push([timeLabels[i], realItem]);
+                } else if (realItem < 0 && targetItem < 0) {
+                    if (realItem >= targetItem) {
+                        transparentBottom.push([timeLabels[i],realItem]);
+                        good.push([timeLabels[i],targetItem - realItem]);
                     } else {
-                        diff.push(-Math.abs(realItem - targetItem).toFixed(2));
-                    }
-                } else if (realItem >= 0 && targetItem >= 0) {
-                    bottom.push(realItem < targetItem ? realItem : targetItem);
-                    if (_.isInteger(realItem - targetItem)) {
-                        diff.push(Math.abs(realItem - targetItem));
-                    } else {
-                        diff.push(Math.abs(realItem - targetItem).toFixed(2));
-                    }
-                } else {
-                    if (realItem > 0 || targetItem > 0) {
-                        bottom.push(realItem);
-                    }
-                    if( targetItem < 0 || realItem < 0) {
-                        under.push(targetItem);
+                        transparentBottom.push([timeLabels[i],targetItem]);
+                        bad.push([timeLabels[i],realItem - targetItem]);
                     }
                 }
-                realItem < targetItem && underTarget.push(i);
             }
             const options = {
                 grid: {
@@ -127,7 +127,7 @@ export default {
                         restore : { show: true },
                         saveAsImage : { show: true }
                     },
-                    right: '150',
+                    right: '300',
                     top: '-2%'
                 },
                 tooltip: {
@@ -141,7 +141,10 @@ export default {
                         const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
                             // console.log(item,item.seriesIndex);
-                            const value = _this.formatNumber(item.value);
+                            let value = _this.formatNumber(item.value);
+                            if (Array.isArray(value)) {
+                                value = value[value.length - 1];
+                            }
                             if (hasTarget==0){
                                 if (item.seriesIndex != 2&&item.seriesIndex != 3) {
                                     if (item.seriesIndex == 0) {//目标
@@ -159,9 +162,10 @@ export default {
                         return result;
                     },
                 },
-                color: ['#26A6D7', '#Fcb448'],//折线颜色 #Fcb448黄色
+                color: ['#26A6D7', '#Fcb448','#01B8AA','#FD625E'],//折线颜色 #Fcb448黄色
                 legend: {
-                    data: ['目标', '实际'],
+                    color: ['#26A6D7', '#Fcb448','#01B8AA','#FD625E'],//折线颜色 #Fcb448黄色
+                    data: ['目标', '实际','正差异','负差异'],
                     left: 'right',
                     show: true,
                 },
@@ -181,53 +185,72 @@ export default {
                         name: '目标',
                         data: arr,
                         type: 'line',
+                        symbol: "none"
                     },
                     {
                         data: realClone,
                         name: '实际',
                         type: 'line',
+                        symbol: "none",
                         lineStyle: {
                             color: '#fcb448',
                             type: 'solid',
                             width: 2
                         }
                     },
-                    {
-                        data: bottom,
-                        type: 'bar',
-                        stack: 1,
-                        barMaxWidth: 20,
-                        itemStyle: {
-                            color: function (params) {
-                                if (under.length) {
-                                    return -1 == underTarget.indexOf(params.dataIndex) ? '#01B8AA' : '#FD625E';//#01B8AA绿色
-                                } else {
-                                    return 'rgba(255,255,255,0)';
-                                }
-                            }
-                        },
-                    },
+                    // transparentBottom
                     {
                         type: 'bar',
                         stack: 1,
                         barMaxWidth: 20,
                         itemStyle: {
-                            color: function (params) {
-                                return -1 == underTarget.indexOf(params.dataIndex) ? '#01B8AA' : '#FD625E';
-                            }
+                            color: "transparent"
                         },
-                        data: under
+                        data: transparentBottom
                     },
+                    // goodBottom
                     {
-                        data: diff,
-                        name: '差异',
+                        name: "正差异",
                         type: 'bar',
                         stack: 1,
+                        barMaxWidth: 20,
                         itemStyle: {
-                            color: function (params) {
-                                return -1 == underTarget.indexOf(params.dataIndex) ? '#01B8AA' : '#FD625E';
-                            }
+                            color: "#01B8AA"
                         },
+                        data: goodBottom
+                    },
+                    // good
+                    {
+                        name: "正差异",
+                        type: 'bar',
+                        stack: 1,
+                        barMaxWidth: 20,
+                        itemStyle: {
+                            color: "#01B8AA"
+                        },
+                        data: good
+                    },
+                    // badBottom
+                    {
+                        name: "负差异",
+                        type: 'bar',
+                        stack: 1,
+                        barMaxWidth: 20,
+                        itemStyle: {
+                            color: "#FD625E"
+                        },
+                        data: badBottom
+                    },
+                    // bad
+                    {
+                        name: "负差异",
+                        type: 'bar',
+                        stack: 1,
+                        barMaxWidth: 20,
+                        itemStyle: {
+                            color: "#FD625E"
+                        },
+                        data: bad
                     }
                 ]
             };
