@@ -78,7 +78,7 @@
           router
           class="el-menu-demo"
           mode="horizontal">
-          <el-menu-item index="/home/equity">品牌价值</el-menu-item>
+          <el-menu-item index="/home/equity"><span class="dot" />品牌价值</el-menu-item>
         </el-menu>
       </div>
       <div class="internal">
@@ -135,12 +135,6 @@
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
 
-import { mapGetters } from 'vuex';
-
-const TREE_PROPS = {
-    children: 'children',
-    label: 'name'
-};
 const menuDataInput = [
     {
         title: "盈利空间",
@@ -221,12 +215,10 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
-            cid: '',
             menuData: MENUDATA,
             menuDataInput: menuDataInput,
             internalAssessment: internalAssessment,
             outernalAssessment: outernalAssessment,
-            defaultProps: TREE_PROPS,
             loading: false,
             activePath: "/home",
             val: {},
@@ -239,16 +231,12 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['overviewArr','overviewTrendArr','productArr','productTrendArr','channelArr','channelTrendArr','orgHomeArr','orgTrendArr','fundHomeArr','fundHomeTrendArr','cusHomeArr','cusHomeTrendArr']),
-        hasTree() {
-            return !_.isEmpty(this.productArr);
-        }
+
     },
     mounted() {
         //获取初始时间
         this.changeDate = this.searchBarValue;
         this.$store.dispatch('SaveSearchDate', this.changeDate);
-        // console.log(this.changeDate);
         this.activePath = this.$route.fullPath;
     },
     watch: {
@@ -308,7 +296,6 @@ export default {
             // 时间改变
             this.$store.dispatch('SaveSearchDate', val);
         },
-
     }
 };
 </script>

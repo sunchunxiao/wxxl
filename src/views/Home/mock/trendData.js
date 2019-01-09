@@ -88,4 +88,51 @@ const dataEquity = function mockTrendData3() {
     }
     return arr;
 };
-export { dataEquity, dataSales, dataProfitTrend };
+//盈利空间
+const dataSpace = function mockTrendData4() {
+    let arr = [];
+    let subject_name = ["毛利润率", '回款额', '回款增长额', '回款增长率','成本费用额','成本费用增长率'];
+    for(let i = 0; i < 6; i++) {
+        arr.push(_.cloneDeep(data));
+        arr[i].hasTarget = getRandomNumArr(16, 2);
+        arr[i].subject_name = subject_name[i];
+        arr[i].real = getRandomNumArr(16, 1000);
+        arr[i].target  = getRandomNumArr(16, 1000);
+        arr[i].ring = getRandomNumArr(16, 20, -10);
+        arr[i].yoy = getRandomNumArr(16, 20, -10);
+    }
+    return arr;
+};
+
+//盈利能力
+const dataAbility = function mockTrendData5() {
+    let arr = [];
+    let subject_name = ["订单额", '订单增长额', '订单增长率', '库存额','库龄','库存增长额','库存增长率'];
+    for(let i = 0; i < 7; i++) {
+        arr.push(_.cloneDeep(data));
+        arr[i].hasTarget = getRandomNumArr(16, 2);
+        arr[i].subject_name = subject_name[i];
+        arr[i].real = getRandomNumArr(16, 1000);
+        arr[i].target  = getRandomNumArr(16, 1000);
+        arr[i].ring = getRandomNumArr(16, 20, -10);
+        arr[i].yoy = getRandomNumArr(16, 20, -10);
+    }
+    return arr;
+};
+
+//支付能力
+const dataPay = function mockTrendData5() {
+    let arr = [];
+    let subject_name = ["净现金流", '现金流入', '现金流出', '应收额','应收增长额','应收增长率','应付额'];
+    for(let i = 0; i < 7; i++) {
+        arr.push(_.cloneDeep(data));
+        arr[i].hasTarget = getRandomNumArr(16, 2);
+        arr[i].subject_name = subject_name[i];
+        arr[i].real = getRandomNumArr(16, 1000);
+        arr[i].target  = getRandomNumArr(16, 1000);
+        arr[i].ring = getRandomNumArr(16, 20, -10);
+        arr[i].yoy = getRandomNumArr(16, 20, -10);
+    }
+    return arr;
+};
+export { dataEquity, dataSales, dataProfitTrend, dataSpace, dataAbility, dataPay };
