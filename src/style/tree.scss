@@ -1,17 +1,24 @@
-.tree_block {
-    display: block;
-}
-.tree_block_none {
-    display: none;
-}
 .tree_container {
     box-sizing: border-box;
     min-width: 280px;
     max-width: 320px;
     overflow-y: auto;
-    border: 1px solid #eee;
-    border-radius: 5px;
     background: #e6e6e6;
+    display: flex;
+    flex-direction: column;
+    &.tree_block {
+        display: block;
+    }
+    &.tree_block_none {
+        display: none;
+    }
+    >div:not(.tree_content) {
+        flex-shrink: 0;
+    }
+    .tree_content {
+        flex: 1;
+        overflow: auto;
+    }
     .title {
         margin: 18px 20px 18px 0;
         text-align: right;
@@ -107,6 +114,18 @@
             position: relative;
             overflow: hidden;
             z-index: 1;
+            .el-checkbox__inner{
+                border: 1px solid #fff;
+                background-color: transparent;
+            }
+            .el-checkbox__input.is-checked{
+                .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner{
+                    background-color: #f2c811;
+                }
+            }
+            .el-checkbox.is-checked +.custom-tree-node .progress {
+                background: #F2C811;
+            }
             .label {
                 width: 100%;
                 display: flex;
@@ -144,13 +163,18 @@
                 font-weight: 500;
                 color: rgb(77,77,77);
             }
+            >.el-tree-node__content {
+                >.custom-tree-node {
+                    font-weight: bold;
+                }
+            }
         }
         .el-tree-node__children .el-tree-node {
             .label_left {
                 font-weight: normal;
             }
         }
-        >.el-tree-node, .el-tree-node__children .el-tree-node{
+        .el-tree-node {
             &:before {
                 content: '';
                 display: block;
@@ -161,11 +185,6 @@
                 bottom: 20px;
                 background-color: #e6e6e6;
             }
-            >.el-tree-node__content {
-                >.custom-tree-node {
-                    font-weight: bold;
-                }
-            }
         }
         .el-tree-node__expand-icon.is-leaf {
             visibility: hidden;
@@ -175,7 +194,6 @@
         }
     }
 }
-
 .el-tooltip__popper.is-dark {
     background: rgba(0, 0, 0, 0.5)!important;
     font-size: 16px;

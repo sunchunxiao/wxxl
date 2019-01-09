@@ -1,23 +1,25 @@
 
 .con_container {
-    height:100%;
+    display: flex;
+    flex-direction: column;
     .time_header {
         background-color:#504b4b;
         height: 40px;
-        padding:5px 0;
         display: flex;
         align-items: center;
         .contrast_btn {
-            float: left;
+            padding: 0 15px;
+            flex-shrink: 0;
+            line-height: 30px;
+        }
+        .search_bar {
+            flex: 1;
         }
     }
     .contrast {
-        min-width: 1345px;
-        background-color: #fff;
-        height: 100%;
+        flex: 1;
+        overflow: auto;
         .overview_select {
-            width: 100%;
-            height: 100%;
             background-color: #fff;
             display: flex;
             align-items: center;
@@ -27,6 +29,7 @@
             min-height: 300px;
             text-align: center;
             line-height: 300px;
+            margin: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
@@ -34,39 +37,18 @@
             width: 300px;
         }
         .content_row {
-            height: calc(100% - 48px);
-            // padding-top: 20px;
-            overflow-y: scroll;
-            overflow: hidden;
-            margin: 0!important;
-            .company {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 24px;
-                .left {
-                    margin-left: 15px;
-                    font-weight: bold;
-                    color: #338cb6;
+            height: 100%;
+            .overflow {
+                flex: 1;
+                overflow: auto;
+                .menu_list_opciatyAll {
+                    opacity: 0.3;
                 }
-                .right {
-                    margin-right: 20px;
-                    font-weight: bold;
+                .menu_list_opciaty {
+                    opacity: 1;
                 }
-            }
-            .tree_block {
-                display: block;
-            }
-            .tree_block_none {
-                display: none;
             }
             .tree_container {
-                height: 100%;
-                min-width: 280px;
-                max-width: 300px;
-                padding: 0!important;
-                overflow-y: auto;
-                border: 1px solid #eee;
-                background: #E6E6E6;
                 .title_target{
                     padding: 13px 0;
                     font-size: 15px;
@@ -83,10 +65,6 @@
                     }
                 }
                 /* btn */
-                // .start_btn{
-                //
-                //     box-shadow: 0 3px 5px 0 rgba(113, 113, 114, 0.5);
-                // }
                 .clean_btn {
                     overflow: hidden;
                     border-bottom: 1px solid#c9c9c9;
@@ -101,7 +79,6 @@
                         color: #4d4d4d;
                         font-weight: bolder;
                         cursor: pointer;
-                        // box-shadow: 0 3px 5px 0 rgba(113, 113, 114, 0.5);
                     }
                     .clean_select {
                         background-color: #b3b3b3;
@@ -112,141 +89,5 @@
                 }
             }
         }
-        .el-tree {
-            background: #E6E6E6;
-            .custom-tree-node {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-                .percent {
-                    margin-right: 20px;
-                }
-                .progress {
-                    display: none;
-                    position: absolute;
-                    width: 50%;
-                    height: 26px;
-                    left: -5%;
-                    top: 0;
-                    border-radius: 15px;
-                    background: #318cb8;
-                    z-index: -1;
-                }
-            }
-            .el-tree-node__content {
-                position: relative;
-                overflow: hidden;
-                z-index: 1;
-                .el-checkbox__inner{
-                    border: 1px solid#fff;
-                    background-color: #ccc;
-                }
-                .el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner{
-                    background-color: #f2c811;
-                }
-                .label {
-                    width: 100%;
-                    display: flex;
-                    align-items: center;
-                    .label_left {
-                        width: 80%;
-                    }
-                }
-                &:hover {
-                    background-color: #eee;
-                    .label {
-                        color: #fff;
-                        line-height: 20px;
-                    }
-                    .percent {
-                        font-size: 20px;
-                    }
-                    .progress {
-                        display: block;
-                    }
-                }
-            }
-            .el-tree-node__content>.el-tree-node__expand-icon {
-                margin: 0 5px 0 15px;
-                padding: 2px;
-                border: 1px solid #4d4d4d;
-                border-radius: 50%;
-                background: #E6E6E6;
-                color: #4d4d4d;
-            }
-            >.el-tree-node {
-                padding: 20px 0;
-                &:before {
-                    content: '';
-                    display: block;
-                    width: 100%;
-                    height: 1px;
-                    margin: 0 auto;
-                    position: relative;
-                    bottom: 20px;
-                    background-color: #c9c9c9;
-                }
-                >.el-tree-node__content {
-                    >.custom-tree-node {
-                        font-weight: bold;
-                    }
-                }
-            }
-            .el-tree-node__expand-icon.is-leaf {
-                visibility: hidden;
-            }
-        }
-        .overflow {
-            height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-            .menu_list_opciatyAll {
-                opacity: 0.3;
-            }
-            .menu_list_opciaty {
-                opacity: 1;
-            }
-        }
-        .stragety {
-            width: 85%;
-            margin: 5px auto 0;
-            .stragety-title {
-                text-align: center;
-                margin-bottom: 10px;
-                color: #454545;
-            }
-            .stragety-box {
-                border: 2px solid #f6f6f6;
-                height: 300px;
-                border-radius: 4px;
-                padding: 20px 35px;
-                position: relative;
-                .el-checkbox {
-                    display: block;
-                }
-                .el-checkbox+.el-checkbox {
-                    margin-left: 0;
-                    margin-top: 5px;
-                }
-                .center {
-                    position: absolute;
-                    bottom: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                }
-            }
-        }
-        .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content {
-            background: #e8e8e8;
-            box-shadow: 0 3px 5px 0 rgba(204, 204, 204, 0.8);
-        }
     }
 }
-
-
-.el-tooltip__popper.is-dark {
-    background: rgba(0, 0, 0, 0.5)!important;
-    font-size: 16px;
-    font-weight: 500;
-}
-
