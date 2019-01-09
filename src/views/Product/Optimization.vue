@@ -2,6 +2,19 @@
   <div class="opt_container">
     <el-row
       class="time_header">
+      <!-- 展开按钮 -->
+      <div
+        class="contrast_btn"
+        @click="handleCollpase">
+        <img
+          v-if="isCollapse"
+          src="../../assets/collapse1.png"
+          alt="">
+        <img
+          v-else
+          src="../../assets/collapse.png"
+          alt="">
+      </div>
       <search-bar
         ref="child"
         @search="handleSearch"
@@ -14,9 +27,10 @@
     <div class="optimization">
       <el-row
         v-if="productTree"
-        class="content_row"
-        :gutter="20">
+        type="flex"
+        class="content_row">
         <el-col
+          :class="{'tree_block_none':isCollapse}"
           :span="5"
           class="tree_container">
           <div class="title">毛利目标达成率</div>
@@ -75,7 +89,7 @@
           v-loading="loading"
           class="overflow">
           <Card>
-            <el-row :gutter="10">
+            <el-row>
               <template v-for="(item,index) in historyArr">
                 <el-col
                   :span="12"
@@ -189,6 +203,7 @@ export default {
             treeClone: {},
             changeDate: {},
             findFatherId: '',
+            isCollapse: false
         };
     },
     computed: {
@@ -220,6 +235,9 @@ export default {
         }
     },
     methods: {
+        handleCollpase () {
+            this.isCollapse = !this.isCollapse;
+        },
         allRequest() {
             this.getTreePrograss();
             this.getHistory();
@@ -453,4 +471,5 @@ export default {
 </script>
 <style lang="scss">
 @import './style/optimization.scss';
+@import '../../style/tree.scss';
 </style>
