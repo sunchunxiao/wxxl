@@ -9,6 +9,7 @@ const fund = {
     fundcompareArr: state => state.fund.fundcompareArr,
     fundcompareArrback: state => state.fund.fundcompareArrback,
     fundhistoryArr: state => state.fund.fundhistoryArr,
+    fundlastParams: state => state.fund.fundlastParams,
 };
 
 export default fund;

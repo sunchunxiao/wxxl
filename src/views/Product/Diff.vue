@@ -10,7 +10,7 @@
           v-loading="loading"
           class="">
           <Card>
-            <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
+            <el-row class="margin-bottom-20 overview_title">目标-实际-差异趋势分析</el-row>
             <el-row>
               <template v-for="(item, index) in trendArr">
                 <el-col

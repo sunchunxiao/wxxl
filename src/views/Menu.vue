@@ -72,7 +72,7 @@ const MENUDATA = [
         children: [
             {
                 title: "全景分析",
-                path: "/overview"
+                path: "/overview/reach"
             },
             {
                 title: "组织对比",
@@ -95,7 +95,7 @@ const MENUDATA = [
         children: [
             {
                 title: "全景分析",
-                path: "/overview"
+                path: "/overview/reach"
             },
             {
                 title: "客户对比",
@@ -118,7 +118,7 @@ const MENUDATA = [
         children: [
             {
                 title: "全景分析",
-                path: "/overview"
+                path: "/overview/reach"
             },
             {
                 title: "资金对比",
@@ -141,7 +141,7 @@ const MENUDATA = [
         children: [
             {
                 title: "全景分析",
-                path: "/overview"
+                path: "/overview/reach"
             },
             {
                 title: "渠道对比",

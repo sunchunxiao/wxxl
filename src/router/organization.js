@@ -1,6 +1,6 @@
 export default [
     {
-        path: '/organization/overview',
+        path: '/organization/overview/:name',
         name: 'organizationOverview',
         component: () =>
             import('views/Organization/Overview.vue')

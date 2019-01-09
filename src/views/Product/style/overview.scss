@@ -82,6 +82,10 @@
                 flex: 1;
                 overflow-y: auto;
                 overflow-x: hidden;
+                .overview_title{
+                    color: #000;
+                    font-size: 18px;
+                }
             }
         }
     }

@@ -1,7 +1,7 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="productTree"
+      v-if="organizationTree"
       class="nav-content-row">
       <el-col
         class="overflow">
@@ -14,10 +14,10 @@
               <el-col :span="14">
                 <IntelligentSelection
                   id="rank"
-                  v-if="rankArr.length"
+                  v-if="orgrankArr.length"
                   @changeTime="changeTime"
                   @showStragety="showStragety"
-                  :data="rankArr" />
+                  :data="orgrankArr" />
               </el-col>
               <el-col :span="10">
                 <div class="stragety">
@@ -25,7 +25,7 @@
                   <div class="stragety-box">
                     <div class="margin-bottom-10">{{ stragetyTitle }}</div>
                     <el-checkbox-group
-                      v-if="stragety.length"
+                      v-if="stragety"
                       v-model="stragetyCheckList">
                       <el-checkbox
                         v-for="(item,index) in stragety"
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import API from './api';
+import API from '../api';
 import Card from 'components/Card';
 // 智能评选和智能策略
 import IntelligentSelection from 'components/IntelligentSelection';
@@ -83,6 +83,7 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
+            version: 0,
             //tree
             pt: '',
             loading: false,
@@ -97,9 +98,9 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'rankArr','lastParams']),
+        ...mapGetters(['organizationTree', 'orgrankArr','orglastParams']),
         hasTree () {
-            return !_.isEmpty(this.productTree);
+            return !_.isEmpty(this.organizationTree);
         },
     },
     watch: {
@@ -139,7 +140,7 @@ export default {
                         time_label: data1.time_label,
                         strategies: this.idArr.join(',')
                     };
-                    API.PostProductSave(data).then(() => {
+                    API.PostOrgStrategyLog(data).then(() => {
                         this.$message({
                             showClose: true,
                             message: '保存成功'
@@ -161,7 +162,7 @@ export default {
                 return;
             }
             this.getRank();
-            this.$store.dispatch("SaveLastParams", this.newParams);
+            this.$store.dispatch("SaveOrgLastParams", this.newParams);
         },
         getRank() {
             if (this.getPt() === '日') {
@@ -172,15 +173,16 @@ export default {
             const params = {
                 cid: this.cid,
                 pt: this.pt,
+                version:this.version,
                 ...this.getPeriodByPt(),
             };
             this.newParams.rank = params;
-            if (JSON.stringify(this.lastParams.rank) == JSON.stringify(params)) {
+            if (JSON.stringify(this.orglastParams.rank) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetProductRank(params).then(res => {
-                this.$store.dispatch('SaveRankArr', res.data);
+            API.GetOrgRank(params).then(res => {
+                this.$store.dispatch('SaveOrgRankArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -245,7 +247,7 @@ export default {
             this.showStragetyId = cid;
             this.subject = subject;
             this.stragety = [];
-            API.GetProductMatch(params).then(res => {
+            API.GetOrgStrategy(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];
                 this.stragety = res.data;
@@ -263,5 +265,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import './style/overview.scss';
+    @import '../../Product/style/overview.scss';
 </style>
