@@ -71,10 +71,6 @@
             margin-right: 20px;
             font-weight: bold;
         }
-        .is-active-zero {
-            color: #F2C811;
-            font-weight: bold;
-        }
     }
     .el-tree {
         &.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
@@ -135,10 +131,6 @@
                     width: 80%;
                 }
             }
-            .is-active-zero {
-                color: #F2C811;
-                font-weight: bold;
-            }
             &:hover {
                 background-color: #E6E6E6;
                 .label {
@@ -193,6 +185,10 @@
         .el-icon-caret-right:before {
             content: "\E603";
         }
+    }
+    .is-active-zero {
+        color: #F2C811 !important;
+        font-weight: bold;
     }
 }
 .el-tooltip__popper.is-dark {
