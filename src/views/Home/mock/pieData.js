@@ -120,4 +120,51 @@ const pieEquity = function mockPieData7() {
     return arr;
 };
 
-export { pieSales, pieProfit, pieEquity };
+//盈利空间
+const profitSpace = function mockPieData7() {
+    let arr = [];
+    let subject = ["ROI", 'PC', 'PR', 'RR','C','CC'];
+    let subject_name = ["毛利润率", '回款额', '回款增长额', '回款增长率','成本费用额','成本费用增长率'];
+    for(let i = 0; i < 6; i++) {
+        arr.push(_.cloneDeep(pieDataSales));
+        arr[i].progress = getRandomNumArr(1, 2);
+        arr[i].subject = subject[i];
+        arr[i].subject_name = subject_name[i];
+        arr[i].real = getRandomNumArr(1, 10000000);
+        arr[i].target  = getRandomNumArr(1, 10000000);
+    }
+    return arr;
+};
+
+//盈利能力
+const profitAbility = function mockPieData7() {
+    let arr = [];
+    let subject = ["ROI", 'PC', 'PR', 'RR','C','CC','DD'];
+    let subject_name = ["订单额", '订单增长额', '订单增长率', '库存额','库龄','库存增长额','库存增长率'];
+    for(let i = 0; i < 7; i++) {
+        arr.push(_.cloneDeep(pieDataSales));
+        arr[i].progress = getRandomNumArr(1, 2);
+        arr[i].subject = subject[i];
+        arr[i].subject_name = subject_name[i];
+        arr[i].real = getRandomNumArr(1, 10000000);
+        arr[i].target  = getRandomNumArr(1, 10000000);
+    }
+    return arr;
+};
+
+//支付能力
+const pay = function mockPieData7() {
+    let arr = [];
+    let subject = ["ROI", 'PC', 'PR', 'RR','C','CC','DD'];
+    let subject_name = ["净现金流", '现金流入', '现金流出', '应收额','应收增长额','应收增长率','应付额'];
+    for(let i = 0; i < 7; i++) {
+        arr.push(_.cloneDeep(pieDataSales));
+        arr[i].progress = getRandomNumArr(1, 2);
+        arr[i].subject = subject[i];
+        arr[i].subject_name = subject_name[i];
+        arr[i].real = getRandomNumArr(1, 10000000);
+        arr[i].target  = getRandomNumArr(1, 10000000);
+    }
+    return arr;
+};
+export { pieSales, pieProfit, pieEquity, profitSpace, profitAbility, pay };

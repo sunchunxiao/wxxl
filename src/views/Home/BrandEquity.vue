@@ -73,37 +73,6 @@ import { pieEquity } from './mock/pieData';
 import { dataEquity } from './mock/trendData';
 import { mapGetters } from 'vuex';
 
-const TREE_PROPS = {
-    children: 'children',
-    label: 'name'
-};
-const MENUDATA = [
-    {
-        title:'公司经营指标',
-        path:'#overview',
-    },
-    {
-        title:'产品效率',
-        path:'#produce',
-    },
-    {
-        title:'渠道效率',
-        path:'#channel',
-    },
-    {
-        title:'客户效率',
-        path:'#customer',
-    },
-    {
-        title:'组织效率',
-        path:'#organization',
-    },
-    {
-        title:'资金效率',
-        path:'#fund',
-    },
-];
-
 export default {
     components: {
         Card,
@@ -119,12 +88,10 @@ export default {
                 search: '', // 暂时没有接口 先这样
             },
             datye:{},
-            menuData: MENUDATA,
             // pieSales: pieDataSales,
             pieEquity: pieEquity(),
             dataEquity: dataEquity(),
             cid: '',
-            defaultProps: TREE_PROPS,
             loading: false,
             //index
             index: 0,

@@ -208,7 +208,7 @@ export default {
                                 },
                                 textStyle: {
                                     fontSize: fontSize,
-                                    color: '#4d4d4d',
+                                    color: color,
                                 }
                             },
                         }
@@ -227,15 +227,11 @@ export default {
                         label: {
                             normal: {
                                 formatter: function(data) {
-                                    // if (progress == null || progress < 0) {
-                                    //     return '-';
-                                    // }else{
                                     if(data.name.length < 8){//显示字体过长换行显示
                                         return data.name;
                                     }else{
                                         return data.name = data.name.slice(0, 4) + '\n' + data.name.slice(4, data.name.length);
                                     }
-                                    // }
                                 },
                                 textStyle: {
                                     fontSize: FONTSIZE2,

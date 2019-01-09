@@ -194,6 +194,12 @@ ul.el-menu{
         .card_company_target {
             width: 100%;
             float: left;
+            .align{
+                text-align: center
+            }
+            .card_title{
+                color: #000;
+            }
         }
         .open {
             background-color: #fff;
