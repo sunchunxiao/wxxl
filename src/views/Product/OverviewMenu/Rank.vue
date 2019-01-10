@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import API from './api';
+import API from '../api';
 import Card from 'components/Card';
 // 智能评选和智能策略
 import IntelligentSelection from 'components/IntelligentSelection';
@@ -263,5 +263,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import './style/overview.scss';
+@import '../style/overview.scss';
 </style>

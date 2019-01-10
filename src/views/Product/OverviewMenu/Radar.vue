@@ -6,23 +6,35 @@
       <el-col
         class="overflow">
         <el-row
-          v-if="trendArr.length>0"
+          v-if="progressArr.length>0"
           v-loading="loading"
           class="">
           <Card>
-            <el-row class="margin-bottom-20 overview_title">同比环比趋势分析</el-row>
-            <el-row>
-              <template v-for="(item, index) in trendArr">
+            <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
+            <slider
+              height="250px"
+              :min-move-num="50">
+              <template v-for="(item, index) in progressArr">
                 <el-col
                   :key="index"
-                  :span="12">
-                  <ProYearOnYearTrend
-                    v-if="trendArr.length"
+                  style="width:198px">
+                  <ProTargetAchievement
+                    v-if="progressArr.length"
                     :id="`${index}`"
                     :data="item" />
                 </el-col>
               </template>
-            </el-row>
+            </slider>
+            <Card>
+              <el-col
+                class="">
+                <el-row class="margin-bottom-20 overview_title">综合评估</el-row>
+                <Radar
+                  v-if="rankArr.length"
+                  :id="'select'"
+                  :data="rankArr[rankArr.length-1]" />
+              </el-col>
+            </Card>
           </Card>
         </el-row>
       </el-col>
@@ -36,22 +48,29 @@
 </template>
 
 <script>
-import API from './api';
+import API from '../api';
 import Card from 'components/Card';
 
-// 目标-实际-差异趋势分析
-import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
+import Slider from 'components/Slider';
+// 目标达成情况总览
+import ProTargetAchievement from 'components/ProTargetAchievement';
+import Radar from 'components/radar';
 
 //vuex
 import { mapGetters } from 'vuex';
+
 export default {
+    name: "RadarWrap",
     props: {
         cid: String,
+        date: Object,
         val: Object
     },
     components: {
         Card,
-        ProYearOnYearTrend
+        Slider,
+        Radar,
+        ProTargetAchievement,
     },
     data () {
         return {
@@ -60,18 +79,17 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
-            //tree
             pt: '',
             loading: false,
-            changeDate: {},
+            // val: {},
             newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'lastParams']),
+        ...mapGetters(['productTree', 'progressArr', 'rankArr', 'lastParams']),
         hasTree () {
             return !_.isEmpty(this.productTree);
-        },
+        }
     },
     watch: {
         cid: {
@@ -90,42 +108,49 @@ export default {
                 return;
             }
             this.getProgress();
+            this.getRank();
             this.$store.dispatch("SaveLastParams", this.newParams);
         },
+        //目标达成
         getProgress() {
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
-            this.newParams.trend = params;
-            if (JSON.stringify(this.lastParams.trend) == JSON.stringify(params)) {
+            this.newParams.progress = params;
+            if (JSON.stringify(this.lastParams.progress) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
             API.GetProductProgress(params).then(res => {
                 this.$store.dispatch('SaveProgressData', res.data);
-                const promises = _.map(res.data, o => this.getTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveTrendArr', resultList);
-                });
             }).finally(() => {
                 this.loading = false;
             });
         },
-        getTrend(subject) {
-            this.loading = true;
+        //雷达图
+        getRank() {
+            if (this.getPt() === '日') {
+                this.pt = '周';
+            }else{
+                this.pt = this.getPt();
+            }
             const params = {
                 cid: this.cid,
-                pt: this.getPt(),
+                pt: this.pt,
                 ...this.getPeriodByPt(),
-                subject: subject
             };
-            return API.GetProductTrend(params);
+            this.newParams.rank = params;
+            if (JSON.stringify(this.lastParams.rank) == JSON.stringify(params)) {
+                return;
+            }
+            this.loading = true;
+            API.GetProductRank(params).then(res => {
+                this.$store.dispatch('SaveRankArr', res.data);
+            }).finally(() => {
+                this.loading = false;
+            });
         },
         getPt() {
             if (this.val.sDate && this.val.eDate) {
@@ -141,13 +166,11 @@ export default {
         },
         getPeriodByPt() {
             const {
-                // pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
-                    // pt: pt,
                     sDate: sDate,
                     eDate: eDate,
                 };
@@ -162,10 +185,13 @@ export default {
                 };
             }
         },
+        clickIndex(i, idx) {
+            this[`index${i}`] = idx;
+        },
     }
 };
 </script>
 
 <style lang="scss">
-@import './style/overview.scss';
+@import '../style/overview.scss';
 </style>
