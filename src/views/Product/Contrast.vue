@@ -90,10 +90,10 @@
         </el-col>
         <el-col
           :span="19"
+          v-loading="loading"
           class="overflow">
           <Card
-            v-if="compareArr.length > 0"
-            v-loading="loading">
+            v-if="compareArr.length > 0">
             <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
             <el-row>
               <slider
@@ -252,13 +252,13 @@ export default {
             Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
-                if(treeData.tree){
+                if (treeData.tree) {
                     this.cid = treeData.tree.cid;
                     this.treeClone = _.cloneDeep(treeData.tree);
                     this.addProperty([this.treeClone]);
                     const children = treeData.tree.children;
                     let arr = [];
-                    for(let i = 0; i < 3; i++) {
+                    for (let i = 0; i < 3; i++) {
                         children[i] && arr.push(children[i]);
                     }
                     const checkKeys = arr.map(i => i.cid);
@@ -332,6 +332,8 @@ export default {
                         }
                     }
                 }
+
+                this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
         getProgress () {
