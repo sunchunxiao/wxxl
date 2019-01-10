@@ -7,7 +7,8 @@ const channel = {
         channelRankArr: [],
         channelCompareArr:[],
         channelHistoryArr:[],
-        channelLastParams: {}
+        channelLastParams: {},
+        channelLastcidObjArr: {}
     },
     mutations: {
         SAVE_CHANNEL_TREE: (state, tree) => {
@@ -37,6 +38,9 @@ const channel = {
         SAVE_CHANLAST_PARAMS: (state, lastParams) => {
             state.channelLastParams = Object.assign({}, state.channelLastParams, lastParams);
         },
+        SAVE_CHANLAST_CIDOBJ: (state, channelLastcidObjArr) => {
+            state.channelLastcidObjArr = channelLastcidObjArr;
+        },
     },
     actions: {
         SaveChannelTree({ commit }, tree) {
@@ -65,6 +69,9 @@ const channel = {
         },
         SaveChannelLastParams({ commit }, lastParams) {
             commit('SAVE_CHANLAST_PARAMS', lastParams);
+        },
+        SaveChannelCidObj({ commit }, channelLastcidObjArr) {
+            commit('SAVE_CHANLAST_CIDOBJ', channelLastcidObjArr);
         },
     }
 };

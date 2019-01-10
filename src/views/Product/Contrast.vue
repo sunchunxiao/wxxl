@@ -180,6 +180,7 @@ export default {
             index0: 0,
             loading: false,
             cidObjArr: [],
+            cidObjArrBefore: [],
             cancelKey: '',
             debounce: null,
             val: {},
@@ -200,7 +201,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'compareArr' ]),
+        ...mapGetters(['productTree', 'progressArr', 'compareArr', 'lastcidObjArr']),
         hasTree() {
             return !_.isEmpty(this.productTree);
         },
@@ -243,6 +244,7 @@ export default {
             this.$store.dispatch('SaveProductTree', this.productTree).then(() => {
                 this.$refs.tree.setCheckedKeys(checkKeys);
             });
+            this.debounce();
         } else {
             this.promise();
         }
@@ -274,11 +276,18 @@ export default {
 
         },
         startChecked() {
+            // console.log(this.lastcidObjArr,this.cidObjArr);
+            // console.log(JSON.stringify(this.lastcidObjArr) == JSON.stringify(this.cidObjArr));
+            const bool = JSON.stringify(this.lastcidObjArr) == JSON.stringify(this.cidObjArr);
+            if (bool) {
+                return;
+            }
             this.debounce();
         },
         cleanChecked () {
             this.cidObjArr = [];
             this.$refs.tree.setCheckedKeys([]);
+            this.$store.dispatch('SavecidObjArr', _.cloneDeep(this.cidObjArr));
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
@@ -332,7 +341,6 @@ export default {
                         }
                     }
                 }
-
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
@@ -355,6 +363,7 @@ export default {
                     v.subject_name = this.progressArr[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
+                this.$store.dispatch('SavecidObjArr',_.cloneDeep(this.cidObjArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if (resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveCompareArr', resultList);

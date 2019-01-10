@@ -11,7 +11,8 @@ const product = {
         historyArr: [],
         strategyArr: [],
         productDateArr: {},
-        lastParams: {}
+        lastParams: {},
+        lastcidObjArr: {}
     },
     mutations: {
         SAVE_PRODUCT_TREE: (state, tree) => {
@@ -53,6 +54,9 @@ const product = {
         SAVE_LAST_PARAMS: (state, lastParams) => {
             state.lastParams = Object.assign({}, state.lastParams, lastParams);
         },
+        SAVE_LAST_CIDOBJ: (state, lastcidObjArr) => {
+            state.lastcidObjArr = lastcidObjArr;
+        },
     },
     actions: {
         SaveProductTree({ commit }, tree) {
@@ -93,6 +97,9 @@ const product = {
         },
         SaveLastParams({ commit }, lastParams) {
             commit('SAVE_LAST_PARAMS', lastParams);
+        },
+        SavecidObjArr({ commit }, lastcidObjArr) {
+            commit('SAVE_LAST_CIDOBJ', lastcidObjArr);
         },
     }
 };

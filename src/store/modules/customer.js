@@ -7,7 +7,8 @@ const customer = {
         cusrankArr: [],
         cuscompareArr: [],
         cushistoryArr:[],
-        cusLastParams: {}
+        cusLastParams: {},
+        cusLastcidObjArr: {}
     },
     mutations: {
         SAVE_CUESTOMER_TREE: (state, tree) => {
@@ -37,6 +38,9 @@ const customer = {
         SAVE_CUSLAST_PARAMS: (state, lastParams) => {
             state.cusLastParams = Object.assign({}, state.cusLastParams, lastParams);
         },
+        SAVE_CUSLAST_CIDOBJ: (state, cusLastcidObjArr) => {
+            state.cusLastcidObjArr = cusLastcidObjArr;
+        },
     },
     actions: {
         SaveCusTree({ commit }, tree) {
@@ -65,6 +69,9 @@ const customer = {
         },
         SaveCustLastParams({ commit }, lastParams) {
             commit('SAVE_CUSLAST_PARAMS', lastParams);
+        },
+        SaveCusCidObj({ commit }, cusLastcidObjArr) {
+            commit('SAVE_CUSLAST_CIDOBJ', cusLastcidObjArr);
         },
     }
 };

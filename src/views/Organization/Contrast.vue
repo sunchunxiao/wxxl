@@ -28,8 +28,7 @@
       <el-row
         v-if="organizationTree"
         type="flex"
-        class="content_row"
-        :gutter="20">
+        class="content_row">
         <el-col
           :span="5"
           :class="{'tree_block_none':isCollapse}"
@@ -228,7 +227,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['organizationTree', 'orgprogressArr', 'orgprogressbackArr', 'orgcompareArr', 'orgcompareArrback']),
+        ...mapGetters(['organizationTree', 'orgprogressArr', 'orgprogressbackArr', 'orgcompareArr', 'orgcompareArrback', 'orgLastcidObjArr', 'orgLastcidObjArrBack']),
         hasConstarst () {
             return !_.isEmpty(this.orgcompareArr);
         },
@@ -317,7 +316,6 @@ export default {
                 const checkKeys = arr.map(i => i.cid);
                 const checkBackKeys = arrback.map(i => i.cid);
                 const cc = [...checkKeys, ...checkBackKeys];
-
                 this.$store.dispatch('SaveOrgTree', treeData.tree).then(() => {
                     this.$refs.tree.setCheckedKeys(cc);
                 });
@@ -332,6 +330,26 @@ export default {
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
+        },
+        startChecked() {
+            // console.log(this.lastcidObjArr,this.cidObjArr);
+            // console.log(JSON.stringify(this.lastcidObjArr) == JSON.stringify(this.cidObjArr));
+            const bool = JSON.stringify(this.orgLastcidObjArr) == JSON.stringify(this.cidObjArr);
+            const boolBack = JSON.stringify(this.orgLastcidObjArrBack) == JSON.stringify(this.cidObjBackArr);
+            // console.log(bool,boolBack);
+            if (!bool) {
+                this.debounce();
+            }
+            if (!boolBack) {
+                this.debounceBack();
+            }
+        },
+        cleanChecked () {
+            this.cidObjArr = [];
+            this.cidObjBackArr = [];
+            this.$refs.tree.setCheckedKeys([]);
+            this.$store.dispatch('SaveOrgCidObj',_.cloneDeep(this.cidObjArr));
+            this.$store.dispatch('SaveOrgCidObjBack',_.cloneDeep(this.cidObjBackArr));
         },
         allRequest() {
             this.getTreePrograss();
@@ -411,6 +429,7 @@ export default {
                     v.subject_name = this.orgprogressArr[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
+                this.$store.dispatch('SaveOrgCidObj',_.cloneDeep(this.cidObjArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if (resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveOrgCompareArr', resultList);
@@ -431,6 +450,7 @@ export default {
                     v.subject_name = this.orgprogressbackArr[k].subject_name;
                 });
                 const cidName = this.cidObjBackArr.map(o => o.name);
+                this.$store.dispatch('SaveOrgCidObjBack',_.cloneDeep(this.cidObjBackArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if (resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveOrgCompareArrback', resultList);
@@ -525,15 +545,6 @@ export default {
             this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;
-        },
-        startChecked() {
-            this.debounce();
-            this.debounceBack();
-        },
-        cleanChecked () {
-            this.cidObjArr = [];
-            this.cidObjBackArr = [];
-            this.$refs.tree.setCheckedKeys([]);
         },
         handleCheckChange (data, checked) {
             const type = 2;//1是前端,2是后端
