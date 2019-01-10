@@ -82,7 +82,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['channelTree', 'channelProgressArr', 'channelRankArr']),
+        ...mapGetters(['channelTree', 'channelProgressArr', 'channelRankArr', 'channelLastParams']),
         hasTree () {
             return !_.isEmpty(this.channelTree);
         }
@@ -105,7 +105,7 @@ export default {
             }
             this.getProgress();
             this.getRank();
-            this.$store.dispatch("SaveOrgLastParams", this.newParams);
+            this.$store.dispatch("SaveChannelLastParams", this.newParams);
         },
         //目标达成
         getProgress() {

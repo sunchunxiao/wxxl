@@ -1,24 +1,25 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="organizationTree"
+      v-if="customerTree"
       class="nav-content-row">
       <el-col
         class="overflow">
         <el-row
-          v-if="hasStructure"
           v-loading="loading"
-          class="margin-top-10 min-height-400">
+          class="">
           <Card>
-            <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析前端</el-row>
+            <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析</el-row>
             <el-row>
               <el-col :span="16">
-                <template v-for="(item, index) in orgstructureArr1">
+                <template v-for="(item, index) in cusstructureArr">
                   <el-col
                     :key="index"
                     :span="6"
                     @click.native="clickIndex(3 ,index)">
                     <ProportionalStructureAverageComparison
+                      v-if="cusstructureArr.length"
+                      @id="structureID"
                       :id="`${index}`"
                       :data="item" />
                   </el-col>
@@ -28,39 +29,10 @@
                 :span="8"
                 class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
+                  @id="structureID"
+                  v-if="cusstructureArr.length"
                   id="ProportionalStructureAverageComparisonBig"
-                  v-if="orgstructureArr1.length>0"
-                  :data="orgstructureArr1[index3]" />
-              </el-col>
-            </el-row>
-          </Card>
-        </el-row>
-        <el-row
-          v-if="hasStructureBack"
-          v-loading="loading"
-          class="margin-top-10 min-height-400">
-          <Card>
-            <el-row class="margin-bottom-20">比例结构与平均值对比分析后端</el-row>
-            <el-row>
-              <el-col :span="16">
-                <template v-for="(item1, index) in orgstructureArr2">
-                  <el-col
-                    :key="index"
-                    :span="6"
-                    @click.native="clickIndex(4 ,index)">
-                    <ProportionalStructureAverageComparison
-                      :id="`orgstructureArr2${index}`"
-                      :data="item1" />
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col
-                :span="8"
-                class="border-left-2-gray">
-                <ProportionalStructureAverageComparisonBig
-                  v-if="orgstructureArr2"
-                  id="ProportionalStructureAverageComparisonBig1"
-                  :data="orgstructureArr2[index3]" />
+                  :data="cusstructureArr[index3]" />
               </el-col>
             </el-row>
           </Card>
@@ -96,7 +68,11 @@ export default {
     },
     data () {
         return {
-            version: 0,
+            form: {
+                pt: '', // 周期类型
+                date: [], // date
+                search: '', // 暂时没有接口 先这样
+            },
             //index
             index3: 0,
             pt: '',
@@ -106,16 +82,10 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['organizationTree',  'orgstructureArr1', 'orgstructureArr2', 'orglastParams']),
+        ...mapGetters(['customerTree', 'cusstructureArr','cusLastParams']),
         hasTree () {
-            return !_.isEmpty(this.organizationTree);
+            return !_.isEmpty(this.customerTree);
         },
-        hasStructure () {
-            return !_.isEmpty(this.orgstructureArr1);
-        },
-        hasStructureBack () {
-            return !_.isEmpty(this.orgstructureArr2);
-        }
     },
     watch: {
         cid: {
@@ -146,43 +116,22 @@ export default {
             if (!this.cid) {
                 return;
             }
-            this.getStructure1();
-            this.getStructure2();
-            this.$store.dispatch("SaveOrgLastParams", this.newParams);
+            this.getStructure();
+            this.$store.dispatch("SaveCustLastParams", this.newParams);
         },
-        //前端
-        getStructure1() {
+        getStructure() {
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                version: this.version,
-                rType: 1
             };
             this.newParams.structure = params;
-            if (JSON.stringify(this.orglastParams.structure) == JSON.stringify(params)) {
-                return;
-            }
-            API.GetOrgStructure(params).then(res => {
-                this.$store.dispatch('SaveOrgStructureArr1', res.data);
-            });
-        },
-        //后端
-        getStructure2() {
-            const params = {
-                cid: this.cid,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-                version: this.version,
-                rType: 2
-            };
-            this.newParams.structure = params;
-            if (JSON.stringify(this.orglastParams.structure) == JSON.stringify(params)) {
+            if (JSON.stringify(this.cusLastParams.structure) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetOrgStructure(params).then(res => {
-                this.$store.dispatch('SaveOrgStructureArr2', res.data);
+            API.GetCusStructure(params).then(res => {
+                this.$store.dispatch('SaveCusStructureArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -227,5 +176,5 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../../Product/style/overview.scss';
+@import '../../Product/style/overview.scss';
 </style>

@@ -1,23 +1,24 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="channelTree"
+      v-if="customerTree"
       class="nav-content-row">
       <el-col
         class="overflow">
         <el-row
-          v-if="channelTrendArr.length>0"
+          v-if="custrendArr.length>0"
           v-loading="loading"
           class="">
           <Card>
-            <el-row class="margin-bottom-20 overview_title">同比环比趋势分析</el-row>
+            <el-row class="margin-bottom-20 overview_title">目标-实际-差异趋势分析</el-row>
             <el-row>
-              <template v-for="(item, index) in channelTrendArr">
+              <template v-for="(item, index) in custrendArr">
                 <el-col
                   :key="index"
-                  :span="12">
-                  <ProYearOnYearTrend
-                    v-if="channelTrendArr.length"
+                  :span="12"
+                  @click.native="clickIndex(1 ,index)">
+                  <ProTargetActualDiffTrend
+                    v-if="custrendArr.length"
                     :id="`${index}`"
                     :data="item" />
                 </el-col>
@@ -40,7 +41,7 @@ import API from '../api';
 import Card from 'components/Card';
 
 // 目标-实际-差异趋势分析
-import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
+import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 
 //vuex
 import { mapGetters } from 'vuex';
@@ -51,27 +52,30 @@ export default {
     },
     components: {
         Card,
-        ProYearOnYearTrend
+        ProTargetActualDiffTrend,
     },
     data () {
         return {
-            version: 0,
+            form: {
+                pt: '', // 周期类型
+                date: [], // date
+                search: '', // 暂时没有接口 先这样
+            },
             //tree
             pt: '',
             loading: false,
-            changeDate: {},
             newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['channelTree', 'channelProgressArr', 'channelTrendArr', 'channelLastParams']),
+        ...mapGetters(['customerTree','cusprogressArr','custrendArr','cusLastParams']),
         hasTree () {
-            return !_.isEmpty(this.channelTree);
+            return !_.isEmpty(this.customerTree);
         },
     },
     watch: {
         cid: {
-            handler () {
+            handler() {
                 this.allRequest();
             },
             immediate: true
@@ -86,24 +90,28 @@ export default {
                 return;
             }
             this.getProgress();
-            this.$store.dispatch("SaveChannelLastParams", this.newParams);
+            this.$store.dispatch("SaveCustLastParams", this.newParams);
         },
         getProgress() {
-            this.loading = true;
             const params = {
-                chId: this.cid,
+                cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
-            API.GetChannelProgress(params).then(res => {
-                this.$store.dispatch('SaveChannelProgress', res.data);
+            this.newParams.diff = params;
+            if (JSON.stringify(this.cusLastParams.diff) == JSON.stringify(params)) {
+                return;
+            }
+            this.loading = true;
+            API.GetCusProgress(params).then(res => {
+                this.$store.dispatch('SaveCusProgressData', res.data);
                 const promises = _.map(res.data, o => this.getTrend(o.subject));
                 Promise.all(promises).then(resultList => {
                     _.forEach(resultList, (v, k) => {
                         v.subject = res.data[k].subject;
                         v.subject_name = res.data[k].subject_name;
                     });
-                    this.$store.dispatch('SaveChannelTrendArr', resultList);
+                    this.$store.dispatch('SaveCusTrendArr', resultList);
                 });
             }).finally(() => {
                 this.loading = false;
@@ -111,12 +119,12 @@ export default {
         },
         getTrend(subject) {
             const params = {
-                chId: this.cid,
+                cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
                 subject: subject
             };
-            return API.GetChannelTrend(params);
+            return API.GetCusTrend(params);
         },
         getPt() {
             if (this.val.sDate && this.val.eDate) {

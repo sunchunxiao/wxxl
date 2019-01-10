@@ -41,18 +41,18 @@
               class="company">
               <span
                 :class="['left','label',
-                         {'is-active-zero':!(calculatePercent(treeClone.real_total, treeClone.target_total).percent) && activeCid == treeClone.cid}]">
+                         {'is-active-zero':!(calculatePercent(treeClone.real_total, treeClone.target_total).percent) && activeCid == treeClone.nid}]">
                 {{ treeClone.name }}
               </span>
               <div
-                :class="{comprogress: true, 'is-active': activeCid == treeClone.cid,'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+                :class="{comprogress: true, 'is-active': activeCid == treeClone.nid,'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
                 :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
             </div>
             <el-tree
               ref="tree"
               :data="treeClone.children"
               empty-text="正在加载"
-              node-key="cid"
+              node-key="nid"
               :expand-on-click-node="false"
               :highlight-current="highlight"
               :props="defaultProps"
@@ -77,11 +77,11 @@
                   <span class="label">
                     <span
                       :class="['label-left',
-                               {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.cid}]">{{ data.name }}</span>
+                               {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.nid}]">{{ data.name }}</span>
                   </span>
                 </el-tooltip>
                 <div
-                  :class="{progress: true, 'is-active': activeCid === data.cid, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+                  :class="{progress: true, 'is-active': activeCid === data.nid, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
                   :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
               </span>
             </el-tree>
@@ -118,10 +118,10 @@ import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
 import viewRadar from './OverviewMenu/Radar.vue';
-// import Diff from './OverviewMenu/Diff.vue';
-// import Trend from './OverviewMenu/Trend.vue';
-// import Structure from './OverviewMenu/Structure.vue';
-// import Rank from './OverviewMenu/Rank.vue';
+import Diff from './OverviewMenu/Diff.vue';
+import Trend from './OverviewMenu/Trend.vue';
+import Structure from './OverviewMenu/Structure.vue';
+import Rank from './OverviewMenu/Rank.vue';
 
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
@@ -151,10 +151,10 @@ const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {
         "reach": viewRadar,
-        // "diff": Diff,
-        // "trend": Trend,
-        // "structure": Structure,
-        // "rank": Rank,
+        "diff": Diff,
+        "trend": Trend,
+        "structure": Structure,
+        "rank": Rank,
         Card,
         SearchBar,
     },
@@ -224,7 +224,7 @@ export default {
             });
         } else {
             this.treeClone = _.cloneDeep(this.channelTree);
-            this.cid = this.channelTree.cid;
+            this.cid = this.channelTree.nid;
             this.addProperty([this.treeClone]);
         }
     },
@@ -267,7 +267,7 @@ export default {
             };
             API.GetChannelTree(params).then(res => {
                 if(res.tree){
-                    if (!this.channelTree || !this.channelTree.cid) {
+                    if (!this.channelTree || !this.channelTree.nid) {
                         this.cid = res.tree.nid;
                     }
                     this.treeClone = _.cloneDeep(res.tree);
@@ -366,8 +366,8 @@ export default {
                 this.isbac = true;
                 this.highlight = false;
                 if (this.cid) {//数据tree不为null时
-                    if (this.cid !== this.channelTree.cid) {
-                        this.cid = this.channelTree.cid;
+                    if (this.cid !== this.channelTree.nid) {
+                        this.cid = this.channelTree.nid;
                         this.treeClone = _.cloneDeep(this.channelTree);
                     } else {
                         //公司根节点
@@ -391,7 +391,7 @@ export default {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
                 //如果是根节点
-                if (this.cid === this.channelTree.cid) {
+                if (this.cid === this.channelTree.nid) {
                     this.isbac = true;
                     this.highlight = false;
                 }

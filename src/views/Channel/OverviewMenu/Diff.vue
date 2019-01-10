@@ -1,24 +1,24 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="organizationTree"
+      v-if="channelTree"
       class="nav-content-row">
       <el-col
         class="overflow">
         <el-row
-          v-if="orgtrendArr.length>0"
+          v-if="channelTrendArr.length>0"
           v-loading="loading"
           class="">
           <Card>
             <el-row class="margin-bottom-20 overview_title">目标-实际-差异趋势分析</el-row>
             <el-row>
-              <template v-for="(item, index) in orgtrendArr">
+              <template v-for="(item, index) in channelTrendArr">
                 <el-col
                   :key="index"
                   :span="12"
                   @click.native="clickIndex(1 ,index)">
                   <ProTargetActualDiffTrend
-                    v-if="orgtrendArr.length"
+                    v-if="channelTrendArr.length"
                     :id="`${index}`"
                     :data="item" />
                 </el-col>
@@ -64,9 +64,9 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['organizationTree', 'orgprogressArr', 'orgtrendArr', 'orglastParams']),
+        ...mapGetters(['channelTree', 'channelProgressArr', 'channelTrendArr', 'channelLastParams']),
         hasTree () {
-            return !_.isEmpty(this.organizationTree);
+            return !_.isEmpty(this.channelTree);
         },
     },
     watch: {
@@ -86,44 +86,37 @@ export default {
                 return;
             }
             this.getProgress();
-            this.$store.dispatch("SaveOrgLastParams", this.newParams);
+            this.$store.dispatch("SaveChannelLastParams", this.newParams);
         },
         getProgress() {
+            this.loading = true;
             const params = {
-                cid: this.cid,
+                chId: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                version: this.version
             };
-            this.newParams.diff = params;
-            if (JSON.stringify(this.orglastParams.diff) == JSON.stringify(params)) {
-                return;
-            }
-            this.loading = true;
-            API.GetOrgProgress(params).then(res => {
-                this.$store.dispatch('SaveOrgProgressData', res.data);
+            API.GetChannelProgress(params).then(res => {
+                this.$store.dispatch('SaveChannelProgress', res.data);
                 const promises = _.map(res.data, o => this.getTrend(o.subject));
                 Promise.all(promises).then(resultList => {
                     _.forEach(resultList, (v, k) => {
                         v.subject = res.data[k].subject;
                         v.subject_name = res.data[k].subject_name;
                     });
-                    this.$store.dispatch('SaveOrgTrendArr', resultList);
+                    this.$store.dispatch('SaveChannelTrendArr', resultList);
                 });
             }).finally(() => {
                 this.loading = false;
             });
         },
         getTrend(subject) {
-            this.loading = true;
             const params = {
-                cid: this.cid,
+                chId: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                subject: subject,
-                version: this.version
+                subject: subject
             };
-            return API.GetOrgTrend(params);
+            return API.GetChannelTrend(params);
         },
         getPt() {
             if (this.val.sDate && this.val.eDate) {

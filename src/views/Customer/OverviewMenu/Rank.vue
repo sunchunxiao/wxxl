@@ -1,7 +1,7 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="channelTree"
+      v-if="customerTree"
       class="nav-content-row">
       <el-col
         class="overflow">
@@ -14,10 +14,10 @@
               <el-col :span="14">
                 <IntelligentSelection
                   id="rank"
-                  v-if="channelRankArr.length"
+                  v-if="cusrankArr.length"
                   @changeTime="changeTime"
                   @showStragety="showStragety"
-                  :data="channelRankArr" />
+                  :data="cusrankArr" />
               </el-col>
               <el-col :span="10">
                 <div class="stragety">
@@ -25,7 +25,7 @@
                   <div class="stragety-box">
                     <div class="margin-bottom-10">{{ stragetyTitle }}</div>
                     <el-checkbox-group
-                      v-if="stragety"
+                      v-if="stragety.length"
                       v-model="stragetyCheckList">
                       <el-checkbox
                         v-for="(item,index) in stragety"
@@ -83,7 +83,6 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
-            version: 0,
             //tree
             pt: '',
             loading: false,
@@ -98,9 +97,9 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['channelTree', 'channelRankArr', 'channelLastParams']),
+        ...mapGetters(['customerTree', 'cusrankArr', 'cusLastParams']),
         hasTree () {
-            return !_.isEmpty(this.channelTree);
+            return !_.isEmpty(this.customerTree);
         },
     },
     watch: {
@@ -140,7 +139,7 @@ export default {
                         time_label: data1.time_label,
                         strategies: this.idArr.join(',')
                     };
-                    API.PostChannelSave(data).then(() => {
+                    API.PostCusStrategyLog(data).then(() => {
                         this.$message({
                             showClose: true,
                             message: '保存成功'
@@ -162,7 +161,7 @@ export default {
                 return;
             }
             this.getRank();
-            this.$store.dispatch("SaveChannelLastParams", this.newParams);
+            this.$store.dispatch("SaveCustLastParams", this.newParams);
         },
         getRank() {
             if (this.getPt() === '日') {
@@ -171,17 +170,17 @@ export default {
                 this.pt = this.getPt();
             }
             const params = {
-                chId: this.cid,
+                cid: this.cid,
                 pt: this.pt,
                 ...this.getPeriodByPt(),
             };
             this.newParams.rank = params;
-            if (JSON.stringify(this.channelLastParams.rank) == JSON.stringify(params)) {
+            if (JSON.stringify(this.cusLastParams.rank) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetChannelRank(params).then(res => {
-                this.$store.dispatch('SaveChannelRankArr', res.data);
+            API.GetCusRank(params).then(res => {
+                this.$store.dispatch('SaveCusRankArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -246,7 +245,7 @@ export default {
             this.showStragetyId = cid;
             this.subject = subject;
             this.stragety = [];
-            API.GetChannelMatch(params).then(res => {
+            API.GetCusStrategy(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];
                 this.stragety = res.data;
@@ -264,5 +263,5 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../../Product/style/overview.scss';
+@import '../../Product/style/overview.scss';
 </style>
