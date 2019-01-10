@@ -203,7 +203,34 @@ export default {
                                         if(data.value == null){
                                             return '';
                                         }
-                                        return data.value + "%";
+                                        let str = "";
+                                        let valueStyle, percentStyle;
+                                        valueStyle = _.includes(MAIN_SUNBJECT, subject) ? "valueSize" : "smallSize";
+                                        percentStyle = _.includes(MAIN_SUNBJECT, subject) ? "percentSize" : "smallPercentSize";
+                                        for (let i of data.value.split("")) {
+                                            str += `{${valueStyle}|${i}}`;
+                                        }
+                                        return str + `{${percentStyle}|%}`;
+                                    }
+                                },
+                                rich: {
+                                    percentSize: {
+                                        fontSize: 19,
+                                        padding: [-8,0,0,5],
+                                        verticalAlign: "bottom"
+                                    },
+                                    smallPercentSize: {
+                                        fontSize: 14,
+                                        padding: [-17,0,0,3],
+                                        verticalAlign: "bottom"
+                                    },
+                                    valueSize: {
+                                        padding: [-10,0,0,5],
+                                        fontSize: 40
+                                    },
+                                    smallSize: {
+                                        fontSize: 34,
+                                        padding: [-20,0,0,3]
                                     }
                                 },
                                 textStyle: {
@@ -227,18 +254,48 @@ export default {
                         label: {
                             normal: {
                                 formatter: function(data) {
+                                    let isMain = _.includes(MAIN_SUNBJECT, subject);
                                     if(data.name.length < 8){//显示字体过长换行显示
-                                        return data.name;
-                                    }else{
-                                        return data.name = data.name.slice(0, 4) + '\n' + data.name.slice(4, data.name.length);
+                                        return !isMain ? `{smallSize|${data.name}}`: data.name;
+                                    }else {
+                                        let str = data.name.slice(0, 5);
+                                        let str2 = data.name.slice(5, data.name.length);
+                                        return !isMain ? `{smallLine|${str}}\n{smallLine2|${str2}}` : `{line|${str}}\n{line2|${str2}}`;
+                                    }
+                                },
+                                rich: {
+                                    line: {
+                                        fontSize: FONTSIZE2,
+                                        color: '#4d4d4d',
+                                        padding:[-5,0,0,0]
+                                    },
+                                    line2: {
+                                        fontSize: FONTSIZE2,
+                                        color: '#4d4d4d',
+                                        padding:[-40,0,0,0]
+                                    },
+                                    smallLine: {
+                                        fontSize: 13,
+                                        color: '#4d4d4d',
+                                        padding: [-10,0,0,0]
+                                    },
+                                    smallLine2: {
+                                        fontSize: 13,
+                                        color: '#4d4d4d',
+                                        padding: [-40,0,0,0]
+                                    },
+                                    smallSize: {
+                                        color: '#4d4d4d',
+                                        fontSize: 13,
+                                        padding: [-5,0,0,0]
                                     }
                                 },
                                 textStyle: {
                                     fontSize: FONTSIZE2,
-                                    fontWeight: FONTWEIGHT,
                                     color: '#4d4d4d'
                                 },
-                                position: 'center'
+                                position: 'center',
+                                padding: [10, 0, 0, 0]
                             },
 
                         }
@@ -312,13 +369,18 @@ export default {
     .pie {
         width: 198px;
         height: 198px;
-        // margin: 0 auto;
     }
     .detail {
-        width: 60%;
-        margin: 0 auto;
-        text-align: left;
+        display: flex;
+        align-items: center;
+        .text {
+            flex: 2;
+            padding-right: 10px;
+            text-align: right;
+        }
         .value {
+            flex: 3;
+            text-align: left;
             font-size: 120%;
         }
     }
