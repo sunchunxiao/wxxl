@@ -32,7 +32,7 @@
           :span="5"
           :class="{'tree_block_none':isCollapse}"
           class="tree_container">
-          <div class="title">毛利目标达成率</div>
+          <div class="title">毛利润额目标达成率</div>
           <div class="tree_content">
             <div
               @click="click"

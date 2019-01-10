@@ -10,7 +10,7 @@
           v-loading="loading"
           class="">
           <Card>
-            <el-row class="margin-bottom-20">目标达成情况总览</el-row>
+            <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
             <slider
               height="250px"
               :min-move-num="50">
@@ -28,7 +28,7 @@
             <Card>
               <el-col
                 class="">
-                <el-row class="margin-bottom-20">综合评估</el-row>
+                <el-row class="margin-bottom-20 overview_title">综合评估</el-row>
                 <Radar
                   v-if="rankArr.length"
                   :id="'select'"

@@ -1,7 +1,7 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="productTree"
+      v-if="customerTree"
       class="nav-content-row">
       <el-col
         class="overflow">
@@ -14,10 +14,10 @@
               <el-col :span="14">
                 <IntelligentSelection
                   id="rank"
-                  v-if="rankArr.length"
+                  v-if="cusrankArr.length"
                   @changeTime="changeTime"
                   @showStragety="showStragety"
-                  :data="rankArr" />
+                  :data="cusrankArr" />
               </el-col>
               <el-col :span="10">
                 <div class="stragety">
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import API from './api';
+import API from '../api';
 import Card from 'components/Card';
 // 智能评选和智能策略
 import IntelligentSelection from 'components/IntelligentSelection';
@@ -97,9 +97,9 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'rankArr','lastParams']),
+        ...mapGetters(['customerTree', 'cusrankArr', 'cusLastParams']),
         hasTree () {
-            return !_.isEmpty(this.productTree);
+            return !_.isEmpty(this.customerTree);
         },
     },
     watch: {
@@ -139,7 +139,7 @@ export default {
                         time_label: data1.time_label,
                         strategies: this.idArr.join(',')
                     };
-                    API.PostProductSave(data).then(() => {
+                    API.PostCusStrategyLog(data).then(() => {
                         this.$message({
                             showClose: true,
                             message: '保存成功'
@@ -161,7 +161,7 @@ export default {
                 return;
             }
             this.getRank();
-            this.$store.dispatch("SaveLastParams", this.newParams);
+            this.$store.dispatch("SaveCustLastParams", this.newParams);
         },
         getRank() {
             if (this.getPt() === '日') {
@@ -175,12 +175,12 @@ export default {
                 ...this.getPeriodByPt(),
             };
             this.newParams.rank = params;
-            if (JSON.stringify(this.lastParams.rank) == JSON.stringify(params)) {
+            if (JSON.stringify(this.cusLastParams.rank) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetProductRank(params).then(res => {
-                this.$store.dispatch('SaveRankArr', res.data);
+            API.GetCusRank(params).then(res => {
+                this.$store.dispatch('SaveCusRankArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -245,7 +245,7 @@ export default {
             this.showStragetyId = cid;
             this.subject = subject;
             this.stragety = [];
-            API.GetProductMatch(params).then(res => {
+            API.GetCusStrategy(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];
                 this.stragety = res.data;
@@ -263,5 +263,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import './style/overview.scss';
+@import '../../Product/style/overview.scss';
 </style>

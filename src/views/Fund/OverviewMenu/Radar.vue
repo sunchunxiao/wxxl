@@ -1,28 +1,40 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="productTree"
+      v-if="fundTree"
       class="nav-content-row">
       <el-col
         class="overflow">
         <el-row
-          v-if="trendArr.length>0"
+          v-if="fundprogressArr.length>0"
           v-loading="loading"
           class="">
           <Card>
-            <el-row class="margin-bottom-20 overview_title">同比环比趋势分析</el-row>
-            <el-row>
-              <template v-for="(item, index) in trendArr">
+            <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
+            <slider
+              height="250px"
+              :min-move-num="50">
+              <template v-for="(item, index) in fundprogressArr">
                 <el-col
                   :key="index"
-                  :span="12">
-                  <ProYearOnYearTrend
-                    v-if="trendArr.length"
+                  style="width:198px">
+                  <ProTargetAchievement
+                    v-if="fundprogressArr.length"
                     :id="`${index}`"
                     :data="item" />
                 </el-col>
               </template>
-            </el-row>
+            </slider>
+            <Card>
+              <el-col
+                class="">
+                <el-row class="margin-bottom-20 overview_title">综合评估</el-row>
+                <Radar
+                  v-if="fundrankArr.length"
+                  :id="'select'"
+                  :data="fundrankArr[fundrankArr.length-1]" />
+              </el-col>
+            </Card>
           </Card>
         </el-row>
       </el-col>
@@ -36,42 +48,43 @@
 </template>
 
 <script>
-import API from './api';
+import API from '../api';
 import Card from 'components/Card';
 
-// 目标-实际-差异趋势分析
-import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
+import Slider from 'components/Slider';
+// 目标达成情况总览
+import ProTargetAchievement from 'components/ProTargetAchievement';
+import Radar from 'components/radar';
 
 //vuex
 import { mapGetters } from 'vuex';
+
 export default {
+    name: "RadarWrap",
     props: {
         cid: String,
+        date: Object,
         val: Object
     },
     components: {
         Card,
-        ProYearOnYearTrend
+        Slider,
+        Radar,
+        ProTargetAchievement,
     },
     data () {
         return {
-            form: {
-                pt: '', // 周期类型
-                date: [], // date
-                search: '', // 暂时没有接口 先这样
-            },
-            //tree
+            version: 0,
             pt: '',
             loading: false,
-            changeDate: {},
             newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'lastParams']),
+        ...mapGetters(['fundTree', 'fundprogressArr', 'fundrankArr', 'fundlastParams']),
         hasTree () {
-            return !_.isEmpty(this.productTree);
-        },
+            return !_.isEmpty(this.fundTree);
+        }
     },
     watch: {
         cid: {
@@ -90,42 +103,51 @@ export default {
                 return;
             }
             this.getProgress();
-            this.$store.dispatch("SaveLastParams", this.newParams);
+            this.getRank();
+            this.$store.dispatch("SaveFundLastParams", this.newParams);
         },
+        //目标达成
         getProgress() {
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
+                version: this.version
             };
-            this.newParams.trend = params;
-            if (JSON.stringify(this.lastParams.trend) == JSON.stringify(params)) {
+            this.newParams.progress = params;
+            if (JSON.stringify(this.fundlastParams.progress) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetProductProgress(params).then(res => {
-                this.$store.dispatch('SaveProgressData', res.data);
-                const promises = _.map(res.data, o => this.getTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveTrendArr', resultList);
-                });
+            API.GetFundProgress(params).then(res => {
+                this.$store.dispatch('SaveFundProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
             });
         },
-        getTrend(subject) {
-            this.loading = true;
+        //雷达图
+        getRank() {
+            if (this.getPt() === '日') {
+                this.pt = '周';
+            }else{
+                this.pt = this.getPt();
+            }
             const params = {
                 cid: this.cid,
-                pt: this.getPt(),
+                pt: this.pt,
                 ...this.getPeriodByPt(),
-                subject: subject
+                version: this.version
             };
-            return API.GetProductTrend(params);
+            this.newParams.rank = params;
+            if (JSON.stringify(this.fundlastParams.rank) == JSON.stringify(params)) {
+                return;
+            }
+            this.loading = true;
+            API.GetFundRank(params).then(res => {
+                this.$store.dispatch('SaveFundRankArr', res.data);
+            }).finally(() => {
+                this.loading = false;
+            });
         },
         getPt() {
             if (this.val.sDate && this.val.eDate) {
@@ -141,13 +163,11 @@ export default {
         },
         getPeriodByPt() {
             const {
-                // pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
-                    // pt: pt,
                     sDate: sDate,
                     eDate: eDate,
                 };
@@ -162,10 +182,13 @@ export default {
                 };
             }
         },
+        clickIndex(i, idx) {
+            this[`index${i}`] = idx;
+        },
     }
 };
 </script>
 
 <style lang="scss">
-@import './style/overview.scss';
+    @import '../../Product/style/overview.scss';
 </style>

@@ -1,6 +1,6 @@
 export default [
     {
-        path: '/channel/overview',
+        path: '/channel/overview/:name',
         name: 'channelOverview',
         component: () =>
             import('views/Channel/Overview.vue')

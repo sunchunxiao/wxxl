@@ -1,252 +1,113 @@
 <template>
-  <div class="view_container">
+  <div class="container">
     <el-row
       class="time_header">
+      <!-- 展开按钮 -->
+      <div
+        class="contrast_btn"
+        @click="handleCollpase">
+        <img
+          v-if="isCollapse"
+          src="../../assets/collapse1.png"
+          alt="">
+        <img
+          v-else
+          src="../../assets/collapse.png"
+          alt="">
+      </div>
       <search-bar
         ref="child"
-        version='0'
-        @input="input"
-        url="/org/search"
         @search="handleSearch"
-        v-model="searchBarValue"
+        url="/org/search"
         placeholder="组织编号/组织名称"
+        v-model="searchBarValue"
         :pt-options="['月', '季', '年']" />
     </el-row>
     <div class="overview">
       <el-row
-        class="content_row"
-        :gutter="20">
+        v-if="organizationTree"
+        type="flex"
+        class="content_row">
         <el-col
           :span="5"
+          :class="{'tree_block_none':isCollapse}"
           class="tree_container">
-          <div class="title">组织净利润额目标达成率</div>
-          <div
-            @click="click"
-            v-if="organizationTree.children"
-            :class="{bac:isbac}"
-            class="company">
-            <span class="left label">{{ treeClone.name }}</span>
-            <span
-              :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-              class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
+          <div class="title">毛利润额目标达成率</div>
+          <div class="tree_content">
             <div
-              :class="{comprogress: true, 'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-              :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
-          </div>
-          <el-tree
-            ref="tree"
-            empty-text="正在加载"
-            :data="treeClone.children"
-            :props="defaultProps"
-            node-key="cid"
-            :expand-on-click-node="false"
-            :default-expanded-keys="nodeArr"
-            :highlight-current="highlight"
-            @node-expand="nodeExpand"
-            @node-click="handleNodeClick">
-            <div
-              class="custom-tree-node"
-              slot-scope="{ node, data }">
-              <el-tooltip
-                class="item"
-                effect="dark"
-                placement="right">
-                <div slot="content">
-                  <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
-                  <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
-                  <div
-                    v-if="data.children"
-                    class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
-                  <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
-                </div>
-                <span class="label">
-                  <span class="label_left">{{ data.name }}</span>
-                  <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
-                </span>
-              </el-tooltip>
+              @click="click"
+              v-if="organizationTree.children"
+              :class="{bac:isbac}"
+              class="company">
+              <span
+                :class="['left','label',
+                         {'is-active-zero':!(calculatePercent(treeClone.real_total, treeClone.target_total).percent) && activeCid == treeClone.cid}]">
+                {{ treeClone.name }}
+              </span>
               <div
-                :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
-                :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
+                :class="{comprogress: true, 'is-active': activeCid == treeClone.cid,'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+                :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
             </div>
-          </el-tree>
+            <el-tree
+              ref="tree"
+              :data="treeClone.children"
+              empty-text="正在加载"
+              node-key="cid"
+              :expand-on-click-node="false"
+              :highlight-current="highlight"
+              :props="defaultProps"
+              :default-expanded-keys="nodeArr"
+              @node-expand="nodeExpand"
+              @node-click="handleNodeClick">
+              <span
+                class="custom-tree-node"
+                slot-scope="{ node, data }">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  placement="right">
+                  <div slot="content">
+                    <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
+                    <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                    <div
+                      v-if="data.children"
+                      class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
+                    <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                  </div>
+                  <span class="label">
+                    <span
+                      :class="['label-left',
+                               {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.cid}]">{{ data.name }}</span>
+                  </span>
+                </el-tooltip>
+                <div
+                  :class="{progress: true, 'is-active': activeCid === data.cid, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+                  :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
+              </span>
+            </el-tree>
+          </div>
         </el-col>
         <el-col
-          :span="18"
-          class="overflow">
-          <el-row
-            class="min-height-400"
-            v-loading="loading">
-            <vue-lazy-component>
-              <Card>
-                <el-row class="margin-bottom-20">目标达成情况总览</el-row>
-                <el-row>
-                  <el-col :span="15">
-                    <template v-for="(item, index) in orgprogressArr">
-                      <el-col
-                        :key="index"
-                        :span="6">
-                        <ProTargetAchievement
-                          :id="`${index}`"
-                          :data="item" />
-                      </el-col>
-                    </template>
-                  </el-col>
-                  <el-col
-                    v-if="orgrankArr.length > 0"
-                    :span="9"
-                    class="border-left-2-gray">
-                    <Radar
-                      :id="'select'"
-                      :data="orgrankArr[orgrankArr.length-1]" />
-                  </el-col>
-                </el-row>
-              </Card>
-            </vue-lazy-component>
-          </el-row>
-          <el-row
-            v-loading="loading"
-            class="margin-top-10 min-height-400">
-            <vue-lazy-component>
-              <Card>
-                <el-row class="margin-bottom-20">目标-实际-差异趋势分析</el-row>
-                <el-row>
-                  <template v-for="(item, index) in orgtrendArr">
-                    <el-col
-                      :key="index"
-                      :span="12"
-                      @click.native="clickIndex(1 ,index)">
-                      <ProTargetActualDiffTrend
-                        :id="`${index}`"
-                        :data="item" />
-                    </el-col>
-                  </template>
-                </el-row>
-              </Card>
-            </vue-lazy-component>
-          </el-row>
-          <el-row
-            v-loading="loading"
-            class="margin-top-10 min-height-400">
-            <vue-lazy-component>
-              <Card>
-                <el-row class="margin-bottom-20">同比环比趋势分析</el-row>
-                <el-row>
-                  <template v-for="(item, index) in orgtrendArr">
-                    <el-col
-                      :key="index"
-                      :span="12"
-                      @click.native="clickIndex(2 ,index)">
-                      <ProYearOnYearTrend
-                        :id="`${index}`"
-                        :data="item" />
-                    </el-col>
-                  </template>
-                </el-row>
-              </Card>
-            </vue-lazy-component>
-          </el-row>
-          <el-row
-            v-if="hasStructure"
-            v-loading="loading"
-            class="margin-top-10 min-height-400">
-            <vue-lazy-component>
-              <Card>
-                <el-row class="margin-bottom-20">比例结构与平均值对比分析前端</el-row>
-                <el-row>
-                  <el-col :span="16">
-                    <template v-for="(item, index) in orgstructureArr1">
-                      <el-col
-                        :key="index"
-                        :span="6"
-                        @click.native="clickIndex(3 ,index)">
-                        <ProportionalStructureAverageComparison
-                          :id="`${index}`"
-                          :data="item" />
-                      </el-col>
-                    </template>
-                  </el-col>
-                  <el-col
-                    :span="8"
-                    class="border-left-2-gray">
-                    <ProportionalStructureAverageComparisonBig
-                      id="ProportionalStructureAverageComparisonBig"
-                      v-if="orgstructureArr1.length>0"
-                      :data="orgstructureArr1[index3]" />
-                  </el-col>
-                </el-row>
-              </Card>
-            </vue-lazy-component>
-          </el-row>
-          <el-row
-            v-if="hasStructureBack"
-            v-loading="loading"
-            class="margin-top-10 min-height-400">
-            <vue-lazy-component>
-              <Card>
-                <el-row class="margin-bottom-20">比例结构与平均值对比分析后端</el-row>
-                <el-row>
-                  <el-col :span="16">
-                    <template v-for="(item1, index) in orgstructureArr2">
-                      <el-col
-                        :key="index"
-                        :span="6"
-                        @click.native="clickIndex(4 ,index)">
-                        <ProportionalStructureAverageComparison
-                          :id="`orgstructureArr2${index}`"
-                          :data="item1" />
-                      </el-col>
-                    </template>
-                  </el-col>
-                  <el-col
-                    :span="8"
-                    class="border-left-2-gray">
-                    <ProportionalStructureAverageComparisonBig
-                      v-if="orgstructureArr2"
-                      id="ProportionalStructureAverageComparisonBig1"
-                      :data="orgstructureArr2[index4]" />
-                  </el-col>
-                </el-row>
-              </Card>
-            </vue-lazy-component>
-          </el-row>
-          <el-row
-            v-loading="loading"
-            class="margin-top-10 min-height-400">
-            <vue-lazy-component>
-              <Card>
-                <el-row class="margin-bottom-20">智能评选和智能策略</el-row>
-                <el-row>
-                  <el-col :span="14">
-                    <IntelligentSelection
-                      id="rank"
-                      @changeTime="changeTime"
-                      @showStragety="showStragety"
-                      :data="orgrankArr" />
-                  </el-col>
-                  <el-col :span="10">
-                    <div class="stragety">
-                      <div class="stragety-title">智能策略</div>
-                      <div class="stragety-box">
-                        <div class="margin-bottom-10">{{ stragetyTitle }}</div>
-                        <el-checkbox-group v-model="stragetyCheckList">
-                          <el-checkbox
-                            v-for="(item,index) in stragety"
-                            :key="index"
-                            :label="item.id"
-                            @change="change">{{ item.strategy }}</el-checkbox>
-                        </el-checkbox-group>
-                        <el-button
-                          @click="submit"
-                          type="primary"
-                          class="center">确 认</el-button>
-                      </div>
-                    </div>
-                  </el-col>
-                </el-row>
-              </Card>
-            </vue-lazy-component>
-          </el-row>
+          class="common-overflow"
+          :span="19">
+          <div class="common-wrap">
+            <span
+              class="span"
+              :key="item.id"
+              v-for="item in tabs"
+              :class="{'bacground':currView==item.id}"
+              @click="handleClick(item.id)"><span class="dot" />{{ item.value }}</span>
+          </div>
+          <component
+            :cid="cid"
+            :val="val"
+            :is="currentTabComponent" />
         </el-col>
+      </el-row>
+      <el-row
+        v-else
+        class="overview_select">
+        暂无数据
       </el-row>
     </div>
   </div>
@@ -254,75 +115,70 @@
 
 <script>
 import API from './api';
+import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
-import Card from '../../components/Card';
-// 目标达成情况总览
-import ProTargetAchievement from '../../components/ProTargetAchievement';
-import Radar from '../../components/radar';
-// 目标-实际-差异趋势分析
-import ProTargetActualDiffTrend from '../../components/ProTargetActualDiffTrend';
-// import ProTargetActualDiffTrendBig from '../../components/ProTargetActualDiffTrendBig';
-// 同比环比趋势分析
-import ProYearOnYearTrend from '../../components/ProYearOnYearTrend';
+import viewRadar from './OverviewMenu/Radar.vue';
+import Diff from './OverviewMenu/Diff.vue';
+import Trend from './OverviewMenu/Trend.vue';
+import Structure from './OverviewMenu/Structure.vue';
+import Rank from './OverviewMenu/Rank.vue';
 
-// 比例结构与平均值对比分析
-import ProportionalStructureAverageComparison from '../../components/ProportionalStructureAverageComparison';
-import ProportionalStructureAverageComparisonBig from '../../components/ProportionalStructureAverageComparisonBig';
-// 智能评选和智能策略
-import IntelligentSelection from '../../components/IntelligentSelection';
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
+//vuex
 import { mapGetters } from 'vuex';
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
+const OVER_TABS = [{
+    id: 'reach',
+    value: '目标达成情况总览'
+},{
+    id: 'diff',
+    value: '目标-实际-差异趋势分析'
+},{
+    id: 'trend',
+    value: '同比环比趋势分析'
+},{
+    id: 'structure',
+    value: '比例结构与平均值对比分析'
+},{
+    id: 'rank',
+    value: '智能评选和智能策略'
+}];
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {
+        "reach": viewRadar,
+        "diff": Diff,
+        "trend": Trend,
+        "structure": Structure,
+        "rank": Rank,
         Card,
         SearchBar,
-        ProYearOnYearTrend,
-        ProportionalStructureAverageComparison,
-        ProportionalStructureAverageComparisonBig,
-        IntelligentSelection,
-        ProTargetAchievement,
-        Radar,
-        ProTargetActualDiffTrend,
     },
-    data() {
+    data () {
         return {
             form: {
-                pt: '',
-                date: [],
-                search: '',
-                version: '0'
+                pt: '', // 周期类型
+                date: [], // date
+                search: '', // 暂时没有接口 先这样
             },
+            version: 0,
+            //tree
             cid: '',
+            pt: '',
+            //js
             error: error,
             find: find,
             preOrder: preOrder,
             addProperty: addProperty,
             calculatePercent: calculatePercent,
-            showStragetyId: '',
-            subject: '',
-            loading: false,
             defaultProps: TREE_PROPS,
-            // index
-            index0: 0,
-            index1: 0,
-            index2: 0,
-            index3: 0,
-            index4: 0,
+            loading: false,
             // stragety
-            stragetyCheckList: [],
-            stragetyTitle: '',
-            stragety: [],
-            type: 3,
-            idArr: [],
             val: {},
-            post: 1,
             nodeArr: [],
             isbac: true,
             highlight: true,
@@ -334,104 +190,65 @@ export default {
             treeClone: {},
             changeDate: {},
             findFatherId: '',
+            //views
+            tabs: OVER_TABS,
+            currView: '',
+            style: 0,
+            isCollapse: false
         };
     },
     computed: {
-        ...mapGetters(['organizationTree', 'orgprogressArr', 'orgtrendArr', 'orgstructureArr1', 'orgstructureArr2',
-            'orgrankArr'
-        ]),
-        hasTree() {
+        ...mapGetters(['organizationTree']),
+        hasTree () {
             return !_.isEmpty(this.organizationTree);
         },
-        hasStructure () {
-            return !_.isEmpty(this.orgstructureArr1);
+        currentTabComponent: function() {
+            return this.currView;
         },
-        hasStructureBack () {
-            return !_.isEmpty(this.orgstructureArr2);
+        activeCid() {
+            return this.cid;
         }
     },
-    mounted() {
+    watch: {
+        cid() {
+            this.allRequest();
+        }
+    },
+    mounted () {
+        this.val = this.searchBarValue;
+        this.currView = this.$route.params.name;
         //获取初始时间
         this.changeDate = this.searchBarValue;
         if (!this.hasTree) {
-            this.getTree();
+            this.$nextTick(() => {
+                this.getTree();
+            });
         } else {
             this.treeClone = _.cloneDeep(this.organizationTree);
             this.cid = this.organizationTree.cid;
             this.addProperty([this.treeClone]);
         }
     },
-    watch: {
-        form: {
-            handler: function() {},
-            deep: true
-        },
-        cid: function() {
-            // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
-            this.allRequest();
-        }
-    },
     methods: {
+        handleCollpase () {
+            this.isCollapse = !this.isCollapse;
+        },
+        handleClick(id) {
+            this.currView = id;
+            this.$router.push(`/organization/overview/${id}`);
+        },
         allRequest() {
             this.getTreePrograss();
-            this.getProgress();
-            this.getStructure1();
-            this.getStructure2();
-            this.getRank();
-        },
-        input(val) {
-            this.form.date = val;
         },
         click() {
-            //点击发送请求清除搜索框
-            this.$refs.child.clearKw();
-            if (this.cid === this.organizationTree.cid){
+            if (this.cid === this.organizationTree.cid) {
                 return;
             } else {
+                //点击发送请求清除搜索框
+                this.$refs.child.clearKw();
                 this.isbac = true;
                 this.highlight = false;
-                this.cid=this.organizationTree.cid;
-            }
-        },
-        change() {
-            this.idArr = [];
-            for (let i of this.stragetyCheckList) {
-                let stragetyObj = this.stragety.find(el => {
-                    return el.id == i;
-                });
-                this.idArr.push(stragetyObj.id);
-            }
-        },
-        submit() {
-            let data1 = JSON.parse(localStorage.data);
-            if(this.stragety.length){
-                this.$confirm('确认?', {
-                    confirmButtonText: '保存',
-                    cancelButtonText: '取消',
-                    type: 'warning',
-                    center: true
-                }).then(() => {
-                    const data = {
-                        cid: data1.cid,
-                        subject: data1.subject,
-                        time_label: data1.time_label,
-                        strategies: this.idArr.join(',')
-                    };
-                    API.PostOrgStrategyLog(data).then(() => {
-                        this.$message({
-                            showClose: true,
-                            message: '保存成功'
-                        });
-                    });
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消',
-                        duration: 1500
-                    });
-                });
-            }else{
-                this.error('无应用策略');
+                this.cid = this.organizationTree.cid;
             }
         },
         findParent(node,cid) {//找父节点id
@@ -441,19 +258,23 @@ export default {
                 this.getTreePrograss(i);
             }
         },
+        //树结构
         getTree() {
             const params = {
                 subject: SUBJECT,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                version: this.form.version
+                version: this.version
             };
             API.GetOrgTree(params).then(res => {
-                if (!this.organizationTree.cid){
-                    this.cid = res.tree.cid;
+                //选择的日期没有数据,res.tree可能为null
+                if (res.tree) {
+                    if (!this.organizationTree || !this.organizationTree.cid) {
+                        this.cid = res.tree.cid;
+                    }
+                    this.treeClone = _.cloneDeep(res.tree);
+                    this.addProperty([this.treeClone]);
                 }
-                this.type = res.tree.type;
-                this.treeClone = _.cloneDeep(res.tree);
-                this.addProperty([this.treeClone]);
                 this.$store.dispatch('SaveOrgTree', res.tree);
             });
         },
@@ -467,11 +288,12 @@ export default {
             }
             const params = {
                 subject: SUBJECT,
+                pt: this.getPt(),
                 ...this.getPeriodByPt(),
                 nid: id,
-                version: this.form.version
+                version: this.version
             };
-            API.GetOrgTreePrograss(params).then(res=>{
+            API.GetOrgTreePrograss(params).then(res => {
                 let obj = this.preOrder([this.treeClone], id);
                 if (obj.cid === id) {
                     obj.hasData = true;//插入数据的hasData为true
@@ -479,7 +301,7 @@ export default {
                     obj.target_total = res.data[id].target;
                 }
                 if (obj.children) {
-                    for (let i of obj.children){
+                    for (let i of obj.children) {
                         if (_.has(res.data, i.cid)) {
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
@@ -488,76 +310,16 @@ export default {
                 }
             });
         },
-        getProgress() {
-            this.loading = true;
-            const params = {
-                cid: this.cid,
-                ...this.getPeriodByPt(),
-                version: this.form.version
-            };
-            API.GetOrgProgress(params).then(res => {
-                this.$store.dispatch('SaveOrgProgressData', res.data);
-                const promises = _.map(res.data, o => this.getTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-
-                    this.$store.dispatch('SaveOrgTrendArr', resultList);
-                });
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
-        getTrend(subject) {
-            const params = {
-                cid: this.cid,
-                ...this.getPeriodByPt(),
-                subject: subject,
-                version: this.form.version
-            };
-            return API.GetOrgTrend(params);
-        },
-        //前端
-        getStructure1() {
-            const params = {
-                cid: this.cid,
-                ...this.getPeriodByPt(),
-                version: this.form.version,
-                rType: 1
-            };
-            API.GetOrgStructure(params).then(res => {
-                this.$store.dispatch('SaveOrgStructureArr1', res.data);
-            });
-        },
-        //后端
-        getStructure2() {
-            this.loading = true;
-            const params = {
-                cid: this.cid,
-                ...this.getPeriodByPt(),
-                version: this.form.version,
-                rType: 2
-            };
-            API.GetOrgStructure(params).then(res => {
-                this.$store.dispatch('SaveOrgStructureArr2', res.data);
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
-        getRank() {
-            this.loading = true;
-            const params = {
-                cid: this.cid,
-                version: this.form.version,
-                ...this.getPeriodByPt(),
-            };
-            API.GetOrgRank(params).then(res => {
-                this.$store.dispatch('SaveOrgRankArr', res.data);
-            }).finally(() => {
-                this.loading = false;
-            });
+        getPt() {
+            const {
+                date
+            } = this.form;
+            if (this.val.sDate && this.val.eDate) {
+                this.pt = this.val.pt;
+            }else{
+                this.pt = date.pt;
+            }
+            return this.pt;
         },
         getDateObj() {
             const {
@@ -565,13 +327,11 @@ export default {
             } = this.form;
             if (this.val.sDate && this.val.eDate) {
                 return {
-                    pt: this.val.pt,
                     sDate: this.val.sDate,
                     eDate: this.val.eDate,
                 };
             } else {
                 return {
-                    pt: date.pt,
                     sDate: date.sDate,
                     eDate: date.eDate,
                 };
@@ -579,21 +339,21 @@ export default {
         },
         getPeriodByPt() {
             const {
-                pt,
+                // pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
-                    pt: pt,
+                    // pt: pt,
                     sDate: sDate,
                     eDate: eDate,
                 };
             } else {
                 return {
-                    pt: '月',
-                    sDate: '2018-03-01',
-                    eDate: '2018-06-30',
+                    pt: '日',
+                    sDate: '2018-01-01',
+                    eDate: '2018-01-31',
                     // 先写死个时间
                     // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                     // eDate: moment().format('YYYY-MM-DD'),
@@ -603,111 +363,67 @@ export default {
         handleSearch(val) {
             this.findFatherId = val.cid;
             this.highlight = true;
-            // 默认公司的背景色
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
                 this.isbac = true;
                 this.highlight = false;
-                if (this.cid !== this.organizationTree.cid) {
-                    this.cid = this.organizationTree.cid;
-                    this.treeClone = _.cloneDeep(this.organizationTree);
+                if (this.cid) {//数据tree不为null时
+                    if (this.cid !== this.organizationTree.cid) {
+                        this.cid = this.organizationTree.cid;
+                        this.treeClone = _.cloneDeep(this.organizationTree);
+                    } else {
+                        //公司根节点
+                        this.allRequest();
+                    }
                 } else {
-                    this.allRequest();
+                    this.getTree();//数据tree为空时,没有id
                 }
-            } else {
+            } else {//精确搜索
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     this.allRequest();
                     this.treeClone = _.cloneDeep(this.organizationTree);
                 }
                 this.changeDate = this.searchBarValue;
-                this.isbac = false;
                 this.cid = val.cid;
                 this.findParent([this.treeClone], this.findFatherId);
+                this.isbac = false;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
+                //如果是根节点
                 if (this.cid === this.organizationTree.cid) {
                     this.isbac = true;
                     this.highlight = false;
                 }
             }
         },
-        nodeExpand (data){
+        nodeExpand(data) {
             this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;
         },
-        handleNodeClick (data) {
-            if (this.searchBarValue.sDate && this.searchBarValue.eDate){
-                this.val = this.searchBarValue;
+        handleNodeClick(data) {
+            if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.isbac = false;
                 this.highlight = true;
                 this.$refs.child.clearKw();
-                this.type = data.type;
-                if (this.cid === data.cid){
-                    return ;
+                if (this.cid === data.cid) {
+                    return;
                 }
                 this.cid = data.cid;
-
             } else {
                 this.highlight = false;
                 this.error('请选择日期');
             }
-
         },
-        clickIndex(i, idx) {
-            this[`index${i}`] = idx;
-        },
-        changeTime() {
-            this.stragetyTitle = '';
-            this.stragety = [];
-        },
-        showStragety(data) {
-            localStorage.setItem("data", JSON.stringify(data));
-            const {
-                cid,
-                brand,
-                name,
-                subject,
-                time_label,
-                rank
-            } = data;
-            this.stragetyTitle = `${brand} - ${name} - ${rank}`;
-            const params = {
-                cid: cid,
-                subject: subject,
-                time_label: time_label,
-            };
-            if (this.showStragetyId === cid && this.subject === subject) {
-                return;
-            }
-            this.showStragetyId = cid;
-            this.subject = subject;
-            API.GetOrgStrategy(params).then(res => {
-                this.stragetyCheckList = [];
-                this.idArr = [];
-                this.stragety = res.data;
-                const checked = 1;
-                for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].status === checked) {
-                        this.stragetyCheckList.push(res.data[i].id);
-                        this.idArr.push(res.data[i].id);
-                    }
-                }
-            });
-        }
     }
 };
 </script>
 
 <style lang="scss">
-		@import '../Product/style/overview.scss';
-		// .el-tooltip__popper.is-dark{
-		// 		background: rgba(0, 0, 0, 0.5)!important;
-		// 		font-size: 14px;
-		// 		font-weight:500;
-		// }
+@import '../Product/style/overview.scss';
+@import '../../style/tree.scss';
 </style>

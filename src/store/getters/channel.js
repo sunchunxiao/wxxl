@@ -6,6 +6,7 @@ const channel = {
     channelRankArr: state => state.channel.channelRankArr,
     channelCompareArr: state => state.channel.channelCompareArr,
     channelHistoryArr: state => state.channel.channelHistoryArr,
+    channelLastParams: state => state.channel.channelLastParams,
 };
 
 export default channel;

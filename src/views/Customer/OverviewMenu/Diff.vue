@@ -1,39 +1,28 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="productTree"
+      v-if="customerTree"
       class="nav-content-row">
       <el-col
         class="overflow">
         <el-row
+          v-if="custrendArr.length>0"
           v-loading="loading"
           class="">
           <Card>
-            <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析</el-row>
+            <el-row class="margin-bottom-20 overview_title">目标-实际-差异趋势分析</el-row>
             <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in structureArr">
-                  <el-col
-                    :key="index"
-                    :span="6"
-                    @click.native="clickIndex(3 ,index)">
-                    <ProportionalStructureAverageComparison
-                      v-if="structureArr.length"
-                      @id="structureID"
-                      :id="`${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col
-                :span="8"
-                class="border-left-2-gray">
-                <ProportionalStructureAverageComparisonBig
-                  @id="structureID"
-                  v-if="structureArr.length"
-                  id="ProportionalStructureAverageComparisonBig"
-                  :data="structureArr[index3]" />
-              </el-col>
+              <template v-for="(item, index) in custrendArr">
+                <el-col
+                  :key="index"
+                  :span="12"
+                  @click.native="clickIndex(1 ,index)">
+                  <ProTargetActualDiffTrend
+                    v-if="custrendArr.length"
+                    :id="`${index}`"
+                    :data="item" />
+                </el-col>
+              </template>
             </el-row>
           </Card>
         </el-row>
@@ -48,12 +37,12 @@
 </template>
 
 <script>
-import API from './api';
+import API from '../api';
 import Card from 'components/Card';
 
-// 比例结构与平均值对比分析
-import ProportionalStructureAverageComparison from 'components/ProportionalStructureAverageComparison';
-import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
+// 目标-实际-差异趋势分析
+import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
+
 //vuex
 import { mapGetters } from 'vuex';
 export default {
@@ -63,8 +52,7 @@ export default {
     },
     components: {
         Card,
-        ProportionalStructureAverageComparison,
-        ProportionalStructureAverageComparisonBig,
+        ProTargetActualDiffTrend,
     },
     data () {
         return {
@@ -73,23 +61,21 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
-            //index
-            index3: 0,
+            //tree
             pt: '',
             loading: false,
-            changeDate: {},
             newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'structureArr','lastParams']),
+        ...mapGetters(['customerTree','cusprogressArr','custrendArr','cusLastParams']),
         hasTree () {
-            return !_.isEmpty(this.productTree);
+            return !_.isEmpty(this.customerTree);
         },
     },
     watch: {
         cid: {
-            handler () {
+            handler() {
                 this.allRequest();
             },
             immediate: true
@@ -99,42 +85,46 @@ export default {
         }
     },
     methods: {
-        clickIndex(i, idx) {
-            this[`index${i}`] = idx;
-        },
-        structureID(data) {
-            this.cid = data;
-            this.nodeArr = [];
-            this.nodeArr.push(this.cid);
-            this.$nextTick(() => {
-                this.$refs.tree.setCurrentKey(this.cid); // tree元素的ref 绑定的node-key
-            });
-            this.isbac = false;
-            this.highlight = true;
-        },
         allRequest() {
             if (!this.cid) {
                 return;
             }
-            this.getStructure();
-            this.$store.dispatch("SaveLastParams", this.newParams);
+            this.getProgress();
+            this.$store.dispatch("SaveCustLastParams", this.newParams);
         },
-        getStructure() {
+        getProgress() {
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
-            this.newParams.structure = params;
-            if (JSON.stringify(this.lastParams.structure) == JSON.stringify(params)) {
+            this.newParams.diff = params;
+            if (JSON.stringify(this.cusLastParams.diff) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetProductStructure(params).then(res => {
-                this.$store.dispatch('SaveStructureArr', res.data);
+            API.GetCusProgress(params).then(res => {
+                this.$store.dispatch('SaveCusProgressData', res.data);
+                const promises = _.map(res.data, o => this.getTrend(o.subject));
+                Promise.all(promises).then(resultList => {
+                    _.forEach(resultList, (v, k) => {
+                        v.subject = res.data[k].subject;
+                        v.subject_name = res.data[k].subject_name;
+                    });
+                    this.$store.dispatch('SaveCusTrendArr', resultList);
+                });
             }).finally(() => {
                 this.loading = false;
             });
+        },
+        getTrend(subject) {
+            const params = {
+                cid: this.cid,
+                pt: this.getPt(),
+                ...this.getPeriodByPt(),
+                subject: subject
+            };
+            return API.GetCusTrend(params);
         },
         getPt() {
             if (this.val.sDate && this.val.eDate) {
@@ -176,5 +166,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import './style/overview.scss';
+@import '../../Product/style/overview.scss';
 </style>

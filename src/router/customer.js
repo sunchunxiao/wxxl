@@ -1,6 +1,6 @@
 export default [
     {
-        path: '/customer/overview',
+        path: '/customer/overview/:name',
         name: 'customerOverview',
         component: () =>
             import('views/Customer/Overview.vue')

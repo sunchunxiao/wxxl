@@ -1,7 +1,7 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="productTree"
+      v-if="channelTree"
       class="nav-content-row">
       <el-col
         class="overflow">
@@ -12,13 +12,13 @@
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析</el-row>
             <el-row>
               <el-col :span="16">
-                <template v-for="(item, index) in structureArr">
+                <template v-for="(item, index) in channelStructureArr">
                   <el-col
                     :key="index"
                     :span="6"
                     @click.native="clickIndex(3 ,index)">
                     <ProportionalStructureAverageComparison
-                      v-if="structureArr.length"
+                      v-if="channelStructureArr.length"
                       @id="structureID"
                       :id="`${index}`"
                       :data="item" />
@@ -30,9 +30,9 @@
                 class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
                   @id="structureID"
-                  v-if="structureArr.length"
+                  v-if="channelStructureArr.length"
                   id="ProportionalStructureAverageComparisonBig"
-                  :data="structureArr[index3]" />
+                  :data="channelStructureArr[index3]" />
               </el-col>
             </el-row>
           </Card>
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import API from './api';
+import API from '../api';
 import Card from 'components/Card';
 
 // 比例结构与平均值对比分析
@@ -82,9 +82,9 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'structureArr','lastParams']),
+        ...mapGetters(['channelTree', 'channelStructureArr', 'channelLastParams']),
         hasTree () {
-            return !_.isEmpty(this.productTree);
+            return !_.isEmpty(this.channelTree);
         },
     },
     watch: {
@@ -117,21 +117,22 @@ export default {
                 return;
             }
             this.getStructure();
-            this.$store.dispatch("SaveLastParams", this.newParams);
+            this.$store.dispatch("SaveChannelLastParams", this.newParams);
         },
         getStructure() {
             const params = {
-                cid: this.cid,
+                chId: this.cid,
                 pt: this.getPt(),
+                subject: this.form.subject,
                 ...this.getPeriodByPt(),
             };
             this.newParams.structure = params;
-            if (JSON.stringify(this.lastParams.structure) == JSON.stringify(params)) {
+            if (JSON.stringify(this.channelLastParams.structure) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetProductStructure(params).then(res => {
-                this.$store.dispatch('SaveStructureArr', res.data);
+            API.GetChannelStructure(params).then(res => {
+                this.$store.dispatch('SaveChannelStructureArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -176,5 +177,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import './style/overview.scss';
+@import '../../Product/style/overview.scss';
 </style>

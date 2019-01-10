@@ -1,6 +1,6 @@
 export default [
     {
-        path: '/fund/overview',
+        path: '/fund/overview/:name',
         name: 'fundOverview',
         component: () =>
             import('views/Fund/Overview.vue')
