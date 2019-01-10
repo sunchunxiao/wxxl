@@ -200,7 +200,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['customerTree','cusprogressArr','cuscompareArr','cusLastcidObjArr']),
+        ...mapGetters(['customerTree','cusprogressArr','cuscompareArr']),
         hasTree() {
             return !_.isEmpty(this.customerTree);
         },
@@ -274,18 +274,11 @@ export default {
 
         },
         startChecked() {
-            // console.log(this.lastcidObjArr,this.cidObjArr);
-            // console.log(JSON.stringify(this.lastcidObjArr) == JSON.stringify(this.cidObjArr));
-            const bool = JSON.stringify(this.cusLastcidObjArr) == JSON.stringify(this.cidObjArr);
-            if (bool) {
-                return;
-            }
             this.debounce();
         },
         cleanChecked () {
             this.cidObjArr = [];
             this.$refs.tree.setCheckedKeys([]);
-            this.$store.dispatch('SaveCusCidObj',_.cloneDeep(this.cidObjArr));
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;

@@ -300,6 +300,9 @@ export default {
             this.promise();
         }
     },
+    destroyed() {
+        this.$store.dispatch('SaveFundCompareArrback', []);
+    },
     methods: {
         promise() {
             Promise.all([this.getTree(), this.getProgressbefore(),this.getProgressback()]).then(res => {
@@ -331,9 +334,9 @@ export default {
                 // 后端指标
                 const progressbackData = res[2];
                 this.$store.dispatch('SaveFundBackData', progressbackData.data);
+                this.debounce();
+                this.debounceBack();
             });
-            this.debounce();
-            this.debounceBack();
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
