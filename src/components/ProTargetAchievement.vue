@@ -4,14 +4,16 @@
       class="pie"
       :id="`pie-${id}`" />
     <div class="detail">
-      <span class="text">目标: </span>
-      <span class="value">{{ target }}</span>
+      <span class="text">目标 : </span>
+      <span :class="['value', {'no-set':targetObj.value =='未设定'}]">{{ targetObj.value }} <span class="unit">{{ targetObj.unit }}</span></span>
     </div>
     <div class="detail">
-      <span class="text">实际: </span>
+      <span class="text">实际 : </span>
       <span
         class="value"
-        :style="{color: color}">{{ real }}</span>
+        :style="{color: color}">{{ realObj.value }} <span
+          :style="{color: color}"
+          class="unit">{{ realObj.unit }}</span></span>
     </div>
   </div>
 </template>
@@ -43,11 +45,11 @@ export default {
         };
     },
     computed: {
-        real() {
+        realObj() {
             const { real } = this.data;
             return this.calculateToShow(real);
         },
-        target() {
+        targetObj() {
             const { target } = this.data;
             return this.calculateToShow(target);
         }
@@ -68,27 +70,51 @@ export default {
         calculateToShow(val) {
             const { subject } = this.data;
             //目标值为null,是未设定,为数值显示数值(0显示0)
+            let obj = {
+                value: "",
+                unit: ""
+            };
             if (val == null) {
-                return "未设定";
+                obj.value = "未设定";
             } else {
                 if (_.includes(SUBJECT, subject)) {
                     if ((val / 10000) >= 1) {
-                        return (val / 10000).toFixed(2) + 'w';
+                        obj.value = (val / 10000).toFixed(2);
+                        obj.unit = " 万";
                     } else {
-                        return val;
+                        obj.value = val;
                     }
                 }
                 let tenThousand = val / 10000 / 100;
                 if (tenThousand / 10000 >= 1) {
-                    return (val / 10000 / 10000 / 100).toFixed(2) + '亿';
+                    obj.value = (val / 10000 / 10000 / 100).toFixed(2);
+                    obj.unit = "亿";
                 } else if (tenThousand >= 1 || tenThousand <= -1) {
-                    return (val / 10000 / 100).toFixed(2) + 'w';
+                    obj.value = (val / 10000 / 100).toFixed(2);
+                    obj.unit = "万";
                 } else if (tenThousand < 1 && tenThousand > 0) {
-                    return (val / 100).toFixed(2);
+                    obj.value = (val / 100).toFixed(2);
                 } else {
-                    return val;
+                    obj.value = val;
                 }
             }
+            obj.value = this.formatValue(obj.value);
+            return obj;
+        },
+        // 隔三位数加一个逗号
+        formatValue(num) {
+            if (Number(num)) {
+                let numArr = String(num).split(".")[0].split("").reverse();
+                let percent = String(num).split(".")[1];
+                for (let i in numArr) {
+                    if ((i> 0) && (i%3 == 0)) {
+                        numArr[i] = numArr[i] + ",";
+                    }
+                }
+                num = numArr.reverse().join("");
+                percent && (num += "." + percent);
+            }
+            return num;
         },
         renderChart(data) {
             let  _this = this;
@@ -96,7 +122,7 @@ export default {
             let valuePercent, realValue, toolTipValue, fontSize, valueOutside, valueLeft1;
             if (progress == null || progress < 0) {//目标未设定或者进度为负值
                 if (!target) {
-                    realValue = this.calculateToShow(real).toString();
+                    realValue = this.calculateToShow(real).value.toString();
                     if (_.includes(SUBJECT, subject)) { //tooltip显示每三位,分隔
                         toolTipValue = real;
                     } else {
@@ -121,7 +147,7 @@ export default {
             } else {
                 radiusInside = ['55', '61'];
                 radiusOutside = ['63', '68'];
-                center = ['50%', '60%'];
+                center = ['50%', '56.5%'];
             }
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
 
@@ -372,16 +398,25 @@ export default {
     }
     .detail {
         display: flex;
-        align-items: center;
+        align-items: baseline;
         .text {
             flex: 2;
+            font-size: 12px;
             padding-right: 10px;
             text-align: right;
         }
         .value {
             flex: 3;
             text-align: left;
-            font-size: 120%;
+            font-size: 20px;
+            height: 22px;
+            line-height: 22px;
+            &.no-set {
+                font-size: 16px;
+            }
+            .unit {
+                font-size: 12px;
+            }
         }
     }
 }
