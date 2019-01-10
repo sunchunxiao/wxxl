@@ -2,114 +2,135 @@
   <div class="con_container">
     <el-row
       class="time_header">
+      <!-- 展开按钮 -->
+      <div
+        class="contrast_btn"
+        @click="handleCollapse">
+        <img
+          v-if="isCollapse"
+          src="../../assets/collapse1.png"
+          alt="">
+        <img
+          v-else
+          src="../../assets/collapse.png"
+          alt="">
+      </div>
       <search-bar
         ref="child"
         @input="input"
         @search="handleSearch"
         v-model="searchBarValue"
-        url="/cus/search"
-        placeholder="客户编号/客户名称"
-        :pt-options="['日', '周', '月', '季', '年']" />
+        placeholder="产品编号/产品名称"
+        url="/customer/search" />
     </el-row>
     <div class="contrast">
       <el-row
-        class="content_row"
-        :gutter="20">
+        v-if="customerTree"
+        type="flex"
+        class="content_row">
         <el-col
-          :span="4"
+          :span="5"
+          :class="{'tree_block_none':isCollapse}"
           class="tree_container">
           <div
-            @click="cleanChecked"
             size="mini"
             class="clean_btn">
             <span
-              class="clean_select">取消全部</span>
-          </div>
-          <div class="title_target">当前选中目标数:{{ num }}</div>
-          <div class="title">客户利润额目标达成率</div>
-          <div class="company">
-            <span class="left">{{ treeClone.name }}</span>
+              @click="startChecked"
+              class="select start_select ">开始对比</span>
             <span
-              :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-              class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
+              @click="cleanChecked"
+              class="select clean_select">取消全部</span>
           </div>
-          <el-tree
-            ref="tree"
-            node-key="cid"
-            check-strictly
-            show-checkbox
-            empty-text="正在加载"
-            :data="treeClone.children"
-            :props="defaultProps"
-            :highlight-current="highlight"
-            :default-expanded-keys="nodeArr"
-            @node-expand="nodeExpand"
-            @check-change="handleCheckChange">
-            <span
-              class="custom-tree-node"
-              slot-scope="{ node, data }">
-              <el-tooltip
-                class="item"
-                effect="dark"
-                placement="right">
-                <div slot="content">
-                  <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
-                  <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
-                  <div
-                    v-if="data.children"
-                    class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
-                  <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
-                </div>
-                <span class="label">
-                  <span class="label_left">{{ data.name }}</span>
-                  <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
-                </span>
-              </el-tooltip>
-
-              <div
-                :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
-                :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
-            </span>
-          </el-tree>
+          <div class="title_target">
+            <span>当前目标: <span class="title">{{ num }}</span></span>
+            <span>毛利目标达成率</span>
+          </div>
+          <div class="tree_content">
+            <div class="company">
+              <span class="left">{{ treeClone.name }}</span>
+            </div>
+            <el-tree
+              ref="tree"
+              check-strictly
+              show-checkbox
+              node-key="cid"
+              :data="treeClone.children"
+              empty-text="正在加载"
+              :default-expanded-keys="nodeArr"
+              :highlight-current="highlight"
+              :props="defaultProps"
+              @node-expand="nodeExpand"
+              @check-change="handleCheckChange">
+              <span
+                class="custom-tree-node"
+                slot-scope="{ node, data }">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  placement="right">
+                  <div slot="content">
+                    <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
+                    <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                    <div
+                      v-if="data.children"
+                      class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
+                    <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                  </div>
+                  <span class="label">
+                    <span class="label_left">{{ data.name }}</span>
+                  </span>
+                </el-tooltip>
+                <div
+                  :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+                  :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
+              </span>
+            </el-tree>
+          </div>
         </el-col>
         <el-col
           :span="19"
           v-loading="loading"
           class="overflow">
-          <el-row>
-            <Card>
-              <el-row class="margin-bottom-20">组织对比分析和平均值分析</el-row>
-              <el-row v-if="cuscompareArr.length>0">
-                <el-col :span="6">
-                  <template v-for="(item, index) in cuscompareArr">
-                    <el-col
-                      :key="index"
-                      :span="12"
-                      @click.native="clickIndex(0 ,index)">
-                      <ConOrgComparisonAverage
-                        :title="item.subject_name"
-                        :id="`${index}`"
-                        :data="item" />
-                    </el-col>
-                  </template>
-                </el-col>
-                <el-col :span="18">
-                  <ConOrgComparisonAverageBig
-                    v-if="cuscompareArr.length > 0"
-                    :title="cuscompareArr[index0].subject_name"
-                    :data="cuscompareArr[index0]"
-                    id="ConOrgComparisonAverage"
-                    :index="index0" />
-                </el-col>
-              </el-row>
-              <el-row
-                v-else
-                class="please_select">
-                请选择要对比的项目
-              </el-row>
-            </Card>
+          <Card
+            v-if="cuscompareArr.length > 0">
+            <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
+            <el-row>
+              <slider
+                height="170px"
+                :min-move-num="50">
+                <template v-for="(item, index) in cuscompareArr">
+                  <el-col
+                    :key="index"
+                    style="width:200px">
+                    <ConOrgComparisonAverage
+                      :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
+                      @click.native="clickIndex(index)"
+                      :id="`${index}`"
+                      :data="item" />
+                  </el-col>
+                </template>
+              </slider>
+              <Card>
+                <ConOrgComparisonAverageBig
+                  :title="cuscompareArr[index0].subject_name"
+                  :data="cuscompareArr[index0]"
+                  id="ConOrgComparisonAverage"
+                  :index="index0" />
+              </Card>
+            </el-row>
+          </Card>
+          <el-row
+            v-else
+            class="please_select">
+            请选择要对比的项目
           </el-row>
         </el-col>
+      </el-row>
+      <el-row
+        v-else
+        class="overview_select">
+        暂无数据
       </el-row>
     </div>
   </div>
@@ -117,23 +138,28 @@
 
 <script>
 import API from './api';
-import Card from '../../components/Card';
 import SearchBar from 'components/SearchBar';
+import Slider from 'components/Slider';
+import Card from '../../components/Card';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
+//vuex
 import { mapGetters } from 'vuex';
+const BTN = ['开始对比','取消选择'];
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
+const ROOTCID = 1;
 const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
     components: {
         Card,
+        Slider,
         SearchBar,
         ConOrgComparisonAverage,
         ConOrgComparisonAverageBig
@@ -141,11 +167,10 @@ export default {
     data() {
         return {
             form: {
-                pt: '月',
                 date: [],
-                search: '',
             },
             cid: '',
+            btn: BTN,
             error: error,
             find: find,
             preOrder: preOrder,
@@ -154,22 +179,24 @@ export default {
             defaultProps: TREE_PROPS,
             index0: 0,
             loading: false,
-            val: {},
-            post: 1,
-            nodeArr: [],
             cidObjArr: [],
             cancelKey: '',
+            debounce: null,
+            val: {},
+            nodeArr: [],
+            highlight: true,
             searchBarValue: {
                 pt: '',
                 sDate: '',
                 eDate: ''
             },
-            debounce: null,
-            highlight: true,
-            changeDate: {},
             treeClone: {},
-
+            changeDate: {},
             findFatherId: '',
+            style: 0,
+            opcityIndex: undefined,
+            opciatyBool: false,
+            isCollapse: false,
         };
     },
     computed: {
@@ -188,29 +215,29 @@ export default {
     watch: {
         cidObjArr(val) {
             if (val.length > 0) {
-                this.debounce();
+                // this.debounce();
             } else if (val.length === 0) {
                 this.$store.dispatch('ClearCusCompare');
             }
         },
-        cid(){
+        cid() {
             this.getTreePrograss();
         }
     },
     created() {
     // 防抖函数 减少发请求次数
-        this.debounce = _.debounce(this.getCompare, 1000);
+        this.debounce = _.debounce(this.getCompare, 0);
     },
     mounted() {
         //获取初始时间
         this.changeDate = this.searchBarValue;
-        if (this.customerTree.children){
+        if (this.cuscompareArr.length) {
             this.cid = this.customerTree.cid;
             this.treeClone = _.cloneDeep(this.customerTree);
             this.addProperty([this.treeClone]);
             let arr = [];
             for (let i = 0; i < 3; i++) {
-                this.customerTree.children[i] && arr.push(this.customerTree.children[i]);
+                this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
             }
             const checkKeys = arr.map(i => i.cid);
             this.$store.dispatch('SaveCusTree', this.customerTree).then(() => {
@@ -221,26 +248,40 @@ export default {
         }
     },
     methods: {
-        promise(){
+        promise() {
             Promise.all([this.getTree(), this.getProgress()]).then(res => {
                 // 树
                 const treeData = res[0];
-                this.cid = treeData.tree.cid;
-                this.treeClone = _.cloneDeep(treeData.tree);
-                this.addProperty([this.treeClone]);
-                const children = this.treeClone.children;
-                let arr = [];
-                for(let i = 0; i < 3; i++) {
-                    children[i] && arr.push(children[i]);
+                if (treeData.tree) {
+                    this.cid = treeData.tree.cid;
+                    this.treeClone = _.cloneDeep(treeData.tree);
+                    this.addProperty([this.treeClone]);
+                    const children = treeData.tree.children;
+                    let arr = [];
+                    for(let i = 0; i < 3; i++) {
+                        children[i] && arr.push(children[i]);
+                    }
+                    const checkKeys = arr.map(i => i.cid);
+                    this.$store.dispatch('SaveCusTree', treeData.tree).then(() => {
+                        this.$refs.tree.setCheckedKeys(checkKeys);
+                    });
+                    // 指标
+                    const progressData = res[1];
+                    this.$store.dispatch('SaveCusProgressData', progressData.data);
                 }
-                const checkKeys = arr.map(i => i.cid);
-                this.$store.dispatch('SaveCusTree', treeData.tree).then(() => {
-                    this.$refs.tree.setCheckedKeys(checkKeys);
-                });
-                // 指标
-                const progressData = res[1];
-                this.$store.dispatch('SaveCusProgressData', progressData.data);
+                this.debounce();
             });
+
+        },
+        startChecked() {
+            this.debounce();
+        },
+        cleanChecked () {
+            this.cidObjArr = [];
+            this.$refs.tree.setCheckedKeys([]);
+        },
+        handleCollapse () {
+            this.isCollapse = !this.isCollapse;
         },
         allRequest() {
             this.getTreePrograss();
@@ -256,14 +297,15 @@ export default {
                 this.getTreePrograss(i);
             }
         },
-        getTree() {
+        getTree () {
             const params = {
                 subject: SUBJECT,
                 ...this.getPeriodByPt(),
             };
             return API.GetCusTree(params);
         },
-        getTreePrograss(cid) {
+        //获取百分比数据
+        getTreePrograss(cid){
             let id;
             if (cid) {
                 id = cid;
@@ -273,11 +315,11 @@ export default {
             const params = {
                 subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid: id,
+                nid: id
             };
             API.GetCusTreePrograss(params).then(res=>{
                 let obj = this.preOrder([this.treeClone], id);
-                if (obj.cid === id) {
+                if(obj.cid === id){
                     obj.hasData = true;//插入数据的hasData为true
                     obj.real_total = res.data[id].real;
                     obj.target_total = res.data[id].target;
@@ -292,9 +334,9 @@ export default {
                 }
             });
         },
-        getProgress() {
+        getProgress () {
             const params = {
-                cid: 1,
+                cid: ROOTCID,
                 ...this.getPeriodByPt(),
             };
             return API.GetCusProgress(params);
@@ -320,7 +362,7 @@ export default {
                 this.loading = false;
             });
         },
-        getTrend(subject) {
+        getTrend (subject) {
             let params = {
                 ...this.getPeriodByPt(),
                 subject: subject
@@ -328,6 +370,24 @@ export default {
             const checkKeys = this.cidObjArr.map(i => i.cid);
             params.targets = checkKeys.join(',');
             return API.GetCusCompare(params);
+        },
+        getDateObj () {
+            const {
+                date
+            } = this.form;
+            if (this.val.sDate && this.val.eDate) {
+                return {
+                    pt: this.val.pt,
+                    sDate: this.val.sDate,
+                    eDate: this.val.eDate,
+                };
+            } else {
+                return {
+                    pt: date.pt,
+                    sDate: date.sDate,
+                    eDate: date.eDate,
+                };
+            }
         },
         getPeriodByPt () {
             const {
@@ -344,27 +404,8 @@ export default {
             } else {
                 return {
                     pt: '日',
-                    sDate: '2018-05-01',
-                    eDate: '2018-06-30',
-                };
-            }
-        },
-        getDateObj () {
-            const {
-                date
-            } = this.form;
-            // console.log(this.val.sDate,date);
-            if (this.val.sDate && this.val.eDate) {
-                return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-            } else {
-                return {
-                    pt: date.pt,
-                    sDate: date.sDate,
-                    eDate: date.eDate,
+                    sDate: '2018-01-01',
+                    eDate: '2018-01-07',
                 };
             }
         },
@@ -389,11 +430,7 @@ export default {
                 });
             }
         },
-        cleanChecked() {
-            this.cidObjArr = [];
-            this.$refs.tree.setCheckedKeys([]);
-        },
-        nodeExpand(data){
+        nodeExpand(data) {
             this.cid = data.cid;
             this.isbac = false;
             this.highlight = true;
@@ -434,19 +471,22 @@ export default {
                 this.cidObjArr.splice(index, 1);
             }
         },
-        warn(msg) {
+        warn (msg) {
             this.$message({
                 message: msg,
                 type: 'warning'
             });
         },
-        clickIndex(i, idx) {
-            this[`index${i}`] = idx;
+        clickIndex (idx) {
+            this.index0 = idx;
+            this.opcityIndex = idx;
+            this.opciatyBool = true;
         },
     }
 };
 </script>
 
 <style lang="scss">
-    @import '../Product/style/contrast.scss';
+@import '../Product/style/contrast.scss';
+@import '../../style/tree.scss';
 </style>
