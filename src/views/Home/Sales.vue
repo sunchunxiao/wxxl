@@ -108,11 +108,14 @@ export default {
             }
         }
     },
+    created() {
+        this.form.date = this.searchDate;
+    },
     mounted() {
-        // console.log(this.dataSales);
+        this.getOverviewProgress();
     },
     watch: {
-        searchDate(){
+        searchDate() {
             this.val = this.searchDate;
         },
         val() {
@@ -156,11 +159,20 @@ export default {
             return API.GetOverviewTrend(params);
         },
         getDateObj () {
+            const {
+                date
+            } = this.form;
             if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
                     eDate: this.val.eDate,
+                };
+            } else {
+                return {
+                    pt: date.pt,
+                    sDate: date.sDate,
+                    eDate: date.eDate,
                 };
             }
         },
