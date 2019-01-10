@@ -263,8 +263,8 @@ export default {
     },
     created () {
     // 防抖函数 减少发请求次数
-        this.debounce = _.debounce(this.getCompare, 1000);
-        this.debounceBack = _.debounce(this.getCompareBack, 1000);
+        this.debounce = _.debounce(this.getCompare, 0);
+        this.debounceBack = _.debounce(this.getCompareBack, 0);
     },
     mounted () {
         //获取初始时间
@@ -295,6 +295,9 @@ export default {
         }
 
     },
+    destroyed() {
+        this.$store.dispatch('SaveOrgCompareArrback', []);
+    },
     methods: {
         promise(){
             Promise.all([this.getTree(), this.getProgressbefore(), this.getProgressback()]).then(res => {
@@ -324,19 +327,16 @@ export default {
                 // 后端指标
                 const progressbackData = res[2];
                 this.$store.dispatch('SaveOrgBackData', progressbackData.data);
+                this.debounce();
+                this.debounceBack();
             });
-            this.debounce();
-            this.debounceBack();
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
         },
         startChecked() {
-            // console.log(this.lastcidObjArr,this.cidObjArr);
-            // console.log(JSON.stringify(this.lastcidObjArr) == JSON.stringify(this.cidObjArr));
             const bool = JSON.stringify(this.orgLastcidObjArr) == JSON.stringify(this.cidObjArr);
             const boolBack = JSON.stringify(this.orgLastcidObjArrBack) == JSON.stringify(this.cidObjBackArr);
-            // console.log(bool,boolBack);
             if (!bool) {
                 this.debounce();
             }

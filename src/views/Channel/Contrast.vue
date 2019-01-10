@@ -268,13 +268,11 @@ export default {
                     // 指标
                     const progressData = res[1];
                     this.$store.dispatch('SaveChannelProgress', progressData.data);
+                    this.debounce();
                 }
-                this.debounce();
             });
         },
         startChecked() {
-            // console.log(this.lastcidObjArr,this.cidObjArr);
-            // console.log(JSON.stringify(this.lastcidObjArr) == JSON.stringify(this.cidObjArr));
             const bool = JSON.stringify(this.channelLastcidObjArr) == JSON.stringify(this.cidObjArr);
             if (bool) {
                 return;
