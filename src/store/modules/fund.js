@@ -10,7 +10,9 @@ const fund = {
         fundcompareArr: [],
         fundcompareArrback: [],
         fundhistoryArr: [],
-        fundlastParams: {}
+        fundlastParams: {},
+        fundLastcidObjArr: {},
+        fundLastcidObjArrBack: {}
     },
     mutations: {
         SAVE_FUND_TREE: (state, tree) => {
@@ -52,6 +54,12 @@ const fund = {
         SAVE_FUNDLAST_PARAMS: (state, lastParams) => {
             state.fundlastParams = Object.assign({}, state.fundlastParams, lastParams);
         },
+        SAVE_FUNDLAST_CIDOBJ: (state, lastParams) => {
+            state.fundLastcidObjArr = lastParams;
+        },
+        SAVE_FUNDLAST_CIDOBJBACK: (state, lastParams) => {
+            state.fundLastcidObjArrBack = lastParams;
+        },
     },
     actions: {
         SaveFundTree({ commit }, tree) {
@@ -92,6 +100,12 @@ const fund = {
         },
         SaveFundLastParams({ commit }, lastParams) {
             commit('SAVE_FUNDLAST_PARAMS', lastParams);
+        },
+        SaveFundCidObj({ commit }, lastParams) {
+            commit('SAVE_FUNDLAST_CIDOBJ', lastParams);
+        },
+        SaveFundCidObjBack({ commit }, lastParams) {
+            commit('SAVE_FUNDLAST_CIDOBJBACK', lastParams);
         },
     }
 };

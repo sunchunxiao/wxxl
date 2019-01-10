@@ -7,6 +7,7 @@ const customer = {
     cuscompareArr: state => state.customer.cuscompareArr,
     cushistoryArr: state => state.customer.cushistoryArr,
     cusLastParams: state => state.customer.cusLastParams,
+    cusLastcidObjArr: state => state.customer.cusLastcidObjArr,
 };
 
 export default customer;

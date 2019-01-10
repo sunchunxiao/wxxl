@@ -10,6 +10,7 @@ const product = {
     strategyArr: state => state.product.strategyArr,
     productDateArr: state => state.product.productDateArr,
     lastParams: state => state.product.lastParams,
+    lastcidObjArr: state => state.product.lastcidObjArr,
 };
 
 export default product;

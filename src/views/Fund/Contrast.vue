@@ -28,8 +28,7 @@
       <el-row
         v-if="fundTree"
         type="flex"
-        class="content_row"
-        :gutter="20">
+        class="content_row">
         <el-col
           :span="5"
           :class="{'tree_block_none':isCollapse}"
@@ -234,7 +233,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['fundTree','fundprogressArr','fundprogressbackArr','fundcompareArr','fundcompareArrback']),
+        ...mapGetters(['fundTree', 'fundprogressArr', 'fundprogressbackArr', 'fundcompareArr', 'fundcompareArrback', 'fundLastcidObjArr', 'fundLastcidObjArrBack']),
         hasConstarst () {
             return !_.isEmpty(this.fundcompareArr);
         },
@@ -339,6 +338,23 @@ export default {
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
         },
+        startChecked() {
+            const bool = JSON.stringify(this.fundLastcidObjArr) == JSON.stringify(this.cidObjArr);
+            const boolBack = JSON.stringify(this.fundLastcidObjArrBack) == JSON.stringify(this.cidObjBackArr);
+            if (!bool) {
+                this.debounce();
+            }
+            if (!boolBack) {
+                this.debounceBack();
+            }
+        },
+        cleanChecked() {
+            this.cidObjArr = [];
+            this.cidObjBackArr = [];
+            this.$refs.tree.setCheckedKeys([]);
+            this.$store.dispatch('SaveFundCidObj',_.cloneDeep(this.cidObjArr));
+            this.$store.dispatch('SaveFundCidObjBack',_.cloneDeep(this.cidObjBackArr));
+        },
         allRequest() {
             this.getTreePrograss();
             this.getCompare();
@@ -418,6 +434,7 @@ export default {
                     v.subject_name = this.fundprogressArr[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
+                this.$store.dispatch('SaveFundCidObj',_.cloneDeep(this.cidObjArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveFundCompareArr', resultList);
@@ -448,6 +465,7 @@ export default {
                     v.subject_name = this.fundprogressbackArr[k].subject_name;
                 });
                 const cidName = this.cidObjBackArr.map(o => o.name);
+                this.$store.dispatch('SaveFundCidObjBack',_.cloneDeep(this.cidObjBackArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveFundCompareArrback', resultList);
@@ -524,15 +542,6 @@ export default {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
             }
-        },
-        startChecked() {
-            this.debounce();
-            this.debounceBack();
-        },
-        cleanChecked() {
-            this.cidObjArr = [];
-            this.cidObjBackArr = [];
-            this.$refs.tree.setCheckedKeys([]);
         },
         nodeExpand(data){
             this.cid = data.cid;

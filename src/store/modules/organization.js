@@ -11,7 +11,9 @@ const organization = {
         orgcompareArr: [],
         orgcompareArrback: [],
         orghistoryArr:[],
-        orglastParams: {}
+        orglastParams: {},
+        orgLastcidObjArr: {},
+        orgLastcidObjArrBack: {}
     },
     mutations: {
         SAVE_ORGANIZATION_TREE: (state, orgtree) => {
@@ -53,6 +55,12 @@ const organization = {
         SAVE_ORGLAST_PARAMS: (state, lastParams) => {
             state.orglastParams = Object.assign({}, state.orglastParams, lastParams);
         },
+        SAVE_ORGLAST_CIDOBJ: (state, lastParams) => {
+            state.orgLastcidObjArr = lastParams;
+        },
+        SAVE_ORGLAST_CIDOBJBACK: (state, lastParams) => {
+            state.orgLastcidObjArrBack = lastParams;
+        },
     },
     actions: {
         SaveOrgTree({ commit }, orgtree) {
@@ -93,6 +101,12 @@ const organization = {
         },
         SaveOrgLastParams({ commit }, lastParams) {
             commit('SAVE_ORGLAST_PARAMS', lastParams);
+        },
+        SaveOrgCidObj({ commit }, lastParams) {
+            commit('SAVE_ORGLAST_CIDOBJ', lastParams);
+        },
+        SaveOrgCidObjBack({ commit }, lastParams) {
+            commit('SAVE_ORGLAST_CIDOBJBACK', lastParams);
         },
     }
 };

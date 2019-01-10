@@ -200,7 +200,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['channelTree','channelProgressArr','channelCompareArr']),
+        ...mapGetters(['channelTree','channelProgressArr','channelCompareArr', 'channelLastcidObjArr']),
         hasTree() {
             return !_.isEmpty(this.channelTree);
         },
@@ -273,11 +273,18 @@ export default {
             });
         },
         startChecked() {
+            // console.log(this.lastcidObjArr,this.cidObjArr);
+            // console.log(JSON.stringify(this.lastcidObjArr) == JSON.stringify(this.cidObjArr));
+            const bool = JSON.stringify(this.channelLastcidObjArr) == JSON.stringify(this.cidObjArr);
+            if (bool) {
+                return;
+            }
             this.debounce();
         },
         cleanChecked () {
             this.cidObjArr = [];
             this.$refs.tree.setCheckedKeys([]);
+            this.$store.dispatch('SaveChannelCidObj',_.cloneDeep(this.cidObjArr));
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
@@ -352,6 +359,7 @@ export default {
                     v.subject_name = this.channelProgressArr[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
+                this.$store.dispatch('SaveChannelCidObj',_.cloneDeep(this.cidObjArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveChannelCompareArr', resultList);

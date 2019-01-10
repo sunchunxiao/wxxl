@@ -7,6 +7,7 @@ const channel = {
     channelCompareArr: state => state.channel.channelCompareArr,
     channelHistoryArr: state => state.channel.channelHistoryArr,
     channelLastParams: state => state.channel.channelLastParams,
+    channelLastcidObjArr: state => state.channel.channelLastcidObjArr,
 };
 
 export default channel;
