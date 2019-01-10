@@ -117,11 +117,11 @@
 import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
-import viewRadar from './Radar.vue';
-import Diff from './Diff.vue';
-import Trend from './Trend.vue';
-import Structure from './Structure.vue';
-import Rank from './Rank.vue';
+import viewRadar from './OverviewMenu/Radar.vue';
+import Diff from './OverviewMenu/Diff.vue';
+import Trend from './OverviewMenu/Trend.vue';
+import Structure from './OverviewMenu/Structure.vue';
+import Rank from './OverviewMenu/Rank.vue';
 
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';

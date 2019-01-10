@@ -6,34 +6,22 @@
       <el-col
         class="overflow">
         <el-row
+          v-if="trendArr.length>0"
           v-loading="loading"
           class="">
           <Card>
-            <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析</el-row>
+            <el-row class="margin-bottom-20 overview_title">同比环比趋势分析</el-row>
             <el-row>
-              <el-col :span="16">
-                <template v-for="(item, index) in structureArr">
-                  <el-col
-                    :key="index"
-                    :span="6"
-                    @click.native="clickIndex(3 ,index)">
-                    <ProportionalStructureAverageComparison
-                      v-if="structureArr.length"
-                      @id="structureID"
-                      :id="`${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col
-                :span="8"
-                class="border-left-2-gray">
-                <ProportionalStructureAverageComparisonBig
-                  @id="structureID"
-                  v-if="structureArr.length"
-                  id="ProportionalStructureAverageComparisonBig"
-                  :data="structureArr[index3]" />
-              </el-col>
+              <template v-for="(item, index) in trendArr">
+                <el-col
+                  :key="index"
+                  :span="12">
+                  <ProYearOnYearTrend
+                    v-if="trendArr.length"
+                    :id="`${index}`"
+                    :data="item" />
+                </el-col>
+              </template>
             </el-row>
           </Card>
         </el-row>
@@ -48,12 +36,12 @@
 </template>
 
 <script>
-import API from './api';
+import API from '../api';
 import Card from 'components/Card';
 
-// 比例结构与平均值对比分析
-import ProportionalStructureAverageComparison from 'components/ProportionalStructureAverageComparison';
-import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
+// 目标-实际-差异趋势分析
+import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
+
 //vuex
 import { mapGetters } from 'vuex';
 export default {
@@ -63,8 +51,7 @@ export default {
     },
     components: {
         Card,
-        ProportionalStructureAverageComparison,
-        ProportionalStructureAverageComparisonBig,
+        ProYearOnYearTrend
     },
     data () {
         return {
@@ -73,8 +60,7 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
-            //index
-            index3: 0,
+            //tree
             pt: '',
             loading: false,
             changeDate: {},
@@ -82,7 +68,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'structureArr','lastParams']),
+        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'lastParams']),
         hasTree () {
             return !_.isEmpty(this.productTree);
         },
@@ -99,42 +85,47 @@ export default {
         }
     },
     methods: {
-        clickIndex(i, idx) {
-            this[`index${i}`] = idx;
-        },
-        structureID(data) {
-            this.cid = data;
-            this.nodeArr = [];
-            this.nodeArr.push(this.cid);
-            this.$nextTick(() => {
-                this.$refs.tree.setCurrentKey(this.cid); // tree元素的ref 绑定的node-key
-            });
-            this.isbac = false;
-            this.highlight = true;
-        },
         allRequest() {
             if (!this.cid) {
                 return;
             }
-            this.getStructure();
+            this.getProgress();
             this.$store.dispatch("SaveLastParams", this.newParams);
         },
-        getStructure() {
+        getProgress() {
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
             };
-            this.newParams.structure = params;
-            if (JSON.stringify(this.lastParams.structure) == JSON.stringify(params)) {
+            this.newParams.trend = params;
+            if (JSON.stringify(this.lastParams.trend) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetProductStructure(params).then(res => {
-                this.$store.dispatch('SaveStructureArr', res.data);
+            API.GetProductProgress(params).then(res => {
+                this.$store.dispatch('SaveProgressData', res.data);
+                const promises = _.map(res.data, o => this.getTrend(o.subject));
+                Promise.all(promises).then(resultList => {
+                    _.forEach(resultList, (v, k) => {
+                        v.subject = res.data[k].subject;
+                        v.subject_name = res.data[k].subject_name;
+                    });
+                    this.$store.dispatch('SaveTrendArr', resultList);
+                });
             }).finally(() => {
                 this.loading = false;
             });
+        },
+        getTrend(subject) {
+            this.loading = true;
+            const params = {
+                cid: this.cid,
+                pt: this.getPt(),
+                ...this.getPeriodByPt(),
+                subject: subject
+            };
+            return API.GetProductTrend(params);
         },
         getPt() {
             if (this.val.sDate && this.val.eDate) {
@@ -176,5 +167,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import './style/overview.scss';
+@import '../style/overview.scss';
 </style>
