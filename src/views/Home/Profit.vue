@@ -106,8 +106,11 @@ export default {
             }
         }
     },
+    created() {
+        this.form.date = this.searchDate;
+    },
     mounted() {
-        // this.getProductProgress();
+        this.getOverviewProgress();
     },
     watch: {
         searchDate(){
@@ -154,11 +157,20 @@ export default {
             return API.GetOverviewTrend(params);
         },
         getDateObj () {
+            const {
+                date
+            } = this.form;
             if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
                     eDate: this.val.eDate,
+                };
+            } else {
+                return {
+                    pt: date.pt,
+                    sDate: date.sDate,
+                    eDate: date.eDate,
                 };
             }
         },
