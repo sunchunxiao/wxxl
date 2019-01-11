@@ -47,11 +47,13 @@
                 color: #000;
                 font-size: 18px;
             }
+            .overflow {
+                height: 100%;
+                overflow: auto;
+                flex: 1;
+            }
         }
-        .overflow {
-            height: 100%;
-            overflow: auto;
-        }
+
         .el-table {
             .cell {
                 >img,
