@@ -181,6 +181,7 @@ export default {
             const options = {
                 backgroundColor: '#fff',
                 tooltip: {
+                    hideDelay: 0,
                     trigger: 'item',
                     formatter: function(params){
                         let result = [];

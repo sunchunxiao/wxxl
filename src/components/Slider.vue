@@ -230,6 +230,9 @@ export default {
             bottom: 0;
             top:0;
             left: 0;
+            &:hover {
+                z-index: 2;
+            }
         }
     }
 }
