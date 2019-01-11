@@ -15,8 +15,7 @@
               <template v-for="(item, index) in orgtrendArr">
                 <el-col
                   :key="index"
-                  :span="12"
-                  @click.native="clickIndex(1 ,index)">
+                  :span="12">
                   <ProTargetActualDiffTrend
                     v-if="orgtrendArr.length"
                     :id="`${index}`"
