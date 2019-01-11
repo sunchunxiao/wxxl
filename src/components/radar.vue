@@ -83,14 +83,15 @@ export default {
                 radar: {
                     name: {
                         textStyle: {
-                            color: '#000',
+                            color: '#5F5D5D',
+                            fontSize: 14,
                             borderRadius: 3,
-                            padding: [3, 5]
+                            padding: [3, 5],
                         }
                     },
                     shape: 'circle',
                     indicator: arr,
-                    radius: 100,
+                    radius: 110,
                     center: ['47%','50%'],
                     splitArea: {
                         areaStyle: {
@@ -99,6 +100,13 @@ export default {
                             // shadowBlur: 10
                         }
                     },
+                    // 网线颜色
+                    splitLine: {
+                        lineStyle: {
+                            color: 'rgb(153, 153, 153)'
+                        }
+                    }
+
                 },
                 series: [{
                     name: '',
@@ -106,14 +114,28 @@ export default {
                     data : [
                         {
                             value : radarValues,
-                            name:transSubjects,
+                            name: transSubjects,
                             areaStyle: {
                                 normal: {
                                     color: 'rgba(1, 184, 170, 0.8)'
                                 }
                             }
                         },
-                    ]
+                    ],
+                    itemStyle : {
+                        normal : {
+                            //拐点线颜色
+                            lineStyle: {
+                                color:'#FD625E',
+                                width: 2
+                            }
+                        },
+                        emphasis: {
+                            lineStyle: {
+                                width: 3
+                            }
+                        }
+                    },
                 }]
             };
             this.chart.setOption(options,true);
@@ -125,9 +147,9 @@ export default {
 <style lang="scss" scoped>
 .pie-container {
     .pie {
-        min-width: 330px;
+        min-width: 350px;
         width: 100%;
-        height: 320px;
+        height: 350px;
         margin: 0 auto;
     }
     .detail {
