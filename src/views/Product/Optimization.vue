@@ -43,9 +43,6 @@
                 :class="['left','label',
                          {'is-active-zero':!(calculatePercent(treeClone.real_total, treeClone.target_total).percent) && activeCid == treeClone.cid}
               ]">{{ treeClone.name }}</span>
-              <!-- <span
-                :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-                class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span> -->
               <div
                 :class="{comprogress: true,'is-active': activeCid == treeClone.cid,'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
                 :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
@@ -80,7 +77,6 @@
                     <span
                       :class="['label_left',
                                {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.cid}]">{{ data.name }}</span>
-                               <!-- <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span> -->
                   </span>
                 </el-tooltip>
                 <div
@@ -95,14 +91,14 @@
           v-loading="loading"
           class="overflow">
           <Card>
-            <el-row class="margin-bottom-20">策略优化</el-row>
-            <el-row :gutter="20">
+            <el-row class="margin-bottom-20 overview_title">策略优化</el-row>
+            <el-row :gutter="10">
               <template v-for="(item,index) in historyArr">
                 <el-col
                   :span="((item.strategies && item.strategies.length) || (historyArr[index+1] && historyArr[index+1].strategies.length))?24:12"
                   :key="index">
                   <el-table
-                    class="margin-bottom-20"
+                    class="margin-bottom-10"
                     :span-method="arraySpanMethod(item.strategies)"
                     :data="item.strategies">
                     <el-table-column
@@ -185,7 +181,6 @@ export default {
     data () {
         return {
             form: {
-                pt: '日',
                 date: [],
                 search: '',
                 version: '0'
@@ -200,7 +195,6 @@ export default {
             defaultProps: TREE_PROPS,
             index0: 0,
             val: {},
-            post: 1,
             nodeArr: [],
             isbac: true,
             highlight: true,
@@ -225,10 +219,10 @@ export default {
         }
     },
     watch: {
-        form: {
-            handler: function () { },
-            deep: true
-        },
+        // form: {
+        //     handler: function () { },
+        //     deep: true
+        // },
         cid: function () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
             this.getTreePrograss();

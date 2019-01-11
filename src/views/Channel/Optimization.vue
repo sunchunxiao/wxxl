@@ -2,6 +2,19 @@
   <div class="opt_container">
     <el-row
       class="time_header">
+      <!-- 展开按钮 -->
+      <div
+        class="contrast_btn"
+        @click="handleCollpase">
+        <img
+          v-if="isCollapse"
+          src="../../assets/collapse1.png"
+          alt="">
+        <img
+          v-else
+          src="../../assets/collapse.png"
+          alt="">
+      </div>
       <search-bar
         ref="child"
         @input="input"
@@ -13,77 +26,80 @@
     </el-row>
     <div class="optimization">
       <el-row
-        v-if="channelTree"
-        class="content_row"
-        :gutter="20">
+        type="flex"
+        class="content_row">
         <el-col
+          :class="{'tree_block_none':isCollapse}"
           :span="5"
           class="tree_container">
-          <div class="title">渠道营业利润额目标达成率</div>
-          <div
-            @click="click"
-            v-if="channelTree.children"
-            :class="{bac:isbac}"
-            class="company">
-            <span class="left label">{{ treeClone.name }}</span>
-            <span
-              :class="{percent: true, red: !calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne, blue: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-              class="right">{{ calculatePercent(treeClone.real_total, treeClone.target_total).percent + '%' }}</span>
+          <div class="title">毛利润额目标达成率</div>
+          <div class="tree_content">
             <div
-              :class="{comprogress: true, 'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-              :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
-          </div>
-          <el-tree
-            ref="tree"
-            node-key="nid"
-            empty-text="正在加载"
-            :expand-on-click-node="false"
-            :highlight-current="highlight"
-            :data="treeClone.children"
-            :props="defaultProps"
-            :default-expanded-keys="nodeArr"
-            @node-expand="nodeExpand"
-            @node-click="handleNodeClick"
-            @check-change="handleCheckChange">
-            <span
-              class="custom-tree-node"
-              slot-scope="{ node, data }">
-              <el-tooltip
-                class="item"
-                effect="dark"
-                placement="right">
-                <div slot="content">
-                  <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
-                  <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
-                  <div
-                    v-if="data.children"
-                    class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
-                  <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
-                </div>
-                <span class="label">
-                  <span class="label_left">{{ data.name }}</span>
-                  <span :class="{percent: true, red: !calculatePercent(data.real_total, data.target_total).largerThanOne, blue: calculatePercent(data.real_total, data.target_total).largerThanOne}">{{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</span>
-                </span>
-              </el-tooltip>
+              @click="click"
+              v-if="channelTree"
+              :class="{bac:isbac}"
+              class="company">
+              <span
+                :class="['left','label',
+                         {'is-active-zero':!(calculatePercent(treeClone.real_total, treeClone.target_total).percent) && activeCid == treeClone.nid}
+              ]">{{ treeClone.name }}</span>
               <div
-                :class="{progress: true, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
-                :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
-            </span>
-          </el-tree>
+                :class="{comprogress: true,'is-active': activeCid == treeClone.nid,'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
+                :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
+            </div>
+            <el-tree
+              ref="tree"
+              node-key="nid"
+              empty-text="正在加载"
+              :expand-on-click-node="false"
+              :highlight-current="highlight"
+              :data="treeClone.children"
+              :props="defaultProps"
+              :default-expanded-keys="nodeArr"
+              @node-expand="nodeExpand"
+              @node-click="handleNodeClick">
+              <span
+                class="custom-tree-node"
+                slot-scope="{ node, data }">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  placement="right">
+                  <div slot="content">
+                    <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
+                    <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
+                    <div
+                      v-if="data.children"
+                      class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
+                    <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                  </div>
+                  <span class="label">
+                    <span
+                      :class="['label_left',
+                               {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.nid}]">{{ data.name }}</span>
+                  </span>
+                </el-tooltip>
+                <div
+                  :class="{progress: true, 'is-active': activeCid == data.nid,'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+                  :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
+              </span>
+            </el-tree>
+          </div>
         </el-col>
         <el-col
           :span="19"
           v-loading="loading"
           class="overflow">
           <Card>
+            <el-row class="margin-bottom-20 overview_title">策略优化</el-row>
             <el-row :gutter="10">
               <template v-for="(item,index) in channelHistoryArr">
                 <el-col
-                  :span="12"
+                  :span="((item.strategies && item.strategies.length) || (channelHistoryArr[index+1] && channelHistoryArr[index+1].strategies.length))?24:12"
                   :key="index">
                   <el-table
                     :data="item.strategies"
-                    size="mini"
+                    class="margin-bottom-10"
                     :span-method="arraySpanMethod(item.strategies)">
                     <el-table-column :label="`${item.start_date} - ${item.end_date}`">
                       <el-table-column
@@ -121,11 +137,11 @@
           </Card>
         </el-col>
       </el-row>
-      <el-row
+      <!-- <el-row
         v-else
         class="overview_select">
         暂无数据
-      </el-row>
+      </el-row> -->
     </div>
   </div>
 </template>
@@ -183,19 +199,19 @@ export default {
             treeClone: {},
             changeDate: {},
             findFatherId: '',
+            isCollapse: false
         };
     },
     computed: {
         ...mapGetters(['channelTree', 'channelHistoryArr']),
         hasTree () {
             return !_.isEmpty(this.channelTree);
+        },
+        activeCid() {
+            return this.cid;
         }
     },
     watch: {
-        form: {
-            handler: function () { },
-            deep: true
-        },
         cid: function () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
             this.getTreePrograss();
@@ -214,6 +230,9 @@ export default {
         }
     },
     methods: {
+        handleCollpase () {
+            this.isCollapse = !this.isCollapse;
+        },
         allRequest() {
             this.getTreePrograss();
             this.getHistory();
@@ -453,4 +472,5 @@ export default {
 
 <style lang="scss">
 @import '../Product/style/optimization.scss';
+@import '../../style/tree.scss';
 </style>

@@ -23,7 +23,7 @@
     .optimization {
         flex: 1;
         overflow: auto;
-        min-width: 1345px;
+        // min-width: 1345px;
         background-color: #fff;
         .overview_select {
             width: 100%;
@@ -43,6 +43,10 @@
         }
         .content_row {
             height: 100%;
+            .overview_title{
+                color: #000;
+                font-size: 18px;
+            }
         }
         .overflow {
             height: 100%;

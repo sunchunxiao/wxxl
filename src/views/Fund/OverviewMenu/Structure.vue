@@ -60,7 +60,7 @@
                 <ProportionalStructureAverageComparisonBig
                   v-if="fundstructureArr2"
                   id="ProportionalStructureAverageComparisonBig1"
-                  :data="fundstructureArr2[index3]" />
+                  :data="fundstructureArr2[index4]" />
               </el-col>
             </el-row>
           </Card>
@@ -99,6 +99,7 @@ export default {
             version: 0,
             //index
             index3: 0,
+            index4: 0,
             pt: '',
             loading: false,
             changeDate: {},
