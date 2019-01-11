@@ -129,9 +129,6 @@ export default {
     components: {},
     data() {
         return {
-            showCountUseList: false,
-            dialogType: "",
-            showDialog: false,
             form: {
                 pt: '日', // 周期类型
                 date: [], // date
@@ -153,6 +150,8 @@ export default {
             currentPage: 1,
             trackListAll: [],
             trackListEff: [],
+            dialogType: "",
+            showDialog: false,
             countUseLoading: false,
             countEffLoading: false,
             lastCountUseId: "",
@@ -186,7 +185,7 @@ export default {
                 let className = cloneCellNodes.className += " clone-cell";
                 if (index == 0) {
                     className += " border-left";
-                }else if (index == $event.path[3].childNodes.length - 1) {
+                } else if (index == $event.path[3].childNodes.length - 1) {
                     className += " border-right";
                 }
                 let targetDom = cloneCellNodes.getElementsByClassName(targetClassName)[0];
@@ -210,7 +209,7 @@ export default {
             this.showDialog = true;
             this.showEff(row);
         },
-        sortChange(val) {
+        sortChange(val) {//筛选
             let order;
             if (val.prop && val.order) {
                 if (val.order === "ascending") {
@@ -222,7 +221,7 @@ export default {
                 this.getProductStrategy();
             }
         },
-        showEff(val) {
+        showEff(val) {//有效次数接口
             if (val.id == this.lastCountEffId) {
                 return;
             }
@@ -241,7 +240,7 @@ export default {
                 this.lastCountEffId = "";
             });
         },
-        show(val) {
+        show(val) {//采纳次数
             if (val.id == this.lastCountUseId) {
                 return;
             }
@@ -325,5 +324,5 @@ export default {
 </script>
 
 <style lang="scss">
-	@import './style/track.scss'
+    @import './style/track.scss'
 </style>

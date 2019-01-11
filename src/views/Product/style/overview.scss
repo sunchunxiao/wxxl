@@ -108,6 +108,8 @@
             .el-checkbox+.el-checkbox {
                 margin-left: 0;
                 margin-top: 5px;
+                display: flex;
+                white-space: pre-wrap;
             }
             .center {
                 position: absolute;
