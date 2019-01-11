@@ -100,3 +100,29 @@ export function find(cid, data, arr) {//查找hasData = false 的父节点
         }
     }
 }
+
+export function labelNewline(num, value, str) {
+    if (!str) {
+        str = "\n";
+    }
+    var newParamsName = "";
+    var paramsNameNumber = value.length;
+    var provideNumber = num;
+    var rowNumber = Math.ceil(paramsNameNumber / provideNumber);
+    if (paramsNameNumber > provideNumber) {
+        for (var p = 0; p < rowNumber; p++) {
+            var tempStr = "";
+            var start = p * provideNumber;
+            var end = start + provideNumber;
+            if (p == rowNumber - 1) {
+                tempStr = value.substring(start, paramsNameNumber);
+            } else {
+                tempStr = value.substring(start, end) + str;
+            }
+            newParamsName += tempStr;
+        }
+    } else {
+        newParamsName = value;
+    }
+    return newParamsName;
+}
