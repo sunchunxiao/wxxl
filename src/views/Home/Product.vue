@@ -40,6 +40,7 @@
                       v-if="productTrendArr.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
+                        :show-detail="false"
                         :id="`product${index}`"
                         :data="productTrendArr[index]" />
                     </el-col>

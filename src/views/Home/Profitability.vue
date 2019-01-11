@@ -38,6 +38,7 @@
                       v-if="dataAbility.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
+                        :show-detail="false"
                         :id="`product${index}`"
                         :data="dataAbility[index]" />
                     </el-col>

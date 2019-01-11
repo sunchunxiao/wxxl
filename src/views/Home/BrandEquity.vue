@@ -41,6 +41,7 @@
                       v-if="dataEquity.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
+                        :show-detail="false"
                         :id="`product${index}`"
                         :data="dataEquity[index]" />
                     </el-col>

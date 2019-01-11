@@ -40,6 +40,7 @@
                       v-if="channelTrendArr.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
+                        :show-detail="false"
                         :id="`channel${index}`"
                         :data="channelTrendArr[index]" />
                     </el-col>

@@ -38,6 +38,7 @@
                       v-if="overviewTrendArr.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
+                        :show-detail="false"
                         :id="`overview${index}`"
                         :data="overviewTrendArr[index]" />
                     </el-col>

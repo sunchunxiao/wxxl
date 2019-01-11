@@ -40,6 +40,7 @@
                       v-if="cusHomeTrendArr.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
+                        :show-detail="false"
                         :id="`customer${index}`"
                         :data="cusHomeTrendArr[index]" />
                     </el-col>
