@@ -10,7 +10,7 @@
           class="">
           <Card>
             <el-row class="margin-bottom-20 overview_title">智能评选和智能策略</el-row>
-            <el-row>
+            <el-row v-if="channelRankArr && channelRankArr.length">
               <el-col :span="14">
                 <IntelligentSelection
                   id="rank"
@@ -34,9 +34,8 @@
                         @change="change">{{ item.strategy }}</el-checkbox>
                     </el-checkbox-group>
                     <el-row
-                      v-else
                       class="stragety-box-data">
-                      暂无数据
+                      {{ stragetyMessage }}
                     </el-row>
                     <el-button
                       @click="submit"
@@ -46,14 +45,14 @@
                 </div>
               </el-col>
             </el-row>
+            <el-row
+              v-else
+              class="overview_select">
+              暂无数据
+            </el-row>
           </Card>
         </el-row>
       </el-col>
-    </el-row>
-    <el-row
-      v-else
-      class="overview_select">
-      暂无数据
     </el-row>
   </div>
 </template>
@@ -91,6 +90,7 @@ export default {
             stragetyCheckList: [],
             stragetyTitle: '',
             stragety: [],
+            stragetyMessage: '',
             idArr: [],
             post: 1,
             changeDate: {},
@@ -246,10 +246,14 @@ export default {
             this.showStragetyId = cid;
             this.subject = subject;
             this.stragety = [];
+            this.stragetyMessage = '';
             API.GetChannelMatch(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];
                 this.stragety = res.data;
+                if (!res.data.length) {
+                    this.stragetyMessage = '暂无数据';
+                }
                 const checked = 1;//1是选中,0是不选中
                 for (let i = 0; i < res.data.length; i++) {
                     if (res.data[i].is_selected === checked) {
