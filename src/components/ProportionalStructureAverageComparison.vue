@@ -68,14 +68,14 @@ export default {
         calculateToShow(val) {
             const { subject } = this.data;
             //日销，投入产出比和库存周转率是显示原值
-            if (subject === 'SD'){//日销
+            if (subject === 'SD') {//日销
                 let tenThousand = (val / 10000 / 100).toFixed(2);
                 if (tenThousand && tenThousand >= 1) {
                     return tenThousand + 'w';
                 } else {
                     return val / 100;
                 }
-            } else if (subject === 'ROI') {//投入产出比
+            } else if (subject === 'ROI') { //投入产出比
                 if (val && val >= 10000) {
                     return (val / 10000).toFixed(2) + 'w';
                 } else {
@@ -84,7 +84,6 @@ export default {
             } else {
                 return val;
             }
-
         },
         radius(value) {
             if (value >= 0) {
@@ -92,7 +91,6 @@ export default {
             } else {
                 return [20, 0, 0, 20];
             }
-
         },
         renderChart(nodes) {
             let _this = this;
@@ -102,8 +100,9 @@ export default {
             } = nodes;
             const percentArr = [];
             const average = nodes.avg;
+
             this.color = nodes["28nodes"];
-            for(let i in pData) {
+            for (let i in pData) {
                 percentArr.push({
                     value:nodes.values[i],
                     itemStyle: {
@@ -117,9 +116,9 @@ export default {
                     axisPointer : { // 坐标轴指示器，坐标轴触发有效
                         type : 'none' // 默认为直线，可选为：'line' | 'shadow'
                     },
-                    formatter: function(params){
+                    formatter: function(params) {
                         let result = [];
-                        if (_.includes(SUBJECT, subject)){
+                        if (_.includes(SUBJECT, subject)) {
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + " : " + _this.formatNumber(item.value) +"</br>";
                             });

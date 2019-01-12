@@ -59,7 +59,6 @@
               :data="treeClone.children"
               empty-text="正在加载"
               :default-expanded-keys="nodeArr"
-              :highlight-current="highlight"
               :props="defaultProps"
               @node-expand="nodeExpand"
               @check-change="handleCheckChange">
@@ -216,7 +215,6 @@ export default {
                 sDate: '',
                 eDate: ''
             },
-            highlight: true,
             changeDate: {},
             treeClone: {},
             findFatherId: '',
@@ -543,8 +541,6 @@ export default {
         },
         nodeExpand(data){
             this.cid = data.cid;
-            this.isbac = false;
-            this.highlight = true;
         },
         handleCheckChange (data, checked) {
             const type = 2;//1是前端,2是后端

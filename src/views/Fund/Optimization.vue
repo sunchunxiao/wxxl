@@ -37,7 +37,6 @@
             <div
               @click="click"
               v-if="fundTree"
-              :class="{bac:isbac}"
               class="company">
               <span
                 :class="['left','label',
@@ -52,7 +51,6 @@
               node-key="cid"
               empty-text="正在加载"
               :expand-on-click-node="false"
-              :highlight-current="highlight"
               :data="treeClone.children"
               :props="defaultProps"
               :default-expanded-keys="nodeArr"
@@ -184,8 +182,6 @@ export default {
             index0: 0,
             val: {},
             nodeArr: [],
-            isbac: true,
-            highlight: true,
             searchBarValue: {
                 pt: '',
                 sDate: '',
@@ -245,8 +241,6 @@ export default {
             } else {
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
-                this.isbac = true;
-                this.highlight = false;
                 this.cid = this.fundTree.cid;
             }
         },
@@ -396,13 +390,10 @@ export default {
         handleSearch(val) {
             this.findFatherId = val.cid;
             // 默认公司的背景色
-            this.isbac = false;
             this.nodeArr = [];
             this.val = val;
             if (!val.cid){
                 this.changeDate = this.searchBarValue;
-                this.isbac = true;
-                this.highlight = false;
                 if (this.cid !== this.fundTree.cid) {
                     this.cid = this.fundTree.cid;
                     this.treeClone = _.cloneDeep(this.fundTree);
@@ -422,20 +413,12 @@ export default {
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree 元素的ref  绑定的node-key
                 });
-                if (this.cid === this.fundTree.cid) {
-                    this.isbac = true;
-                    this.highlight = false;
-                }
             }
         },
         nodeExpand(data) {
             this.cid = data.cid;
-            this.isbac = false;
-            this.highlight = true;
         },
         handleNodeClick(data) {
-            this.isbac = false;
-            this.highlight = true;
             this.$refs.child.clearKw();
             this.type = data.type;
             if (this.cid === data.cid){
