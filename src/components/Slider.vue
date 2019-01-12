@@ -44,8 +44,7 @@ export default {
             hasRight: false,
             sliderItems: [],
             slider_wrap: null,
-            isSetTransition: false,
-            debounce: null
+            isSetTransition: false
         };
     },
     mounted() {
@@ -55,12 +54,11 @@ export default {
         this.setTranslateX();
         this.judgeCanClick();
         window.addEventListener("resize", this.resize);
-        this.debounce = _.debounce(this.judgeCanClick, 100);
-        window.addEventListener("resize", this.debounce);
+        window.onresize = this.judgeCanClick;
     },
     destroyed() {
         window.removeEventListener("resize", this.resize);
-        window.removeEventListener("resize", this.debounce);
+        window.onresize = null;
     },
     methods: {
         resize() {
@@ -77,7 +75,6 @@ export default {
                 this.clearTransition();
                 this.setTranslateX();
             }
-            // this.judgeCanClick();
         },
         addClassName() {
             if (!this.$slots.default) {

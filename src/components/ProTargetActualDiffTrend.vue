@@ -1,7 +1,7 @@
 <template>
   <div class="bar-container">
     <div
-      class="bar"
+      class="bar echart"
       :style="{height: height}"
       :id="`bar-${id}`" />
     <div

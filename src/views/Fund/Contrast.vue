@@ -172,7 +172,7 @@ import Slider from 'components/Slider';
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
-import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
@@ -338,6 +338,9 @@ export default {
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
+            this.$nextTick(() => {
+                echartAndSliderResize();
+            });
         },
         startChecked() {
             const bool = JSON.stringify(this.fundLastcidObjArr) == JSON.stringify(this.cidObjArr);

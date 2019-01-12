@@ -1,7 +1,7 @@
 <template>
   <div class="averagebar-container">
     <div
-      class="averagebar"
+      class="averagebar echart"
       :style="{height: heightValue}"
       :id="`averagebar-${id}`" />
     <div class="detail">{{ data.subject_name }}</div>
