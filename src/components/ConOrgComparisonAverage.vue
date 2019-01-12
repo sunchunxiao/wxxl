@@ -1,7 +1,7 @@
 <template>
   <div class="ConOrgComparisonAverage-container">
     <div
-      class="ConOrgComparisonAverage"
+      class="ConOrgComparisonAverage echart"
       :id="`ConOrgComparisonAverage-${id}`" />
     <div class="detail">{{ data.subject_name }}</div>
   </div>

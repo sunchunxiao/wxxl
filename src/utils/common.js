@@ -1,3 +1,4 @@
+import echarts from "echarts";
 export function calculatePercent(a, b) {
     if (b > 0) {
         const percent = (a / b * 100).toFixed(0) - 0; //将percent转化为number
@@ -125,4 +126,16 @@ export function labelNewline(num, value, str) {
         newParamsName = value;
     }
     return newParamsName;
+}
+
+export function echartAndSliderResize() {
+    let chartArr = document.getElementsByClassName("echart");
+    if (chartArr.length) {
+        for (let i of chartArr) {
+            echarts.init(i).resize();
+        }
+    }
+    if (window.onresize) {
+        window.onresize();
+    }
 }

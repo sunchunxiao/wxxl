@@ -1,7 +1,7 @@
 <template>
   <div class="pie-container">
     <div
-      class="pie"
+      class="pie echart"
       :id="`pie-${id}`" />
   </div>
 </template>

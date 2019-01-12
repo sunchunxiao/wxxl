@@ -31,6 +31,7 @@
 // @ is an alias to /src
 import Menu from './Menu';
 import Header from './Header';
+import { echartAndSliderResize } from 'utils/common';
 
 export default {
     name: 'Home',
@@ -49,6 +50,9 @@ export default {
         },
         handleClick () {
             this.isCollapse = !this.isCollapse;
+            setTimeout(() => {
+                echartAndSliderResize();
+            }, 300);
         }
     }
 };

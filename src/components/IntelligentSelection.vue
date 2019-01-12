@@ -1,7 +1,7 @@
 <template>
   <div class="heatmap-container">
     <div
-      class="heatmap"
+      class="heatmap echart"
       :id="`heatmap-${id}`" />
   </div>
 </template>

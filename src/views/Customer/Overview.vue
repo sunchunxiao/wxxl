@@ -122,7 +122,7 @@ import Structure from './OverviewMenu/Structure.vue';
 import Rank from './OverviewMenu/Rank.vue';
 
 //tree 百分比计算
-import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
 const OVER_TABS = [{
@@ -227,6 +227,9 @@ export default {
     methods: {
         handleCollpase () {
             this.isCollapse = !this.isCollapse;
+            this.$nextTick(() => {
+                echartAndSliderResize();
+            });
         },
         handleClick(id) {
             this.currView = id;

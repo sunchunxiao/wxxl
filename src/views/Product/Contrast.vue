@@ -144,7 +144,7 @@ import Card from '../../components/Card';
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
-import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
 const BTN = ['开始对比','取消选择'];
@@ -289,6 +289,9 @@ export default {
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
+            this.$nextTick(() => {
+                echartAndSliderResize();
+            });
         },
         allRequest() {
             this.getTreePrograss();

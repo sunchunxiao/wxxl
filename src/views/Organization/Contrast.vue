@@ -167,7 +167,7 @@ import Slider from 'components/Slider';
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
-import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 import { mapGetters } from 'vuex';
 const SUBJECT = 'P'; // S: 销售额 P: 利润额
 const TREE_PROPS = {
@@ -331,6 +331,9 @@ export default {
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
+            this.$nextTick(() => {
+                echartAndSliderResize();
+            });
         },
         startChecked() {
             const bool = JSON.stringify(this.orgLastcidObjArr) == JSON.stringify(this.cidObjArr);
