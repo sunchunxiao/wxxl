@@ -1,5 +1,9 @@
 export default [
     {
+        path: '/customer/overview',
+        redirect: '/customer/overview/reach'
+    },
+    {
         path: '/customer/overview/:name',
         name: 'customerOverview',
         component: () =>

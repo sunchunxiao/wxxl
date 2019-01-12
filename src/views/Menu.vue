@@ -49,7 +49,7 @@ const MENUDATA = [
         children: [
             {
                 title: "全景分析",
-                path: "/overview/reach"
+                path: "/overview"
             },
             {
                 title: "产品对比",
@@ -72,7 +72,7 @@ const MENUDATA = [
         children: [
             {
                 title: "全景分析",
-                path: "/overview/reach"
+                path: "/overview"
             },
             {
                 title: "组织对比",
@@ -95,7 +95,7 @@ const MENUDATA = [
         children: [
             {
                 title: "全景分析",
-                path: "/overview/reach"
+                path: "/overview"
             },
             {
                 title: "客户对比",
@@ -118,7 +118,7 @@ const MENUDATA = [
         children: [
             {
                 title: "全景分析",
-                path: "/overview/reach"
+                path: "/overview"
             },
             {
                 title: "资金对比",
@@ -141,7 +141,7 @@ const MENUDATA = [
         children: [
             {
                 title: "全景分析",
-                path: "/overview/reach"
+                path: "/overview"
             },
             {
                 title: "渠道对比",
@@ -165,12 +165,12 @@ export default {
     data () {
         return {
             menuData: MENUDATA,
-            activePath: "/home",
+            activePath: "",
         };
     },
     watch: {
         ['$route.fullPath']: function (val) {
-            if (val === '/home/sales') {
+            if (val.includes('/home')) {
                 this.activePath = 'placeholder';
                 return;
             }
@@ -178,7 +178,14 @@ export default {
         }
     },
     mounted () {
-        this.activePath = this.$route.fullPath;
+        let reg = /.*(?<=\/overview)/;
+        if (this.$route.fullPath.includes("/overview")) {
+            this.activePath = this.$route.fullPath.match(reg)[0];
+        } else if (this.$route.fullPath.includes("/home")) {
+            this.activePath = "/home";
+        } else {
+            this.activePath = this.$route.fullPath;
+        }
     },
     methods:{
         home(){
@@ -233,6 +240,7 @@ $scale: 1.8;
     line-height: $subtitle-height;
 }
 ul.el-menu {
+  width: 100%;
   background-color: $bgcolor;
   border-right: none;
   .el-submenu__title {
