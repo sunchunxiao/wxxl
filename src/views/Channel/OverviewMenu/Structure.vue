@@ -10,7 +10,9 @@
           class="">
           <Card>
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析</el-row>
-            <el-row v-if="channelStructureArr.length">
+            <el-row
+              v-if="channelStructureArr.length"
+              type="flex">
               <el-col :span="16">
                 <template v-for="(item, index) in channelStructureArr">
                   <el-col
@@ -20,7 +22,7 @@
                     <ProportionalStructureAverageComparison
                       @id="structureID"
                       :id="`${index}`"
-                      :data="item" />
+                      :data="sliceData(item)" />
                   </el-col>
                 </template>
               </el-col>
@@ -98,6 +100,14 @@ export default {
         }
     },
     methods: {
+        sliceData(item) {
+            let data = _.cloneDeep(item);
+            let num = data["28nodes"].length - 10;
+            data["28nodes"] = data["28nodes"].slice(num);
+            data["nodes"] = data["nodes"].slice(num);
+            data["values"] = data["values"].slice(num);
+            return data;
+        },
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
         },
