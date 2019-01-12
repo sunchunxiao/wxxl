@@ -38,6 +38,7 @@
                       v-if="dataSpace.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
+                        :show-detail="false"
                         :id="`product${index}`"
                         :data="dataSpace[index]" />
                     </el-col>

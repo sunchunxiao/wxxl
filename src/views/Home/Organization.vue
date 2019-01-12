@@ -40,6 +40,7 @@
                       v-if="orgTrendArr.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
+                        :show-detail="false"
                         :id="`org${index}`"
                         :data="orgTrendArr[index]" />
                     </el-col>

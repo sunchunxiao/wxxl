@@ -2,8 +2,11 @@
   <div class="bar-container">
     <div
       class="bar"
+      :style="{height: height}"
       :id="`bar-${id}`" />
-    <div class="detail">{{ data.subject_name }}</div>
+    <div
+      class="detail"
+      v-if="showDetail">{{ data.subject_name }}</div>
   </div>
 </template>
 
@@ -16,6 +19,14 @@ export default {
     props: {
         id: String,
         data: Object,
+        height: {
+            type: String,
+            default: "260px"
+        },
+        showDetail: {
+            type: Boolean,
+            default: true
+        }
     },
     data () {
         return {
@@ -112,10 +123,10 @@ export default {
             }
             const options = {
                 grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
-                    top: 40,
+                    left: 0,
+                    right: 30,
+                    bottom: 0,
+                    top: 72,
                     containLabel: true
                 },
                 toolbox: {
@@ -127,8 +138,8 @@ export default {
                         restore : { show: true },
                         saveAsImage : { show: true }
                     },
-                    right: '300',
-                    top: '-2%'
+                    right: 30,
+                    top: 0
                 },
                 tooltip: {
                     show: true,
@@ -168,6 +179,7 @@ export default {
                     data: ['目标', '实际','正差异','负差异'],
                     left: 'right',
                     show: true,
+                    padding: [43,30,0,0]
                 },
                 xAxis: {
                     type: 'category',
@@ -265,7 +277,6 @@ export default {
     width: 100%;
   .bar {
     width: 100%;
-    height: 260px;
     margin: 0 auto;
   }
   .detail {

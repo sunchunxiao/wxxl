@@ -41,6 +41,7 @@
                       v-if="fundHomeTrendArr.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
+                        :show-detail="false"
                         :id="`fund${index}`"
                         :data="fundHomeTrendArr[index]" />
                     </el-col>
