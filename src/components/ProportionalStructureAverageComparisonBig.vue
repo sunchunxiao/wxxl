@@ -2,6 +2,7 @@
   <div class="averagebar-container">
     <div
       class="averagebar"
+      :style="{height: heightValue}"
       :id="`averagebar-${id}`" />
     <div class="detail">{{ data.subject_name }}</div>
   </div>
@@ -9,23 +10,46 @@
 
 <script>
 import echarts from 'plugins/echarts';
-import { formatNumber } from 'utils/common';
+import { formatNumber, labelNewline } from 'utils/common';
 const SUBJECT = ['ROI','POR','ITO','RY'];
 export default {
     props: {
         id: String,
         data: Object,
+        height: {
+            type: String,
+            default: "140px"
+        }
     },
     data(){
         return {
             val: [],
             color: [],
-            formatNumber: formatNumber
+            formatNumber: formatNumber,
+            debounce: null,
         };
+    },
+    computed: {
+        heightValue() {
+            if (!this.data.nodes) {
+                return this.height;
+            }
+            if (this.height.includes("px")) {
+                if ((this.data.nodes.length * 45) > parseInt(this.height)) {
+                    return this.data.nodes.length * 45 + "px";
+                }
+            }
+            return this.height;
+        }
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`averagebar-${this.id}`));
         this.renderChart(this.data);
+        this.debounce = _.debounce(this.chart.resize, 1000);
+        window.addEventListener('resize', this.debounce);
+    },
+    beforeDestroy () {
+        window.removeEventListener('resize', this.debounce);
     },
     watch: {
         data: {
@@ -33,6 +57,11 @@ export default {
                 this.renderChart(val);
             },
             deep: true
+        },
+        heightValue() {
+            this.$nextTick(() => {
+                this.chart.resize();
+            });
         },
     },
     methods: {
@@ -55,6 +84,7 @@ export default {
             } else {
                 return val;
             }
+
         },
         radius(value) {
             if (value >= 0) {
@@ -77,24 +107,15 @@ export default {
                 percentArr.push({
                     value:nodes.values[i],
                     itemStyle: {
-                        normal: {
-                            barBorderRadius:this.radius(nodes.values[i])
-                        }
+                        barBorderRadius:this.radius(nodes.values[i])
                     }
                 });
             }
             const options = {
-                grid: {
-                    left: 10,
-                    right: 20,
-                    bottom: 5,
-                    top: 20,
-                    containLabel: true
-                },
                 tooltip : {
                     trigger: 'axis',
-                    axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                        type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                    axisPointer : { // 坐标轴指示器，坐标轴触发有效
+                        type : 'none' // 默认为直线，可选为：'line' | 'shadow'
                     },
                     formatter: function(params){
                         let result = [];
@@ -106,14 +127,24 @@ export default {
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + "</br>" +
                                 `占比 : ${(item.value / nodes.total * 100).toFixed(2)}%` + "</br>" +
-                                `额 :${_this.formatNumber(parseInt(item.value / 100))}`;
+                                `&nbsp;&nbsp;&nbsp;额 : ${_this.formatNumber(parseInt(item.value / 100))}`;
                             });
                         }
                         return result;
                     },
-                    position: ['10%', '50%']
+                    position: function (point) {
+                        return ["50%", point[1] + 25];
+                    }
+                },
+                grid: {
+                    right: 50,
+                    bottom: 5,
+                    top: 20,
+                    left: "20%",
+                    containLabel: true
                 },
                 xAxis: {
+                    inverse: false,
                     type: 'value',
                     axisLabel: {
                         show: false
@@ -129,46 +160,56 @@ export default {
                     },
                 },
                 yAxis: {
+                    z: 3,
                     type: 'category',
                     axisTick: {
                         show: false
                     },
                     data: pData,
                     axisLabel: {
-                        show: false,
+                        show: true,
+                        fontSize: 14,
+                        formatter: function(value) {
+                            return labelNewline(6, value);
+                        }
                     }
                 },
                 series: [{
                     type: 'bar',
+                    barMaxWidth: 35,
                     itemStyle: {
-                        normal: {
-                            color: function(params) {
-                                return _this.color[`${params.dataIndex}`] === params.dataIndex ? '#318cb8' : '#b0afad';
-                            },
-                        },
+                        color: function(params) {
+                            return _this.color[`${params.dataIndex}`] ? '#1EB7A6' : '#E6E6E6';
+                        }
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            color: "#F2C811"
+                        }
                     },
                     label: {
-                        normal: {
-                            show: true,
-                            position: 'insideLeft',
-                            color: "#000",
-                            formatter: function(params) {
-                                if (!params.value || !nodes.display_rate) {
-                                    return `${pData[params.dataIndex]} : ${ _this.calculateToShow(params.value)}`;
+                        fontSize: 14,
+                        show: true,
+                        position: 'insideLeft',
+                        color: "#000",
+                        formatter: function(params) {
+                            if (!params.value || !nodes.display_rate) {
+                                return `${ _this.calculateToShow(params.value)}`;
+                            } else {
+                                if (nodes.total === 0) {//总和为0
+                                    return `${params.value}`;
                                 } else {
-                                    if (nodes.total === 0) {//总和为0
-                                        return `${pData[params.dataIndex]} : ${params.value}`;
-                                    } else {
-                                        return `${pData[params.dataIndex]} : ${(params.value / nodes.total * 100).toFixed(2)}% ` ;
-                                    }
+                                    return `${(params.value / nodes.total * 100).toFixed(2)}%`;
                                 }
-                            },
+                            }
                         },
                     },
                     data: percentArr,
                     markLine: {
                         symbol: 'none',
+                        name: '平均值',
                         label: {
+                            fontSize: 14,
                             formatter:function(){
                                 if ( nodes.display_rate == 0){
                                     return `平均值${_this.calculateToShow(average)}`;
@@ -176,7 +217,7 @@ export default {
                                     if (average==0){
                                         return `平均值${average}`;
                                     } else {
-                                        return `平均值${(average / nodes.total * 100).toFixed(2)}%`;
+                                        return `平均值${(average / nodes.total*100).toFixed(2)}%`;
                                     }
                                 }
                             }
@@ -184,15 +225,13 @@ export default {
                         data: [{
                             xAxis: average,
                             itemStyle: {
-                                normal: {
-                                    color: '#b12725'
-                                }
+                                color: '#b12725'
                             }
                         }]
                     },
                 }]
             };
-            this.chart.setOption(options);
+            this.chart.setOption(options, true);
         }
     }
 };
@@ -201,8 +240,7 @@ export default {
 <style lang="scss" scoped>
     .averagebar-container {
         .averagebar {
-            width: 280px;
-            height: 280px;
+            width: 100%;
             margin: 0 auto;
         }
         .detail {
