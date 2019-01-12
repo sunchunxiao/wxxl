@@ -33,6 +33,11 @@
                   v-if="cusrankArr.length"
                   :id="'select'"
                   :data="cusrankArr[cusrankArr.length-1]" />
+                <el-row
+                  v-else
+                  class="overview_select">
+                  暂无数据
+                </el-row>
               </el-col>
             </Card>
           </Card>
