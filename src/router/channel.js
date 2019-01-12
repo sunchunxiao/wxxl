@@ -1,5 +1,9 @@
 export default [
     {
+        path: '/channel/overview',
+        redirect: '/channel/overview/reach'
+    },
+    {
         path: '/channel/overview/:name',
         name: 'channelOverview',
         component: () =>

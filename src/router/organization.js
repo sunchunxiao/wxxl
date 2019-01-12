@@ -1,5 +1,9 @@
 export default [
     {
+        path: '/organization/overview',
+        redirect: '/organization/overview/reach'
+    },
+    {
         path: '/organization/overview/:name',
         name: 'organizationOverview',
         component: () =>

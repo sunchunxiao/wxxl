@@ -1,5 +1,9 @@
 export default [
     {
+        path: '/product/overview',
+        redirect: '/product/overview/reach'
+    },
+    {
         path: '/product/overview/:name',
         name: 'productOverview',
         component: () => import('views/Product/Overview.vue')

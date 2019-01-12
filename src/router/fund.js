@@ -1,5 +1,9 @@
 export default [
     {
+        path: '/fund/overview',
+        redirect: '/fund/overview/reach'
+    },
+    {
         path: '/fund/overview/:name',
         name: 'fundOverview',
         component: () =>
