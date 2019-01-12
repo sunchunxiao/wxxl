@@ -8,6 +8,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
+import { labelNewline } from 'utils/common';
 const RANK = ['未知', '差', '中', '良', '优'];
 export default {
     props: {
@@ -163,7 +164,11 @@ export default {
                             show: false,
                         },
                         axisLabel: {
-                            interval: 0
+                            interval: 0,
+                            show: true,
+                            formatter: function(value) {
+                                return labelNewline(3, value);
+                            }
                         }
                     },
                     yAxis: {
