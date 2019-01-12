@@ -47,6 +47,12 @@ export default {
         this.renderChart(this.data);
         this.debounce = _.debounce(this.chart.resize, 1000);
         window.addEventListener('resize', this.debounce);
+        let _this = this;
+        this.chart.on('click', function(params) {
+            const select_id = params.seriesId.split(",");
+            const id = select_id[params.dataIndex];
+            _this.$emit('id', id);
+        });
     },
     beforeDestroy () {
         window.removeEventListener('resize', this.debounce);
@@ -68,7 +74,7 @@ export default {
         calculateToShow(val) {
             const { subject } = this.data;
             //日销，投入产出比和库存周转率是显示原值
-            if (subject === 'SD'){//日销
+            if (subject === 'SD') {//日销
                 let tenThousand = (val / 10000 / 100).toFixed(2);
                 if (tenThousand && tenThousand >= 1) {
                     return tenThousand + 'w';
@@ -84,7 +90,6 @@ export default {
             } else {
                 return val;
             }
-
         },
         radius(value) {
             if (value >= 0) {
@@ -97,6 +102,7 @@ export default {
         renderChart(nodes) {
             let _this = this;
             const {
+                ids,
                 subject,
                 nodes: pData
             } = nodes;
@@ -204,6 +210,7 @@ export default {
                             }
                         },
                     },
+                    id: ids,
                     data: percentArr,
                     markLine: {
                         symbol: 'none',

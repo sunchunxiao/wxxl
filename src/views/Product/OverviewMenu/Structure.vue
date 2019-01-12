@@ -10,7 +10,7 @@
           class="">
           <Card>
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析</el-row>
-            <el-row>
+            <el-row v-if="structureArr.length">
               <el-col :span="16">
                 <template v-for="(item, index) in structureArr">
                   <el-col
@@ -18,8 +18,6 @@
                     :span="6"
                     @click.native="clickIndex(3 ,index)">
                     <ProportionalStructureAverageComparison
-                      v-if="structureArr.length"
-                      @id="structureID"
                       :id="`${index}`"
                       :data="item" />
                   </el-col>
@@ -30,19 +28,18 @@
                 class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
                   @id="structureID"
-                  v-if="structureArr.length"
                   id="ProportionalStructureAverageComparisonBig"
                   :data="structureArr[index3]" />
               </el-col>
             </el-row>
+            <el-row
+              v-else
+              class="overview_select">
+              暂无数据
+            </el-row>
           </Card>
         </el-row>
       </el-col>
-    </el-row>
-    <el-row
-      v-else
-      class="overview_select">
-      暂无数据
     </el-row>
   </div>
 </template>
@@ -78,14 +75,11 @@ export default {
             pt: '',
             loading: false,
             changeDate: {},
-            newParams: {}
+            newParams: {},
         };
     },
     computed: {
         ...mapGetters(['productTree', 'structureArr','lastParams']),
-        hasTree () {
-            return !_.isEmpty(this.productTree);
-        },
     },
     watch: {
         cid: {
@@ -96,21 +90,14 @@ export default {
         },
         val() {
             this.allRequest();
-        }
+        },
     },
     methods: {
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
         },
         structureID(data) {
-            this.cid = data;
-            this.nodeArr = [];
-            this.nodeArr.push(this.cid);
-            this.$nextTick(() => {
-                this.$refs.tree.setCurrentKey(this.cid); // tree元素的ref 绑定的node-key
-            });
-            this.isbac = false;
-            this.highlight = true;
+            this.$emit('changeCid', data);
         },
         allRequest() {
             if (!this.cid) {

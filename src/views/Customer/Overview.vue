@@ -37,7 +37,6 @@
             <div
               @click="click"
               v-if="customerTree.children"
-              :class="{bac:isbac}"
               class="company">
               <span
                 :class="['left','label',
@@ -54,7 +53,6 @@
               empty-text="正在加载"
               node-key="cid"
               :expand-on-click-node="false"
-              :highlight-current="highlight"
               :props="defaultProps"
               :default-expanded-keys="nodeArr"
               @node-expand="nodeExpand"
@@ -179,8 +177,6 @@ export default {
             // stragety
             val: {},
             nodeArr: [],
-            isbac: true,
-            highlight: true,
             searchBarValue: {
                 pt: '',
                 sDate: '',
@@ -245,8 +241,6 @@ export default {
             } else {
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
-                this.isbac = true;
-                this.highlight = false;
                 this.cid = this.customerTree.cid;
             }
         },
@@ -360,12 +354,9 @@ export default {
         },
         handleSearch(val) {
             this.findFatherId = val.cid;
-            this.highlight = true;
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
-                this.isbac = true;
-                this.highlight = false;
                 if (this.cid) {//数据tree不为null时
                     if (this.cid !== this.customerTree.cid) {
                         this.cid = this.customerTree.cid;
@@ -386,34 +377,23 @@ export default {
                 this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
                 this.findParent([this.treeClone], this.findFatherId);
-                this.isbac = false;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
-                //如果是根节点
-                if (this.cid === this.customerTree.cid) {
-                    this.isbac = true;
-                    this.highlight = false;
-                }
             }
         },
         nodeExpand(data) {
             this.cid = data.cid;
-            this.isbac = false;
-            this.highlight = true;
         },
         handleNodeClick(data) {
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
-                this.isbac = false;
-                this.highlight = true;
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {
                     return;
                 }
                 this.cid = data.cid;
             } else {
-                this.highlight = false;
                 this.error('请选择日期');
             }
         },

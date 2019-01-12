@@ -58,7 +58,6 @@
               :data="treeClone.children"
               empty-text="正在加载"
               :default-expanded-keys="nodeArr"
-              :highlight-current="highlight"
               :props="defaultProps"
               @node-expand="nodeExpand"
               @check-change="handleCheckChange">
@@ -184,7 +183,6 @@ export default {
             debounce: null,
             val: {},
             nodeArr: [],
-            highlight: true,
             searchBarValue: {
                 pt: '',
                 sDate: '',
@@ -433,8 +431,6 @@ export default {
         },
         nodeExpand(data) {
             this.cid = data.cid;
-            this.isbac = false;
-            this.highlight = true;
         },
         handleCheckChange(data, checked) {
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择

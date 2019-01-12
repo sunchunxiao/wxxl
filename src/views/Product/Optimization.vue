@@ -37,7 +37,6 @@
             <div
               @click="click"
               v-if="productTree"
-              :class="{bac:isbac}"
               class="company">
               <span
                 :class="['left','label',
@@ -52,7 +51,6 @@
               node-key="cid"
               empty-text="正在加载"
               :expand-on-click-node="false"
-              :highlight-current="highlight"
               :data="treeClone.children"
               :props="defaultProps"
               :default-expanded-keys="nodeArr"
@@ -196,8 +194,6 @@ export default {
             index0: 0,
             val: {},
             nodeArr: [],
-            isbac: true,
-            highlight: true,
             searchBarValue: {
                 pt: '',
                 sDate: '',
@@ -257,8 +253,6 @@ export default {
             } else {
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
-                this.isbac = true;
-                this.highlight = false;
                 this.cid = this.productTree.cid;
             }
         },
@@ -411,12 +405,9 @@ export default {
         },
         handleSearch(val) {
             this.findFatherId = val.cid;
-            this.highlight = true;
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
-                this.isbac = true;
-                this.highlight = false;
                 //数据为空时,没有id
                 if(this.cid){
                     if (this.cid !== this.productTree.cid) {
@@ -437,27 +428,18 @@ export default {
                 this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
                 this.findParent([this.treeClone], this.findFatherId);
-                this.isbac = false;
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
-                if (this.cid == this.productTree.cid) {
-                    this.isbac = true;
-                    this.highlight = false;
-                }
             }
         },
         nodeExpand (data) {
             this.cid = data.cid;
-            this.isbac = false;
-            this.highlight = true;
         },
         handleNodeClick (data) {
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.val = this.searchBarValue;
-                this.isbac = false;
-                this.highlight = true;
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {
                     return;

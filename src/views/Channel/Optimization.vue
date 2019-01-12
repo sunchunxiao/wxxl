@@ -37,7 +37,6 @@
             <div
               @click="click"
               v-if="channelTree"
-              :class="{bac:isbac}"
               class="company">
               <span
                 :class="['left','label',
@@ -52,7 +51,6 @@
               node-key="nid"
               empty-text="正在加载"
               :expand-on-click-node="false"
-              :highlight-current="highlight"
               :data="treeClone.children"
               :props="defaultProps"
               :default-expanded-keys="nodeArr"
@@ -189,8 +187,6 @@ export default {
             val: {},
             post: 1,
             nodeArr: [],
-            isbac: true,
-            highlight: true,
             searchBarValue: {
                 pt: '',
                 sDate: '',
@@ -246,8 +242,6 @@ export default {
             } else {
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
-                this.isbac = true;
-                this.highlight = false;
                 this.cid = this.channelTree.nid;
             }
 
@@ -399,13 +393,9 @@ export default {
         },
         handleSearch (val) {
             this.findFatherId = val.cid;
-            // 默认公司的背景色
-            this.highlight = true;
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
-                this.isbac = true;
-                this.highlight = false;
                 //数据为空时,没有id
                 if (this.cid) {
                     if (this.cid !== this.channelTree.nid) {
@@ -424,29 +414,20 @@ export default {
                     this.treeClone = _.cloneDeep(this.channelTree);
                 }
                 this.changeDate = this.searchBarValue;
-                this.isbac = false;
                 this.cid = val.cid;
                 this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
-                if (this.cid === this.channelTree.nid) {
-                    this.isbac = true;
-                    this.highlight = false;
-                }
             }
         },
         nodeExpand(data) {
             this.cid = data.nid;
-            this.isbac = false;
-            this.highlight = true;
         },
         handleNodeClick(data) {
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.val = this.searchBarValue;
-                this.isbac = false;
-                this.highlight = true;
                 this.$refs.child.clearKw();
                 if (this.cid !== data.nid) {
                     this.cid = data.nid;

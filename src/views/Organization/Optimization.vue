@@ -37,7 +37,6 @@
             <div
               @click="click"
               v-if="organizationTree"
-              :class="{bac:isbac}"
               class="company">
               <span
                 :class="['left','label',
@@ -52,7 +51,6 @@
               node-key="cid"
               empty-text="正在加载"
               :expand-on-click-node="false"
-              :highlight-current="highlight"
               :data="treeClone.children"
               :props="defaultProps"
               :default-expanded-keys="nodeArr"
@@ -182,8 +180,6 @@ export default {
             index0: 0,
             val: {},
             nodeArr: [],
-            isbac: true,
-            highlight: true,
             searchBarValue: {
                 pt: '',
                 sDate: '',
@@ -239,8 +235,6 @@ export default {
             if (this.cid === this.organizationTree.cid) {
                 return;
             } else {
-                this.isbac = true;
-                this.highlight = false;
                 this.cid = this.organizationTree.cid;
             }
         },
@@ -391,13 +385,9 @@ export default {
         },
         handleSearch(val) {
             this.findFatherId = val.cid;
-            // 默认公司的背景色
-            this.highlight = true;
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
-                this.isbac = true;
-                this.highlight = false;
                 if (this.cid !== this.organizationTree.cid) {
                     this.cid = this.organizationTree.cid;
                     this.treeClone = _.cloneDeep(this.organizationTree);
@@ -411,27 +401,18 @@ export default {
                     this.treeClone = _.cloneDeep(this.organizationTree);
                 }
                 this.changeDate = this.searchBarValue;
-                this.isbac = false;
                 this.cid = val.cid;
                 this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
                     this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
                 });
-                if (this.cid === this.organizationTree.cid) {
-                    this.isbac = true;
-                    this.highlight = false;
-                }
             }
         },
         nodeExpand(data){
             this.cid = data.cid;
-            this.isbac = false;
-            this.highlight = true;
         },
         handleNodeClick(data) {
-            this.isbac = false;
-            this.highlight = true;
             this.$refs.child.clearKw();
             this.type = data.type;
             if (this.cid === data.cid) {

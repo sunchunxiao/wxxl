@@ -19,7 +19,6 @@
                     @click.native="clickIndex(3 ,index)">
                     <ProportionalStructureAverageComparison
                       v-if="cusstructureArr.length"
-                      @id="structureID"
                       :id="`${index}`"
                       :data="item" />
                   </el-col>
@@ -102,15 +101,8 @@ export default {
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
         },
-        structureID(data) {
-            this.cid = data;
-            this.nodeArr = [];
-            this.nodeArr.push(this.cid);
-            this.$nextTick(() => {
-                this.$refs.tree.setCurrentKey(this.cid); // tree元素的ref 绑定的node-key
-            });
-            this.isbac = false;
-            this.highlight = true;
+        structureID() {
+
         },
         allRequest() {
             if (!this.cid) {
