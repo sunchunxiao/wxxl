@@ -10,7 +10,7 @@
           class="">
           <Card>
             <el-row class="margin-bottom-20 overview_title">智能评选和智能策略</el-row>
-            <el-row>
+            <el-row v-if="rankArr && rankArr.length">
               <el-col :span="14">
                 <IntelligentSelection
                   id="rank"
@@ -22,7 +22,8 @@
               <el-col :span="10">
                 <div class="stragety">
                   <div class="stragety-title">智能策略</div>
-                  <div class="stragety-box">
+                  <div
+                    class="stragety-box">
                     <div class="margin-bottom-10">{{ stragetyTitle }}</div>
                     <el-checkbox-group
                       v-if="stragety.length"
@@ -34,9 +35,8 @@
                         @change="change">{{ item.strategy }}</el-checkbox>
                     </el-checkbox-group>
                     <el-row
-                      v-else
                       class="stragety-box-data">
-                      暂无数据
+                      {{ stragetyMessage }}
                     </el-row>
                     <el-button
                       @click="submit"
@@ -46,14 +46,14 @@
                 </div>
               </el-col>
             </el-row>
+            <el-row
+              v-else
+              class="overview_select">
+              暂无数据
+            </el-row>
           </Card>
         </el-row>
       </el-col>
-    </el-row>
-    <el-row
-      v-else
-      class="overview_select">
-      暂无数据
     </el-row>
   </div>
 </template>
@@ -90,10 +90,11 @@ export default {
             stragetyCheckList: [],
             stragetyTitle: '',
             stragety: [],
+            stragetyMessage: '',
             idArr: [],
             post: 1,
             changeDate: {},
-            newParams: {}
+            newParams: {},
         };
     },
     computed: {
@@ -244,11 +245,16 @@ export default {
             }
             this.showStragetyId = cid;
             this.subject = subject;
+            this.loading = true;
             this.stragety = [];
+            this.stragetyMessage = '';
             API.GetProductMatch(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];
                 this.stragety = res.data;
+                if (!res.data.length) {
+                    this.stragetyMessage = '暂无数据';
+                }
                 const checked = 1;//1是选中,0是不选中
                 for (let i = 0; i < res.data.length; i++) {
                     if (res.data[i].is_selected === checked) {
@@ -256,6 +262,8 @@ export default {
                         this.idArr.push(res.data[i].id);
                     }
                 }
+            }).finally(() => {
+                this.loading = false;
             });
         }
     }

@@ -34,9 +34,8 @@
                         @change="change">{{ item.strategy }}</el-checkbox>
                     </el-checkbox-group>
                     <el-row
-                      v-else
                       class="stragety-box-data">
-                      暂无数据
+                      {{ stragetyMessage }}
                     </el-row>
                     <el-button
                       @click="submit"
@@ -91,6 +90,7 @@ export default {
             stragetyCheckList: [],
             stragetyTitle: '',
             stragety: [],
+            stragetyMessage: '',
             idArr: [],
             post: 1,
             changeDate: {},
@@ -247,13 +247,17 @@ export default {
             this.showStragetyId = cid;
             this.subject = subject;
             this.stragety = [];
+            this.stragetyMessage = '';
             API.GetOrgStrategy(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];
                 this.stragety = res.data;
+                if (!res.data.length) {
+                    this.stragetyMessage = '暂无数据';
+                }
                 const checked = 1;//1是选中,0是不选中
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].is_selected === checked) {
+                    if (res.data[i].status === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
                         this.idArr.push(res.data[i].id);
                     }
