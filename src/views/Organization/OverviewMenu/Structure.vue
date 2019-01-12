@@ -8,10 +8,10 @@
         <el-row
           v-if="hasStructure"
           v-loading="loading"
-          class="margin-top-10 min-height-400">
+          class="min-height-400">
           <Card>
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析前端</el-row>
-            <el-row>
+            <el-row type="flex">
               <el-col :span="16">
                 <template v-for="(item, index) in orgstructureArr1">
                   <el-col
@@ -36,21 +36,22 @@
           </Card>
         </el-row>
         <el-row
+          style="margin-top:-20px;"
           v-if="hasStructureBack"
           v-loading="loading"
-          class="margin-top-10 min-height-400">
+          class="min-height-400">
           <Card>
-            <el-row class="margin-bottom-20">比例结构与平均值对比分析后端</el-row>
-            <el-row>
+            <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析后端</el-row>
+            <el-row type="flex">
               <el-col :span="16">
-                <template v-for="(item1, index) in orgstructureArr2">
+                <template v-for="(item, index) in orgstructureArr2">
                   <el-col
                     :key="index"
                     :span="6"
                     @click.native="clickIndex(4 ,index)">
                     <ProportionalStructureAverageComparison
                       :id="`orgstructureArr2${index}`"
-                      :data="item1" />
+                      :data="sliceData(item)" />
                   </el-col>
                 </template>
               </el-col>
@@ -130,6 +131,14 @@ export default {
         }
     },
     methods: {
+        sliceData(item) {
+            let data = _.cloneDeep(item);
+            let num = data["28nodes"].length - 10;
+            data["28nodes"] = data["28nodes"].slice(num);
+            data["nodes"] = data["nodes"].slice(num);
+            data["values"] = data["values"].slice(num);
+            return data;
+        },
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
         },

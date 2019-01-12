@@ -18,7 +18,7 @@ export default {
         data: Object,
         height: {
             type: String,
-            default: "140px"
+            default: "415px"
         }
     },
     data(){
@@ -60,6 +60,7 @@ export default {
         },
         heightValue() {
             this.$nextTick(() => {
+                this.renderChart(this.data);
                 this.chart.resize();
             });
         },
@@ -73,7 +74,7 @@ export default {
                 if (tenThousand && tenThousand >= 1) {
                     return tenThousand + 'w';
                 } else {
-                    return val / 100;
+                    return (val / 100).toFixed(2);
                 }
             } else if (subject === 'ROI') {//投入产出比
                 if (val && val >= 10000) {
@@ -179,7 +180,7 @@ export default {
                     barMaxWidth: 35,
                     itemStyle: {
                         color: function(params) {
-                            return _this.color[`${params.dataIndex}`] ? '#1EB7A6' : '#E6E6E6';
+                            return _this.color[`${params.dataIndex}`] ? '#01b8aa' : '#b3b3b3';
                         }
                     },
                     emphasis: {
@@ -209,6 +210,7 @@ export default {
                         symbol: 'none',
                         name: '平均值',
                         label: {
+                            color: "#fd625e",
                             fontSize: 14,
                             formatter:function(){
                                 if ( nodes.display_rate == 0){
