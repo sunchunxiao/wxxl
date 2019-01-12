@@ -27,12 +27,6 @@ export default {
         };
     },
     mounted() {
-        let chartArr = document.getElementsByClassName("echart");
-        if (chartArr.length) {
-            for (let i of chartArr) {
-                echarts.init(i).resize();
-            }
-        }
         this.chart = echarts.init(document.getElementById(`trendline-${this.id}`));
         this.renderChart(this.data);
         this.debounce = _.debounce(this.chart.resize, 1000);
