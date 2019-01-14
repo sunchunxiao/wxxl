@@ -56,7 +56,7 @@ export default {
             }
         },
         renderChart(data) {
-            const { series, timeLabels, subject } = data;
+            const { series, timeLabels, subject, nodes } = data;
             const seriesClone = _.cloneDeep(series);
             let _this = this;
             for(let i = 0;i < seriesClone.length; i++) {
@@ -75,8 +75,28 @@ export default {
                     left: 0,
                     right: 40,
                     bottom: 0,
-                    top: 10,
+                    top: 60,
                     containLabel: true
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        mark : { show: true },
+                        dataView : { show: true, readOnly: false },
+                        magicType : { show: true, type: ['line', 'bar'] },
+                        restore : { show: true },
+                        saveAsImage : { show: true }
+                    },
+                    right: 30,
+                },
+                legend: {
+                    left: 'right',
+                    top: '0%',
+                    padding: [43,30,0,0],
+                    textStyle: {
+                        // color: '#ffd285',
+                    },
+                    data: nodes
                 },
                 tooltip: {
                     trigger: 'axis',
@@ -85,7 +105,13 @@ export default {
                     type: 'category',
                     name: '日期',
                     boundaryGap: false,
-                    data: timeLabels
+                    data: timeLabels,
+                    axisLabel: {
+                        formatter: function (value) {
+                            let arr =  value.split("-");
+                            return arr.slice(arr.length-2).join(".");
+                        }
+                    }
                 },
                 yAxis: {
                     type: 'value',
@@ -97,12 +123,19 @@ export default {
                 },
                 series: []
             };
-            for(let i = 0; i < seriesClone.length; i++) {
+            for (let i = 0; i < seriesClone.length; i++) {
+                let type  = 'solid';
+                if (i == seriesClone.length-1) {
+                    type = 'dashed';
+                }
                 options.series.push({
                     name: this.data.nodes[i],
                     type: 'line',
                     stack: i,
-                    data: seriesClone[i]
+                    data: seriesClone[i],
+                    lineStyle: {
+                        type: type
+                    }
                 });
             }
             this.chart.setOption(options,true);
@@ -116,7 +149,7 @@ export default {
         width: 100%;
         .ConOrgComparisonAverage {
             width: 100%;
-            height: 520px;
+            height: 500px;
             margin: 0 auto;
         }
         .detail {

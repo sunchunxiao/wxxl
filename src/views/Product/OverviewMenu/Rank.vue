@@ -245,7 +245,6 @@ export default {
             }
             this.showStragetyId = cid;
             this.subject = subject;
-            this.loading = true;
             this.stragety = [];
             this.stragetyMessage = '';
             API.GetProductMatch(params).then(res => {
@@ -262,8 +261,6 @@ export default {
                         this.idArr.push(res.data[i].id);
                     }
                 }
-            }).finally(() => {
-                this.loading = false;
             });
         }
     }
