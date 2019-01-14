@@ -9,15 +9,15 @@
             id="produce"
             class="">
             <el-row
-              v-if="profitSpace.length>0"
+              v-if="overviewArr.length>0"
               v-loading="loading">
               <Card>
                 <slider
                   height="296px"
                   :min-move-num="50">
-                  <template v-for="(item, index) in profitSpace">
+                  <template v-for="(item, index) in [overviewArr[1]]">
                     <el-col
-                      v-if="profitSpace.length>0"
+                      v-if="overviewArr.length>0"
                       :key="index"
                       style="width:198px">
                       <ProTargetAchievement
@@ -35,12 +35,12 @@
                   <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
                   <template>
                     <el-col
-                      v-if="dataSpace.length>0"
+                      v-if="overviewTrendArr.length>0"
                       :key="index">
                       <ProTargetActualDiffTrend
                         :show-detail="false"
                         :id="`product${index}`"
-                        :data="dataSpace[index]" />
+                        :data="overviewTrendArr[index]" />
                     </el-col>
                   </template>
                 </div>
@@ -94,7 +94,7 @@ export default {
             cid: '',
             loading: false,
             //index
-            index: 0,
+            index: 1,
             // date
             val: {},
             style: undefined,
@@ -102,20 +102,25 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['searchDate']),
+        ...mapGetters(['overviewArr', 'overviewTrendArr','searchDate']),
+        // hasSubjectName() {
+        //     return this.dataSpace[this.index].subject_name;
+        // }
         hasSubjectName() {
-            return this.dataSpace[this.index].subject_name;
+            if (this.overviewTrendArr.length) {
+                return this.overviewTrendArr[this.index].subject_name;
+            }
         }
     },
     mounted() {
-        // console.log(this.dataSales);
+        this.getOverviewProgress();
     },
     watch: {
         searchDate(){
             this.val = this.searchDate;
         },
         val() {
-            this.getProductProgress();
+            this.getOverviewProgress();
         }
     },
     methods: {
@@ -127,6 +132,26 @@ export default {
         select(index) {
             this.style = index;
         },
+        //公司
+        getOverviewProgress() {
+            this.loading = true;
+            const params = {
+                ...this.getPeriodByPt(),
+            };
+            API.GetOverviewProgress(params).then(res => {
+                this.$store.dispatch('SaveOverviewProgressData', res.data);
+                const promises = _.map(res.data, o => this.getOverviewTrend(o.subject));
+                Promise.all(promises).then(resultList => {
+                    _.forEach(resultList, (v, k) => {
+                        v.subject = res.data[k].subject;
+                        v.subject_name = res.data[k].subject_name;
+                    });
+                    this.$store.dispatch('SaveOverviewTrendArr', resultList);
+                });
+            }).finally(() => {
+                this.loading = false;
+            });
+        },
         getOverviewTrend(subject) {
             const params = {
                 ...this.getPeriodByPt(),
@@ -134,39 +159,21 @@ export default {
             };
             return API.GetOverviewTrend(params);
         },
-        //产品
-        getProductProgress() {
-            this.loading = true;
-            const params = {
-                ...this.getPeriodByPt(),
-            };
-            API.GetProductProgress(params).then(res => {
-                this.$store.dispatch('SaveProductProgressData', res.data);
-                const promises = _.map(res.data, o => this.getProductTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveProductTrendArr', resultList);
-                });
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
-        getProductTrend(subject) {
-            const params = {
-                ...this.getPeriodByPt(),
-                subject: subject
-            };
-            return API.GetProductTrend(params);
-        },
         getDateObj () {
+            const {
+                date
+            } = this.form;
             if (this.val.sDate && this.val.eDate) {
                 return {
                     pt: this.val.pt,
                     sDate: this.val.sDate,
                     eDate: this.val.eDate,
+                };
+            } else {
+                return {
+                    pt: date.pt,
+                    sDate: date.sDate,
+                    eDate: date.eDate,
                 };
             }
         },
