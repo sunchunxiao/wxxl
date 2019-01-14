@@ -37,7 +37,8 @@
           </el-submenu>
         </template>
         <div
-          class="menu_output outernal">外部评估</div>
+          @click="outputClick"
+          class="menu_output ">外部评估</div>
         <el-menu-item
           index="/home/sales"
           class="outernal"><span class="dot" />销售</el-menu-item>
@@ -63,7 +64,9 @@
           </el-submenu>
         </template>
         <el-menu-item index="/home/equity"><span class="dot" />品牌价值</el-menu-item>
-        <div class="menu_output internal">内部评估</div>
+        <div
+          @click="inputClick"
+          class="menu_output internal">内部评估</div>
         <template v-for="item in menuDataInput">
           <el-menu-item
             class="internal"
@@ -220,6 +223,12 @@ export default {
         }
     },
     methods: {
+        outputClick() {
+            this.$router.push('/home');
+        },
+        inputClick(){
+            this.$router.push('/home/profitSpace');
+        },
         input() {
         },
         getDateObj () {

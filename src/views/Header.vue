@@ -8,6 +8,15 @@
       <img
         src="../assets/logo1.png"
         alt="五项效率">
+      <template v-for="(item, index) in path">
+        <span
+          style="color: #fff"
+          :key="item">{{ item }}</span>
+        <span
+          :key="'icon'+item"
+          class="el-icon-arrow-right greet_icon"
+          v-if="index!=path.length-1" />
+      </template>
     </div>
   </div>
 </template>
@@ -19,13 +28,24 @@ export default {
     props: {
         isCollapse: Boolean
     },
+    computed:{
+        path() {
+            if(this.$route.meta.path.constructor == Object) {
+                let name = this.$route.params.name;
+                return this.$route.meta.path[name];
+            } else if (Array.isArray(this.$route.meta.path)) {
+                return this.$route.meta.path;
+            }
+            return [];
+        }
+    },
     data() {
         return {
             username: getUsername()
         };
     },
     mounted() {
-        // console.log(this.$route.path);
+        // console.log(this.$route.meta.path[this.$route.params.name], this.$route.params);
     },
     methods: {
         logout() {
@@ -45,7 +65,13 @@ export default {
     color: #858585;
     background: #2d2929;
     .greet {
+        display: flex;
+        align-items: center;
         height: 55px;
+        .greet_icon{
+            margin:0 5px;
+            color: #fff;
+        }
         .greet_img {
             width: 55px;
             }
