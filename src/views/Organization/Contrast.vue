@@ -110,19 +110,20 @@
                   </el-col>
                 </template>
               </slider>
-              <Card>
-                <ConOrgComparisonAverageBig
-                  :title="orgcompareArr[index0].subject_name"
-                  :data="orgcompareArr[index0]"
-                  id="ConOrgComparisonAverage"
-                  :index="index0" />
-              </Card>
+              <ConOrgComparisonAverageBig
+                v-if="orgcompareArr.length > 0"
+                :title="orgcompareArr[index0].subject_name"
+                :data="orgcompareArr[index0]"
+                id="ConOrgComparisonAverage"
+                :index="index0" />
             </el-row>
             <el-row
               v-else
               class="please_select">请选择要对比的项目</el-row>
           </Card>
-          <Card v-if="hasConstarstBack">
+          <Card
+            v-if="hasConstarstBack"
+            class="padding-top-0">
             <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
             <el-row v-if="orgcompareArrback.length > 0">
               <slider
@@ -140,13 +141,12 @@
                   </el-col>
                 </template>
               </slider>
-              <Card>
-                <ConOrgComparisonAverageBig
-                  :title="orgcompareArrback[index1].subject_name"
-                  :data="orgcompareArrback[index1]"
-                  id="ConOrgComparisonAverage1"
-                  :index="index0" />
-              </Card>
+              <ConOrgComparisonAverageBig
+                v-if="orgcompareArrback.length > 0"
+                :title="orgcompareArrback[index1].subject_name"
+                :data="orgcompareArrback[index1]"
+                id="ConOrgComparisonAverage1"
+                :index="index0" />
             </el-row>
             <el-row
               v-else

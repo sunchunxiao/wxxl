@@ -23,7 +23,6 @@
     .optimization {
         flex: 1;
         overflow: auto;
-        // min-width: 1345px;
         background-color: #fff;
         .overview_select {
             width: 100%;
@@ -35,11 +34,6 @@
         }
         .el-date-editor.el-range-editor {
             width: 300px;
-        }
-        .please_select {
-            min-height: 300px;
-            text-align: center;
-            line-height: 300px;
         }
         .content_row {
             height: 100%;

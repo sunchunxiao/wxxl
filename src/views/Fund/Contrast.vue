@@ -110,14 +110,12 @@
                   </el-col>
                 </template>
               </slider>
-              <Card>
-                <ConOrgComparisonAverageBig
-                  v-if="fundcompareArr.length > 0"
-                  :title="fundcompareArr[index0].subject_name"
-                  :data="fundcompareArr[index0]"
-                  id="ConOrgComparisonAverage"
-                  :index="index0" />
-              </Card>
+              <ConOrgComparisonAverageBig
+                v-if="fundcompareArr.length > 0"
+                :title="fundcompareArr[index0].subject_name"
+                :data="fundcompareArr[index0]"
+                id="ConOrgComparisonAverage"
+                :index="index0" />
             </el-row>
             <el-row
               v-else
@@ -128,28 +126,27 @@
           <Card v-if="hasConstarstBack">
             <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
             <el-row v-if="fundcompareArrback.length>0">
-              <el-col :span="6">
-                <template v-for="(item1, index) in fundcompareArrback">
+              <slider
+                height="170px"
+                :min-move-num="50">
+                <template v-for="(item, index) in fundcompareArrback">
                   <el-col
                     :key="index"
-                    :span="12"
+                    style="width:200px"
                     @click.native="clickIndex(1 ,index)">
                     <ConOrgComparisonAverage
-                      :title="item1.subject_name"
+                      :title="item.subject_name"
                       :id="`fundcompareArrback${index}`"
-                      :data="item1" />
+                      :data="item" />
                   </el-col>
                 </template>
-              </el-col>
-              <el-col
-                :span="18"
-                v-if="fundcompareArrback.length > 0">
-                <ConOrgComparisonAverageBig
-                  :title="fundcompareArrback[index1].subject_name"
-                  :data="fundcompareArrback[index1]"
-                  id="ConOrgComparisonAverage1"
-                  :index="index1" />
-              </el-col>
+              </slider>
+              <ConOrgComparisonAverageBig
+                v-if="fundcompareArrback.length > 0"
+                :title="fundcompareArrback[index1].subject_name"
+                :data="fundcompareArrback[index1]"
+                id="ConOrgComparisonAverage1"
+                :index="index1" />
             </el-row>
             <el-row
               v-else

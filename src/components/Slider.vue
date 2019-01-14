@@ -200,7 +200,8 @@ export default {
         font-size: 20px;
         color: white;
         >div {
-            height: 180px;
+            max-height: 180px;
+            height: 100%;
             background: #CCCCCC;
             position: relative;
             border-radius: 3px;

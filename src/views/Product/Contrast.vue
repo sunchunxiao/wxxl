@@ -119,11 +119,11 @@
               </Card>
             </el-row>
           </Card>
-          <el-row
-            v-else
-            class="please_select">
-            请选择要对比的项目
-          </el-row>
+          <Card v-else>
+            <div class="please_select">
+              请选择要对比的项目
+            </div>
+          </Card>
         </el-col>
       </el-row>
       <el-row
