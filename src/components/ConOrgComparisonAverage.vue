@@ -73,15 +73,22 @@ export default {
                 },
                 tooltip: {
                     trigger: 'axis',
-                    position: function (pos) { // point: 鼠标位置
-                        return { left:pos[0], top: pos[1] };
-                    },
+                    // position: function (pos) { // point: 鼠标位置
+                    //     return { left:pos[0], top: pos[1] };
+                    // },
+                    position: ['50%', '40%']
                 },
                 xAxis: {
                     type: 'category',
                     name: '日期',
                     boundaryGap: false,
-                    data: timeLabels
+                    data: timeLabels,
+                    axisLabel: {
+                        formatter: function (value) {
+                            let arr =  value.split("-");
+                            return arr.slice(arr.length-2).join(".");
+                        }
+                    }
                 },
                 yAxis: {
                     type: 'value',
@@ -94,11 +101,18 @@ export default {
                 series: []
             };
             for (let i = 0; i < seriesClone.length; i++) {
+                let type  = 'solid';
+                if (i == seriesClone.length-1) {
+                    type = 'dashed';
+                }
                 options.series.push({
                     name: this.data.nodes[i],
                     type: 'line',
                     stack: i,
-                    data: seriesClone[i]
+                    data: seriesClone[i],
+                    lineStyle: {
+                        type: type
+                    }
                 });
             }
             this.chart.setOption(options,true);
