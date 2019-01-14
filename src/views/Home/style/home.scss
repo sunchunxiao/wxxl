@@ -61,6 +61,9 @@ $border-right: #7F7F7F;
         }
         ul.el-menu {
             height: 50px;
+            div.menu_output:focus {
+                outline: none;
+            }
             .el-submenu {
                 .el-submenu__title{
                     border-left: none;

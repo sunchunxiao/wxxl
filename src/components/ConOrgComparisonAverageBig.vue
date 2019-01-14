@@ -75,7 +75,7 @@ export default {
                     left: 0,
                     right: 40,
                     bottom: 0,
-                    top: 60,
+                    top: 72,
                     containLabel: true
                 },
                 toolbox: {
@@ -90,6 +90,7 @@ export default {
                     right: 30,
                 },
                 legend: {
+                    type: 'scroll',
                     left: 'right',
                     top: '0%',
                     padding: [43,30,0,0],

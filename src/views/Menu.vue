@@ -34,9 +34,6 @@
         </template>
       </el-submenu>
     </template>
-    <el-menu-item
-      v-show="false"
-      index="placeholder" />
   </el-menu>
 </template>
 
@@ -164,32 +161,29 @@ export default {
     },
     data () {
         return {
-            menuData: MENUDATA,
-            activePath: "",
+            menuData: MENUDATA
         };
     },
-    watch: {
-        ['$route.fullPath']: function (val) {
-            if (val.includes('/home')) {
-                this.activePath = 'placeholder';
-                return;
-            }
-            this.activePath = val;
-        }
-    },
-    mounted () {
-        let reg = /.*(?<=\/overview)/;
-        if (this.$route.fullPath.includes("/overview")) {
-            this.activePath = this.$route.fullPath.match(reg)[0];
-        } else if (this.$route.fullPath.includes("/home")) {
-            this.activePath = "/home";
-        } else {
-            this.activePath = this.$route.fullPath;
+    computed: {
+        activePath() {
+            return this.getActivePath(this.$route.fullPath);
         }
     },
     methods:{
         home(){
             this.$router.push('/home');
+        },
+        getActivePath(fullPath) {
+            let activePath;
+            let reg = /.*(?<=\/overview)/;
+            if (fullPath.includes("/overview")) {
+                activePath = fullPath.match(reg)[0];
+            } else if (fullPath.includes("/home")) {
+                activePath = "/home";
+            } else {
+                activePath = fullPath;
+            }
+            return activePath;
         }
     }
 };
@@ -240,7 +234,9 @@ $scale: 1.8;
     line-height: $subtitle-height;
 }
 ul.el-menu {
-  width: 100%;
+  &:not(.el-menu--collapse) {
+    width: 100%;
+  }
   background-color: $bgcolor;
   border-right: none;
   .el-submenu__title {
