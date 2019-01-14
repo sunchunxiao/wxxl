@@ -62,7 +62,7 @@ export default {
 // $bgcolor: #224e6b;
 $bgcolor:#333;
 $width: 200px;
-$width_collapse: 55px;
+$width_collapse: 64px;
 
 .container {
     height: 100%;
