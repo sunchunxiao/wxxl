@@ -89,41 +89,42 @@
         </el-col>
         <el-col
           :span="19"
-          v-loading="loading"
           class="overflow">
-          <Card
-            v-if="compareArr.length > 0">
-            <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
-            <el-row>
-              <slider
-                height="170px"
-                :min-move-num="50">
-                <template v-for="(item, index) in compareArr">
-                  <el-col
-                    :key="index"
-                    style="width:200px">
-                    <ConOrgComparisonAverage
-                      :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
-                      @click.native="clickIndex(index)"
-                      :id="`${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </slider>
-              <Card>
-                <ConOrgComparisonAverageBig
-                  :title="compareArr[index0].subject_name"
-                  :data="compareArr[index0]"
-                  id="ConOrgComparisonAverage"
-                  :index="index0" />
-              </Card>
-            </el-row>
-          </Card>
-          <el-row
-            v-else
-            class="please_select">
-            请选择要对比的项目
-          </el-row>
+          <div v-loading="loading">
+            <Card
+              v-if="compareArr.length > 0">
+              <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
+              <el-row>
+                <slider
+                  height="170px"
+                  :min-move-num="50">
+                  <template v-for="(item, index) in compareArr">
+                    <el-col
+                      :key="index"
+                      style="width:200px">
+                      <ConOrgComparisonAverage
+                        :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
+                        @click.native="clickIndex(index)"
+                        :id="`${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </slider>
+                <Card>
+                  <ConOrgComparisonAverageBig
+                    :title="compareArr[index0].subject_name"
+                    :data="compareArr[index0]"
+                    id="ConOrgComparisonAverage"
+                    :index="index0" />
+                </Card>
+              </el-row>
+            </Card>
+            <Card v-else>
+              <div class="please_select">
+                请选择要对比的项目
+              </div>
+            </Card>
+          </div>
         </el-col>
       </el-row>
       <el-row

@@ -90,73 +90,71 @@
         </el-col>
         <el-col
           :span="19"
-          v-loading="loading"
           class="overflow">
-          <Card>
-            <el-row class="margin-bottom-20">组织对比分析和平均值分析前端</el-row>
-            <el-row v-if="hasConstarst">
-              <slider
-                height="170px"
-                :min-move-num="50">
-                <template v-for="(item, index) in fundcompareArr">
-                  <el-col
-                    :key="index"
-                    style="width:200px"
-                    @click.native="clickIndex(0 ,index)">
-                    <ConOrgComparisonAverage
-                      :title="item.subject_name"
-                      :id="`${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </slider>
-              <Card>
+          <div v-loading="loading">
+            <Card>
+              <el-row class="margin-bottom-20">组织对比分析和平均值分析前端</el-row>
+              <el-row v-if="hasConstarst">
+                <slider
+                  height="170px"
+                  :min-move-num="50">
+                  <template v-for="(item, index) in fundcompareArr">
+                    <el-col
+                      :key="index"
+                      style="width:200px"
+                      @click.native="clickIndex(0 ,index)">
+                      <ConOrgComparisonAverage
+                        :title="item.subject_name"
+                        :id="`${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </slider>
                 <ConOrgComparisonAverageBig
                   v-if="fundcompareArr.length > 0"
                   :title="fundcompareArr[index0].subject_name"
                   :data="fundcompareArr[index0]"
                   id="ConOrgComparisonAverage"
                   :index="index0" />
-              </Card>
-            </el-row>
-            <el-row
-              v-else
-              class="please_select">
-              请选择要对比的项目
-            </el-row>
-          </Card>
-          <Card v-if="hasConstarstBack">
-            <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
-            <el-row v-if="fundcompareArrback.length>0">
-              <el-col :span="6">
-                <template v-for="(item1, index) in fundcompareArrback">
-                  <el-col
-                    :key="index"
-                    :span="12"
-                    @click.native="clickIndex(1 ,index)">
-                    <ConOrgComparisonAverage
-                      :title="item1.subject_name"
-                      :id="`fundcompareArrback${index}`"
-                      :data="item1" />
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col
-                :span="18"
-                v-if="fundcompareArrback.length > 0">
+              </el-row>
+              <el-row
+                v-else
+                class="please_select">
+                请选择要对比的项目
+              </el-row>
+            </Card>
+            <Card v-if="hasConstarstBack">
+              <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
+              <el-row v-if="fundcompareArrback.length>0">
+                <slider
+                  height="170px"
+                  :min-move-num="50">
+                  <template v-for="(item, index) in fundcompareArrback">
+                    <el-col
+                      :key="index"
+                      style="width:200px"
+                      @click.native="clickIndex(1 ,index)">
+                      <ConOrgComparisonAverage
+                        :title="item.subject_name"
+                        :id="`fundcompareArrback${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </slider>
                 <ConOrgComparisonAverageBig
+                  v-if="fundcompareArrback.length > 0"
                   :title="fundcompareArrback[index1].subject_name"
                   :data="fundcompareArrback[index1]"
                   id="ConOrgComparisonAverage1"
                   :index="index1" />
-              </el-col>
-            </el-row>
-            <el-row
-              v-else
-              class="please_select">
-              请选择要对比的项目
-            </el-row>
-          </Card>
+              </el-row>
+              <el-row
+                v-else
+                class="please_select">
+                请选择要对比的项目
+              </el-row>
+            </Card>
+          </div>
         </el-col>
       </el-row>
     </div>
