@@ -78,7 +78,7 @@
                     <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
                   </div>
                   <span class="label">
-                    <span class="label_left">{{ data.name }}</span>
+                    <span class="label_left"><span v-if="data.type==2">* </span>{{ data.name }}</span>
                   </span>
                 </el-tooltip>
                 <div
@@ -557,7 +557,7 @@ export default {
                     if (data.type === type) {
                         // 如果有选中的节点 并且此次选择了不同pid的节点
                         if (this.cidObjBackArr[0] && data.parent_id !== this.cidObjBackArr[0].parent_id) {
-                            this.warn('请选择相同父级下的进行对比');
+                            this.warn('请选择相同父级下的后端进行对比');
                             this.cancelKey = data.cid;
                             const checkKeys = this.cidObjArr.map(i => i.cid);
                             const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
@@ -575,7 +575,7 @@ export default {
                     } else {
                     // 如果有选中的节点 并且此次选择了不同pid的节点
                         if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
-                            this.warn('请选择相同父级下的进行对比');
+                            this.warn('请选择相同父级下的前端进行对比');
                             this.cancelKey = data.cid;
                             const checkKeys = this.cidObjArr.map(i => i.cid);
                             const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
