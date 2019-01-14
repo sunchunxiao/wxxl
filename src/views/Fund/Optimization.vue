@@ -86,20 +86,19 @@
         </el-col>
         <el-col
           :span="19"
-          v-loading="loading"
           class="overflow">
-          <Card>
+          <Card v-loading="loading">
             <el-row class="margin-bottom-20 overview_title">策略优化</el-row>
-            <el-row :gutter="10">
+            <el-row :gutter="20">
               <template v-for="(item,index) in fundhistoryArr">
                 <el-col
-                  :span="((item.strategies && item.strategies.length) || (fundhistoryArr[index+1] && fundhistoryArr[index+1].strategies.length))?24:12"
+                  :span="getColSpan(item, index)"
                   :key="index">
                   <el-table
                     :data="item.strategies"
-                    class="margin-bottom-10"
+                    class="margin-bottom-20"
                     :span-method="arraySpanMethod2(item.strategies)">
-                    <el-table-column :label="`${item.start_date} - ${item.end_date}`">
+                    <el-table-column :label="`周期: ${item.start_date} 至 ${item.end_date}`">
                       <el-table-column
                         prop="subject_name"
                         label="指标" />
@@ -132,7 +131,6 @@
                 </el-col>
               </template>
             </el-row>
-
           </Card>
         </el-col>
       </el-row>
@@ -225,6 +223,15 @@ export default {
         }
     },
     methods: {
+        getColSpan(item,index) {
+            if (item.strategies && item.strategies.length) {
+                return 24;
+            }
+            if (this.fundhistoryArr[index+1] && this.fundhistoryArr[index+1].strategies.length && ((index + 1) % 2)) {
+                return 24;
+            }
+            return 12;
+        },
         handleCollpase () {
             this.isCollapse = !this.isCollapse;
         },

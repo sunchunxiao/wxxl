@@ -47,8 +47,10 @@
                 flex: 1;
             }
         }
-
         .el-table {
+            .el-table__header-wrapper {
+                background: #f5f7fa;
+            }
             .cell {
                 >img,
                 >span {
@@ -59,6 +61,9 @@
                     margin-left: 0!important;
                 }
             }
+        }
+        .el-table--border td, .el-table--border th, .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed {
+            border-right: none;
         }
     }
 }
