@@ -1,6 +1,6 @@
 <template>
   <el-menu
-    id="menu"
+    id="collapse-menu"
     :default-active="activePath"
     router>
     <el-menu-item
@@ -10,7 +10,6 @@
       <img
         class="menu_icon"
         src="../assets/3.png">
-      <span slot="title">首页</span>
     </el-menu-item>
     <template v-for="item in menuData">
       <el-submenu
@@ -21,14 +20,13 @@
             class="menu_icon"
             :src="require(`../assets/${item.icon}`)"
             :alt="item.icon">
-          <span slot="title">{{ item.title }}</span>
         </template>
         <template v-for="itm in item.children">
           <el-menu-item
             :index="`${item.path}${itm.path}`"
             :key="`${item.path}${itm.path}`">
             <span class="sub-text">
-              <span class="dot" /> {{ itm.title }}
+              <span /> {{ itm.title }}
             </span>
           </el-menu-item>
         </template>
@@ -45,19 +43,19 @@ const MENUDATA = [
         icon: "4.png",
         children: [
             {
-                title: "全景分析",
+                title: "全",
                 path: "/overview"
             },
             {
-                title: "产品对比",
+                title: "对",
                 path: "/contrast"
             },
             {
-                title: "策略优化",
+                title: "优",
                 path: "/optimization"
             },
             {
-                title: "策略跟踪",
+                title: "略",
                 path: "/track"
             }
         ]
@@ -68,19 +66,19 @@ const MENUDATA = [
         icon: "5.png",
         children: [
             {
-                title: "全景分析",
+                title: "全",
                 path: "/overview"
             },
             {
-                title: "组织对比",
+                title: "对",
                 path: "/contrast"
             },
             {
-                title: "策略优化",
+                title: "优",
                 path: "/optimization"
             },
             {
-                title: "策略跟踪",
+                title: "略",
                 path: "/track"
             }
         ]
@@ -91,19 +89,19 @@ const MENUDATA = [
         icon: "6.png",
         children: [
             {
-                title: "全景分析",
+                title: "全",
                 path: "/overview"
             },
             {
-                title: "客户对比",
+                title: "对",
                 path: "/contrast"
             },
             {
-                title: "策略优化",
+                title: "优",
                 path: "/optimization"
             },
             {
-                title: "策略跟踪",
+                title: "略",
                 path: "/track"
             }
         ]
@@ -114,19 +112,19 @@ const MENUDATA = [
         icon: "7.png",
         children: [
             {
-                title: "全景分析",
+                title: "全",
                 path: "/overview"
             },
             {
-                title: "资金对比",
+                title: "对",
                 path: "/contrast"
             },
             {
-                title: "策略优化",
+                title: "优",
                 path: "/optimization"
             },
             {
-                title: "策略跟踪",
+                title: "略",
                 path: "/track"
             }
         ]
@@ -137,19 +135,19 @@ const MENUDATA = [
         icon: "8.png",
         children: [
             {
-                title: "全景分析",
+                title: "全",
                 path: "/overview"
             },
             {
-                title: "渠道对比",
+                title: "对",
                 path: "/contrast"
             },
             {
-                title: "策略优化",
+                title: "优",
                 path: "/optimization"
             },
             {
-                title: "策略跟踪",
+                title: "略",
                 path: "/track"
             }
         ]
@@ -195,10 +193,11 @@ $border-color-active: #F2C811;
 $subtitle-height: 50px;
 $menu-item-height: 38px;
 $title-font-size: 18px;
-$subtitle-font-size: 14px;
-$scale: 1.5;
-#menu {
-    width: 100%;
+$subtitle-font-size: 16px;
+$scale: 1.8;
+#collapse-menu {
+    width: 64px;
+    overflow: hidden;
     background-color: $bgcolor;
     border-right: none;
     .home{
@@ -217,10 +216,9 @@ $scale: 1.5;
     .el-menu-item.is-active {
         color: $white;
         background-color: $bg-color-active;
-        // border-left: 5px solid $border-color-active;
     }
     .menu_icon {
-        margin: 0 12px 0 -5px;
+        margin: 0 10px 0 -5px;
     }
     .el-menu-item, .el-submenu__title{
         height: $subtitle-height;
@@ -243,7 +241,7 @@ $scale: 1.5;
         }
     }
     .el-submenu {
-        .el-submenu__title {
+        >.el-submenu__title {
             border-left: 5px solid $bgcolor;
             i {
                 margin-right: 15px;
@@ -251,16 +249,9 @@ $scale: 1.5;
         }
     }
     .el-submenu.is-active {
-        >.el-submenu__title {
+        .el-submenu__title {
             border-left: 5px solid $border-color-active;
             background: $bg-color-active;
-        }
-    }
-    >.el-menu-item {
-        border-left: 5px solid $bgcolor;
-        color: $white;
-        &.is-active {
-            border-left: 5px solid $border-color-active;
         }
     }
     .el-submenu .el-menu-item {
@@ -268,37 +259,22 @@ $scale: 1.5;
         line-height: $menu-item-height;
         background-color: $bgcolor;
         color: $white;
-        border-top: 1px solid transparent;
-        border-bottom: 1px solid transparent;
-        padding: 0 0 0 35px !important;
-        &.is-active {
-            background-color: $bg-color-active;
-            border-color: #7F7F7F;
-        }
+        font-size: $subtitle-font-size;
+        padding: 0 0 0 0 !important;
         .sub-text {
-            font-size: $subtitle-font-size;
-            padding: 2px 30px;
-            border-radius: 10px;
-            .dot {
-                display: inline-block;
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                position: relative;
-                left: -8px;
-                top: -1px;
-                background-color: #fff;
-            }
+            display: block;
+            padding-left: 20px;
+        }
+    }
+    .el-menu-item.is-active {
+        color: $white;
+        .sub-text {
+            background-color: $bg-color-active;
         }
     }
     // arrow
     .el-submenu__icon-arrow {
-        color: $white;
-        transform: scale($scale);
-    }
-    .el-submenu.is-opened > .el-submenu__title .el-submenu__icon-arrow {
-        transform: rotateZ(180deg) scale($scale);
+        display: none;
     }
 }
 </style>
-

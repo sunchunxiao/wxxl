@@ -17,7 +17,7 @@
         </div>
         <!-- 右侧菜单栏 -->
         <div class="menu_container">
-          <Menu :isCollapse="isCollapse" />
+          <component :is="isCollapse?'CollapseMenu':'Menu'" />
         </div>
       </div>
       <div :class="['right', {'right_collapse': isCollapse} ]">
@@ -30,6 +30,8 @@
 <script>
 // @ is an alias to /src
 import Menu from './Menu';
+import CollapseMenu from './CollapseMenu';
+
 import Header from './Header';
 import { echartAndSliderResize } from 'utils/common';
 
@@ -37,7 +39,8 @@ export default {
     name: 'Home',
     components: {
         Menu,
-        Header
+        Header,
+        CollapseMenu
     },
     data () {
         return {
@@ -123,8 +126,20 @@ $width_collapse: 64px;
                 min-width: 1200px;
             }
         }
+        #collapse-menu {
+            display: none;
+        }
+        #menu {
+            display: block;
+        }
         .left_collapse {
             width: $width_collapse;
+            #menu {
+                display: none;
+            }
+            #collapse-menu {
+                display: block;
+            }
         }
         .content {
             // padding: 0px 0px 16px;
