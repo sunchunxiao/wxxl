@@ -86,17 +86,16 @@
         </el-col>
         <el-col
           :span="19"
-          v-loading="loading"
           class="overflow">
-          <Card>
+          <Card v-loading="loading">
             <el-row class="margin-bottom-20 overview_title">策略优化</el-row>
-            <el-row :gutter="10">
+            <el-row :gutter="20">
               <template v-for="(item,index) in historyArr">
                 <el-col
-                  :span="((item.strategies && item.strategies.length) || (historyArr[index+1] && historyArr[index+1].strategies.length))?24:12"
+                  :span="getColSpan(item, index)"
                   :key="index">
                   <el-table
-                    class="margin-bottom-10"
+                    class="margin-bottom-20"
                     :span-method="arraySpanMethod(item.strategies)"
                     :data="item.strategies">
                     <el-table-column
@@ -237,6 +236,15 @@ export default {
         }
     },
     methods: {
+        getColSpan(item,index) {
+            if (item.strategies && item.strategies.length) {
+                return 24;
+            }
+            if (this.historyArr[index+1] && this.historyArr[index+1].strategies.length && ((index + 1) % 2)) {
+                return 24;
+            }
+            return 12;
+        },
         handleCollpase () {
             this.isCollapse = !this.isCollapse;
         },

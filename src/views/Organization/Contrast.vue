@@ -90,69 +90,70 @@
         </el-col>
         <el-col
           :span="19"
-          v-loading="loading"
           class="overflow">
-          <Card>
-            <el-row class="margin-bottom-20">组织对比分析和平均值分析前端</el-row>
-            <el-row v-if="hasConstarst">
-              <slider
-                height="170px"
-                :min-move-num="50">
-                <template v-for="(item, index) in orgcompareArr">
-                  <el-col
-                    :key="index"
-                    style="width:200px"
-                    @click.native="clickIndex(0 ,index)">
-                    <ConOrgComparisonAverage
-                      :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
-                      :title="item.subject_name"
-                      :id="`${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </slider>
-              <Card>
+          <div v-loading="loading">
+            <Card>
+              <el-row class="margin-bottom-20">组织对比分析和平均值分析前端</el-row>
+              <el-row v-if="hasConstarst">
+                <slider
+                  height="170px"
+                  :min-move-num="50">
+                  <template v-for="(item, index) in orgcompareArr">
+                    <el-col
+                      :key="index"
+                      style="width:200px"
+                      @click.native="clickIndex(0 ,index)">
+                      <ConOrgComparisonAverage
+                        :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
+                        :title="item.subject_name"
+                        :id="`${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </slider>
                 <ConOrgComparisonAverageBig
+                  v-if="orgcompareArr.length > 0"
                   :title="orgcompareArr[index0].subject_name"
                   :data="orgcompareArr[index0]"
                   id="ConOrgComparisonAverage"
                   :index="index0" />
-              </Card>
-            </el-row>
-            <el-row
-              v-else
-              class="please_select">请选择要对比的项目</el-row>
-          </Card>
-          <Card v-if="hasConstarstBack">
-            <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
-            <el-row v-if="orgcompareArrback.length > 0">
-              <slider
-                height="170px"
-                :min-move-num="50">
-                <template v-for="(item, index) in orgcompareArrback">
-                  <el-col
-                    :key="index"
-                    style="width:200px"
-                    @click.native="clickIndex(1 ,index)">
-                    <ConOrgComparisonAverage
-                      :title="item.subject_name"
-                      :id="`orgcompareArrback${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </slider>
-              <Card>
+              </el-row>
+              <el-row
+                v-else
+                class="please_select">请选择要对比的项目</el-row>
+            </Card>
+            <Card
+              v-if="hasConstarstBack"
+              class="padding-top-0">
+              <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
+              <el-row v-if="orgcompareArrback.length > 0">
+                <slider
+                  height="170px"
+                  :min-move-num="50">
+                  <template v-for="(item, index) in orgcompareArrback">
+                    <el-col
+                      :key="index"
+                      style="width:200px"
+                      @click.native="clickIndex(1 ,index)">
+                      <ConOrgComparisonAverage
+                        :title="item.subject_name"
+                        :id="`orgcompareArrback${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </slider>
                 <ConOrgComparisonAverageBig
+                  v-if="orgcompareArrback.length > 0"
                   :title="orgcompareArrback[index1].subject_name"
                   :data="orgcompareArrback[index1]"
                   id="ConOrgComparisonAverage1"
                   :index="index0" />
-              </Card>
-            </el-row>
-            <el-row
-              v-else
-              class="please_select">请选择要对比的项目</el-row>
-          </Card>
+              </el-row>
+              <el-row
+                v-else
+                class="please_select">请选择要对比的项目</el-row>
+            </Card>
+          </div>
         </el-col>
       </el-row>
     </div>
@@ -169,7 +170,6 @@ import { organization, orgBack } from '../../data/subject';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
-
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 import { mapGetters } from 'vuex';
@@ -195,11 +195,11 @@ export default {
                 search: '',
                 version: '0'
             },
-            loading: false,
-            cid: '',
             //data
             orgSubject: organization(),
             orgBackSubject: orgBack(),
+            loading: false,
+            cid: '',
             error:error,
             find: find,
             preOrder: preOrder,
@@ -289,9 +289,9 @@ export default {
             }
             const checkKeys = arr.map(i => i.cid);
             const checkBackKeys = arrback.map(i => i.cid);
-            const allCheckKeys = [...checkKeys, ...checkBackKeys];
+            const cc = [...checkKeys, ...checkBackKeys];
             this.$store.dispatch('SaveOrgTree', this.organizationTree).then(() => {
-                this.$refs.tree.setCheckedKeys(allCheckKeys);
+                this.$refs.tree.setCheckedKeys(cc);
             });
             this.debounce();
             this.debounceBack();
@@ -323,9 +323,9 @@ export default {
                 }
                 const checkKeys = arr.map(i => i.cid);
                 const checkBackKeys = arrback.map(i => i.cid);
-                const allCheckKeys = [...checkKeys, ...checkBackKeys];
+                const cc = [...checkKeys, ...checkBackKeys];
                 this.$store.dispatch('SaveOrgTree', treeData.tree).then(() => {
-                    this.$refs.tree.setCheckedKeys(allCheckKeys);
+                    this.$refs.tree.setCheckedKeys(cc);
                 });
                 this.debounce();
                 this.debounceBack();
@@ -461,6 +461,7 @@ export default {
             params.targets = checkKeys.join(',');
             return API.GetOrgCompare(params);
         },
+
         getTrendback (subject) {
             let params = {
                 ...this.getPeriodByPt(),
@@ -550,8 +551,8 @@ export default {
                             this.cancelKey = data.cid;
                             const checkKeys = this.cidObjArr.map(i => i.cid);
                             const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                            const allCheckKeys = [...checkKeys, ...checkBackKeys];
-                            this.$refs.tree.setCheckedKeys(allCheckKeys);
+                            const cc = [...checkKeys, ...checkBackKeys];
+                            this.$refs.tree.setCheckedKeys(cc);
                             return;
                         }
                         this.cidObjBackArr.push(data);
@@ -568,8 +569,8 @@ export default {
                             this.cancelKey = data.cid;
                             const checkKeys = this.cidObjArr.map(i => i.cid);
                             const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                            const allCheckKeys = [...checkKeys, ...checkBackKeys];
-                            this.$refs.tree.setCheckedKeys(allCheckKeys);
+                            const cc = [...checkKeys, ...checkBackKeys];
+                            this.$refs.tree.setCheckedKeys(cc);
                             return;
                         }
                         this.cidObjArr.push(data);
@@ -588,8 +589,8 @@ export default {
                     this.cancelKey = data.cid;
                     const checkKeys = this.cidObjArr.map(i => i.cid);
                     const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                    const allCheckKeys = [...checkKeys, ...checkBackKeys];
-                    this.$refs.tree.setCheckedKeys(allCheckKeys);
+                    const cc = [...checkKeys, ...checkBackKeys];
+                    this.$refs.tree.setCheckedKeys(cc);
                 }
             } else { // 如果取消选择
                 // 找到取消选择的下标
