@@ -15,27 +15,23 @@
       <el-menu
         router
         :default-active="activePath"
-        class="el-menu-demo"
         mode="horizontal">
-        <template v-for="item in outernalAssessment">
-          <el-submenu
-            class="collapse_outernal"
-            :index="item.path"
-            :key="'collapse_outernal'+item.path">
-            <template slot="title">
-              <span class="dot" />{{ item.title }}
-            </template>
-            <template v-for="itm in item.children">
-              <el-menu-item
-                :index="`${item.path}${itm.path}`"
-                :key="`${item.path}${itm.path}`">
-                <span>
-                  <span class="dot" /> {{ itm.title }}
-                </span>
-              </el-menu-item>
-            </template>
-          </el-submenu>
-        </template>
+        <el-submenu
+          class="collapse_outernal"
+          :index="outernalAssessment.title">
+          <template slot="title">
+            <span class="dot" />{{ outernalAssessment.title }}
+          </template>
+          <template v-for="itm in outernalAssessment.children">
+            <el-menu-item
+              :index="itm.path"
+              :key="itm.path">
+              <span>
+                <span class="dot" /> {{ itm.title }}
+              </span>
+            </el-menu-item>
+          </template>
+        </el-submenu>
         <div
           @click="outputClick"
           class="menu_output ">外部评估</div>
@@ -75,25 +71,22 @@
             <span class="dot" />{{ item.title }}
           </el-menu-item>
         </template>
-        <template v-for="item in internalAssessment">
-          <el-submenu
-            class="collapse_internal"
-            :index="item.path"
-            :key="'collapse_internal'+item.path">
-            <template slot="title">
-              <span class="dot" />{{ item.title }}
-            </template>
-            <template v-for="itm in item.children">
-              <el-menu-item
-                :index="`${item.path}${itm.path}`"
-                :key="`${item.path}${itm.path}`">
-                <span>
-                  <span class="dot" /> {{ itm.title }}
-                </span>
-              </el-menu-item>
-            </template>
-          </el-submenu>
-        </template>
+        <el-submenu
+          class="collapse_internal"
+          :index="internalAssessment.title">
+          <template slot="title">
+            <span class="dot" />{{ internalAssessment.title }}
+          </template>
+          <template v-for="itm in internalAssessment.children">
+            <el-menu-item
+              :index="itm.path"
+              :key="itm.path">
+              <span>
+                <span class="dot" /> {{ itm.title }}
+              </span>
+            </el-menu-item>
+          </template>
+        </el-submenu>
       </el-menu>
     </div>
     <div
@@ -123,13 +116,10 @@ const menuDataInput = [
         path: "/home/pay",
     }
 ];
-const internalAssessment = [
-    {
-        title: "内部评估",
-        path: "",
-        children: menuDataInput
-    }
-];
+const internalAssessment = {
+    title: "内部评估",
+    children: menuDataInput
+};
 const menuDataInput2 = [
     {
         title: "销售",
@@ -140,13 +130,10 @@ const menuDataInput2 = [
         path: "/home/profit",
     }
 ];
-const outernalAssessment = [
-    {
-        title: "外部评估",
-        path: "",
-        children: menuDataInput2
-    }
-];
+const outernalAssessment = {
+    title: "外部评估",
+    children: menuDataInput2
+};
 
 const MENUDATA = [
     {
