@@ -6,54 +6,43 @@
           :span="24"
           class="home_overflow common">
           <el-row
-            id="produce"
-            class="">
-            <el-row v-if="pieEquity.length>0">
-              <el-row
-                v-loading="loading">
-                <Card>
-                  <el-row>
-                    <el-col>
-                      <template v-for="(item, index) in pieEquity">
-                        <el-col
-                          v-if="pieEquity.length>0"
-                          :key="index"
-                          :span="4">
-                          <ProTargetAchievement
-                            :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                            @click.native="clickIndex(index)"
-                            :id="`${index}`"
-                            :data="item" />
-                        </el-col>
-                      </template>
-                    </el-col>
-                  </el-row>
-                </Card>
-              </el-row>
-            </el-row>
-            <el-row>
-              <Card>
-                <div class="card_company_target">
-                  <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-                  <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
-                  <template>
-                    <el-col
-                      v-if="dataEquity.length>0"
-                      :key="index">
-                      <ProTargetActualDiffTrend
-                        :show-detail="false"
-                        :id="`product${index}`"
-                        :data="dataEquity[index]" />
-                    </el-col>
-                  </template>
-                </div>
-              </Card>
-            </el-row>
-            <!-- <el-row
-              v-else
-              class="home_select">
-              加载中
-            </el-row> -->
+            v-loading="loading"
+            id="brand">
+            <Card class="min-height-400">
+              <slider
+                v-if="pieEquity.length>0"
+                height="296px"
+                :min-move-num="50">
+                <template v-for="(item, index) in pieEquity">
+                  <el-col
+                    v-if="pieEquity.length>0"
+                    :key="index"
+                    :span="4">
+                    <ProTargetAchievement
+                      :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                      @click.native="clickIndex(index)"
+                      :id="`${index}`"
+                      :data="item" />
+                  </el-col>
+                </template>
+              </slider>
+            </Card>
+            <Card>
+              <div class="card_company_target">
+                <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
+                <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+                <template>
+                  <el-col
+                    v-if="dataEquity.length>0"
+                    :key="index">
+                    <ProTargetActualDiffTrend
+                      :show-detail="false"
+                      :id="`product${index}`"
+                      :data="dataEquity[index]" />
+                  </el-col>
+                </template>
+              </div>
+            </Card>
           </el-row>
         </el-col>
       </el-row>
@@ -65,6 +54,7 @@
 import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
+import Slider from 'components/Slider';
 // 目标达成情况总览
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
@@ -77,6 +67,7 @@ import { mapGetters } from 'vuex';
 export default {
     components: {
         Card,
+        Slider,
         SearchBar,
         ProTargetAchievement,
         ProTargetActualDiffTrend,

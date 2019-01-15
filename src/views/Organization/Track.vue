@@ -42,6 +42,7 @@
         stripe>
         <el-table-column
           type="index"
+          width="50px"
           label="序号" />
         <el-table-column
           prop="level_name"

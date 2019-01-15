@@ -144,6 +144,8 @@ import Card from '../../components/Card';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+//data
+import { channel } from '../../data/subject';
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 //vuex
@@ -153,7 +155,6 @@ const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-const ROOTCID = 1;
 const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
@@ -171,6 +172,8 @@ export default {
             },
             cid: '',
             btn: BTN,
+            //data
+            channelSubject: channel(),
             error: error,
             find: find,
             preOrder: preOrder,
@@ -199,7 +202,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['channelTree','channelProgressArr','channelCompareArr', 'channelLastcidObjArr']),
+        ...mapGetters(['channelTree','channelCompareArr', 'channelLastcidObjArr']),
         hasTree() {
             return !_.isEmpty(this.channelTree);
         },
@@ -248,7 +251,7 @@ export default {
     },
     methods: {
         promise() {
-            Promise.all([this.getTree(), this.getProgress()]).then(res => {
+            Promise.all([this.getTree()]).then(res => {
                 // 树
                 const treeData = res[0];
                 if (treeData.tree) {
@@ -264,9 +267,6 @@ export default {
                     this.$store.dispatch('SaveChannelTree', treeData.tree).then(() => {
                         this.$refs.tree.setCheckedKeys(checkKeys);
                     });
-                    // 指标
-                    const progressData = res[1];
-                    this.$store.dispatch('SaveChannelProgress', progressData.data);
                     this.debounce();
                 }
             });
@@ -340,23 +340,16 @@ export default {
                 }
             });
         },
-        getProgress() {
-            const params = {
-                chId: ROOTCID,
-                ...this.getPeriodByPt(),
-            };
-            return API.GetChannelProgress(params);
-        },
         getCompare() {
             if (!this.cidObjArr.length) {
                 return;
             }
             this.loading = true;
-            const promises = _.map(this.channelProgressArr, o => this.getTrend(o.subject));
+            const promises = _.map(this.channelSubject, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = this.channelProgressArr[k].subject;
-                    v.subject_name = this.channelProgressArr[k].subject_name;
+                    v.subject = this.channelSubject[k].subject;
+                    v.subject_name = this.channelSubject[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
                 this.$store.dispatch('SaveChannelCidObj',_.cloneDeep(this.cidObjArr));

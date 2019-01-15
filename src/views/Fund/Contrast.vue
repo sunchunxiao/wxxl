@@ -104,18 +104,21 @@
                       style="width:200px"
                       @click.native="clickIndex(0 ,index)">
                       <ConOrgComparisonAverage
+                        :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
                         :title="item.subject_name"
                         :id="`${index}`"
                         :data="item" />
                     </el-col>
                   </template>
                 </slider>
-                <ConOrgComparisonAverageBig
-                  v-if="fundcompareArr.length > 0"
-                  :title="fundcompareArr[index0].subject_name"
-                  :data="fundcompareArr[index0]"
-                  id="ConOrgComparisonAverage"
-                  :index="index0" />
+                <Card>
+                  <ConOrgComparisonAverageBig
+                    v-if="fundcompareArr.length > 0"
+                    :title="fundcompareArr[index0].subject_name"
+                    :data="fundcompareArr[index0]"
+                    id="ConOrgComparisonAverage"
+                    :index="index0" />
+                </Card>
               </el-row>
               <el-row
                 v-else
@@ -129,24 +132,26 @@
                 <slider
                   height="170px"
                   :min-move-num="50">
-                  <template v-for="(item, index) in fundcompareArrback">
+                  <template v-for="(item1, index) in fundcompareArrback">
                     <el-col
                       :key="index"
                       style="width:200px"
                       @click.native="clickIndex(1 ,index)">
                       <ConOrgComparisonAverage
-                        :title="item.subject_name"
+                        :title="item1.subject_name"
                         :id="`fundcompareArrback${index}`"
-                        :data="item" />
+                        :data="item1" />
                     </el-col>
                   </template>
                 </slider>
-                <ConOrgComparisonAverageBig
-                  v-if="fundcompareArrback.length > 0"
-                  :title="fundcompareArrback[index1].subject_name"
-                  :data="fundcompareArrback[index1]"
-                  id="ConOrgComparisonAverage1"
-                  :index="index1" />
+                <Card>
+                  <ConOrgComparisonAverageBig
+                    v-if="fundcompareArrback.length > 0"
+                    :title="fundcompareArrback[index1].subject_name"
+                    :data="fundcompareArrback[index1]"
+                    id="ConOrgComparisonAverage1"
+                    :index="index1" />
+                </Card>
               </el-row>
               <el-row
                 v-else
@@ -166,6 +171,8 @@ import API from './api';
 import Card from '../../components/Card';
 import SearchBar from 'components/SearchBar';
 import Slider from 'components/Slider';
+//data 指标
+import { fund, fundBack } from '../../data/subject';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
@@ -194,6 +201,9 @@ export default {
                 search: '',
                 version: '0'
             },
+            //data
+            fundSubject: fund(),
+            fundBackSubject: fundBack(),
             loading: false,
             cid:'',
             error:error,
@@ -206,7 +216,6 @@ export default {
             index1: 0,
             type:3,
             val:{},
-            post:1,
             nodeArr:[],
             cidObjArr:[],
             cidObjBackArr:[],
@@ -229,12 +238,12 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['fundTree', 'fundprogressArr', 'fundprogressbackArr', 'fundcompareArr', 'fundcompareArrback', 'fundLastcidObjArr', 'fundLastcidObjArrBack']),
+        ...mapGetters(['fundTree', 'fundcompareArr', 'fundcompareArrback', 'fundLastcidObjArr', 'fundLastcidObjArrBack']),
         hasConstarst () {
             return !_.isEmpty(this.fundcompareArr);
         },
         hasConstarstBack () {
-            return !_.isEmpty(this.fundprogressbackArr);
+            return !_.isEmpty(this.fundcompareArrback);
         },
         num () {
             if (this.cidObjArr.length || this.cidObjBackArr.length) {
@@ -264,7 +273,7 @@ export default {
         }
     },
     created() {
-    // 防抖函数 减少发请求次数
+        // 防抖函数 减少发请求次数
         this.debounce = _.debounce(this.getCompare, 1000);
         this.debounceBack = _.debounce(this.getCompareBack, 1000);
     },
@@ -286,9 +295,9 @@ export default {
             }
             const checkKeys = arr.map(i => i.cid);
             const checkBackKeys = arrback.map(i => i.cid);
-            const cc=[...checkKeys,...checkBackKeys];
+            const allCheckKeys = [...checkKeys,...checkBackKeys];
             this.$store.dispatch('SaveFundTree', this.fundTree).then(() => {
-                this.$refs.tree.setCheckedKeys(cc);
+                this.$refs.tree.setCheckedKeys(allCheckKeys);
             });
             this.debounce();
             this.debounceBack();
@@ -301,7 +310,7 @@ export default {
     },
     methods: {
         promise() {
-            Promise.all([this.getTree(), this.getProgressbefore(),this.getProgressback()]).then(res => {
+            Promise.all([this.getTree()]).then(res => {
                 // 树
                 const treeData = res[0];
                 this.cid = treeData.tree.cid;
@@ -319,17 +328,11 @@ export default {
                 }
                 const checkKeys = arr.map(i => i.cid);
                 const checkBackKeys = arrback.map(i => i.cid);
-                const cc=[...checkKeys,...checkBackKeys];
+                const allCheckKeys = [...checkKeys,...checkBackKeys];
 
                 this.$store.dispatch('SaveFundTree', treeData.tree).then(() => {
-                    this.$refs.tree.setCheckedKeys(cc);
+                    this.$refs.tree.setCheckedKeys(allCheckKeys);
                 });
-                // 前端指标
-                const progressData = res[1];
-                this.$store.dispatch('SaveFundProgressData', progressData.data);
-                // 后端指标
-                const progressbackData = res[2];
-                this.$store.dispatch('SaveFundBackData', progressbackData.data);
                 this.debounce();
                 this.debounceBack();
             });
@@ -412,28 +415,16 @@ export default {
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
-        getProgressbefore() {
-            const params = {
-                rType:1
-            };
-            return API.GetFundSubject(params);
-        },
-        getProgressback() {
-            const params = {
-                rType:2
-            };
-            return API.GetFundSubject(params);
-        },
         getCompare() {
             if(!this.cidObjArr.length){
                 return;
             }
             this.loading = true;
-            const promises = _.map(this.fundprogressArr, o => this.getTrend(o.subject));
+            const promises = _.map(this.fundSubject, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = this.fundprogressArr[k].subject;
-                    v.subject_name = this.fundprogressArr[k].subject_name;
+                    v.subject = this.fundSubject[k].subject;
+                    v.subject_name = this.fundSubject[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
                 this.$store.dispatch('SaveFundCidObj',_.cloneDeep(this.cidObjArr));
@@ -460,11 +451,11 @@ export default {
                 return;
             }
             this.loading = true;
-            const promises = _.map(this.fundprogressbackArr, o => this.getTrendback(o.subject));
+            const promises = _.map(this.fundBackSubject, o => this.getTrendback(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = this.fundprogressbackArr[k].subject;
-                    v.subject_name = this.fundprogressbackArr[k].subject_name;
+                    v.subject = this.fundBackSubject[k].subject;
+                    v.subject_name = this.fundBackSubject[k].subject_name;
                 });
                 const cidName = this.cidObjBackArr.map(o => o.name);
                 this.$store.dispatch('SaveFundCidObjBack',_.cloneDeep(this.cidObjBackArr));
@@ -552,9 +543,6 @@ export default {
             const type = 2;//1是前端,2是后端
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             // 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
-            // if (this.isFirstLoad) {
-            //         return;
-            // }
             if (!checked && this.cancelKey && data.cid === this.cancelKey) {
                 return;
             }
@@ -568,8 +556,8 @@ export default {
 
                             const checkKeys = this.cidObjArr.map(i => i.cid);
                             const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                            const cc = [...checkKeys,...checkBackKeys];
-                            this.$refs.tree.setCheckedKeys(cc);
+                            const allCheckKeys = [...checkKeys,...checkBackKeys];
+                            this.$refs.tree.setCheckedKeys(allCheckKeys);
                             return;
                         }
                         this.cidObjBackArr.push(data);
@@ -586,8 +574,8 @@ export default {
                             this.cancelKey = data.cid;
                             const checkKeys = this.cidObjArr.map(i => i.cid);
                             const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                            const cc = [...checkKeys,...checkBackKeys];
-                            this.$refs.tree.setCheckedKeys(cc);
+                            const allCheckKeys = [...checkKeys,...checkBackKeys];
+                            this.$refs.tree.setCheckedKeys(allCheckKeys);
                             return;
                         }
                         this.cidObjArr.push(data);
@@ -606,8 +594,8 @@ export default {
                     this.cancelKey = data.cid;
                     const checkKeys = this.cidObjArr.map(i => i.cid);
                     const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                    const cc = [...checkKeys, ...checkBackKeys];
-                    this.$refs.tree.setCheckedKeys(cc);
+                    const allCheckKeys = [...checkKeys, ...checkBackKeys];
+                    this.$refs.tree.setCheckedKeys(allCheckKeys);
                 }
 
             } else { // 如果取消选择
@@ -631,6 +619,8 @@ export default {
         },
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
+            this.opcityIndex = idx;
+            this.opciatyBool = true;
         },
     }
 };

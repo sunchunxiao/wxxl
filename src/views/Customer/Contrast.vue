@@ -144,6 +144,8 @@ import Card from '../../components/Card';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+//data 指标
+import { customer } from '../../data/subject';
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 //vuex
@@ -153,7 +155,6 @@ const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-const ROOTCID = 1;
 const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
@@ -171,6 +172,8 @@ export default {
             },
             cid: '',
             btn: BTN,
+            //data
+            customerSubject: customer(),
             error: error,
             find: find,
             preOrder: preOrder,
@@ -199,7 +202,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['customerTree','cusprogressArr','cuscompareArr']),
+        ...mapGetters(['customerTree', 'cuscompareArr']),
         hasTree() {
             return !_.isEmpty(this.customerTree);
         },
@@ -248,7 +251,7 @@ export default {
     },
     methods: {
         promise() {
-            Promise.all([this.getTree(), this.getProgress()]).then(res => {
+            Promise.all([this.getTree()]).then(res => {
                 // 树
                 const treeData = res[0];
                 if (treeData.tree) {
@@ -264,9 +267,6 @@ export default {
                     this.$store.dispatch('SaveCusTree', treeData.tree).then(() => {
                         this.$refs.tree.setCheckedKeys(checkKeys);
                     });
-                    // 指标
-                    const progressData = res[1];
-                    this.$store.dispatch('SaveCusProgressData', progressData.data);
                 }
                 this.debounce();
             });
@@ -336,23 +336,16 @@ export default {
                 }
             });
         },
-        getProgress () {
-            const params = {
-                cid: ROOTCID,
-                ...this.getPeriodByPt(),
-            };
-            return API.GetCusProgress(params);
-        },
         getCompare() {
             if(!this.cidObjArr.length){
                 return;
             }
             this.loading = true;
-            const promises = _.map(this.cusprogressArr, o => this.getTrend(o.subject));
+            const promises = _.map(this.customerSubject, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = this.cusprogressArr[k].subject;
-                    v.subject_name = this.cusprogressArr[k].subject_name;
+                    v.subject = this.customerSubject[k].subject;
+                    v.subject_name = this.customerSubject[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
                 this.$store.dispatch('SaveCusCidObj',_.cloneDeep(this.cidObjArr));
