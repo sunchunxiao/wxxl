@@ -28,6 +28,7 @@
                 :span="8"
                 class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
+                  @id="structureID"
                   id="ProportionalStructureAverageComparisonBig"
                   v-if="fundstructureArr1.length>0"
                   :data="fundstructureArr1[index3]" />
@@ -59,6 +60,7 @@
                 :span="8"
                 class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
+                  @id="structureID"
                   v-if="fundstructureArr2"
                   id="ProportionalStructureAverageComparisonBig1"
                   :data="fundstructureArr2[index4]" />
@@ -143,14 +145,7 @@ export default {
             this[`index${i}`] = idx;
         },
         structureID(data) {
-            this.cid = data;
-            this.nodeArr = [];
-            this.nodeArr.push(this.cid);
-            this.$nextTick(() => {
-                this.$refs.tree.setCurrentKey(this.cid); // tree元素的ref 绑定的node-key
-            });
-            this.isbac = false;
-            this.highlight = true;
+            this.$emit('changeCid', data);
         },
         allRequest() {
             if (!this.cid) {

@@ -104,6 +104,7 @@
                     style="width:200px"
                     @click.native="clickIndex(0 ,index)">
                     <ConOrgComparisonAverage
+                      :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
                       :title="item.subject_name"
                       :id="`${index}`"
                       :data="item" />
@@ -163,9 +164,12 @@ import API from './api';
 import Card from '../../components/Card';
 import SearchBar from 'components/SearchBar';
 import Slider from 'components/Slider';
+//data 指标
+import { organization, orgBack } from '../../data/subject';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 import { mapGetters } from 'vuex';
@@ -193,6 +197,9 @@ export default {
             },
             loading: false,
             cid: '',
+            //data
+            orgSubject: organization(),
+            orgBackSubject: orgBack(),
             error:error,
             find: find,
             preOrder: preOrder,
@@ -225,12 +232,12 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['organizationTree', 'orgprogressArr', 'orgprogressbackArr', 'orgcompareArr', 'orgcompareArrback', 'orgLastcidObjArr', 'orgLastcidObjArrBack']),
+        ...mapGetters(['organizationTree', 'orgcompareArr', 'orgcompareArrback', 'orgLastcidObjArr', 'orgLastcidObjArrBack']),
         hasConstarst () {
             return !_.isEmpty(this.orgcompareArr);
         },
         hasConstarstBack () {
-            return !_.isEmpty(this.orgprogressbackArr);
+            return !_.isEmpty(this.orgcompareArrback);
         },
         num () {
             if (this.cidObjArr.length || this.cidObjBackArr.length) {
@@ -282,9 +289,9 @@ export default {
             }
             const checkKeys = arr.map(i => i.cid);
             const checkBackKeys = arrback.map(i => i.cid);
-            const cc = [...checkKeys, ...checkBackKeys];
+            const allCheckKeys = [...checkKeys, ...checkBackKeys];
             this.$store.dispatch('SaveOrgTree', this.organizationTree).then(() => {
-                this.$refs.tree.setCheckedKeys(cc);
+                this.$refs.tree.setCheckedKeys(allCheckKeys);
             });
             this.debounce();
             this.debounceBack();
@@ -298,7 +305,7 @@ export default {
     },
     methods: {
         promise(){
-            Promise.all([this.getTree(), this.getProgressbefore(), this.getProgressback()]).then(res => {
+            Promise.all([this.getTree()]).then(res => {
                 // 树
                 const treeData = res[0];
                 this.cid = treeData.tree.cid;
@@ -316,15 +323,10 @@ export default {
                 }
                 const checkKeys = arr.map(i => i.cid);
                 const checkBackKeys = arrback.map(i => i.cid);
-                const cc = [...checkKeys, ...checkBackKeys];
+                const allCheckKeys = [...checkKeys, ...checkBackKeys];
                 this.$store.dispatch('SaveOrgTree', treeData.tree).then(() => {
-                    this.$refs.tree.setCheckedKeys(cc);
+                    this.$refs.tree.setCheckedKeys(allCheckKeys);
                 });
-                const progressData = res[1];
-                this.$store.dispatch('SaveOrgProgressData', progressData.data);
-                // 后端指标
-                const progressbackData = res[2];
-                this.$store.dispatch('SaveOrgBackData', progressbackData.data);
                 this.debounce();
                 this.debounceBack();
             });
@@ -406,28 +408,16 @@ export default {
                 }
             });
         },
-        getProgressbefore () {
-            const params = {
-                rType: 1
-            };
-            return API.GetOrgSubject(params);
-        },
-        getProgressback () {
-            const params = {
-                rType: 2
-            };
-            return API.GetOrgSubject(params);
-        },
         getCompare () {
             if (!this.cidObjArr.length) {
                 return;
             }
             this.loading = true;
-            const promises = _.map(this.orgprogressArr, o => this.getTrend(o.subject));
+            const promises = _.map(this.orgSubject, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = this.orgprogressArr[k].subject;
-                    v.subject_name = this.orgprogressArr[k].subject_name;
+                    v.subject = this.orgSubject[k].subject;
+                    v.subject_name = this.orgSubject[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
                 this.$store.dispatch('SaveOrgCidObj',_.cloneDeep(this.cidObjArr));
@@ -444,11 +434,11 @@ export default {
                 return;
             }
             this.loading = true;
-            const promises = _.map(this.orgprogressbackArr, o => this.getTrendback(o.subject));
+            const promises = _.map(this.orgBackSubject, o => this.getTrendback(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = this.orgprogressbackArr[k].subject;
-                    v.subject_name = this.orgprogressbackArr[k].subject_name;
+                    v.subject = this.orgBackSubject[k].subject;
+                    v.subject_name = this.orgBackSubject[k].subject_name;
                 });
                 const cidName = this.cidObjBackArr.map(o => o.name);
                 this.$store.dispatch('SaveOrgCidObjBack',_.cloneDeep(this.cidObjBackArr));
@@ -471,7 +461,6 @@ export default {
             params.targets = checkKeys.join(',');
             return API.GetOrgCompare(params);
         },
-
         getTrendback (subject) {
             let params = {
                 ...this.getPeriodByPt(),
@@ -561,8 +550,8 @@ export default {
                             this.cancelKey = data.cid;
                             const checkKeys = this.cidObjArr.map(i => i.cid);
                             const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                            const cc = [...checkKeys, ...checkBackKeys];
-                            this.$refs.tree.setCheckedKeys(cc);
+                            const allCheckKeys = [...checkKeys, ...checkBackKeys];
+                            this.$refs.tree.setCheckedKeys(allCheckKeys);
                             return;
                         }
                         this.cidObjBackArr.push(data);
@@ -579,8 +568,8 @@ export default {
                             this.cancelKey = data.cid;
                             const checkKeys = this.cidObjArr.map(i => i.cid);
                             const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                            const cc = [...checkKeys, ...checkBackKeys];
-                            this.$refs.tree.setCheckedKeys(cc);
+                            const allCheckKeys = [...checkKeys, ...checkBackKeys];
+                            this.$refs.tree.setCheckedKeys(allCheckKeys);
                             return;
                         }
                         this.cidObjArr.push(data);
@@ -599,8 +588,8 @@ export default {
                     this.cancelKey = data.cid;
                     const checkKeys = this.cidObjArr.map(i => i.cid);
                     const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                    const cc = [...checkKeys, ...checkBackKeys];
-                    this.$refs.tree.setCheckedKeys(cc);
+                    const allCheckKeys = [...checkKeys, ...checkBackKeys];
+                    this.$refs.tree.setCheckedKeys(allCheckKeys);
                 }
             } else { // 如果取消选择
                 // 找到取消选择的下标
@@ -623,7 +612,8 @@ export default {
         },
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
-
+            this.opcityIndex = idx;
+            this.opciatyBool = true;
         },
     }
 };

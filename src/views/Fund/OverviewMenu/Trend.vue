@@ -38,6 +38,8 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
+//data 指标
+import { fund } from '../../../data/subject';
 
 // 目标-实际-差异趋势分析
 import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
@@ -60,11 +62,13 @@ export default {
             pt: '',
             loading: false,
             changeDate: {},
-            newParams: {}
+            newParams: {},
+            //data
+            fundSubject: fund(),
         };
     },
     computed: {
-        ...mapGetters(['fundTree', 'fundprogressArr', 'fundtrendArr', 'fundlastParams']),
+        ...mapGetters(['fundTree', 'fundtrendArr', 'fundlastParams']),
         hasTree () {
             return !_.isEmpty(this.fundTree);
         },
@@ -89,33 +93,19 @@ export default {
             this.$store.dispatch("SaveFundLastParams", this.newParams);
         },
         getProgress() {
-            const params = {
-                cid: this.cid,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-                version: this.version
-            };
-            this.newParams.trend = params;
-            if (JSON.stringify(this.fundlastParams.trend) == JSON.stringify(params)) {
-                return;
-            }
             this.loading = true;
-            API.GetFundProgress(params).then(res => {
-                this.$store.dispatch('SaveFundProgressData', res.data);
-                const promises = _.map(res.data, o => this.getTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveFundTrendArr', resultList);
+            const promises = _.map(this.fundSubject, o => this.getTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.fundSubject[k].subject;
+                    v.subject_name = this.fundSubject[k].subject_name;
                 });
+                this.$store.dispatch('SaveFundTrendArr', resultList);
             }).finally(() => {
                 this.loading = false;
             });
         },
         getTrend(subject) {
-            this.loading = true;
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),

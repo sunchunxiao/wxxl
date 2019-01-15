@@ -97,6 +97,7 @@
               @click="handleClick(item.id)"><span class="dot" />{{ item.value }}</span>
           </div>
           <component
+            @changeCid='handleChangeCid'
             :cid="cid"
             :val="val"
             :is="currentTabComponent" />
@@ -225,6 +226,14 @@ export default {
         }
     },
     methods: {
+        handleChangeCid(cid) {
+            this.cid = cid;
+            this.nodeArr = [];
+            this.nodeArr.push(this.cid);
+            this.$nextTick(() => {
+                this.$refs.tree.setCurrentKey(this.cid); // tree元素的ref 绑定的node-key
+            });
+        },
         handleCollpase () {
             this.isCollapse = !this.isCollapse;
             this.$nextTick(() => {

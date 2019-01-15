@@ -38,7 +38,8 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
-
+//data 指标
+import { channel } from '../../../data/subject';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 
@@ -59,11 +60,13 @@ export default {
             //tree
             pt: '',
             loading: false,
-            newParams: {}
+            newParams: {},
+            //data
+            channelSubject: channel(),
         };
     },
     computed: {
-        ...mapGetters(['channelTree', 'channelProgressArr', 'channelTrendArr', 'channelLastParams']),
+        ...mapGetters(['channelTree', 'channelTrendArr', 'channelLastParams']),
         hasTree () {
             return !_.isEmpty(this.channelTree);
         },
@@ -89,21 +92,13 @@ export default {
         },
         getProgress() {
             this.loading = true;
-            const params = {
-                chId: this.cid,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-            };
-            API.GetChannelProgress(params).then(res => {
-                this.$store.dispatch('SaveChannelProgress', res.data);
-                const promises = _.map(res.data, o => this.getTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveChannelTrendArr', resultList);
+            const promises = _.map(this.channelSubject, o => this.getTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.channelSubject[k].subject;
+                    v.subject_name = this.channelSubject[k].subject_name;
                 });
+                this.$store.dispatch('SaveChannelTrendArr', resultList);
             }).finally(() => {
                 this.loading = false;
             });

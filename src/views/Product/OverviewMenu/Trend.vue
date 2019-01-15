@@ -38,6 +38,8 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
+//data 指标
+import { product } from '../../../data/subject';
 
 // 目标-实际-差异趋势分析
 import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
@@ -64,11 +66,12 @@ export default {
             pt: '',
             loading: false,
             changeDate: {},
-            newParams: {}
+            newParams: {},
+            productSubject: product(),
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'progressArr', 'trendArr', 'lastParams']),
+        ...mapGetters(['productTree', 'trendArr', 'lastParams']),
         hasTree () {
             return !_.isEmpty(this.productTree);
         },
@@ -93,32 +96,19 @@ export default {
             this.$store.dispatch("SaveLastParams", this.newParams);
         },
         getProgress() {
-            const params = {
-                cid: this.cid,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-            };
-            this.newParams.trend = params;
-            if (JSON.stringify(this.lastParams.trend) == JSON.stringify(params)) {
-                return;
-            }
             this.loading = true;
-            API.GetProductProgress(params).then(res => {
-                this.$store.dispatch('SaveProgressData', res.data);
-                const promises = _.map(res.data, o => this.getTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveTrendArr', resultList);
+            const promises = _.map(this.productSubject, o => this.getTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.productSubject[k].subject;
+                    v.subject_name = this.productSubject[k].subject_name;
                 });
+                this.$store.dispatch('SaveTrendArr', resultList);
             }).finally(() => {
                 this.loading = false;
             });
         },
         getTrend(subject) {
-            this.loading = true;
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),

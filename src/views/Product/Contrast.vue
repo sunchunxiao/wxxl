@@ -143,6 +143,9 @@ import Card from '../../components/Card';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+//data 指标
+import { product } from '../../data/subject';
+
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 //vuex
@@ -152,7 +155,7 @@ const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-const ROOTCID = 1;
+
 const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
@@ -196,6 +199,7 @@ export default {
             opcityIndex: undefined,
             opciatyBool: false,
             isCollapse: false,
+            productSubject: product()
         };
     },
     computed: {
@@ -249,7 +253,7 @@ export default {
     },
     methods: {
         promise() {
-            Promise.all([this.getTree(), this.getProgress()]).then(res => {
+            Promise.all([this.getTree()]).then(res => {
                 // 树
                 const treeData = res[0];
                 if (treeData.tree) {
@@ -266,16 +270,13 @@ export default {
                         this.$refs.tree.setCheckedKeys(checkKeys);
                     });
                     // 指标
-                    const progressData = res[1];
-                    this.$store.dispatch('SaveProgressData', progressData.data);
+                    // const progressData = res[1];
+                    // this.$store.dispatch('SaveProgressData', progressData.data);
                 }
                 this.debounce();
             });
-
         },
         startChecked() {
-            // console.log(this.lastcidObjArr,this.cidObjArr);
-            // console.log(JSON.stringify(this.lastcidObjArr) == JSON.stringify(this.cidObjArr));
             const bool = JSON.stringify(this.lastcidObjArr) == JSON.stringify(this.cidObjArr);
             if (bool) {
                 return;
@@ -345,23 +346,16 @@ export default {
                 this.$store.dispatch('SaveProductTreePrograss', res.data);
             });
         },
-        getProgress () {
-            const params = {
-                cid: ROOTCID,
-                ...this.getPeriodByPt(),
-            };
-            return API.GetProductProgress(params);
-        },
         getCompare () {
             if (!this.cidObjArr.length) {
                 return;
             }
             this.loading = true;
-            const promises = _.map(this.progressArr, o => this.getTrend(o.subject));
+            const promises = _.map(this.productSubject, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = this.progressArr[k].subject;
-                    v.subject_name = this.progressArr[k].subject_name;
+                    v.subject = this.productSubject[k].subject;
+                    v.subject_name = this.productSubject[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
                 this.$store.dispatch('SavecidObjArr',_.cloneDeep(this.cidObjArr));

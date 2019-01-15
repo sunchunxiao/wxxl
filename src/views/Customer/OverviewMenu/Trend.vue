@@ -38,7 +38,8 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
-
+//data 指标
+import { customer } from '../../../data/subject';
 // 目标-实际-差异趋势分析
 import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
 
@@ -64,7 +65,9 @@ export default {
             pt: '',
             loading: false,
             changeDate: {},
-            newParams: {}
+            newParams: {},
+            //data
+            customerSubject: customer(),
         };
     },
     computed: {
@@ -93,26 +96,14 @@ export default {
             this.$store.dispatch("SaveCustLastParams", this.newParams);
         },
         getProgress() {
-            const params = {
-                cid: this.cid,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-            };
-            this.newParams.diff = params;
-            if (JSON.stringify(this.cusLastParams.diff) == JSON.stringify(params)) {
-                return;
-            }
             this.loading = true;
-            API.GetCusProgress(params).then(res => {
-                this.$store.dispatch('SaveCusProgressData', res.data);
-                const promises = _.map(res.data, o => this.getTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveCusTrendArr', resultList);
+            const promises = _.map(this.customerSubject, o => this.getTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.customerSubject[k].subject;
+                    v.subject_name = this.customerSubject[k].subject_name;
                 });
+                this.$store.dispatch('SaveCusTrendArr', resultList);
             }).finally(() => {
                 this.loading = false;
             });

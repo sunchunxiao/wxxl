@@ -313,7 +313,6 @@ export default {
                 }
             });
         },
-
         getPt() {
             const {
                 date

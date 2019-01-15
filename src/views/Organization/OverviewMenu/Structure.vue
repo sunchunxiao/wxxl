@@ -28,6 +28,7 @@
                 :span="8"
                 class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
+                  @id="structureID"
                   id="ProportionalStructureAverageComparisonBig"
                   v-if="orgstructureArr1.length>0"
                   :data="orgstructureArr1[index3]" />
@@ -42,7 +43,9 @@
           class="min-height-400">
           <Card>
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析后端</el-row>
-            <el-row type="flex">
+            <el-row
+              v-if="orgstructureArr2.length"
+              type="flex">
               <el-col :span="16">
                 <template v-for="(item, index) in orgstructureArr2">
                   <el-col
@@ -59,6 +62,7 @@
                 :span="8"
                 class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
+                  @id="structureID"
                   v-if="orgstructureArr2"
                   id="ProportionalStructureAverageComparisonBig1"
                   :data="orgstructureArr2[index4]" />
@@ -143,14 +147,7 @@ export default {
             this[`index${i}`] = idx;
         },
         structureID(data) {
-            this.cid = data;
-            this.nodeArr = [];
-            this.nodeArr.push(this.cid);
-            this.$nextTick(() => {
-                this.$refs.tree.setCurrentKey(this.cid); // tree元素的ref 绑定的node-key
-            });
-            this.isbac = false;
-            this.highlight = true;
+            this.$emit('changeCid', data);
         },
         allRequest() {
             if (!this.cid) {
@@ -173,8 +170,11 @@ export default {
             if (JSON.stringify(this.orglastParams.structure) == JSON.stringify(params)) {
                 return;
             }
+            this.loading = true;
             API.GetOrgStructure(params).then(res => {
                 this.$store.dispatch('SaveOrgStructureArr1', res.data);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         //后端
