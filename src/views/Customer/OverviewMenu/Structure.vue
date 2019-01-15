@@ -10,7 +10,9 @@
           class="">
           <Card>
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析</el-row>
-            <el-row type="flex">
+            <el-row
+              v-if="cusstructureArr"
+              type="flex">
               <el-col :span="16">
                 <template v-for="(item, index) in cusstructureArr">
                   <el-col
@@ -34,14 +36,14 @@
                   :data="cusstructureArr[index3]" />
               </el-col>
             </el-row>
+            <el-row
+              v-else
+              class="overview_select">
+              暂无数据
+            </el-row>
           </Card>
         </el-row>
       </el-col>
-    </el-row>
-    <el-row
-      v-else
-      class="overview_select">
-      暂无数据
     </el-row>
   </div>
 </template>
@@ -109,8 +111,8 @@ export default {
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
         },
-        structureID() {
-
+        structureID(data) {
+            this.$emit('changeCid', data);
         },
         allRequest() {
             if (!this.cid) {

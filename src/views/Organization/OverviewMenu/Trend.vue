@@ -38,7 +38,8 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
-
+//data
+import { organization } from '../../../data/subject';
 // 目标-实际-差异趋势分析
 import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
 
@@ -60,7 +61,9 @@ export default {
             pt: '',
             loading: false,
             changeDate: {},
-            newParams: {}
+            newParams: {},
+            //data
+            orgSubject: organization(),
         };
     },
     computed: {
@@ -89,33 +92,19 @@ export default {
             this.$store.dispatch("SaveOrgLastParams", this.newParams);
         },
         getProgress() {
-            const params = {
-                cid: this.cid,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-                version: this.version
-            };
-            this.newParams.trend = params;
-            if (JSON.stringify(this.orglastParams.trend) == JSON.stringify(params)) {
-                return;
-            }
             this.loading = true;
-            API.GetOrgProgress(params).then(res => {
-                this.$store.dispatch('SaveOrgProgressData', res.data);
-                const promises = _.map(res.data, o => this.getTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveOrgTrendArr', resultList);
+            const promises = _.map(this.orgSubject, o => this.getTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.orgSubject[k].subject;
+                    v.subject_name = this.orgSubject[k].subject_name;
                 });
+                this.$store.dispatch('SaveOrgTrendArr', resultList);
             }).finally(() => {
                 this.loading = false;
             });
         },
         getTrend(subject) {
-            this.loading = true;
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
