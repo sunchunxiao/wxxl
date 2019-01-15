@@ -236,9 +236,9 @@ export default {
         },
         handleCollpase () {
             this.isCollapse = !this.isCollapse;
-            this.$nextTick(() => {
+            setTimeout(() =>{
                 echartAndSliderResize();
-            });
+            }, 300);
         },
         handleClick(id) {
             this.currView = id;
