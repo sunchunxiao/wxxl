@@ -98,23 +98,8 @@ export default {
                     obj.value = val;
                 }
             }
-            obj.value = this.formatValue(obj.value);
+            obj.value = this.formatNumber(obj.value);
             return obj;
-        },
-        // 隔三位数加一个逗号
-        formatValue(num) {
-            if (Number(num)) {
-                let numArr = String(num).split(".")[0].split("").reverse();
-                let percent = String(num).split(".")[1];
-                for (let i in numArr) {
-                    if ((i> 0) && (i%3 == 0)) {
-                        numArr[i] = numArr[i] + ",";
-                    }
-                }
-                num = numArr.reverse().join("");
-                percent && (num += "." + percent);
-            }
-            return num;
         },
         renderChart(data) {
             let  _this = this;

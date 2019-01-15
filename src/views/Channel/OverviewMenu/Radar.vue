@@ -6,40 +6,39 @@
       <el-col
         class="overflow">
         <el-row
-          v-if="channelProgressArr.length>0"
           v-loading="loading"
-          class="">
-          <Card>
+          class="min-height-400">
+          <Card v-if="channelRankArr.length || channelProgressArr.length">
             <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
-            <slider
-              height="250px"
-              :min-move-num="50">
-              <template v-for="(item, index) in channelProgressArr">
-                <el-col
-                  :key="index"
-                  style="width:198px">
-                  <ProTargetAchievement
-                    v-if="channelProgressArr.length"
-                    :id="`${index}`"
-                    :data="item" />
-                </el-col>
-              </template>
-            </slider>
-            <Card>
-              <el-col
-                class="">
-                <el-row class="margin-bottom-20 overview_title">综合评估</el-row>
-                <Radar
-                  v-if="channelRankArr.length"
-                  :id="'select'"
-                  :data="channelRankArr[channelRankArr.length-1]" />
-                <el-row
-                  v-else
-                  class="overview_select">
-                  暂无数据
-                </el-row>
-              </el-col>
-            </Card>
+            <div
+              class="margin-bottom-20"
+              style="height:250px;">
+              <slider
+                v-if="channelProgressArr.length"
+                height="250px"
+                :min-move-num="50">
+                <template v-for="(item, index) in channelProgressArr">
+                  <el-col
+                    :key="index"
+                    style="width:198px">
+                    <ProTargetAchievement
+                      :id="`${index}`"
+                      :data="item" />
+                  </el-col>
+                </template>
+              </slider>
+            </div>
+
+            <el-row class="margin-bottom-20 overview_title">综合评估</el-row>
+            <Radar
+              v-if="channelRankArr.length"
+              :id="'select'"
+              :data="channelRankArr[channelRankArr.length-1]" />
+            <el-row
+              v-if="!loading && !channelRankArr.length"
+              class="overview_select">
+              暂无数据
+            </el-row>
           </Card>
         </el-row>
       </el-col>

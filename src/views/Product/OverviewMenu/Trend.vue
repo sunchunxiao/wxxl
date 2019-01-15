@@ -3,12 +3,11 @@
     <el-row
       v-if="productTree"
       class="nav-content-row">
-      <el-col
+      <div
         class="overflow">
         <el-row
-          v-if="trendArr.length>0"
           v-loading="loading"
-          class="">
+          class="min-height-400">
           <Card>
             <el-row class="margin-bottom-20 overview_title">同比环比趋势分析</el-row>
             <el-row>
@@ -25,7 +24,7 @@
             </el-row>
           </Card>
         </el-row>
-      </el-col>
+      </div>
     </el-row>
     <el-row
       v-else

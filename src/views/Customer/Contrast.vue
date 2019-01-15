@@ -90,12 +90,14 @@
         <el-col
           :span="19"
           class="overflow">
-          <div v-loading="loading">
-            <Card
-              v-if="cuscompareArr.length > 0">
+          <div
+            v-loading="loading"
+            class="min-height-400">
+            <Card>
               <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
-              <el-row>
+              <el-row v-if="cuscompareArr.length">
                 <slider
+                  class="margin-bottom-20"
                   height="170px"
                   :min-move-num="50">
                   <template v-for="(item, index) in cuscompareArr">
@@ -110,16 +112,14 @@
                     </el-col>
                   </template>
                 </slider>
-                <Card>
-                  <ConOrgComparisonAverageBig
-                    :title="cuscompareArr[index0].subject_name"
-                    :data="cuscompareArr[index0]"
-                    id="ConOrgComparisonAverage"
-                    :index="index0" />
-                </Card>
+                <ConOrgComparisonAverageBig
+                  :title="cuscompareArr[index0].subject_name"
+                  :data="cuscompareArr[index0]"
+                  id="ConOrgComparisonAverage"
+                  :index="index0" />
               </el-row>
             </Card>
-            <Card v-else>
+            <Card v-if="!loading&&!cuscompareArr.length">
               <div class="please_select">
                 请选择要对比的项目
               </div>

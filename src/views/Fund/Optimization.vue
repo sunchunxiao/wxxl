@@ -87,7 +87,9 @@
         <el-col
           :span="19"
           class="overflow">
-          <Card v-loading="loading">
+          <Card
+            v-loading="loading"
+            class="min-height-400">
             <el-row class="margin-bottom-20 overview_title">策略优化</el-row>
             <el-row :gutter="20">
               <template v-for="(item,index) in fundhistoryArr">

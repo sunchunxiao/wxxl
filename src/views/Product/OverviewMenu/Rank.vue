@@ -3,18 +3,17 @@
     <el-row
       v-if="productTree"
       class="nav-content-row">
-      <el-col
+      <div
         class="overflow">
         <el-row
           v-loading="loading"
-          class="">
+          class="min-height-400">
           <Card>
             <el-row class="margin-bottom-20 overview_title">智能评选和智能策略</el-row>
-            <el-row v-if="rankArr && rankArr.length">
+            <el-row v-if="rankArr.length">
               <el-col :span="14">
                 <IntelligentSelection
                   id="rank"
-                  v-if="rankArr.length"
                   @changeTime="changeTime"
                   @showStragety="showStragety"
                   :data="rankArr" />
@@ -53,7 +52,7 @@
             </el-row>
           </Card>
         </el-row>
-      </el-col>
+      </div>
     </el-row>
   </div>
 </template>

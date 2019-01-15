@@ -3,11 +3,11 @@
     <el-row
       v-if="channelTree"
       class="nav-content-row">
-      <el-col
+      <div
         class="overflow">
         <el-row
           v-loading="loading"
-          class="">
+          class="min-height-400">
           <Card>
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析</el-row>
             <el-row
@@ -36,13 +36,13 @@
               </el-col>
             </el-row>
             <el-row
-              v-else
+              v-if="!loading && !channelStructureArr.length"
               class="overview_select">
               暂无数据
             </el-row>
           </Card>
         </el-row>
-      </el-col>
+      </div>
     </el-row>
 
   </div>
