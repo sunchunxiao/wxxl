@@ -3,15 +3,15 @@
     <el-row
       v-if="customerTree"
       class="nav-content-row">
-      <el-col
+      <div
         class="overflow">
         <el-row
           v-loading="loading"
-          class="">
+          class="min-height-400">
           <Card>
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析</el-row>
             <el-row
-              v-if="cusstructureArr"
+              v-if="cusstructureArr.length"
               type="flex">
               <el-col :span="16">
                 <template v-for="(item, index) in cusstructureArr">
@@ -20,7 +20,6 @@
                     :span="6"
                     @click.native="clickIndex(3 ,index)">
                     <ProportionalStructureAverageComparison
-                      v-if="cusstructureArr.length"
                       :id="`${index}`"
                       :data="sliceData(item)" />
                   </el-col>
@@ -31,19 +30,18 @@
                 class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
                   @id="structureID"
-                  v-if="cusstructureArr.length"
                   id="ProportionalStructureAverageComparisonBig"
                   :data="cusstructureArr[index3]" />
               </el-col>
             </el-row>
             <el-row
-              v-else
+              v-if="!loading && !cusstructureArr.length"
               class="overview_select">
               暂无数据
             </el-row>
           </Card>
         </el-row>
-      </el-col>
+      </div>
     </el-row>
   </div>
 </template>

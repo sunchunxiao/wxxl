@@ -91,12 +91,15 @@
         <el-col
           :span="19"
           class="overflow">
-          <div v-loading="loading">
+          <div
+            v-loading="loading"
+            class="min-height-400">
             <Card>
               <el-row class="margin-bottom-20">组织对比分析和平均值分析前端</el-row>
               <el-row v-if="hasConstarst">
                 <slider
                   height="170px"
+                  class="margin-bottom-20"
                   :min-move-num="50">
                   <template v-for="(item, index) in orgcompareArr">
                     <el-col
@@ -119,15 +122,17 @@
                   :index="index0" />
               </el-row>
               <el-row
-                v-else
+                v-if="!loading&&!hasConstarst"
                 class="please_select">请选择要对比的项目</el-row>
             </Card>
             <Card
               v-if="hasConstarstBack"
               class="padding-top-0">
               <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
-              <el-row v-if="orgcompareArrback.length > 0">
+              <el-row
+                v-if="orgcompareArrback.length > 0">
                 <slider
+                  class="margin-bottom-20"
                   height="170px"
                   :min-move-num="50">
                   <template v-for="(item, index) in orgcompareArrback">
@@ -150,7 +155,7 @@
                   :index="index0" />
               </el-row>
               <el-row
-                v-else
+                v-if="!loading&&!orgcompareArrback.length"
                 class="please_select">请选择要对比的项目</el-row>
             </Card>
           </div>

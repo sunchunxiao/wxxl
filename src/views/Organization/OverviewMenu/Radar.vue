@@ -1,53 +1,47 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="organizationTree"
       class="nav-content-row">
-      <el-col
+      <el-row
         class="overflow">
         <el-row
-          v-if="orgprogressArr.length>0"
           v-loading="loading"
-          class="">
-          <Card>
+          class="min-height-400">
+          <Card v-if="orgrankArr.length || orgprogressArr.length">
             <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
-            <slider
-              height="250px"
-              :min-move-num="50">
-              <template v-for="(item, index) in orgprogressArr">
-                <el-col
-                  :key="index"
-                  style="width:198px">
-                  <ProTargetAchievement
-                    v-if="orgprogressArr.length"
-                    :id="`${index}`"
-                    :data="item" />
-                </el-col>
-              </template>
-            </slider>
-            <Card>
-              <el-col
-                class="">
-                <el-row class="margin-bottom-20 overview_title">综合评估</el-row>
-                <Radar
-                  v-if="orgrankArr.length"
-                  :id="'select'"
-                  :data="orgrankArr[orgrankArr.length-1]" />
-                <el-row
-                  v-else
-                  class="overview_select">
-                  暂无数据
-                </el-row>
-              </el-col>
-            </Card>
+            <div
+              class="margin-bottom-20"
+              style="height:250px;">
+              <slider
+                height="250px"
+                v-if="orgprogressArr.length"
+                class="margin-bottom-20"
+                :min-move-num="50">
+                <template v-for="(item, index) in orgprogressArr">
+                  <el-col
+                    :key="index"
+                    style="width:198px">
+                    <ProTargetAchievement
+                      v-if="orgprogressArr.length"
+                      :id="`${index}`"
+                      :data="item" />
+                  </el-col>
+                </template>
+              </slider>
+            </div>
+            <el-row class="margin-bottom-20 overview_title">综合评估</el-row>
+            <Radar
+              v-if="orgrankArr.length"
+              :id="'select'"
+              :data="orgrankArr[orgrankArr.length-1]" />
+            <el-row
+              v-if="!loading && !orgrankArr.length"
+              class="overview_select">
+              暂无数据
+            </el-row>
           </Card>
         </el-row>
-      </el-col>
-    </el-row>
-    <el-row
-      v-else
-      class="overview_select">
-      暂无数据
+      </el-row>
     </el-row>
   </div>
 </template>

@@ -3,13 +3,12 @@
     <el-row
       v-if="fundTree"
       class="nav-content-row">
-      <el-col
+      <div
         class="overflow">
         <el-row
-          v-if="hasStructure"
           v-loading="loading"
           class="min-height-400">
-          <Card>
+          <Card v-if="hasStructure">
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析前端</el-row>
             <el-row type="flex">
               <el-col :span="16">
@@ -68,7 +67,7 @@
             </el-row>
           </Card>
         </el-row>
-      </el-col>
+      </div>
     </el-row>
     <el-row
       v-else

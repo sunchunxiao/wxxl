@@ -91,12 +91,15 @@
         <el-col
           :span="19"
           class="overflow">
-          <div v-loading="loading">
+          <div
+            v-loading="loading"
+            class="min-height-400">
             <Card>
               <el-row class="margin-bottom-20">组织对比分析和平均值分析前端</el-row>
               <el-row v-if="hasConstarst">
                 <slider
                   height="170px"
+                  class="margin-bottom-20"
                   :min-move-num="50">
                   <template v-for="(item, index) in fundcompareArr">
                     <el-col
@@ -111,25 +114,25 @@
                     </el-col>
                   </template>
                 </slider>
-                <Card>
-                  <ConOrgComparisonAverageBig
-                    v-if="fundcompareArr.length > 0"
-                    :title="fundcompareArr[index0].subject_name"
-                    :data="fundcompareArr[index0]"
-                    id="ConOrgComparisonAverage"
-                    :index="index0" />
-                </Card>
+                <ConOrgComparisonAverageBig
+                  v-if="fundcompareArr.length > 0"
+                  :title="fundcompareArr[index0].subject_name"
+                  :data="fundcompareArr[index0]"
+                  id="ConOrgComparisonAverage"
+                  :index="index0" />
               </el-row>
               <el-row
-                v-else
+                v-if="!loading&&!hasConstarst"
                 class="please_select">
                 请选择要对比的项目
               </el-row>
             </Card>
             <Card v-if="hasConstarstBack">
               <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
-              <el-row v-if="fundcompareArrback.length>0">
+              <el-row
+                v-if="fundcompareArrback.length>0">
                 <slider
+                  class="margin-bottom-20"
                   height="170px"
                   :min-move-num="50">
                   <template v-for="(item1, index) in fundcompareArrback">
@@ -144,17 +147,15 @@
                     </el-col>
                   </template>
                 </slider>
-                <Card>
-                  <ConOrgComparisonAverageBig
-                    v-if="fundcompareArrback.length > 0"
-                    :title="fundcompareArrback[index1].subject_name"
-                    :data="fundcompareArrback[index1]"
-                    id="ConOrgComparisonAverage1"
-                    :index="index1" />
-                </Card>
+                <ConOrgComparisonAverageBig
+                  v-if="fundcompareArrback.length > 0"
+                  :title="fundcompareArrback[index1].subject_name"
+                  :data="fundcompareArrback[index1]"
+                  id="ConOrgComparisonAverage1"
+                  :index="index1" />
               </el-row>
               <el-row
-                v-else
+                v-if="!loading&&!fundcompareArrback.length"
                 class="please_select">
                 请选择要对比的项目
               </el-row>

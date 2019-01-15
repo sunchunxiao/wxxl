@@ -149,7 +149,7 @@ export default {
     .pie {
         min-width: 350px;
         width: 100%;
-        height: 350px;
+        height: 300px;
         margin: 0 auto;
     }
     .detail {

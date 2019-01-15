@@ -110,7 +110,9 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="page_container">
+      <div
+        class="page_container"
+        v-if="total">
         <el-pagination
           background
           @current-change="handleCurrentChange"
