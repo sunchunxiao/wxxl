@@ -152,9 +152,11 @@ export default {
                         const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
                             // console.log(item,item.seriesIndex);
-                            let value = _this.formatNumber(item.value);
+                            let value = item.value;
                             if (Array.isArray(value)) {
-                                value = value[value.length - 1];
+                                value = _this.formatNumber(value[value.length - 1]);
+                            } else {
+                                value = _this.formatNumber(value);
                             }
                             if (hasTarget==0){
                                 if (item.seriesIndex != 2&&item.seriesIndex != 3) {
