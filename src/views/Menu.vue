@@ -172,9 +172,8 @@ export default {
         },
         getActivePath(fullPath) {
             let activePath;
-            let reg = /.*(?<=\/overview)/;
             if (fullPath.includes("/overview")) {
-                activePath = fullPath.match(reg)[0];
+                activePath = fullPath.split("/overview")[0] + "/overview";
             } else if (fullPath.includes("/home")) {
                 activePath = "/home";
             } else {
