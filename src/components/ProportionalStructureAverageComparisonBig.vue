@@ -206,7 +206,7 @@ export default {
                                 if (nodes.total === 0) {//总和为0
                                     return `${params.value}`;
                                 } else {
-                                    return `${(params.value / nodes.total * 100).toFixed(2)}%`;
+                                    return `${(params.value / nodes.total * 100).toFixed(2)}%   ${_this.formatNumber(parseInt(params.value / 100))}`;
                                 }
                             }
                         },
@@ -254,9 +254,10 @@ export default {
         }
         .detail {
             text-align: center;
-            color: #5e5e5e;
+            color: #000;
             font-size: 15px;
             padding: 20px;
+            font-weight: 500;
         }
     }
 </style>
