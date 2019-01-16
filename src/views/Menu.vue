@@ -245,7 +245,7 @@ $scale: 1.5;
         .el-submenu__title {
             border-left: 5px solid $bgcolor;
             i {
-                margin-right: 15px;
+                margin-right: 5px;
             }
         }
     }
@@ -290,14 +290,12 @@ $scale: 1.5;
             }
         }
     }
-    // arrow
-    .el-submenu__icon-arrow {
-        color: $white;
-        transform: scale($scale);
-    }
-    .el-submenu.is-opened > .el-submenu__title .el-submenu__icon-arrow {
-        transform: rotateZ(180deg) scale($scale);
-    }
+}
+// arrow
+.el-menu i.el-submenu__icon-arrow {
+    color: $white;
+    font-size: 18px;
+    font-weight: bold;
 }
 </style>
 

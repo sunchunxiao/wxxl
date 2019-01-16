@@ -65,9 +65,11 @@ $border-right: #7F7F7F;
                 outline: none;
             }
             .el-submenu {
+                width: 150px;
                 .el-submenu__title{
                     border-left: none;
                     color: #fff;
+                    padding: 0 10px 0 30px;
                     font-size: 16px;
                     background-color: #4d4d4d;
                     border-right: 1px solid $border-right;
@@ -229,9 +231,10 @@ ul.el-menu{
 
 body >div.el-menu--horizontal{
     ul.el-menu.el-menu--popup {
-        min-width: 153px;
+        min-width: 150px;
         opacity: 0.8;
         .el-menu-item {
+            text-align: center;
             background-color: #828282;
             height: 40px;
             line-height: 40px;
