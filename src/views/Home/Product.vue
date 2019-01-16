@@ -27,12 +27,17 @@
           </slider>
           <div class="card_company_target">
             <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-            <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+              <span class="card_title">{{ hasSubjectName }}</span>
+              <span
+                class="card_title"
+                v-if="homeProduct[index].subject_unit"> ( {{ homeProduct[index].subject_unit }} )</span>
+            </el-row>
             <template>
               <el-col
                 v-if="productTrendArr.length>0"
                 :key="index">
                 <ProTargetActualDiffTrend
+                  :unit="homeProduct[index].subject_unit"
                   :show-detail="false"
                   :id="`product${index}`"
                   :data="productTrendArr[index]" />
@@ -57,6 +62,7 @@ import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 //mock
 import { dataSales } from './mock/trendData';
 import { mapGetters } from 'vuex';
+import { homeProduct } from 'data/subject.js';
 
 export default {
     components: {
@@ -68,6 +74,7 @@ export default {
     },
     data() {
         return {
+            homeProduct: homeProduct(),
             form: {
                 pt: '', // 周期类型
                 date: [], // date
@@ -97,14 +104,14 @@ export default {
         this.form.date = this.searchDate;
     },
     mounted() {
-        this.getProductProgress();
+        this.allRequest();
     },
     watch: {
         searchDate() {
             this.val = this.searchDate;
         },
         val() {
-            this.getProductProgress();
+            this.allRequest();
         }
     },
     methods: {
@@ -127,16 +134,19 @@ export default {
             };
             API.GetProductProgress(params).then(res => {
                 this.$store.dispatch('SaveProductProgressData', res.data);
-                const promises = _.map(res.data, o => this.getProductTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveProductTrendArr', resultList);
-                });
             }).finally(() => {
                 this.loading = false;
+            });
+        },
+        allRequest() {
+            this.getProductProgress();
+            const promises = _.map(this.homeProduct, o => this.getProductTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.homeProduct[k].subject;
+                    v.subject_name = this.homeProduct[k].subject_name;
+                });
+                this.$store.dispatch('SaveProductTrendArr', resultList);
             });
         },
         getProductTrend(subject) {

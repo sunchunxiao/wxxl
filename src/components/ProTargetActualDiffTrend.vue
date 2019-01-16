@@ -26,6 +26,10 @@ export default {
         showDetail: {
             type: Boolean,
             default: true
+        },
+        unit: {
+            type: String,
+            default: ""
         }
     },
     data () {
@@ -78,8 +82,13 @@ export default {
             // transparentBottom 透明辅助柱子
             // good bad 正负差异
             const good = [], goodBottom = [], bad = [], badBottom = [], transparentBottom = [];
-            const realClone = _.cloneDeep(real);
-            const targetClone = _.cloneDeep(target);
+            let realClone = _.cloneDeep(real);
+            let targetClone = _.cloneDeep(target);
+            // 单位是百分号需要乘100
+            if (this.unit == "%") {
+                realClone = realClone.map(el => el * 100);
+                targetClone = targetClone.map(el => el * 100);
+            }
             for (let i = 0;i < hasTarget.length;i++) {
                 // value值转换为元
                 if (_.includes(SUBJECT,subject)) {
@@ -151,13 +160,12 @@ export default {
                         let result = params[0].axisValue + "<br />";
                         const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
-                            // console.log(item,item.seriesIndex);
-                            let value = item.value;
-                            if (Array.isArray(value)) {
-                                value = _this.formatNumber(value[value.length - 1]);
-                            } else {
-                                value = _this.formatNumber(value);
+                            let value = Array.isArray(item.value) ? item.value[item.value.length - 1] : item.value;
+                            if (!_.isInteger(value)) {
+                                value = value.toFixed(2);
                             }
+                            value = _this.formatNumber(value);
+                            value = value.toString().replace(".00","") + _this.unit;
                             if (hasTarget==0){
                                 if (item.seriesIndex != 2&&item.seriesIndex != 3) {
                                     if (item.seriesIndex == 0) {//目标
