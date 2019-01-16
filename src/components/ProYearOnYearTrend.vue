@@ -46,7 +46,13 @@ export default {
     },
     methods: {
         renderChart(data) {
-            const { timeLabels, ring, yoy } = data;
+            const { timeLabels } = data;
+            const ring = _.map(data.ring, (v)=> {
+                return (v * 100).toFixed(2);
+            });
+            const yoy = _.map(data.yoy, (v)=> {
+                return (v * 100).toFixed(2);
+            });
             const options = {
                 tooltip: {
                     show: true,
