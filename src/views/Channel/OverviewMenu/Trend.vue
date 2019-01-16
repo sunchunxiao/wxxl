@@ -92,6 +92,15 @@ export default {
             this.$store.dispatch("SaveChannelLastParams", this.newParams);
         },
         getProgress() {
+            const params = {
+                chId: this.cid,
+                pt: this.getPt(),
+                ...this.getPeriodByPt(),
+            };
+            this.newParams.trend = params;
+            if (JSON.stringify(this.channelLastParams.trend) == JSON.stringify(params)) {
+                return;
+            }
             this.loading = true;
             const promises = _.map(this.channelSubject, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
@@ -111,6 +120,8 @@ export default {
                 ...this.getPeriodByPt(),
                 subject: subject
             };
+            this.newParams.trend = _.cloneDeep(params);
+            delete this.newParams.trend.subject;
             return API.GetChannelTrend(params);
         },
         getPt() {

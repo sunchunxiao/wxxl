@@ -3,11 +3,12 @@
     <el-row
       v-if="customerTree"
       class="nav-content-row">
-      <div
+      <el-col
         class="overflow">
         <el-row
+          v-if="custrendArr.length>0"
           v-loading="loading"
-          class="min-height-400">
+          class="">
           <Card>
             <el-row class="margin-bottom-20 overview_title">目标-实际-差异趋势分析</el-row>
             <el-row>
@@ -24,7 +25,7 @@
             </el-row>
           </Card>
         </el-row>
-      </div>
+      </el-col>
     </el-row>
     <el-row
       v-else
@@ -94,7 +95,15 @@ export default {
             this.$store.dispatch("SaveCustLastParams", this.newParams);
         },
         getProgress() {
-
+            const params = {
+                cid: this.cid,
+                pt: this.getPt(),
+                ...this.getPeriodByPt(),
+            };
+            this.newParams.diff = params;
+            if (JSON.stringify(this.cusLastParams.diff) == JSON.stringify(params)) {
+                return;
+            }
             this.loading = true;
             const promises = _.map(this.customerSubject, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
@@ -106,9 +115,6 @@ export default {
             }).finally(() => {
                 this.loading = false;
             });
-            // }).finally(() => {
-            //     this.loading = false;
-            // });
         },
         getTrend(subject) {
             const params = {
@@ -117,6 +123,8 @@ export default {
                 ...this.getPeriodByPt(),
                 subject: subject
             };
+            this.newParams.diff = _.cloneDeep(params);
+            delete this.newParams.diff.subject;
             return API.GetCusTrend(params);
         },
         getPt() {

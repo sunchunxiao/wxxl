@@ -185,10 +185,10 @@ export default {
                 version: this.version,
                 rType: 2
             };
-            this.newParams.structure = params;
-            if (JSON.stringify(this.orglastParams.structure) == JSON.stringify(params)) {
-                return;
-            }
+            // this.newParams.structure = params;
+            // if (JSON.stringify(this.orglastParams.structure) == JSON.stringify(params)) {
+            //     return;
+            // }
             this.loading = true;
             API.GetOrgStructure(params).then(res => {
                 this.$store.dispatch('SaveOrgStructureArr2', res.data);
