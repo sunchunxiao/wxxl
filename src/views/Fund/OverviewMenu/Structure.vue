@@ -180,10 +180,10 @@ export default {
                 version: this.version,
                 rType: 2
             };
-            this.newParams.structure = params;
-            if (JSON.stringify(this.fundlastParams.structure) == JSON.stringify(params)) {
-                return;
-            }
+            // this.newParams.structure = params;
+            // if (JSON.stringify(this.fundlastParams.structure) == JSON.stringify(params)) {
+            //     return;
+            // }
             this.loading = true;
             API.GetFundStructure(params).then(res => {
                 this.$store.dispatch('SaveFundStructureArr2', res.data);

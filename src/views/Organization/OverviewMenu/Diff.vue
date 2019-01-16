@@ -91,6 +91,16 @@ export default {
             this.$store.dispatch("SaveOrgLastParams", this.newParams);
         },
         getProgress() {
+            const params = {
+                cid: this.cid,
+                pt: this.getPt(),
+                ...this.getPeriodByPt(),
+                version: this.version
+            };
+            this.newParams.diff = params;
+            if (JSON.stringify(this.orglastParams.diff) == JSON.stringify(params)) {
+                return;
+            }
             this.loading = true;
             const promises = _.map(this.orgSubject, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
@@ -111,6 +121,8 @@ export default {
                 subject: subject,
                 version: this.version
             };
+            this.newParams.diff = _.cloneDeep(params);
+            delete this.newParams.diff.subject;
             return API.GetOrgTrend(params);
         },
         getPt() {

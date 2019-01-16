@@ -75,7 +75,7 @@
                   <span class="label">
                     <span
                       :class="['label-left',
-                               {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.cid}]">{{ data.name }}</span>
+                               {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.cid}]"><span v-if="data.type==2">* </span>{{ data.name }}</span>
                   </span>
                 </el-tooltip>
                 <div

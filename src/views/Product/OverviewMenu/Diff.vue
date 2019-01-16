@@ -94,6 +94,15 @@ export default {
             this.$store.dispatch("SaveLastParams", this.newParams);
         },
         getProgress() {
+            const params = {
+                cid: this.cid,
+                pt: this.getPt(),
+                ...this.getPeriodByPt(),
+            };
+            this.newParams.diff = params;
+            if (JSON.stringify(this.lastParams.diff) == JSON.stringify(params)) {
+                return;
+            }
             this.loading = true;
             const promises = _.map(this.productSubject, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
@@ -113,6 +122,8 @@ export default {
                 ...this.getPeriodByPt(),
                 subject: subject
             };
+            this.newParams.diff = _.cloneDeep(params);
+            delete this.newParams.diff.subject;
             return API.GetProductTrend(params);
         },
         getPt() {
