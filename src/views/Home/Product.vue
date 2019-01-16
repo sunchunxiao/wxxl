@@ -4,45 +4,42 @@
       <el-col
         :span="24"
         class="home_overflow common">
-        <el-row
+        <Card
           v-loading="loading"
-          id="produce">
-          <Card class="min-height-400">
-            <slider
-              v-if="productArr.length>0"
-              height="296px"
-              :min-move-num="50">
-              <template v-for="(item, index) in productArr">
-                <el-col
-                  v-if="productArr.length>0"
-                  :key="index"
-                  style="width:198px">
-                  <ProTargetAchievement
-                    :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                    @click.native="clickIndex(index)"
-                    :id="`${index}`"
-                    :data="item" />
-                </el-col>
-              </template>
-            </slider>
-          </Card>
-          <Card>
-            <div class="card_company_target">
-              <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-              <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
-              <template>
-                <el-col
-                  v-if="productTrendArr.length>0"
-                  :key="index">
-                  <ProTargetActualDiffTrend
-                    :show-detail="false"
-                    :id="`product${index}`"
-                    :data="productTrendArr[index]" />
-                </el-col>
-              </template>
-            </div>
-          </Card>
-        </el-row>
+          id="produce"
+          class="min-height-400">
+          <slider
+            v-if="productArr.length>0"
+            height="296px"
+            :min-move-num="50">
+            <template v-for="(item, index) in productArr">
+              <el-col
+                v-if="productArr.length>0"
+                :key="index"
+                style="width:198px">
+                <ProTargetAchievement
+                  :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                  @click.native="clickIndex(index)"
+                  :id="`${index}`"
+                  :data="item" />
+              </el-col>
+            </template>
+          </slider>
+          <div class="card_company_target">
+            <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
+            <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+            <template>
+              <el-col
+                v-if="productTrendArr.length>0"
+                :key="index">
+                <ProTargetActualDiffTrend
+                  :show-detail="false"
+                  :id="`product${index}`"
+                  :data="productTrendArr[index]" />
+              </el-col>
+            </template>
+          </div>
+        </Card>
       </el-col>
     </el-row>
   </div>

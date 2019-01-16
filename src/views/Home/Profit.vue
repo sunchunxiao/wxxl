@@ -6,44 +6,40 @@
         class="home_overflow common">
         <el-row
           id="profit">
-          <el-row
-            v-loading="loading">
-            <Card
-              class="min-height-400">
-              <slider
-                v-if="overviewArr.length"
-                height="296px"
-                :min-move-num="50">
-                <template v-for="(item, index) in [overviewArr[2]]">
-                  <el-col
-                    v-if="overviewArr.length>0"
-                    :key="index"
-                    style="width:198px">
-                    <ProTargetAchievement
-                      :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                      :id="`${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </slider>
-            </Card>
-            <Card>
-              <div class="card_company_target">
-                <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-                <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
-                <template>
-                  <el-col
-                    v-if="overviewTrendArr.length>0"
-                    :key="index">
-                    <ProTargetActualDiffTrend
-                      :show-detail="false"
-                      :id="`overview${index}`"
-                      :data="overviewTrendArr[index]" />
-                  </el-col>
-                </template>
-              </div>
-            </Card>
-          </el-row>
+          <Card
+            v-loading="loading"
+            class="min-height-400">
+            <slider
+              v-if="overviewArr.length"
+              height="296px"
+              :min-move-num="50">
+              <template v-for="(item, index) in [overviewArr[2]]">
+                <el-col
+                  v-if="overviewArr.length>0"
+                  :key="index"
+                  style="width:198px">
+                  <ProTargetAchievement
+                    :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                    :id="`${index}`"
+                    :data="item" />
+                </el-col>
+              </template>
+            </slider>
+            <div class="card_company_target">
+              <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
+              <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+              <template>
+                <el-col
+                  v-if="overviewTrendArr.length>0"
+                  :key="index">
+                  <ProTargetActualDiffTrend
+                    :show-detail="false"
+                    :id="`overview${index}`"
+                    :data="overviewTrendArr[index]" />
+                </el-col>
+              </template>
+            </div>
+          </Card>
         </el-row>
       </el-col>
     </el-row>
