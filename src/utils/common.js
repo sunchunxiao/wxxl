@@ -139,3 +139,13 @@ export function echartAndSliderResize() {
         window.onresize();
     }
 }
+
+export function formatTimeLabel(valueStr) {
+    let arr = valueStr.split("-");
+    _.forEach(arr, (v,k) => {
+        if (_.isInteger(Number(v))) {
+            arr[k] = Number(v);
+        }
+    });
+    return arr.slice(arr.length-2).join('.');
+}

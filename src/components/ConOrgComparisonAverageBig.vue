@@ -10,6 +10,7 @@
 <script>
 import echarts from 'plugins/echarts';
 const SUBJECT = ['ROI','ITO','RY'];
+import { formatTimeLabel } from 'utils/common';
 export default {
     props: {
         id: String,
@@ -109,8 +110,7 @@ export default {
                     data: timeLabels,
                     axisLabel: {
                         formatter: function (value) {
-                            let arr =  value.split("-");
-                            return arr.slice(arr.length-2).join(".");
+                            return formatTimeLabel(value);
                         }
                     }
                 },
