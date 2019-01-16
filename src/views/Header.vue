@@ -69,12 +69,13 @@ export default {
         align-items: center;
         height: 55px;
         .greet_icon{
-            margin:0 5px;
+            margin: -3px 5px 0 5px;
             color: #fff;
+            font-weight: bold;
         }
         .greet_img {
             width: 55px;
-            }
+        }
         .blue {
             color: #2d90b0;
             font-weight: bold;

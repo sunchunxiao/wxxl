@@ -9,7 +9,7 @@ export default [
                 path: '/home/sales',
                 name: 'homeSales',
                 meta: {
-                    path: ['首页', '基本竞争力--销售']
+                    path: ['首页', '基本竞争力一一销售']
                 },
                 component: () => import('views/Home/Sales.vue')
             },
@@ -17,7 +17,7 @@ export default [
                 path: '/home/profit',
                 name: 'profit',
                 meta: {
-                    path: ['首页', '持续竞争力--利润']
+                    path: ['首页', '持续竞争力一一利润']
                 },
                 component: () => import('views/Home/Profit.vue')
             },
@@ -25,7 +25,7 @@ export default [
                 path: '/home/product',
                 name: 'homeProduct',
                 meta: {
-                    path: ['首页', '核心竞争力--五项效率', '产品效率 ( 单品平均效率 ) ']
+                    path: ['首页', '核心竞争力一一五项效率', '产品效率 ( 单品平均效率 ) ']
                 },
                 component: () => import('views/Home/Product.vue')
             },
@@ -33,7 +33,7 @@ export default [
                 path: '/home/channel',
                 name: 'homeChannel',
                 meta: {
-                    path: ['首页', '核心竞争力--五项效率', '渠道效率 ( 单店平均效率 ) ']
+                    path: ['首页', '核心竞争力一一五项效率', '渠道效率 ( 单店平均效率 ) ']
                 },
                 component: () => import('views/Home/Channel.vue')
             },
@@ -41,7 +41,7 @@ export default [
                 path: '/home/customer',
                 name: 'homeCustomer',
                 meta: {
-                    path: ['首页', '核心竞争力--五项效率', '客户道效率 ( 消费者人均效率 ) ']
+                    path: ['首页', '核心竞争力一一五项效率', '客户道效率 ( 消费者人均效率 ) ']
                 },
                 component: () => import('views/Home/Customer.vue')
             },
@@ -49,7 +49,7 @@ export default [
                 path: '/home/organization',
                 name: 'homeOrganization',
                 meta: {
-                    path: ['首页', '核心竞争力--五项效率', '组织效率 ( 企业人均效率 ) ']
+                    path: ['首页', '核心竞争力一一五项效率', '组织效率 ( 企业人均效率 ) ']
                 },
                 component: () => import('views/Home/Organization.vue')
             },
@@ -57,7 +57,7 @@ export default [
                 path: '/home/fund',
                 name: 'Fund',
                 meta: {
-                    path: ['首页', '核心竞争力--五项效率','资金效率 ( 企业人均效率 ) ']
+                    path: ['首页', '核心竞争力一一五项效率','资金效率 ( 企业人均效率 ) ']
                 },
                 component: () => import('views/Home/Fund.vue')
             },
