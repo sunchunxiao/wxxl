@@ -97,7 +97,7 @@ export default {
     methods: {
         sliceData(item) {
             let data = _.cloneDeep(item);
-            let num = data["28nodes"].length - 10;
+            let num = (data["28nodes"].length - 10) < 0 ? 0 : (data["28nodes"].length - 10);
             data["28nodes"] = data["28nodes"].slice(num);
             data["nodes"] = data["nodes"].slice(num);
             data["values"] = data["values"].slice(num);
