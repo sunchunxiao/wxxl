@@ -12,7 +12,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
-import { formatNumber } from 'utils/common';
+import { formatNumber, formatTimeLabel } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率
 const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
 export default {
@@ -193,7 +193,12 @@ export default {
                 },
                 xAxis: {
                     type: 'category',
-                    data: timeLabels
+                    data: timeLabels,
+                    axisLabel: {
+                        formatter: function (value) {
+                            return formatTimeLabel(value);
+                        }
+                    }
                 },
                 yAxis: {
                     axisLabel: {

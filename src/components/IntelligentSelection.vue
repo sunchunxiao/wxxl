@@ -8,7 +8,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
-import { labelNewline } from 'utils/common';
+import { labelNewline, formatTimeLabel } from 'utils/common';
 const RANK = ['未知', '差', '中', '良', '优'];
 export default {
     props: {
@@ -100,14 +100,13 @@ export default {
                         formatter: function(params) {
                             if (params.componentType == 'timeline') {
                                 let result = params.marker + params.name;
-                                return result;
+                                return formatTimeLabel(result);
                             } else {
                                 const name = params.seriesName.split(",");
                                 let result = params.marker + name[params.value[1]] + "<br />";
                                 result += params.name + " : " + _this.getRank(params.value[2]) + "</br>";
                                 return result;
                             }
-
                         }
                     },
                     visualMap: {
@@ -212,6 +211,11 @@ export default {
                         axisType: 'category',
                         playInterval: 2000,
                         data: timeLineData,
+                        label: {
+                            formatter: function(value) {
+                                return formatTimeLabel(value);
+                            }
+                        },
                         checkpointStyle: {
                             color: '#F2C811',
                             borderWidth: 1,

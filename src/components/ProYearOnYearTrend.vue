@@ -10,6 +10,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
+import { formatTimeLabel } from 'utils/common';
 
 export default {
     props: {
@@ -45,7 +46,13 @@ export default {
     },
     methods: {
         renderChart(data) {
-            const { timeLabels, ring, yoy } = data;
+            const { timeLabels } = data;
+            const ring = _.map(data.ring, (v)=> {
+                return (v * 100).toFixed(2);
+            });
+            const yoy = _.map(data.yoy, (v)=> {
+                return (v * 100).toFixed(2);
+            });
             const options = {
                 tooltip: {
                     show: true,
@@ -53,7 +60,7 @@ export default {
                     formatter: function(params){
                         let str = params[0].axisValue + "</br>";
                         for (let i of params) {
-                            str +=  i.marker + " " + i.seriesName + " : " + i.value + '%' + "</br>";
+                            str +=  i.marker + " " + i.seriesName + " : " + String(i.value).replace(".00","") + '%' + "</br>";
                         }
                         return str;
                     },
@@ -77,8 +84,7 @@ export default {
                     data: timeLabels,
                     axisLabel: {
                         formatter: function (value) {
-                            let arr =  value.split("-");
-                            return arr.slice(arr.length-2).join(".");
+                            return formatTimeLabel(value);
                         }
                     }
                 },
