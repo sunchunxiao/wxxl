@@ -21,7 +21,7 @@
         @search="handleSearch"
         v-model="searchBarValue"
         placeholder="产品编号/产品名称"
-        url="/customer/search" />
+        url="/cus/search" />
     </el-row>
     <div class="contrast">
       <el-row

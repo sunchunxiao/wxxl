@@ -18,7 +18,7 @@
       <search-bar
         ref="child"
         @search="handleSearch"
-        url="/customer/search"
+        url="/cus/search"
         placeholder="客户编号/客户名称"
         v-model="searchBarValue"
         :pt-options="['日', '周', '月', '季', '年']" />
