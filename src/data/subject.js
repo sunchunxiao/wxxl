@@ -29,7 +29,7 @@ const profit = function () {
     let arr = [
         ["P","净利润额","元"],
         ["NIR","净利润率","%"],
-        ["MOCK","净利润增长额","元"]
+        // ["MOCK","净利润增长额","元"]
     ];
     return setData(arr);
 };
@@ -120,11 +120,11 @@ const homeEquity = function () {
 // 首页-盈利空间
 const homeProfitSpace = function () {
     let arr = [
+        ["C","总成本费用额","元"],
         ["S","毛利率","%"],
         ["MOCK","回款额","元"],
         ["MOCK","回款增长额","元"],
         ["MOCK","回款增长率","%"],
-        ["C","总成本费用额","元"],
         ["MOCK","成本费用增长额","元"],
         ["MOCK","成本费用增长率","%"],
         ["MOCK","盈利空间",""],

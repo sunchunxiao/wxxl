@@ -28,12 +28,17 @@
             </slider>
             <div class="card_company_target">
               <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-              <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+                <span class="card_title">{{ hasSubjectName }} </span>
+                <span
+                  class="card_title"
+                  v-if="homeEquity[index].subject_unit"> ( {{ homeEquity[index].subject_unit }} )</span>
+              </el-row>
               <template>
                 <el-col
                   v-if="dataEquity.length>0"
                   :key="index">
                   <ProTargetActualDiffTrend
+                    :unit="homeEquity[index].subject_unit"
                     :show-detail="false"
                     :id="`product${index}`"
                     :data="dataEquity[index]" />
@@ -60,6 +65,8 @@ import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 import { pieEquity } from './mock/pieData';
 import { dataEquity } from './mock/trendData';
 import { mapGetters } from 'vuex';
+//data
+import { homeEquity } from 'data/subject.js';
 
 export default {
     components: {
@@ -71,6 +78,7 @@ export default {
     },
     data() {
         return {
+            homeEquity: homeEquity(),
             form: {
                 pt: '', // 周期类型
                 date: [], // date
@@ -84,10 +92,9 @@ export default {
             loading: false,
             //index
             index: 0,
-            // stragety
-            val: {},
             style: undefined,
-            opciatyBool: false
+            opciatyBool: false,
+            newParams: {}
         };
     },
     computed: {
@@ -97,14 +104,13 @@ export default {
         }
     },
     mounted() {
-        // console.log(this.dataSales);
+        if(Object.keys(this.searchDate).length){
+            // this.allRequest();
+        }
     },
     watch: {
-        searchDate(){
-            this.val = this.searchDate;
-        },
-        val() {
-            this.getProductProgress();
+        searchDate() {
+            // this.allRequest();
         }
     },
     methods: {
@@ -131,16 +137,20 @@ export default {
             };
             API.GetProductProgress(params).then(res => {
                 this.$store.dispatch('SaveProductProgressData', res.data);
-                const promises = _.map(res.data, o => this.getProductTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveProductTrendArr', resultList);
-                });
+
             }).finally(() => {
                 this.loading = false;
+            });
+        },
+        allRequest() {
+            this.getProductProgress();
+            const promises = _.map(this.homeEquity, o => this.getProductTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.homeEquity[k].subject;
+                    v.subject_name = this.homeEquity[k].subject_name;
+                });
+                this.$store.dispatch('SaveProductTrendArr', resultList);
             });
         },
         getProductTrend(subject) {
@@ -151,11 +161,11 @@ export default {
             return API.GetProductTrend(params);
         },
         getDateObj () {
-            if (this.val.sDate && this.val.eDate) {
+            if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
+                    pt: this.searchDate.pt,
+                    sDate: this.searchDate.sDate,
+                    eDate: this.searchDate.eDate,
                 };
             }
         },
@@ -182,9 +192,9 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
+        handleSearch(searchDate) {
             // 默认公司的背景色
-            this.val = val;
+            this.searchDate = searchDate;
         },
 
     }

@@ -28,12 +28,17 @@
             </slider>
             <div class="card_company_target">
               <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-              <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+                <span class="card_title">{{ hasSubjectName }}</span>
+                <span
+                  class="card_title"
+                  v-if="homePay[index].subject_unit"> ( {{ homePay[index].subject_unit }} )</span>
+              </el-row>
               <template>
                 <el-col
                   v-if="dataPay.length>0"
                   :key="index">
                   <ProTargetActualDiffTrend
+                    :unit="homePay[index].subject_unit"
                     :show-detail="false"
                     :id="`product${index}`"
                     :data="dataPay[index]" />
@@ -60,6 +65,8 @@ import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 import { pay } from './mock/pieData';
 import { dataPay } from './mock/trendData';
 import { mapGetters } from 'vuex';
+//data
+import { homePay } from 'data/subject.js';
 
 export default {
     components: {
@@ -71,6 +78,7 @@ export default {
     },
     data() {
         return {
+            homePay: homePay(),
             form: {
                 pt: '', // 周期类型
                 date: [], // date
@@ -84,27 +92,25 @@ export default {
             loading: false,
             //index
             index: 0,
-            // date
-            val: {},
             style: undefined,
-            opciatyBool: false
+            opciatyBool: false,
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['searchDate']),
+        ...mapGetters(['searchDate', 'homeLastParams']),
         hasSubjectName() {
             return this.dataPay[this.index].subject_name;
         }
     },
     mounted() {
-        // console.log(this.dataSales);
+        if(Object.keys(this.searchDate).length){
+            // this.allRequest();
+        }
     },
     watch: {
-        searchDate(){
-            this.val = this.searchDate;
-        },
-        val() {
-            this.getProductProgress();
+        searchDate() {
+            // this.allRequest();
         }
     },
     methods: {
@@ -131,16 +137,27 @@ export default {
             };
             API.GetProductProgress(params).then(res => {
                 this.$store.dispatch('SaveProductProgressData', res.data);
-                const promises = _.map(res.data, o => this.getProductTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveProductTrendArr', resultList);
-                });
             }).finally(() => {
                 this.loading = false;
+            });
+        },
+        allRequest() {
+            const params = {
+                ...this.getPeriodByPt(),
+            };
+            if (JSON.stringify(this.homeLastParams.homePay) == JSON.stringify(params)) {
+                return;
+            }
+            this.newParams.homePay = params;
+            this.$store.dispatch("SaveHomeLastParams", this.newParams);
+            this.getProductProgress();
+            const promises = _.map(this.homePay, o => this.getProductTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.homePay[k].subject;
+                    v.subject_name = this.homePay[k].subject_name;
+                });
+                this.$store.dispatch('SaveProductTrendArr', resultList);
             });
         },
         getProductTrend(subject) {

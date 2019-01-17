@@ -28,12 +28,17 @@
             </slider>
             <div class="card_company_target">
               <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-              <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+                <span class="card_title">{{ hasSubjectName }} </span>
+                <span
+                  class="card_title"
+                  v-if="homeOrganization[index].subject_unit"> ( {{ homeOrganization[index].subject_unit }} )</span>
+              </el-row>
               <template>
                 <el-col
                   v-if="orgTrendArr.length>0"
                   :key="index">
                   <ProTargetActualDiffTrend
+                    :unit="homeOrganization[index].subject_unit"
                     :show-detail="false"
                     :id="`org${index}`"
                     :data="orgTrendArr[index]" />
@@ -59,6 +64,8 @@ import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 //mock
 import { dataSales } from './mock/trendData';
 import { mapGetters } from 'vuex';
+//data
+import { homeOrganization } from 'data/subject.js';
 
 export default {
     components: {
@@ -70,6 +77,7 @@ export default {
     },
     data() {
         return {
+            homeOrganization: homeOrganization(),
             form: {
                 pt: '', // 周期类型
                 date: [], // date
@@ -81,15 +89,13 @@ export default {
             loading: false,
             //index
             index: 0,
-            // stragety
-            val: {},
-            post: 1,
             style: undefined,
-            opciatyBool: false
+            opciatyBool: false,
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['orgHomeArr','orgTrendArr', 'searchDate']),
+        ...mapGetters(['orgHomeArr','orgTrendArr', 'searchDate', 'homeLastParams']),
         hasSubjectName() {
             if (this.orgTrendArr.length) {
                 return this.orgTrendArr[this.index].subject_name;
@@ -100,27 +106,23 @@ export default {
         this.form.date = this.searchDate;
     },
     mounted() {
-        this.allRequest();
+        if(Object.keys(this.searchDate).length){
+            this.allRequest();
+        }
     },
     watch: {
         searchDate() {
-            this.val = this.searchDate;
-        },
-        val() {
             this.allRequest();
         }
     },
     methods: {
-        allRequest() {
-            this.getOrgProgress();
-        },
         clickIndex(idx) {
             this.index = idx;
             this.style = idx;
             this.opciatyBool = true;
         },
-        input(val) {
-            this.form.date = val;
+        input(searchDate) {
+            this.form.date = searchDate;
         },
         select(index) {
             this.style = index;
@@ -134,16 +136,27 @@ export default {
             };
             API.GetOrgProgress(params).then(res=>{
                 this.$store.dispatch('SaveOrgHomeProgress', res.data);
-                const promises = _.map(res.data, o => this.getOrgTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveOrgHomeTrendArr', resultList);
-                });
             }).finally(() => {
                 this.loading = false;
+            });
+        },
+        allRequest() {
+            const params = {
+                ...this.getPeriodByPt(),
+            };
+            if (JSON.stringify(this.homeLastParams.homeOrg) == JSON.stringify(params)) {
+                return;
+            }
+            this.newParams.homeOrg = params;
+            this.$store.dispatch("SaveHomeLastParams", this.newParams);
+            this.getOrgProgress();
+            const promises = _.map(this.homeOrganization, o => this.getOrgTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.homeOrganization[k].subject;
+                    v.subject_name = this.homeOrganization[k].subject_name;
+                });
+                this.$store.dispatch('SaveOrgHomeTrendArr', resultList);
             });
         },
         getOrgTrend(subject) {
@@ -158,11 +171,11 @@ export default {
             const {
                 date
             } = this.form;
-            if (this.val.sDate && this.val.eDate) {
+            if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
+                    pt: this.searchDate.pt,
+                    sDate: this.searchDate.sDate,
+                    eDate: this.searchDate.eDate,
                 };
             } else {
                 return {
@@ -195,9 +208,9 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
+        handleSearch(searchDate) {
             // 默认公司的背景色
-            this.val = val;
+            this.searchDate = searchDate;
         },
 
     }

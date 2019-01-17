@@ -28,12 +28,16 @@
             </slider>
             <div class="card_company_target">
               <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-              <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+                <span class="card_title">{{ hasSubjectName }}</span><span
+                  class="card_title"
+                  v-if="homeCustomer[index].subject_unit"> ( {{ homeCustomer[index].subject_unit }} )</span>
+              </el-row>
               <template>
                 <el-col
                   v-if="cusHomeTrendArr.length>0"
                   :key="index">
                   <ProTargetActualDiffTrend
+                    :unit="homeCustomer[index].subject_unit"
                     :show-detail="false"
                     :id="`customer${index}`"
                     :data="cusHomeTrendArr[index]" />
@@ -59,6 +63,8 @@ import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 //mock
 import { dataSales } from './mock/trendData';
 import { mapGetters } from 'vuex';
+//data
+import { homeCustomer } from 'data/subject.js';
 
 export default {
     components: {
@@ -70,6 +76,7 @@ export default {
     },
     data() {
         return {
+            homeCustomer: homeCustomer(),
             form: {
                 pt: '', // 周期类型
                 date: [], // date
@@ -81,15 +88,14 @@ export default {
             loading: false,
             //index
             index: 0,
-            // stragety
-            val: {},
             post: 1,
             style: undefined,
-            opciatyBool: false
+            opciatyBool: false,
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['cusHomeArr', 'cusHomeTrendArr', 'searchDate']),
+        ...mapGetters(['cusHomeArr', 'cusHomeTrendArr', 'searchDate', 'homeLastParams']),
         hasSubjectName() {
             if (this.cusHomeTrendArr.length) {
                 return this.cusHomeTrendArr[this.index].subject_name;
@@ -100,14 +106,13 @@ export default {
         this.form.date = this.searchDate;
     },
     mounted() {
-        this.getCusProgress();
+        if (Object.keys(this.searchDate).length) {
+            this.allRequest();
+        }
     },
     watch: {
         searchDate() {
-            this.val = this.searchDate;
-        },
-        val() {
-            this.getCusProgress();
+            this.allRequest();
         }
     },
     methods: {
@@ -116,8 +121,8 @@ export default {
             this.style = idx;
             this.opciatyBool = true;
         },
-        input(val) {
-            this.form.date = val;
+        input(searchDate) {
+            this.form.date = searchDate;
         },
         select(index) {
             this.style = index;
@@ -130,16 +135,27 @@ export default {
             };
             API.GetCusProgress(params).then(res=>{
                 this.$store.dispatch('SaveCusHomeProgress', res.data);
-                const promises = _.map(res.data, o => this.getCusTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveCusHomeTrendArr', resultList);
-                });
             }).finally(() => {
                 this.loading = false;
+            });
+        },
+        allRequest() {
+            const params = {
+                ...this.getPeriodByPt(),
+            };
+            if (JSON.stringify(this.homeLastParams.homeCustomer) == JSON.stringify(params)) {
+                return;
+            }
+            this.newParams.homeCustomer = params;
+            this.$store.dispatch("SaveHomeLastParams", this.newParams);
+            this.getCusProgress();
+            const promises = _.map(this.homeCustomer, o => this.getCusTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.homeCustomer[k].subject;
+                    v.subject_name = this.homeCustomer[k].subject_name;
+                });
+                this.$store.dispatch('SaveCusHomeTrendArr', resultList);
             });
         },
         getCusTrend(subject) {
@@ -153,11 +169,11 @@ export default {
             const {
                 date
             } = this.form;
-            if (this.val.sDate && this.val.eDate) {
+            if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
+                    pt: this.searchDate.pt,
+                    sDate: this.searchDate.sDate,
+                    eDate: this.searchDate.eDate,
                 };
             } else {
                 return {
@@ -190,9 +206,9 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
+        handleSearch(searchDate) {
             // 默认公司的背景色
-            this.val = val;
+            this.searchDate = searchDate;
         },
 
     }

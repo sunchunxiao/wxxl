@@ -28,12 +28,16 @@
             </slider>
             <div class="card_company_target">
               <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-              <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+                <span class="card_title">{{ hasSubjectName }} </span>
+                <span
+                  class="card_title"
+                  v-if="homeProfitSpace[index].subject_unit"> ( {{ homeProfitSpace[index].subject_unit }} )</span></el-row>
               <template>
                 <el-col
                   v-if="overviewTrendArr.length>0"
                   :key="index">
                   <ProTargetActualDiffTrend
+                    :unit="homeProfitSpace[index].subject_unit"
                     :show-detail="false"
                     :id="`product${index}`"
                     :data="overviewTrendArr[index]" />
@@ -60,6 +64,8 @@ import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 import { profitSpace } from './mock/pieData';
 import { dataSpace } from './mock/trendData';
 import { mapGetters } from 'vuex';
+//data
+import { homeProfitSpace } from 'data/subject.js';
 
 export default {
     components: {
@@ -71,6 +77,7 @@ export default {
     },
     data() {
         return {
+            homeProfitSpace: homeProfitSpace(),
             form: {
                 pt: '', // 周期类型
                 date: [], // date
@@ -83,18 +90,14 @@ export default {
             cid: '',
             loading: false,
             //index
-            index: 1,
-            // date
-            val: {},
+            index: 0,
             style: undefined,
-            opciatyBool: false
+            opciatyBool: false,
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['overviewArr', 'overviewTrendArr','searchDate']),
-        // hasSubjectName() {
-        //     return this.dataSpace[this.index].subject_name;
-        // }
+        ...mapGetters(['overviewArr', 'overviewTrendArr', 'searchDate', 'homeLastParams']),
         hasSubjectName() {
             if (this.overviewTrendArr.length) {
                 return this.overviewTrendArr[this.index].subject_name;
@@ -102,14 +105,13 @@ export default {
         }
     },
     mounted() {
-        this.getOverviewProgress();
+        if(Object.keys(this.searchDate).length){
+            this.allRequest();
+        }
     },
     watch: {
-        searchDate(){
-            this.val = this.searchDate;
-        },
-        val() {
-            this.getOverviewProgress();
+        searchDate() {
+            this.allRequest();
         }
     },
     methods: {
@@ -129,16 +131,27 @@ export default {
             };
             API.GetOverviewProgress(params).then(res => {
                 this.$store.dispatch('SaveOverviewProgressData', res.data);
-                const promises = _.map(res.data, o => this.getOverviewTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveOverviewTrendArr', resultList);
-                });
             }).finally(() => {
                 this.loading = false;
+            });
+        },
+        allRequest() {
+            const params = {
+                ...this.getPeriodByPt(),
+            };
+            if (JSON.stringify(this.homeLastParams.homeSpace) == JSON.stringify(params)) {
+                return;
+            }
+            this.newParams.homeSpace = params;
+            this.$store.dispatch("SaveHomeLastParams", this.newParams);
+            this.getOverviewProgress();
+            const promises = _.map(this.homeProfitSpace, o => this.getOverviewTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.homeProfitSpace[k].subject;
+                    v.subject_name = this.homeProfitSpace[k].subject_name;
+                });
+                this.$store.dispatch('SaveOverviewTrendArr', resultList);
             });
         },
         getOverviewTrend(subject) {
@@ -152,11 +165,11 @@ export default {
             const {
                 date
             } = this.form;
-            if (this.val.sDate && this.val.eDate) {
+            if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
+                    pt: this.searchDate.pt,
+                    sDate: this.searchDate.sDate,
+                    eDate: this.searchDate.eDate,
                 };
             } else {
                 return {
@@ -189,9 +202,9 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
+        handleSearch(searchDate) {
             // 默认公司的背景色
-            this.val = val;
+            this.searchDate = searchDate;
         },
 
     }

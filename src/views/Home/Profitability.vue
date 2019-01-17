@@ -28,12 +28,16 @@
             </slider>
             <div class="card_company_target">
               <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-              <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+                <span class="card_title">{{ hasSubjectName }} </span>
+                <span
+                  class="card_title"
+                  v-if="homeProfitAbility[index].subject_unit"> ( {{ homeProfitAbility[index].subject_unit }} )</span></el-row>
               <template>
                 <el-col
                   v-if="dataAbility.length>0"
                   :key="index">
                   <ProTargetActualDiffTrend
+                    :unit="homeProfitAbility[index].subject_unit"
                     :show-detail="false"
                     :id="`product${index}`"
                     :data="dataAbility[index]" />
@@ -60,6 +64,8 @@ import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 import { profitAbility } from './mock/pieData';
 import { dataAbility } from './mock/trendData';
 import { mapGetters } from 'vuex';
+//data
+import { homeProfitAbility } from 'data/subject.js';
 
 export default {
     components: {
@@ -71,6 +77,7 @@ export default {
     },
     data() {
         return {
+            homeProfitAbility: homeProfitAbility(),
             form: {
                 pt: '', // 周期类型
                 date: [], // date
@@ -84,27 +91,25 @@ export default {
             loading: false,
             //index
             index: 0,
-            // stragety
-            val: {},
             style: undefined,
-            opciatyBool: false
+            opciatyBool: false,
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['searchDate']),
+        ...mapGetters(['searchDate', 'homeLastParams']),
         hasSubjectName() {
             return this.dataAbility[this.index].subject_name;
         }
     },
     mounted() {
-        // console.log(this.dataSales);
+        if(Object.keys(this.searchDate).length){
+            // this.allRequest();
+        }
     },
     watch: {
-        searchDate(){
-            this.val = this.searchDate;
-        },
-        val() {
-            this.getProductProgress();
+        searchDate() {
+            // this.allRequest();
         }
     },
     methods: {
@@ -143,6 +148,25 @@ export default {
                 this.loading = false;
             });
         },
+        allRequest() {
+            const params = {
+                ...this.getPeriodByPt(),
+            };
+            if (JSON.stringify(this.homeLastParams.homeAbility) == JSON.stringify(params)) {
+                return;
+            }
+            this.newParams.homeAbility = params;
+            this.$store.dispatch("SaveHomeLastParams", this.newParams);
+            this.getProductProgress();
+            const promises = _.map(this.homeProfitAbility, o => this.getProductTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.homeProfitAbility[k].subject;
+                    v.subject_name = this.homeProfitAbility[k].subject_name;
+                });
+                this.$store.dispatch('SaveProductTrendArr', resultList);
+            });
+        },
         getProductTrend(subject) {
             const params = {
                 ...this.getPeriodByPt(),
@@ -151,11 +175,11 @@ export default {
             return API.GetProductTrend(params);
         },
         getDateObj () {
-            if (this.val.sDate && this.val.eDate) {
+            if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
+                    pt: this.searchDate.pt,
+                    sDate: this.searchDate.sDate,
+                    eDate: this.searchDate.eDate,
                 };
             }
         },
@@ -182,9 +206,9 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
+        handleSearch(searchDate) {
             // 默认公司的背景色
-            this.val = val;
+            this.searchDate = searchDate;
         },
 
     }

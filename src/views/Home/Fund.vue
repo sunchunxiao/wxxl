@@ -28,12 +28,17 @@
           </slider>
           <div class="card_company_target">
             <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-            <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+              <span class="card_title">{{ hasSubjectName }}</span>
+              <span
+                class="card_title"
+                v-if="homeFund[index].subject_unit"> ( {{ homeFund[index].subject_unit }} )</span>
+            </el-row>
             <template>
               <el-col
                 v-if="fundHomeTrendArr.length>0"
                 :key="index">
                 <ProTargetActualDiffTrend
+                  :unit="homeFund[index].subject_unit"
                   :show-detail="false"
                   :id="`fund${index}`"
                   :data="fundHomeTrendArr[index]" />
@@ -58,6 +63,8 @@ import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 //mock
 import { dataSales } from './mock/trendData';
 import { mapGetters } from 'vuex';
+//data
+import { homeFund } from 'data/subject.js';
 
 export default {
     components: {
@@ -69,6 +76,8 @@ export default {
     },
     data() {
         return {
+            //data
+            homeFund: homeFund(),
             form: {
                 pt: '', // 周期类型
                 date: [], // date
@@ -80,15 +89,14 @@ export default {
             loading: false,
             //index
             index: 0,
-            // stragety
-            val: {},
             post: 1,
             style: undefined,
-            opciatyBool: false
+            opciatyBool: false,
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['fundHomeArr', 'fundHomeTrendArr', 'searchDate']),
+        ...mapGetters(['fundHomeArr', 'fundHomeTrendArr', 'searchDate', 'homeLastParams']),
         hasSubjectName() {
             if (this.fundHomeTrendArr.length) {
                 return this.fundHomeTrendArr[this.index].subject_name;
@@ -99,14 +107,13 @@ export default {
         this.form.date = this.searchDate;
     },
     mounted() {
-        this.getFundProgress();
+        if(Object.keys(this.searchDate).length){
+            this.allRequest();
+        }
     },
     watch: {
         searchDate() {
-            this.val = this.searchDate;
-        },
-        val() {
-            this.getFundProgress();
+            this.allRequest();
         }
     },
     methods: {
@@ -114,9 +121,6 @@ export default {
             this.index = idx;
             this.style = idx;
             this.opciatyBool = true;
-        },
-        input(val) {
-            this.form.date = val;
         },
         select(index) {
             this.style = index;
@@ -130,16 +134,27 @@ export default {
             };
             API.GetFundProgress(params).then(res=>{
                 this.$store.dispatch('SaveFundHomeProgress', res.data);
-                const promises = _.map(res.data, o => this.getFundTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveFundHomeTrendArr', resultList);
-                });
             }).finally(() => {
                 this.loading = false;
+            });
+        },
+        allRequest() {
+            const params = {
+                ...this.getPeriodByPt(),
+            };
+            if (JSON.stringify(this.homeLastParams.homeFund) == JSON.stringify(params)) {
+                return;
+            }
+            this.newParams.homeFund = params;
+            this.$store.dispatch("SaveHomeLastParams", this.newParams);
+            this.getFundProgress();
+            const promises = _.map(this.homeFund, o => this.getFundTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.homeFund[k].subject;
+                    v.subject_name = this.homeFund[k].subject_name;
+                });
+                this.$store.dispatch('SaveFundHomeTrendArr', resultList);
             });
         },
         getFundTrend(subject) {
@@ -154,11 +169,11 @@ export default {
             const {
                 date
             } = this.form;
-            if (this.val.sDate && this.val.eDate) {
+            if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
+                    pt: this.searchDate.pt,
+                    sDate: this.searchDate.sDate,
+                    eDate: this.searchDate.eDate,
                 };
             } else {
                 return {
@@ -191,11 +206,6 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
-            // 默认公司的背景色
-            this.val = val;
-        },
-
     }
 };
 </script>

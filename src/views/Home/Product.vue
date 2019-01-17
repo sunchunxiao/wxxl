@@ -59,9 +59,8 @@ import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-//mock
-import { dataSales } from './mock/trendData';
 import { mapGetters } from 'vuex';
+//data
 import { homeProduct } from 'data/subject.js';
 
 export default {
@@ -74,6 +73,7 @@ export default {
     },
     data() {
         return {
+            //data
             homeProduct: homeProduct(),
             form: {
                 pt: '', // 周期类型
@@ -81,19 +81,17 @@ export default {
                 search: '', // 暂时没有接口 先这样
             },
             cid: '',
-            // mock
-            dataSales: dataSales(),
             loading: false,
             //index
             index: 0,
-            val: {},
             post: 1,
             style: undefined,
-            opciatyBool: false
+            opciatyBool: false,
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['productArr', 'productTrendArr', 'searchDate']),
+        ...mapGetters(['productArr', 'productTrendArr', 'searchDate', 'homeLastParams']),
         hasSubjectName() {
             if (this.productTrendArr.length) {
                 return this.productTrendArr[this.index].subject_name;
@@ -104,13 +102,12 @@ export default {
         this.form.date = this.searchDate;
     },
     mounted() {
-        this.allRequest();
+        if (Object.keys(this.searchDate).length) {
+            this.allRequest();
+        }
     },
     watch: {
         searchDate() {
-            this.val = this.searchDate;
-        },
-        val() {
             this.allRequest();
         }
     },
@@ -120,18 +117,15 @@ export default {
             this.style = idx;
             this.opciatyBool = true;
         },
-        // input(val) {
-        //     this.form.date = val;
-        // },
         select(index) {
             this.style = index;
         },
         //产品
         getProductProgress() {
-            this.loading = true;
             const params = {
                 ...this.getPeriodByPt(),
             };
+            this.loading = true;
             API.GetProductProgress(params).then(res => {
                 this.$store.dispatch('SaveProductProgressData', res.data);
             }).finally(() => {
@@ -139,6 +133,14 @@ export default {
             });
         },
         allRequest() {
+            const params = {
+                ...this.getPeriodByPt(),
+            };
+            if (JSON.stringify(this.homeLastParams.homeProduct) == JSON.stringify(params)) {
+                return;
+            }
+            this.newParams.homeProduct = params;
+            this.$store.dispatch("SaveHomeLastParams", this.newParams);
             this.getProductProgress();
             const promises = _.map(this.homeProduct, o => this.getProductTrend(o.subject));
             Promise.all(promises).then(resultList => {
@@ -160,11 +162,11 @@ export default {
             const {
                 date
             } = this.form;
-            if (this.val.sDate && this.val.eDate) {
+            if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
+                    pt: this.searchDate.pt,
+                    sDate: this.searchDate.sDate,
+                    eDate: this.searchDate.eDate,
                 };
             } else {
                 return {
@@ -197,11 +199,6 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
-            // 默认公司的背景色
-            this.val = val;
-        },
-
     }
 };
 </script>

@@ -11,7 +11,8 @@ const home = {
     fundHomeTrendArr: state => state.home.fundHomeTrendArr,
     cusHomeArr: state => state.home.cusHomeArr,
     cusHomeTrendArr: state => state.home.cusHomeTrendArr,
-    searchDate: state => state.home.searchDate
+    searchDate: state => state.home.searchDate,
+    homeLastParams: state => state.home.homeLastParams,
 };
 
 export default home;

@@ -27,12 +27,17 @@
             </slider>
             <div class="card_company_target">
               <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-              <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+                <span class="card_title">{{ hasSubjectName }} </span>
+                <span
+                  class="card_title"
+                  v-if="profit[index].subject_unit"> ( {{ profit[index].subject_unit }} )</span>
+              </el-row>
               <template>
                 <el-col
                   v-if="overviewTrendArr.length>0"
                   :key="index">
                   <ProTargetActualDiffTrend
+                    :unit="profit[index].subject_unit"
                     :show-detail="false"
                     :id="`overview${index}`"
                     :data="overviewTrendArr[index]" />
@@ -55,10 +60,10 @@ import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-//mock
-import { pieProfit } from './mock/pieData';
-import { dataProfitTrend } from './mock/trendData';
+//vuex
 import { mapGetters } from 'vuex';
+//data
+import { profit } from 'data/subject.js';
 
 export default {
     components: {
@@ -70,26 +75,23 @@ export default {
     },
     data() {
         return {
+            profit: profit(),
             form: {
                 pt: '', // 周期类型
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
-            pieProfit: pieProfit(),
-            dataProfitTrend: dataProfitTrend(),
             cid: '',
             loading: false,
             //index
-            index: 2,
-            // date
-            val: {},
-            post: 1,
+            index: 0,
             style: undefined,
-            opciatyBool: false
+            opciatyBool: false,
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['overviewArr','overviewTrendArr', 'searchDate']),
+        ...mapGetters(['overviewArr','overviewTrendArr', 'searchDate', 'homeLastParams']),
         hasSubjectName() {
             if (this.overviewTrendArr.length) {
                 return this.overviewTrendArr[this.index].subject_name;
@@ -100,14 +102,13 @@ export default {
         this.form.date = this.searchDate;
     },
     mounted() {
-        this.getOverviewProgress();
+        if(Object.keys(this.searchDate).length){
+            this.allRequest();
+        }
     },
     watch: {
-        searchDate(){
-            this.val = this.searchDate;
-        },
-        val() {
-            this.getOverviewProgress();
+        searchDate() {
+            this.allRequest();
         }
     },
     methods: {
@@ -127,16 +128,27 @@ export default {
             };
             API.GetOverviewProgress(params).then(res => {
                 this.$store.dispatch('SaveOverviewProgressData', res.data);
-                const promises = _.map(res.data, o => this.getOverviewTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveOverviewTrendArr', resultList);
-                });
             }).finally(() => {
                 this.loading = false;
+            });
+        },
+        allRequest() {
+            const params = {
+                ...this.getPeriodByPt(),
+            };
+            if (JSON.stringify(this.homeLastParams.homeProfit) == JSON.stringify(params)) {
+                return;
+            }
+            this.newParams.homeProfit = params;
+            this.$store.dispatch("SaveHomeLastParams", this.newParams);
+            this.getOverviewProgress();
+            const promises = _.map(this.profit, o => this.getOverviewTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.profit[k].subject;
+                    v.subject_name = this.profit[k].subject_name;
+                });
+                this.$store.dispatch('SaveOverviewTrendArr', resultList);
             });
         },
         getOverviewTrend(subject) {
@@ -150,11 +162,11 @@ export default {
             const {
                 date
             } = this.form;
-            if (this.val.sDate && this.val.eDate) {
+            if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
+                    pt: this.searchDate.pt,
+                    sDate: this.searchDate.sDate,
+                    eDate: this.searchDate.eDate,
                 };
             } else {
                 return {
@@ -187,9 +199,9 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
+        handleSearch(searchDate) {
             // 默认公司的背景色
-            this.val = val;
+            this.searchDate = searchDate;
         },
 
     }
