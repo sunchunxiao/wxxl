@@ -22,6 +22,7 @@
                     <ProportionalStructureAverageComparison
                       @id="structureID"
                       :id="`${index}`"
+                      :unit="getUnit(item)"
                       :data="sliceData(item)" />
                   </el-col>
                 </template>
@@ -31,6 +32,7 @@
                 class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
                   @id="structureID"
+                  :unit="getUnit(channelStructureArr[index3])"
                   id="ProportionalStructureAverageComparisonBig"
                   :data="channelStructureArr[index3]" />
               </el-col>
@@ -57,6 +59,8 @@ import ProportionalStructureAverageComparison from 'components/ProportionalStruc
 import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
 //vuex
 import { mapGetters } from 'vuex';
+//data 指标
+import { channel } from 'data/subject';
 export default {
     props: {
         cid: String,
@@ -79,7 +83,9 @@ export default {
             pt: '',
             loading: false,
             changeDate: {},
-            newParams: {}
+            newParams: {},
+            //data
+            channelSubject: channel()
         };
     },
     computed: {
@@ -100,6 +106,12 @@ export default {
         }
     },
     methods: {
+        getUnit(item) {
+            let obj = this.channelSubject.find(el => {
+                return el.subject == item.subject && el.subject_name == item.subject_name;
+            });
+            return obj ? obj.subject_unit : "";
+        },
         sliceData(item) {
             let data = _.cloneDeep(item);
             let num = (data["28nodes"].length - 10) < 0 ? 0 : (data["28nodes"].length - 10);

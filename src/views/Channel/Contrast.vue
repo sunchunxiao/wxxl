@@ -105,6 +105,7 @@
                       :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
                       @click.native="clickIndex(index)"
                       :id="`${index}`"
+                      :unit="getUnit(item)"
                       :data="item" />
                   </el-col>
                 </template>
@@ -113,6 +114,7 @@
                 <ConOrgComparisonAverageBig
                   :title="channelCompareArr[index0].subject_name"
                   :data="channelCompareArr[index0]"
+                  :unit="getUnit(channelCompareArr[index0])"
                   id="ConOrgComparisonAverage"
                   :index="index0" />
               </Card>
@@ -248,6 +250,12 @@ export default {
         }
     },
     methods: {
+        getUnit(item) {
+            let obj = this.channelSubject.find(el => {
+                return el.subject == item.subject && el.subject_name == item.subject_name;
+            });
+            return obj ? obj.subject_unit : "";
+        },
         promise() {
             Promise.all([this.getTree()]).then(res => {
                 // 树

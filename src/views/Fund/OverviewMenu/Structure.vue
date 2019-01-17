@@ -7,8 +7,9 @@
         class="overflow">
         <el-row
           v-loading="loading"
+          v-if="hasStructure"
           class="min-height-400">
-          <Card v-if="hasStructure">
+          <Card>
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析前端</el-row>
             <el-row type="flex">
               <el-col :span="16">
@@ -19,6 +20,7 @@
                     @click.native="clickIndex(3 ,index)">
                     <ProportionalStructureAverageComparison
                       :id="`${index}`"
+                      :unit="getUnit(item, fundSubject)"
                       :data="item" />
                   </el-col>
                 </template>
@@ -29,6 +31,7 @@
                 <ProportionalStructureAverageComparisonBig
                   @id="structureID"
                   id="ProportionalStructureAverageComparisonBig"
+                  :unit="getUnit(fundstructureArr1[index3], fundSubject)"
                   v-if="fundstructureArr1.length>0"
                   :data="fundstructureArr1[index3]" />
               </el-col>
@@ -51,6 +54,7 @@
                     @click.native="clickIndex(4 ,index)">
                     <ProportionalStructureAverageComparison
                       :id="`fundstructureArr2${index}`"
+                      :unit="getUnit(item, fundBackSubject)"
                       :data="sliceData(item)" />
                   </el-col>
                 </template>
@@ -59,8 +63,9 @@
                 :span="8"
                 class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
-                  @id="structureID"
                   v-if="fundstructureArr2"
+                  @id="structureID"
+                  :unit="getUnit(fundstructureArr2[index4], fundBackSubject)"
                   id="ProportionalStructureAverageComparisonBig1"
                   :data="fundstructureArr2[index4]" />
               </el-col>
@@ -80,6 +85,7 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
+import { fund, fundBack } from '../../../data/subject';
 
 // 比例结构与平均值对比分析
 import ProportionalStructureAverageComparison from 'components/ProportionalStructureAverageComparison';
@@ -105,7 +111,10 @@ export default {
             pt: '',
             loading: false,
             changeDate: {},
-            newParams: {}
+            newParams: {},
+            //data
+            fundSubject: fund(),
+            fundBackSubject: fundBack()
         };
     },
     computed: {
@@ -132,6 +141,12 @@ export default {
         }
     },
     methods: {
+        getUnit(item, sujectData) {
+            let obj = sujectData.find(el => {
+                return el.subject == item.subject && el.subject_name == item.subject_name;
+            });
+            return obj ? obj.subject_unit : "";
+        },
         sliceData(item) {
             let data = _.cloneDeep(item);
             let num = (data["28nodes"].length - 10) < 0 ? 0 : (data["28nodes"].length - 10);

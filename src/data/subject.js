@@ -172,7 +172,7 @@ const homePay = function () {
 const product = function () {
     let arr = [
         ["S","销售额","元"],
-        ["P","净利润额","元"],
+        ["P","毛利润额","元"],
         ["C","成本额","元"],
         ["SD","日销","元"],
         ["ROI","投入产出比",""],
@@ -207,11 +207,12 @@ const customer = function () {
     ];
     return setData(arr);
 };
+
 //组织前端
 const organization = function () {
     let arr = [
         ["S","销售额","元"],
-        ["P","利润额","元"],
+        ["P","净利润额","元"],
         ["C","人工成本额","元"],
         ["SD","日销","元"],
         ["ROI","投入产出比",""],

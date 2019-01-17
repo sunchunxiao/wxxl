@@ -17,6 +17,7 @@
                   :span="12">
                   <ProTargetActualDiffTrend
                     v-if="orgtrendArr.length"
+                    :unit="getUnit(item)"
                     :id="`${index}`"
                     :data="item" />
                 </el-col>
@@ -38,7 +39,7 @@
 import API from '../api';
 import Card from 'components/Card';
 //data
-import { organization } from '../../../data/subject';
+import { organization, orgBack } from '../../../data/subject';
 
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
@@ -64,6 +65,7 @@ export default {
             newParams: {},
             //data
             orgSubject: organization(),
+            orgBackSubject: orgBack()
         };
     },
     computed: {
@@ -84,6 +86,13 @@ export default {
         }
     },
     methods: {
+        getUnit(item) {
+            let subjectData = this.type != 2 ? this.orgSubject : this.orgBackSubject;
+            let obj = subjectData.find(el => {
+                return el.subject == item.subject && el.subject_name == item.subject_name;
+            });
+            return obj ? obj.subject_unit : "";
+        },
         allRequest() {
             if (!this.cid) {
                 return;
@@ -102,12 +111,13 @@ export default {
             if (JSON.stringify(this.orglastParams.diff) == JSON.stringify(params)) {
                 return;
             }
+            let subjectData = this.type != 2 ? this.orgSubject : this.orgBackSubject;
             this.loading = true;
-            const promises = _.map(this.orgSubject, o => this.getTrend(o.subject));
+            const promises = _.map(subjectData, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = this.orgSubject[k].subject;
-                    v.subject_name = this.orgSubject[k].subject_name;
+                    v.subject = subjectData[k].subject;
+                    v.subject_name = subjectData[k].subject_name;
                 });
                 this.$store.dispatch('SaveOrgTrendArr', resultList);
             }).finally(() => {

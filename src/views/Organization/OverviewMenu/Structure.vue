@@ -7,8 +7,9 @@
         class="overflow">
         <el-row
           v-loading="loading"
+          v-if="hasStructure"
           class="min-height-400">
-          <Card v-if="hasStructure">
+          <Card>
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析前端</el-row>
             <el-row type="flex">
               <el-col :span="16">
@@ -18,6 +19,7 @@
                     :span="6"
                     @click.native="clickIndex(3 ,index)">
                     <ProportionalStructureAverageComparison
+                      :unit="getUnit(item, organizationSubject)"
                       :id="`${index}`"
                       :data="item" />
                   </el-col>
@@ -30,6 +32,7 @@
                   @id="structureID"
                   id="ProportionalStructureAverageComparisonBig"
                   v-if="orgstructureArr1.length>0"
+                  :unit="getUnit(orgstructureArr1[index3], organizationSubject)"
                   :data="orgstructureArr1[index3]" />
               </el-col>
             </el-row>
@@ -53,6 +56,7 @@
                     @click.native="clickIndex(4 ,index)">
                     <ProportionalStructureAverageComparison
                       :id="`orgstructureArr2${index}`"
+                      :unit="getUnit(item, orgBackSubject)"
                       :data="sliceData(item)" />
                   </el-col>
                 </template>
@@ -63,6 +67,7 @@
                 <ProportionalStructureAverageComparisonBig
                   @id="structureID"
                   v-if="orgstructureArr2"
+                  :unit="getUnit(orgstructureArr2[index4], orgBackSubject)"
                   id="ProportionalStructureAverageComparisonBig1"
                   :data="orgstructureArr2[index4]" />
               </el-col>
@@ -88,6 +93,8 @@ import ProportionalStructureAverageComparison from 'components/ProportionalStruc
 import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
 //vuex
 import { mapGetters } from 'vuex';
+import { organization, orgBack } from 'data/subject';
+
 export default {
     props: {
         cid: String,
@@ -107,7 +114,9 @@ export default {
             pt: '',
             loading: false,
             changeDate: {},
-            newParams: {}
+            newParams: {},
+            organizationSubject: organization(),
+            orgBackSubject: orgBack()
         };
     },
     computed: {
@@ -134,6 +143,12 @@ export default {
         }
     },
     methods: {
+        getUnit(item, sujectData) {
+            let obj = sujectData.find(el => {
+                return el.subject == item.subject && el.subject_name == item.subject_name;
+            });
+            return obj ? obj.subject_unit : "";
+        },
         sliceData(item) {
             let data = _.cloneDeep(item);
             let num = (data["28nodes"].length - 10) < 0 ? 0 : (data["28nodes"].length - 10);

@@ -38,7 +38,7 @@
 import API from '../api';
 import Card from 'components/Card';
 //data
-import { organization } from '../../../data/subject';
+import { organization, orgBack } from '../../../data/subject';
 // 目标-实际-差异趋势分析
 import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
 
@@ -47,7 +47,8 @@ import { mapGetters } from 'vuex';
 export default {
     props: {
         cid: String,
-        val: Object
+        val: Object,
+        type: Number
     },
     components: {
         Card,
@@ -63,6 +64,7 @@ export default {
             newParams: {},
             //data
             orgSubject: organization(),
+            orgBackSubject: orgBack()
         };
     },
     computed: {
@@ -102,11 +104,12 @@ export default {
                 return;
             }
             this.loading = true;
-            const promises = _.map(this.orgSubject, o => this.getTrend(o.subject));
+            let subjectData = this.type != 2 ? this.orgSubject : this.orgBackSubject;
+            const promises = _.map(subjectData, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = this.orgSubject[k].subject;
-                    v.subject_name = this.orgSubject[k].subject_name;
+                    v.subject = subjectData[k].subject;
+                    v.subject_name = subjectData[k].subject_name;
                 });
                 this.$store.dispatch('SaveOrgTrendArr', resultList);
             }).finally(() => {

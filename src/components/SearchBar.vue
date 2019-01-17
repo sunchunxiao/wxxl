@@ -213,6 +213,7 @@ export default {
             },
             kw: '',
             cid: '',
+            type: 0,
             isSearchChange: true,
         };
     },
@@ -367,6 +368,7 @@ export default {
         kw: function (val) {
             if (!val) {
                 this.cid = '';
+                this.type = '';
             }
         },
         cid: function () {
@@ -426,6 +428,7 @@ export default {
                     return;
                 }
                 obj.cid = this.cid;
+                obj.type = this.type;
                 this.$emit('search', obj);
                 this.isSearchChange = false;
             }
@@ -447,6 +450,7 @@ export default {
         },
         handleKwSelect (obj) {
             this.cid = obj.id;
+            this.type = obj.type;
         }
     }
 };

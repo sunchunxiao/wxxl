@@ -17,6 +17,7 @@
                   :span="12">
                   <ProTargetActualDiffTrend
                     v-if="fundtrendArr.length"
+                    :unit="getUnit(item)"
                     :id="`${index}`"
                     :data="item" />
                 </el-col>
@@ -38,7 +39,7 @@
 import API from '../api';
 import Card from 'components/Card';
 //data 指标
-import { fund } from '../../../data/subject';
+import { fund, fundBack } from 'data/subject';
 
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
@@ -48,7 +49,8 @@ import { mapGetters } from 'vuex';
 export default {
     props: {
         cid: String,
-        val: Object
+        val: Object,
+        type: Number
     },
     components: {
         Card,
@@ -63,6 +65,7 @@ export default {
             newParams: {},
             //data
             fundSubject: fund(),
+            fundBackSubject: fundBack(),
         };
     },
     computed: {
@@ -83,6 +86,13 @@ export default {
         }
     },
     methods: {
+        getUnit(item) {
+            let subjectData = this.type != 2 ? this.fundSubject : this.fundBackSubject;
+            let obj = subjectData.find(el => {
+                return el.subject == item.subject && el.subject_name == item.subject_name;
+            });
+            return obj ? obj.subject_unit : "";
+        },
         allRequest() {
             if (!this.cid) {
                 return;
@@ -102,11 +112,12 @@ export default {
                 return;
             }
             this.loading = true;
-            const promises = _.map(this.fundSubject, o => this.getTrend(o.subject));
+            let subjectData = this.type != 2 ? this.fundSubject : this.fundBackSubject;
+            const promises = _.map(subjectData, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = this.fundSubject[k].subject;
-                    v.subject_name = this.fundSubject[k].subject_name;
+                    v.subject = subjectData[k].subject;
+                    v.subject_name = subjectData[k].subject_name;
                 });
                 this.$store.dispatch('SaveFundTrendArr', resultList);
             }).finally(() => {

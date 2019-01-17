@@ -13,6 +13,7 @@
               class="margin-bottom-20"
               style="height:250px;">
               <slider
+                :key="sliderKey"
                 v-if="fundprogressArr.length"
                 height="250px"
                 :min-move-num="50">
@@ -28,7 +29,6 @@
                 </template>
               </slider>
             </div>
-
             <el-row class="margin-bottom-20 overview_title">综合评估</el-row>
             <Radar
               v-if="fundrankArr.length"
@@ -76,7 +76,8 @@ export default {
             version: 0,
             pt: '',
             loading: false,
-            newParams: {}
+            newParams: {},
+            sliderKey: ""
         };
     },
     computed: {
@@ -119,6 +120,7 @@ export default {
             }
             this.loading = true;
             API.GetFundProgress(params).then(res => {
+                this.sliderKey = new Date().getTime();
                 this.$store.dispatch('SaveFundProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
