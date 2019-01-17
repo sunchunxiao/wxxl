@@ -14,6 +14,7 @@
               style="height:250px;">
               <slider
                 height="250px"
+                :key="sliderKey"
                 v-if="orgprogressArr.length"
                 class="margin-bottom-20"
                 :min-move-num="50">
@@ -77,7 +78,8 @@ export default {
             pt: '',
             loading: false,
             // val: {},
-            newParams: {}
+            newParams: {},
+            sliderKey: "",
         };
     },
     computed: {
@@ -120,6 +122,7 @@ export default {
             }
             this.loading = true;
             API.GetOrgProgress(params).then(res => {
+                this.sliderKey = new Date().getTime();
                 this.$store.dispatch('SaveOrgProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
