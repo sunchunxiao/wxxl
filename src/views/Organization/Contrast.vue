@@ -70,12 +70,11 @@
                   effect="dark"
                   placement="right">
                   <div slot="content">
-                    <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
+                    <div class="margin-bottom-5">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"
-                      class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
-                    <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                      class="margin-bottom-5">宽度 : {{ data.children.length }}</div>
                   </div>
                   <span class="label">
                     <span class="label_left"><span v-if="data.type==2">* </span>{{ data.name }}</span>
