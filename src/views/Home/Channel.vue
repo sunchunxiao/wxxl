@@ -27,12 +27,17 @@
           </slider>
           <div class="card_company_target">
             <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-            <span class="card_title">{{ hasSubjectName }} ( 万元 ) </span></el-row>
+              <span class="card_title">{{ hasSubjectName }}</span>
+              <span
+                class="card_title"
+                v-if="homeChannel[index].subject_unit"> ( {{ homeChannel[index].subject_unit }} )</span>
+            </el-row>
             <template>
               <el-col
                 v-if="channelTrendArr.length>0"
                 :key="index">
                 <ProTargetActualDiffTrend
+                  :unit="homeChannel[index].subject_unit"
                   :show-detail="false"
                   :id="`channel${index}`"
                   :data="channelTrendArr[index]" />
@@ -57,6 +62,8 @@ import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 //mock
 import { dataSales } from './mock/trendData';
 import { mapGetters } from 'vuex';
+//data
+import { homeChannel } from 'data/subject.js';
 
 export default {
     components: {
@@ -68,6 +75,7 @@ export default {
     },
     data() {
         return {
+            homeChannel: homeChannel(),
             form: {
                 pt: '', // 周期类型
                 date: {}, // date
@@ -79,15 +87,14 @@ export default {
             loading: false,
             //index
             index: 0,
-            // stragety
-            val: {},
             post: 1,
             style: undefined,
-            opciatyBool: false
+            opciatyBool: false,
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['channelArr', 'channelTrendArr', 'searchDate']),
+        ...mapGetters(['channelArr', 'channelTrendArr', 'searchDate','homeLastParams']),
         hasSubjectName() {
             if (this.channelTrendArr.length) {
                 return this.channelTrendArr[this.index].subject_name;
@@ -98,14 +105,13 @@ export default {
         this.form.date = this.searchDate;
     },
     mounted() {
-        this.getChannelProgress();
+        if(Object.keys(this.searchDate).length){
+            this.allRequest();
+        }
     },
     watch: {
         searchDate() {
-            this.val = this.searchDate;
-        },
-        val() {
-            this.getChannelProgress();
+            this.allRequest();
         }
     },
     methods: {
@@ -114,30 +120,41 @@ export default {
             this.style = idx;
             this.opciatyBool = true;
         },
-        input(val) {
-            this.form.date = val;
+        input(searchDate) {
+            this.form.date = searchDate;
         },
         select(index) {
             this.style = index;
         },
         //渠道
         getChannelProgress() {
-            this.loading = true;
             const params = {
                 ...this.getPeriodByPt(),
             };
+            this.loading = true;
             API.GetChannelProgress(params).then(res=>{
                 this.$store.dispatch('SaveChannelProgressData', res.data);
-                const promises = _.map(res.data, o => this.getChannelTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveChannelTrendArr', resultList);
-                });
             }).finally(() => {
                 this.loading = false;
+            });
+        },
+        allRequest() {
+            const params = {
+                ...this.getPeriodByPt(),
+            };
+            if (JSON.stringify(this.homeLastParams.channel) == JSON.stringify(params)) {
+                return;
+            }
+            this.newParams.channel = params;
+            this.$store.dispatch("SaveHomeLastParams", this.newParams);
+            this.getChannelProgress();
+            const promises = _.map(this.homeChannel, o => this.getChannelTrend(o.subject));
+            Promise.all(promises).then(resultList => {
+                _.forEach(resultList, (v, k) => {
+                    v.subject = this.homeChannel[k].subject;
+                    v.subject_name = this.homeChannel[k].subject_name;
+                });
+                this.$store.dispatch('SaveChannelTrendArr', resultList);
             });
         },
         getChannelTrend(subject) {
@@ -151,11 +168,11 @@ export default {
             const {
                 date
             } = this.form;
-            if (this.val.sDate && this.val.eDate) {
+            if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
+                    pt: this.searchDate.pt,
+                    sDate: this.searchDate.sDate,
+                    eDate: this.searchDate.eDate,
                 };
             } else {
                 return {
@@ -188,9 +205,9 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
+        handleSearch(searchDate) {
             // 默认公司的背景色
-            this.val = val;
+            this.searchDate = searchDate;
         },
 
     }
