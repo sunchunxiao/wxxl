@@ -20,7 +20,11 @@ export default {
         unit: {
             type: String,
             default: ""
-        }
+        },
+        tooltipScroll: {
+            type: Boolean,
+            default: true
+        },
     },
     data(){
         return{
@@ -80,14 +84,19 @@ export default {
                 },
                 tooltip: {
                     trigger: 'axis',
+                    enterable: true,
+                    hideDelay: 0,
                     formatter: function(params){
                         let str = params[0].name + "<br/>";
                         for (let i of params) {
                             str += i.marker + i.seriesName + ":" + formatNumber(i.value) + _this.unit + "<br/>";
                         }
+                        if (_this.tooltipScroll) {
+                            return `<div style='max-height:${_this.$el.offsetHeight - 35}px;overflow:auto;'>${str}</div>`;
+                        }
                         return str;
                     },
-                    position: ['10%', '20%']
+                    position: [0, 0]
                 },
                 xAxis: {
                     type: 'category',
