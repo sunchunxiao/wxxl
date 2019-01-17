@@ -554,6 +554,10 @@ export default {
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             // 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
             if (!checked && this.cancelKey && data.cid === this.cancelKey) {
+                const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
+                if (index >= 0) {
+                    this.cidObjArr.splice(index, 1);
+                }
                 return;
             }
             if (checked) { // 如果选中

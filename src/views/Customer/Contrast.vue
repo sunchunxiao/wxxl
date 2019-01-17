@@ -119,9 +119,9 @@
                   id="ConOrgComparisonAverage"
                   :index="index0" />
               </el-row>
-            </Card>
-            <Card v-if="!loading&&!cuscompareArr.length">
-              <div class="please_select">
+              <div
+                class="please_select"
+                v-if="!loading&&!cuscompareArr.length">
                 请选择要对比的项目
               </div>
             </Card>
@@ -439,6 +439,10 @@ export default {
         handleCheckChange(data, checked) {
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             if (!checked && this.cancelKey && data.cid === this.cancelKey) {
+                const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
+                if (index >= 0) {
+                    this.cidObjArr.splice(index, 1);
+                }
                 return;
             }
             if (checked) { // 如果选中

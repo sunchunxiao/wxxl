@@ -87,44 +87,46 @@
           </div>
         </el-col>
         <el-col
-          v-loading="loading"
           :span="19"
           class="overflow">
-          <Card
-            v-if="channelCompareArr.length > 0">
-            <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
-            <el-row>
-              <slider
-                height="170px"
-                :min-move-num="50">
-                <template v-for="(item, index) in channelCompareArr">
-                  <el-col
-                    :key="index"
-                    style="width:200px">
-                    <ConOrgComparisonAverage
-                      :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
-                      @click.native="clickIndex(index)"
-                      :id="`${index}`"
-                      :unit="getUnit(item)"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </slider>
-              <Card>
-                <ConOrgComparisonAverageBig
-                  :title="channelCompareArr[index0].subject_name"
-                  :data="channelCompareArr[index0]"
-                  :unit="getUnit(channelCompareArr[index0])"
-                  id="ConOrgComparisonAverage"
-                  :index="index0" />
-              </Card>
-            </el-row>
-          </Card>
-          <el-row
-            v-else
-            class="please_select">
-            请选择要对比的项目
-          </el-row>
+          <div
+            v-loading="loading"
+            class="min-height-400">
+            <Card>
+              <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
+              <el-row v-if="channelCompareArr.length">
+                <slider
+                  height="170px"
+                  :min-move-num="50">
+                  <template v-for="(item, index) in channelCompareArr">
+                    <el-col
+                      :key="index"
+                      style="width:200px">
+                      <ConOrgComparisonAverage
+                        :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
+                        @click.native="clickIndex(index)"
+                        :id="`${index}`"
+                        :unit="getUnit(item)"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </slider>
+                <Card>
+                  <ConOrgComparisonAverageBig
+                    :title="channelCompareArr[index0].subject_name"
+                    :data="channelCompareArr[index0]"
+                    :unit="getUnit(channelCompareArr[index0])"
+                    id="ConOrgComparisonAverage"
+                    :index="index0" />
+                </Card>
+              </el-row>
+              <div
+                class="please_select"
+                v-if="!loading&&!channelCompareArr.length">
+                请选择要对比的项目
+              </div>
+            </Card>
+          </div>
         </el-col>
       </el-row>
       <el-row
@@ -441,6 +443,10 @@ export default {
         handleCheckChange(data, checked) {
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             if (!checked && this.cancelKey && data.nid === this.cancelKey) {
+                const index = _.findIndex(this.cidObjArr, item => item.nid === data.nid);
+                if (index >= 0) {
+                    this.cidObjArr.splice(index, 1);
+                }
                 return;
             }
             if (checked) { // 如果选中
