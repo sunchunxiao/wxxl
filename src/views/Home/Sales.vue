@@ -28,7 +28,7 @@
             </slider>
             <div class="card_company_target">
               <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-                <span class="card_title">{{ hasSubjectName }} </span>
+                <span class="card_title">{{ sales[index].subject_name }} </span>
                 <span
                   class="card_title"
                   v-if="sales[index].subject_unit"> ( {{ sales[index].subject_unit }} )</span></el-row>
@@ -97,11 +97,6 @@ export default {
     },
     computed: {
         ...mapGetters(['overviewArr', 'overviewTrendArr', 'searchDate', 'homeLastParams']),
-        hasSubjectName() {
-            if (this.overviewTrendArr.length) {
-                return this.overviewTrendArr[this.index].subject_name;
-            }
-        }
     },
     created() {
         this.form.date = this.searchDate;

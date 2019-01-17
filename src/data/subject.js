@@ -19,6 +19,7 @@ function setData(dataArr) {
 const sales = function () {
     let arr = [
         ["S","销售额","元"],
+        // 未显示
         ["MOCK","销售增长额","元"]
     ];
     return setData(arr);
@@ -65,7 +66,7 @@ const homeChannel = function () {
 // 首页-客户效率
 const homeCustomer = function () {
     let arr = [
-        ["PER","消费者数量","个"],
+        ["PER","消费者数量","人"],
         ["S","客户销售额","元"],
         ["P","客户利润额","元"],
         ["C","客户费用额","元"],
@@ -121,6 +122,7 @@ const homeEquity = function () {
 const homeProfitSpace = function () {
     let arr = [
         ["C","总成本费用额","元"],
+        // 未显示
         ["S","毛利率","%"],
         ["MOCK","回款额","元"],
         ["MOCK","回款增长额","元"],
@@ -139,10 +141,11 @@ const homeProfitAbility = function () {
         ["MOCK","订单增长额","元"],
         ["MOCK","订单增长率","%"],
         ["MOCK","库存额","元"],
+        ["MOCK","库龄","天"],
         ["MOCK","库存增长额","元"],
         ["MOCK","库存增长率","%"],
+        // 未显示
         ["MOCK","库存周转率",""],
-        ["MOCK","库龄","天"],
         ["MOCK","盈利能力",""],
     ];
     return setData(arr);
@@ -158,6 +161,7 @@ const homePay = function () {
         ["MOCK","应收增长额","元"],
         ["MOCK","应收增长率","%"],
         ["MOCK","应付额","元"],
+        // 未显示
         ["MOCK","应付增长额","元"],
         ["MOCK","应付增长率","%"],
         ["MOCK","支付能力1",""],
