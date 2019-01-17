@@ -19,6 +19,10 @@ export default {
         height: {
             type: String,
             default: "415px"
+        },
+        unit: {
+            type: String,
+            default: ""
         }
     },
     data(){
@@ -128,13 +132,13 @@ export default {
                         let result = [];
                         if (_.includes(SUBJECT, subject)){
                             params.forEach(function (item) {
-                                result += item.marker + " " + item.name + " : " + _this.formatNumber(item.value) +"</br>";
+                                result += item.marker + " " + item.name + " : " + _this.formatNumber(item.value) + _this.unit + "</br>";
                             });
                         } else {
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + "</br>" +
                                 `占比 : ${(item.value / nodes.total * 100).toFixed(2)}%` + "</br>" +
-                                `&nbsp;&nbsp;&nbsp;额 : ${_this.formatNumber(parseInt(item.value / 100))}`;
+                                `&nbsp;&nbsp;&nbsp;额 : ${_this.formatNumber(parseInt(item.value / 100)) + _this.unit}`;
                             });
                         }
                         return result;
@@ -254,7 +258,7 @@ export default {
         }
         .detail {
             text-align: center;
-            color: #000;
+            color: #5e5e5e;
             font-size: 15px;
             padding: 20px;
             font-weight: 500;

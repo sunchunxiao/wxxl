@@ -16,6 +16,7 @@
                   :key="index"
                   :span="12">
                   <ProTargetActualDiffTrend
+                    :unit="getUnit(item)"
                     v-if="trendArr.length"
                     :id="`${index}`"
                     :data="item" />
@@ -86,6 +87,12 @@ export default {
         }
     },
     methods: {
+        getUnit(item) {
+            let obj = this.productSubject.find(el => {
+                return el.subject == item.subject && el.subject_name == item.subject_name;
+            });
+            return obj ? obj.subject_unit : "";
+        },
         allRequest() {
             if (!this.cid) {
                 return;

@@ -98,6 +98,7 @@
           <component
             @changeCid='handleChangeCid'
             :cid="cid"
+            :type="type"
             :val="val"
             :is="currentTabComponent" />
         </el-col>
@@ -166,6 +167,7 @@ export default {
             version: 0,
             //tree
             cid: '',
+            type: 0, // 前后端类型, 1,3属于前端,2:后端
             pt: '',
             //js
             error: error,
@@ -222,6 +224,7 @@ export default {
         } else {
             this.treeClone = _.cloneDeep(this.fundTree);
             this.cid = this.fundTree.cid;
+            this.type = this.fundTree.type;
             this.addProperty([this.treeClone]);
         }
     },
@@ -254,6 +257,7 @@ export default {
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.cid = this.fundTree.cid;
+                this.type = this.fundTree.type;
             }
         },
         findParent(node,cid) {//找父节点id
@@ -276,6 +280,7 @@ export default {
                 if (res.tree) {
                     if (!this.fundTree || !this.fundTree.cid) {
                         this.cid = res.tree.cid;
+                        this.type = res.tree.type;
                     }
                     this.treeClone = _.cloneDeep(res.tree);
                     this.addProperty([this.treeClone]);
@@ -373,6 +378,7 @@ export default {
                 if (this.cid) {//数据tree不为null时
                     if (this.cid !== this.fundTree.cid) {
                         this.cid = this.fundTree.cid;
+                        this.type = this.fundTree.type;
                         this.treeClone = _.cloneDeep(this.fundTree);
                     } else {
                         //公司根节点
@@ -389,6 +395,7 @@ export default {
                 }
                 this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
+                this.type = val.type;
                 this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
@@ -398,6 +405,7 @@ export default {
         },
         nodeExpand(data) {
             this.cid = data.cid;
+            this.type = data.type;
         },
         handleNodeClick(data) {
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
@@ -406,6 +414,7 @@ export default {
                     return;
                 }
                 this.cid = data.cid;
+                this.type = data.type;
             } else {
                 this.error('请选择日期');
             }

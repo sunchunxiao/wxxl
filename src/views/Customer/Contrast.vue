@@ -106,6 +106,7 @@
                       <ConOrgComparisonAverage
                         :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
                         @click.native="clickIndex(index)"
+                        :unit="getUnit(item)"
                         :id="`${index}`"
                         :data="item" />
                     </el-col>
@@ -114,6 +115,7 @@
                 <ConOrgComparisonAverageBig
                   :title="cuscompareArr[index0].subject_name"
                   :data="cuscompareArr[index0]"
+                  :unit="getUnit(cuscompareArr[index0])"
                   id="ConOrgComparisonAverage"
                   :index="index0" />
               </el-row>
@@ -249,6 +251,12 @@ export default {
         }
     },
     methods: {
+        getUnit(item) {
+            let obj = this.customerSubject.find(el => {
+                return el.subject == item.subject && el.subject_name == item.subject_name;
+            });
+            return obj ? obj.subject_unit : "";
+        },
         promise() {
             Promise.all([this.getTree()]).then(res => {
                 // 树

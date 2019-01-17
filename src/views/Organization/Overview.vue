@@ -98,8 +98,8 @@
           <component
             @changeCid='handleChangeCid'
             :cid="cid"
-            :val="val"
             :type="type"
+            :val="val"
             :is="currentTabComponent" />
         </el-col>
       </el-row>
@@ -167,6 +167,7 @@ export default {
             version: 0,
             //tree
             cid: '',
+            type: 0, // 前后端类型, 1,3属于前端,2:后端
             pt: '',
             //js
             error: error,
@@ -191,8 +192,7 @@ export default {
             tabs: OVER_TABS,
             currView: '',
             style: 0,
-            isCollapse: false,
-            type: 0
+            isCollapse: false
         };
     },
     computed: {
@@ -224,6 +224,7 @@ export default {
         } else {
             this.treeClone = _.cloneDeep(this.organizationTree);
             this.cid = this.organizationTree.cid;
+            this.type = this.organizationTree.type;
             this.addProperty([this.treeClone]);
         }
     },
@@ -256,6 +257,7 @@ export default {
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
                 this.cid = this.organizationTree.cid;
+                this.type = this.organizationTree.type;
             }
         },
         findParent(node,cid) {//找父节点id
@@ -375,6 +377,7 @@ export default {
                 if (this.cid) {//数据tree不为null时
                     if (this.cid !== this.organizationTree.cid) {
                         this.cid = this.organizationTree.cid;
+                        this.type = this.organizationTree.type;
                         this.treeClone = _.cloneDeep(this.organizationTree);
                     } else {
                         //公司根节点
@@ -391,6 +394,7 @@ export default {
                 }
                 this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
+                this.type = val.type;
                 this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
@@ -400,15 +404,16 @@ export default {
         },
         nodeExpand(data) {
             this.cid = data.cid;
+            this.type = data.type;
         },
         handleNodeClick(data) {
-            this.type = data.type;
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {
                     return;
                 }
                 this.cid = data.cid;
+                this.type = data.type;
             } else {
                 this.error('请选择日期');
             }

@@ -10,13 +10,17 @@
 <script>
 import echarts from 'plugins/echarts';
 const SUBJECT = ['ROI', 'ITO', 'RY'];
-import { formatTimeLabel } from 'utils/common';
+import { formatNumber, formatTimeLabel } from 'utils/common';
 
 export default {
     props: {
         id: String,
         data: Object,
-        title: String
+        title: String,
+        unit: {
+            type: String,
+            default: ""
+        }
     },
     data(){
         return{
@@ -66,6 +70,7 @@ export default {
                 }
             }
             const options = {
+                color: ['#01AFA0','#6C8C97', '#9D6046', '#5A5042', '#91c7ae','#749f83', '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'],
                 grid: {
                     left: 0,
                     right: 10,
@@ -75,10 +80,14 @@ export default {
                 },
                 tooltip: {
                     trigger: 'axis',
-                    // position: function (pos) { // point: 鼠标位置
-                    //     return { left:pos[0], top: pos[1] };
-                    // },
-                    position: ['50%', '40%']
+                    formatter: function(params){
+                        let str = params[0].name + "<br/>";
+                        for (let i of params) {
+                            str += i.marker + i.seriesName + ":" + formatNumber(i.value) + _this.unit + "<br/>";
+                        }
+                        return str;
+                    },
+                    position: ['10%', '20%']
                 },
                 xAxis: {
                     type: 'category',
@@ -86,8 +95,15 @@ export default {
                     boundaryGap: false,
                     data: timeLabels,
                     axisLabel: {
+                        color: "#000",
                         formatter: function (value) {
                             return formatTimeLabel(value);
+                        }
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            type: "dotted",
+                            color: "#DCDCDC"
                         }
                     }
                 },
@@ -96,6 +112,12 @@ export default {
                     axisLabel: {
                         formatter: function (val) {
                             return _this.calculateToShow(val);
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            type: "dotted",
+                            color: "#DCDCDC"
                         }
                     }
                 },
@@ -112,6 +134,9 @@ export default {
                     type: 'line',
                     stack: i,
                     data: seriesClone[i],
+                    itemStyle: {
+                        color: type == 'dashed' ? "#F6606A" : ""
+                    },
                     lineStyle: {
                         type: type
                     }

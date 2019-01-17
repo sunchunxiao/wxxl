@@ -18,6 +18,7 @@
                   :span="12">
                   <ProTargetActualDiffTrend
                     v-if="custrendArr.length"
+                    :unit="getUnit(item)"
                     :id="`${index}`"
                     :data="item" />
                 </el-col>
@@ -39,7 +40,7 @@
 import API from '../api';
 import Card from 'components/Card';
 //data 指标
-import { customer } from '../../../data/subject';
+import { customer } from 'data/subject';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 
@@ -87,6 +88,12 @@ export default {
         }
     },
     methods: {
+        getUnit(item) {
+            let obj = this.customerSubject.find(el => {
+                return el.subject == item.subject && el.subject_name == item.subject_name;
+            });
+            return obj ? obj.subject_unit : "";
+        },
         allRequest() {
             if (!this.cid) {
                 return;

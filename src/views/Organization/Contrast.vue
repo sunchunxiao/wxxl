@@ -109,6 +109,7 @@
                         :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
                         :title="item.subject_name"
                         :id="`${index}`"
+                        :unit="getUnit(item, orgSubject)"
                         :data="item" />
                     </el-col>
                   </template>
@@ -118,6 +119,7 @@
                   :title="orgcompareArr[index0].subject_name"
                   :data="orgcompareArr[index0]"
                   id="ConOrgComparisonAverage"
+                  :unit="getUnit(orgcompareArr[index0], orgSubject)"
                   :index="index0" />
               </el-row>
               <el-row
@@ -142,6 +144,7 @@
                       <ConOrgComparisonAverage
                         :title="item.subject_name"
                         :id="`orgcompareArrback${index}`"
+                        :unit="getUnit(item, orgBackSubject)"
                         :data="item" />
                     </el-col>
                   </template>
@@ -150,6 +153,7 @@
                   v-if="orgcompareArrback.length > 0"
                   :title="orgcompareArrback[index1].subject_name"
                   :data="orgcompareArrback[index1]"
+                  :unit="getUnit(orgcompareArrback[index1], orgBackSubject)"
                   id="ConOrgComparisonAverage1"
                   :index="index0" />
               </el-row>
@@ -308,6 +312,12 @@ export default {
         this.$store.dispatch('SaveOrgCompareArrback', []);
     },
     methods: {
+        getUnit(item, sujectData) {
+            let obj = sujectData.find(el => {
+                return el.subject == item.subject && el.subject_name == item.subject_name;
+            });
+            return obj ? obj.subject_unit : "";
+        },
         promise(){
             Promise.all([this.getTree()]).then(res => {
                 // 树

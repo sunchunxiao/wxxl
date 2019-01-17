@@ -21,6 +21,7 @@
                     @click.native="clickIndex(3 ,index)">
                     <ProportionalStructureAverageComparison
                       :id="`${index}`"
+                      :unit="getUnit(item)"
                       :data="sliceData(item)" />
                   </el-col>
                 </template>
@@ -31,6 +32,7 @@
                 <ProportionalStructureAverageComparisonBig
                   @id="structureID"
                   id="ProportionalStructureAverageComparisonBig"
+                  :unit="getUnit(cusstructureArr[index3])"
                   :data="cusstructureArr[index3]" />
               </el-col>
             </el-row>
@@ -55,6 +57,9 @@ import ProportionalStructureAverageComparison from 'components/ProportionalStruc
 import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
 //vuex
 import { mapGetters } from 'vuex';
+//data 指标
+import { customer } from 'data/subject';
+
 export default {
     props: {
         cid: String,
@@ -77,7 +82,8 @@ export default {
             pt: '',
             loading: false,
             changeDate: {},
-            newParams: {}
+            newParams: {},
+            customerSubject: customer(),
         };
     },
     computed: {
@@ -98,6 +104,12 @@ export default {
         }
     },
     methods: {
+        getUnit(item) {
+            let obj = this.customerSubject.find(el => {
+                return el.subject == item.subject && el.subject_name == item.subject_name;
+            });
+            return obj ? obj.subject_unit : "";
+        },
         sliceData(item) {
             let data = _.cloneDeep(item);
             let num = (data["28nodes"].length - 10) < 0 ? 0 : (data["28nodes"].length - 10);
