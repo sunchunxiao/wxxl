@@ -288,9 +288,9 @@ export default {
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
-            this.$nextTick(() => {
+            setTimeout(() =>{
                 echartAndSliderResize();
-            });
+            }, 300);
         },
         allRequest() {
             this.getTreePrograss();
