@@ -347,9 +347,9 @@ export default {
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
-            this.$nextTick(() => {
+            setTimeout(() =>{
                 echartAndSliderResize();
-            });
+            }, 300);
         },
         startChecked() {
             const bool = JSON.stringify(this.orgLastcidObjArr) == JSON.stringify(this.cidObjArr);
