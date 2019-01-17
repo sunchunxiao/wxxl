@@ -48,7 +48,8 @@ import { mapGetters } from 'vuex';
 export default {
     props: {
         cid: String,
-        val: Object
+        val: Object,
+        type: Number
     },
     components: {
         Card,

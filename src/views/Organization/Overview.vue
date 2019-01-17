@@ -65,12 +65,11 @@
                   effect="dark"
                   placement="right">
                   <div slot="content">
-                    <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
+                    <div class="margin-bottom-5">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"
-                      class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
-                    <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                      class="margin-bottom-5">宽度 : {{ data.children.length }}</div>
                   </div>
                   <span class="label">
                     <span
@@ -100,6 +99,7 @@
             @changeCid='handleChangeCid'
             :cid="cid"
             :val="val"
+            :type="type"
             :is="currentTabComponent" />
         </el-col>
       </el-row>
@@ -191,7 +191,8 @@ export default {
             tabs: OVER_TABS,
             currView: '',
             style: 0,
-            isCollapse: false
+            isCollapse: false,
+            type: 0
         };
     },
     computed: {
@@ -401,6 +402,7 @@ export default {
             this.cid = data.cid;
         },
         handleNodeClick(data) {
+            this.type = data.type;
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {

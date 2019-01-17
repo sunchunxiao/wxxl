@@ -69,12 +69,11 @@
                   effect="dark"
                   placement="right">
                   <div slot="content">
-                    <div class="margin-bottom-5 bold">品类:{{ data.name }}</div>
+                    <div class="margin-bottom-5">品类:{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"
-                      class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
-                    <div>毛利目标达成率: {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                      class="margin-bottom-5">宽度 : {{ data.children.length }}</div>
                   </div>
                   <span class="label">
                     <span class="label_left">{{ data.name }}</span>
@@ -88,43 +87,42 @@
           </div>
         </el-col>
         <el-col
+          v-loading="loading"
           :span="19"
           class="overflow">
-          <div
-            v-loading="loading"
-            class="min-height-400">
-            <Card>
-              <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
-              <el-row v-if="channelCompareArr.length">
-                <slider
-                  class="margin-bottom-20"
-                  height="170px"
-                  :min-move-num="50">
-                  <template v-for="(item, index) in channelCompareArr">
-                    <el-col
-                      :key="index"
-                      style="width:200px">
-                      <ConOrgComparisonAverage
-                        :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
-                        @click.native="clickIndex(index)"
-                        :id="`${index}`"
-                        :data="item" />
-                    </el-col>
-                  </template>
-                </slider>
+          <Card
+            v-if="channelCompareArr.length > 0">
+            <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
+            <el-row>
+              <slider
+                height="170px"
+                :min-move-num="50">
+                <template v-for="(item, index) in channelCompareArr">
+                  <el-col
+                    :key="index"
+                    style="width:200px">
+                    <ConOrgComparisonAverage
+                      :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
+                      @click.native="clickIndex(index)"
+                      :id="`${index}`"
+                      :data="item" />
+                  </el-col>
+                </template>
+              </slider>
+              <Card>
                 <ConOrgComparisonAverageBig
                   :title="channelCompareArr[index0].subject_name"
                   :data="channelCompareArr[index0]"
                   id="ConOrgComparisonAverage"
                   :index="index0" />
-              </el-row>
-            </Card>
-            <Card v-if="!loading&&!channelCompareArr.length">
-              <div class="please_select">
-                请选择要对比的项目
-              </div>
-            </Card>
-          </div>
+              </Card>
+            </el-row>
+          </Card>
+          <el-row
+            v-else
+            class="please_select">
+            请选择要对比的项目
+          </el-row>
         </el-col>
       </el-row>
       <el-row
@@ -144,7 +142,7 @@ import Card from '../../components/Card';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
-//data
+//data 指标
 import { channel } from '../../data/subject';
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
