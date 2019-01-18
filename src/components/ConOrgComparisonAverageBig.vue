@@ -78,7 +78,7 @@ export default {
             const options = {
                 color: ['#01AFA0','#6C8C97', '#9D6046', '#5A5042', '#91c7ae','#749f83', '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'],
                 grid: {
-                    left: 0,
+                    left: 20,
                     right: 40,
                     bottom: 0,
                     top: 72,
@@ -110,7 +110,7 @@ export default {
                     formatter: function(params){
                         let str = params[0].name + "<br/>";
                         for (let i of params) {
-                            str += i.marker + i.seriesName + ":" + formatNumber(i.value) + _this.unit + "<br/>";
+                            str += i.marker + i.seriesName + " : " + formatNumber(i.value) + _this.unit + "<br/>";
                         }
                         return str;
                     },
@@ -159,7 +159,7 @@ export default {
                 series: []
             };
             for (let i = 0; i < seriesClone.length; i++) {
-                let type  = 'solid';
+                let type = 'solid';
                 if (i == seriesClone.length-1) {
                     type = 'dashed';
                 }

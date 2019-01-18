@@ -39,7 +39,6 @@
           </Card>
         </el-row>
         <el-row
-          style="margin-top:-20px;"
           v-if="hasStructureBack"
           v-loading="loading"
           class="min-height-400">

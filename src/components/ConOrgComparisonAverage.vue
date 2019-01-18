@@ -84,19 +84,19 @@ export default {
                 },
                 tooltip: {
                     trigger: 'axis',
-                    enterable: true,
+                    // enterable: true,
                     hideDelay: 0,
-                    formatter: function(params){
+                    formatter: function(params) {
                         let str = params[0].name + "<br/>";
                         for (let i of params) {
-                            str += i.marker + i.seriesName + ":" + formatNumber(i.value) + _this.unit + "<br/>";
+                            str += i.marker + i.seriesName + " : " + formatNumber(i.value) + _this.unit + "<br/>";
                         }
                         if (_this.tooltipScroll) {
                             return `<div style='max-height:${_this.$el.offsetHeight - 35}px;overflow:auto;'>${str}</div>`;
                         }
                         return str;
                     },
-                    position: [0, 0]
+                    position: [0, 0],
                 },
                 xAxis: {
                     type: 'category',

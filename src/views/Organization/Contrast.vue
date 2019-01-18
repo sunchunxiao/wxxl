@@ -106,7 +106,7 @@
                       style="width:200px"
                       @click.native="clickIndex(0 ,index)">
                       <ConOrgComparisonAverage
-                        :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
+                        :class="{'menu_list_opciaty':opcityIndex0==index, 'menu_list_opciatyAll':opciatyBool0}"
                         :title="item.subject_name"
                         :id="`${index}`"
                         :unit="getUnit(item, orgSubject)"
@@ -142,6 +142,7 @@
                       style="width:200px"
                       @click.native="clickIndex(1 ,index)">
                       <ConOrgComparisonAverage
+                        :class="{'menu_list_opciaty':opcityIndex1==index, 'menu_list_opciatyAll':opciatyBool1}"
                         :title="item.subject_name"
                         :id="`orgcompareArrback${index}`"
                         :unit="getUnit(item, orgBackSubject)"
@@ -234,8 +235,10 @@ export default {
             treeClone: {},
             findFatherId: '',
             style: 0,
-            opcityIndex: undefined,
-            opciatyBool: false,
+            opcityIndex0: undefined,
+            opcityIndex1: undefined,
+            opciatyBool0: false,
+            opciatyBool1: false,
             isCollapse: false,
         };
     },
@@ -630,8 +633,8 @@ export default {
         },
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
-            this.opcityIndex = idx;
-            this.opciatyBool = true;
+            this[`opcityIndex${i}`] = idx;
+            this[`opciatyBool${i}`] = true;
         },
     }
 };

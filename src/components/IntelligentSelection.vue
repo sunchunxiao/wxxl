@@ -148,7 +148,7 @@ export default {
                     grid: {
                         width:'auto',
                         height: '70%',
-                        y: '14%',
+                        y: '13%',
                         x: '15%'
                     },
                     custom: {
@@ -178,6 +178,13 @@ export default {
                         },
                         axisTick: {
                             show: false
+                        },
+                        axisLabel: {
+                            interval: 0,
+                            show: true,
+                            formatter: function(value) {
+                                return labelNewline(6, value);
+                            }
                         }
                     },
                     series: [{
@@ -221,7 +228,7 @@ export default {
                             borderWidth: 1,
                             borderColor: '000'
                         },
-                        // bottom: '-5%',
+                        bottom: '-1%',
                         //时间轴线颜色
                         lineStyle: {
                             color: '#494A4A',
