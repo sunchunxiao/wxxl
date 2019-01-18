@@ -360,6 +360,7 @@ export default {
                 this.debounceBack();
             }
             this.changeDate = this.searchBarValue;
+            this.$refs.child.clearKw();
             const bool = JSON.stringify(this.fundLastcidObjArr) == JSON.stringify(this.cidObjArr);
             const boolBack = JSON.stringify(this.fundLastcidObjArrBack) == JSON.stringify(this.cidObjBackArr);
             if (!bool) {

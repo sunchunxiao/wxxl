@@ -389,7 +389,7 @@ export default {
                 this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref 绑定的node-key
                 });
             }
         },
