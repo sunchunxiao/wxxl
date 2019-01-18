@@ -17,6 +17,20 @@
           class="el-icon-arrow-right greet_icon"
           v-if="index!=path.length-1" />
       </template>
+      <div class="logoutMenu">
+        <el-dropdown class="">
+          <span class="el-dropdown-link">
+            <img
+              style="padding-right:10px"
+              src="../assets/13.png">
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item><el-button
+              @click="logout"
+              type="text">退出登录</el-button></el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
     </div>
   </div>
 </template>
@@ -81,7 +95,13 @@ export default {
             font-weight: bold;
         }
         .logoutMenu {
-            margin-left: 20px;
+            // margin-left: 20px;
+            flex: 1;
+            text-align: right;
+            .el-dropdown{
+                height: 40px;
+                margin-top: 20px;
+            }
         }
     }
 }
