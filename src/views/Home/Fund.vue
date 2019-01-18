@@ -1,9 +1,8 @@
 <template>
   <div class="container">
-    <el-row
-      :gutter="20">
+    <el-row>
       <el-col
-        :span="25"
+        :span="24"
         class="home_overflow common">
         <Card
           v-loading="loading"

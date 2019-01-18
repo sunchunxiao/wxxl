@@ -83,6 +83,7 @@ export default {
             let timeLineData = [];
             for (let i = 0; i < data.length; i++) {
                 let item = data[i];
+
                 let seriesData = item.data.map(function(v) {
                     return [v[1], v[0], v[2]];
                 });
@@ -192,7 +193,6 @@ export default {
                         type: 'heatmap',
                         data: seriesData,
                         id: item.timeLabel,
-                        value: item.categoryNames,
                         label: {
                             normal: {
                                 show: true,
@@ -207,7 +207,8 @@ export default {
                                 shadowColor: 'rgba(0, 0, 0, 0.5)'
                             }
                         }
-                    }]
+                    },
+                    ]
                 };
                 options.push(option);
                 timeLineData.push(item.timeLabel);

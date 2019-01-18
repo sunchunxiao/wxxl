@@ -24,7 +24,7 @@ import { formatNumber } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 NIR净利率 CTR资金周转率
 const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
-const MAIN_SUNBJECT = ['S', 'P','C', 'ROI', 'ITO', 'PP'];//PP净利润率
+const MAIN_SUNBJECT = ['S', 'P', 'C', 'SD', 'SA', 'ROI', 'ITO', 'PP'];//SD日销,SA库存额,PP净利润率
 const COLORMAP = { over: '#FD625E', below: '#01B8AA' }; // #FD625E粉红色
 const colorLeft = '#E0E3E9';
 const FONTSIZE1 = 28;
@@ -377,8 +377,8 @@ export default {
 
 <style lang="scss" scoped>
 .pie-container {
-    // width: 100%;
-    width: 198px;
+    width: 100%;
+    // width: 198px;
     .pie {
         width: 198px;
         height: 198px;
