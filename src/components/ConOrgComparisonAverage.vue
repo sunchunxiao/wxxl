@@ -10,7 +10,7 @@
 <script>
 import echarts from 'plugins/echarts';
 const SUBJECT = ['ROI', 'ITO', 'RY'];
-import { formatNumber, formatTimeLabel } from 'utils/common';
+import { formatTimeLabel } from 'utils/common';
 
 export default {
     props: {
@@ -76,31 +76,32 @@ export default {
             const options = {
                 color: ['#01AFA0','#6C8C97', '#9D6046', '#5A5042', '#91c7ae','#749f83', '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'],
                 grid: {
-                    left: 0,
-                    right: 10,
+                    left: 10,
+                    right: 20,
                     bottom: 0,
                     top: 10,
                     containLabel: true
                 },
                 tooltip: {
-                    trigger: 'axis',
-                    // enterable: true,
-                    hideDelay: 0,
-                    formatter: function(params) {
-                        let str = params[0].name + "<br/>";
-                        for (let i of params) {
-                            str += i.marker + i.seriesName + " : " + formatNumber(i.value) + _this.unit + "<br/>";
-                        }
-                        if (_this.tooltipScroll) {
-                            return `<div style='max-height:${_this.$el.offsetHeight - 35}px;overflow:auto;'>${str}</div>`;
-                        }
-                        return str;
-                    },
-                    position: [0, 0],
+                    show: false,
+                    // trigger: 'axis',
+                    // enterable: false,
+                    // hideDelay: 0,
+                    // formatter: function(params) {
+                    //     let str = params[0].name + "<br/>";
+                    //     for (let i of params) {
+                    //         str += i.marker + i.seriesName + " : " + formatNumber(i.value) + _this.unit + "<br/>";
+                    //     }
+                    //     if (_this.tooltipScroll) {
+                    //         return `<div style='max-height:${_this.$el.offsetHeight - 55}px;overflow:auto;'>${str}</div>`;
+                    //     }
+                    //     return str;
+                    // },
+                    // position: [0, 0]
                 },
                 xAxis: {
                     type: 'category',
-                    name: '日期',
+                    name: '',
                     boundaryGap: false,
                     data: timeLabels,
                     axisLabel: {

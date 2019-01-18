@@ -163,9 +163,17 @@ export default {
             let lastSliderItem = this.sliderItems[this.sliderItems.length -1];
             let firstSliderItem = this.sliderItems[0];
             let lastNum = this.getTranslateX(lastSliderItem);
-            if (lastNum + lastSliderItem.offsetWidth > this.sliderWrap.offsetWidth) {
+            let num = lastNum + lastSliderItem.offsetWidth - this.sliderWrap.offsetWidth;
+            if (num > 0) {
                 this.setIsClick("hasRight", true);
             } else {
+                let firstnum = this.getTranslateX(firstSliderItem);
+                if (Math.abs(num) + firstnum >= 0) {
+                    firstSliderItem.style.transform = "translateX(" + 0 + "px)";
+                } else {
+                    firstSliderItem.style.transform = "translateX(" + (firstnum + Math.abs(num)) + "px)";
+                }
+                this.setTranslateX();
                 this.setIsClick("hasRight", false);
             }
             let firstNum = this.getTranslateX(firstSliderItem);

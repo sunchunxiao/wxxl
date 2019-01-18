@@ -4,23 +4,28 @@
       class="pie echart"
       :id="`pie-${id}`" />
     <div class="detail">
-      <span class="text">目标 : </span>
-      <span :class="['value', {'no-set':targetObj.value =='未设定'}]">{{ targetObj.value }} <span class="unit">{{ targetObj.unit }}</span></span>
-    </div>
-    <div class="detail">
-      <span class="text">实际 : </span>
-      <span
-        class="value"
-        :style="{color: color}">{{ realObj.value }} <span
-          :style="{color: color}"
-          class="unit">{{ realObj.unit }}</span></span>
+      <div>
+        <p class="text">目标 : </p>
+        <p class="text">实际 : </p>
+      </div>
+      <div>
+        <p :class="['value', {'no-set':targetObj.value =='未设定'}]">{{ targetObj.value }} <span class="unit">{{ targetObj.unit }}</span></p>
+        <p
+          class="value"
+          :style="{color: color}">
+          <span>{{ realObj.value }} </span>
+          <span
+            :style="{color: color}"
+            class="unit">{{ realObj.unit }}</span>
+        </p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import echarts from 'plugins/echarts';
-import { formatNumber } from 'utils/common';
+import { formatNumber, labelNewline } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 NIR净利率 CTR资金周转率
 const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
@@ -170,14 +175,18 @@ export default {
                     trigger: 'item',
                     formatter: function(params){
                         let result = [];
+                        let span = "<span style='width:20px;display:inline-block;'></span>";
                         if (!progress) {
-                            result += params.marker + " " + params.name + " : " + _this.formatNumber(toolTipValue) + "</br>";
+                            result += params.marker + " " + labelNewline(9,params.name,"</br>" + span) + " : </br>" + span + _this.formatNumber(toolTipValue) + "</br>";
                         } else {
-                            result += params.marker + " " + params.name + " : " + params.value + '%' + "</br>";
+                            result += params.marker + " " + labelNewline(9,params.name,"</br>" + span) + " : </br>" + span + params.value + '%' + "</br>";
                         }
                         return result;
                     },
-                    position: ['50%', '50%']
+                    position: function (point, params, dom) {
+                        dom.style.transform = "translate(-50%, 0%)";
+                        return ["50%", "50%"];
+                    }
                 },
                 grid: {
                     left: 0,
@@ -268,7 +277,7 @@ export default {
                                 formatter: function(data) {
                                     let isMain = _.includes(MAIN_SUNBJECT, subject);
                                     if(data.name.length < 8){//显示字体过长换行显示
-                                        return !isMain ? `{smallSize|${data.name}}`: data.name;
+                                        return !isMain ? `{smallSize|${data.name}}`: `{valueSize|${data.name}}`;
                                     }else {
                                         let str = data.name.slice(0, 5);
                                         let str2 = data.name.slice(5, data.name.length);
@@ -299,7 +308,12 @@ export default {
                                     smallSize: {
                                         color: '#4d4d4d',
                                         fontSize: 13,
-                                        padding: [-5,0,0,0]
+                                        padding: [-15,0,0,0]
+                                    },
+                                    valueSize: {
+                                        color: '#4d4d4d',
+                                        fontSize: FONTSIZE2,
+                                        padding: [-15,0,0,0]
                                     }
                                 },
                                 textStyle: {
@@ -375,25 +389,26 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .pie-container {
     width: 100%;
-    // width: 198px;
     .pie {
-        width: 198px;
+        width: 100%;
         height: 198px;
+        >div{
+            margin: 0 auto !important;
+        }
     }
     .detail {
         display: flex;
-        align-items: baseline;
+        justify-content: center;
         .text {
-            flex: 2;
+            line-height: 23px;
             font-size: 12px;
             padding-right: 10px;
             text-align: right;
         }
         .value {
-            flex: 3;
             text-align: left;
             font-size: 20px;
             height: 22px;
