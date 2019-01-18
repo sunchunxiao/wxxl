@@ -74,6 +74,7 @@ $width_collapse: 64px;
     .container_wrap{
         display: flex;
         flex: 1;
+        overflow: auto;
         .left {
             flex-shrink: 0;
             width: $width;
