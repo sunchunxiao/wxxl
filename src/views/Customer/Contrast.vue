@@ -203,7 +203,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['customerTree', 'cuscompareArr']),
+        ...mapGetters(['customerTree', 'cuscompareArr', 'cusLastcidObjArr']),
         hasTree() {
             return !_.isEmpty(this.customerTree);
         },
@@ -280,6 +280,15 @@ export default {
 
         },
         startChecked() {
+            this.val = this.searchBarValue;
+            if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
+                this.debounce();
+            }
+            this.changeDate = this.searchBarValue;
+            const bool = JSON.stringify(this.cusLastcidObjArr) == JSON.stringify(this.cidObjArr);
+            if (bool) {
+                return;
+            }
             this.debounce();
         },
         cleanChecked () {

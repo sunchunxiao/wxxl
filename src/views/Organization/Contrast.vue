@@ -355,6 +355,12 @@ export default {
             }, 300);
         },
         startChecked() {
+            this.val = this.searchBarValue;
+            if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
+                this.debounce();
+                this.debounceBack();
+            }
+            this.changeDate = this.searchBarValue;
             const bool = JSON.stringify(this.orgLastcidObjArr) == JSON.stringify(this.cidObjArr);
             const boolBack = JSON.stringify(this.orgLastcidObjArrBack) == JSON.stringify(this.cidObjBackArr);
             if (!bool) {
