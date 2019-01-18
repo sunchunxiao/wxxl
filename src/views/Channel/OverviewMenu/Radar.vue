@@ -28,7 +28,6 @@
                 </template>
               </slider>
             </div>
-
             <el-row class="margin-bottom-20 overview_title">综合评估</el-row>
             <Radar
               v-if="channelRankArr.length"

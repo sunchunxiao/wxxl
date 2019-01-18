@@ -377,7 +377,8 @@ export default {
 
 <style lang="scss" scoped>
 .pie-container {
-    width: 100%;
+    // width: 100%;
+    width: 198px;
     .pie {
         width: 198px;
         height: 198px;

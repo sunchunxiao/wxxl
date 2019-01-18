@@ -17,7 +17,7 @@
               <el-col
                 v-if="fundHomeArr.length>0"
                 :key="index"
-                :span="4">
+                style="width:198px">
                 <ProTargetAchievement
                   :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
                   @click.native="clickIndex(index)"
