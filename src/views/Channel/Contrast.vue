@@ -280,6 +280,11 @@ export default {
             });
         },
         startChecked() {
+            this.val = this.searchBarValue;
+            if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
+                this.debounce();
+            }
+            this.changeDate = this.searchBarValue;
             const bool = JSON.stringify(this.channelLastcidObjArr) == JSON.stringify(this.cidObjArr);
             if (bool) {
                 return;

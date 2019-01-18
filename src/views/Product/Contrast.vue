@@ -277,14 +277,16 @@ export default {
                     this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
                         this.$refs.tree.setCheckedKeys(checkKeys);
                     });
-                    // 指标
-                    // const progressData = res[1];
-                    // this.$store.dispatch('SaveProgressData', progressData.data);
                 }
                 this.debounce();
             });
         },
         startChecked() {
+            this.val = this.searchBarValue;
+            if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
+                this.debounce();
+            }
+            this.changeDate = this.searchBarValue;
             const bool = JSON.stringify(this.lastcidObjArr) == JSON.stringify(this.cidObjArr);
             if (bool) {
                 return;
