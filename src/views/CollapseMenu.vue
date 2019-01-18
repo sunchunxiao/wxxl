@@ -165,7 +165,7 @@ export default {
         }
     },
     methods:{
-        home(){
+        home() {
             this.$router.push('/home');
         },
         getActivePath(fullPath) {
