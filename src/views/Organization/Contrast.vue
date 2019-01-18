@@ -361,6 +361,7 @@ export default {
                 this.debounceBack();
             }
             this.changeDate = this.searchBarValue;
+            this.$refs.child.clearKw();
             const bool = JSON.stringify(this.orgLastcidObjArr) == JSON.stringify(this.cidObjArr);
             const boolBack = JSON.stringify(this.orgLastcidObjArrBack) == JSON.stringify(this.cidObjBackArr);
             if (!bool) {
