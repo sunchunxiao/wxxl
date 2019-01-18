@@ -6,12 +6,12 @@
     background: #e6e6e6;
     display: flex;
     flex-direction: column;
-    transition: all .3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: width .3s ease, min-width .3s ease;
     &.tree_block_none {
         width: 0;
         min-width: 0;
-        white-space: nowrap;
-        transition: all .3s ease;
     }
     >div:not(.tree_content) {
         flex-shrink: 0;
