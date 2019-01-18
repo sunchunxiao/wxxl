@@ -169,6 +169,9 @@ export default {
     position: relative;
     top: -6px;
   }
+  input.el-input__inner {
+      line-height: 28px;
+  }
 }
 </style>
 
