@@ -134,12 +134,11 @@
                 </el-col>
               </template>
             </el-row>
+            <el-row
+              class="overview_select">
+              {{ message }}
+            </el-row>
           </Card>
-          <el-row
-            v-if="!productTree"
-            class="overview_select">
-            暂无数据
-          </el-row>
         </el-col>
       </el-row>
     </div>
@@ -202,7 +201,8 @@ export default {
             treeClone: {},
             changeDate: {},
             findFatherId: '',
-            isCollapse: false
+            isCollapse: false,
+            message: ''
         };
     },
     computed: {
@@ -274,6 +274,9 @@ export default {
             };
             API.GetProductHistory(params).then(res => {
                 this.$store.dispatch('SaveProductHistory', res.data);
+                if (!res.data.length) {
+                    this.message = '暂无数据';
+                }
             }).finally(() => {
                 this.loading = false;
             });
