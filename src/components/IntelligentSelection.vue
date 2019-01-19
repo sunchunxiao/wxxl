@@ -203,8 +203,10 @@ export default {
                         },
                         itemStyle: {
                             emphasis: {
-                                shadowBlur: 10,
-                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                borderColor: '#F2C811',
+                                borderWidth: 2,
+                                // shadowBlur: 10,
+                                // shadowColor: 'rgba(0, 0, 0, 0.5)'
                             }
                         }
                     },
