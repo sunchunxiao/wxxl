@@ -195,7 +195,7 @@ $title-font-size: 18px;
 $subtitle-font-size: 16px;
 $scale: 1.8;
 #collapse-menu {
-    width: 64px;
+    width: 55px;
     overflow: hidden;
     background-color: $bgcolor;
     border-right: none;
