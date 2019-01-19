@@ -103,7 +103,7 @@
             border-radius: 4px;
             padding: 20px 35px;
             position: relative;
-            .el-checkbox-group{
+            .el-checkbox-group {
                 height: 260px;
                 overflow-y: auto;
             }
@@ -120,12 +120,27 @@
                 margin-top: 5px;
                 display: flex;
                 white-space: pre-wrap;
+                color: #757475;
             }
             .center {
+                width: 138px;
+                height: 28px;
+                line-height: 4px;
+                color: #4d4d4d;
+                font-weight: 600;
+                background-color: #F2C811;
+                border-color: #F2C811;
                 position: absolute;
                 bottom: 20px;
                 left: 50%;
                 transform: translateX(-50%);
+            }
+            .el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner{
+                background-color: #F2C811;
+                border-color: #F2C811;
+            }
+            .el-checkbox__input.is-checked+.el-checkbox__label{
+                color: #757475;
             }
         }
     }
