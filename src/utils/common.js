@@ -2,7 +2,7 @@ import echarts from "echarts";
 export function calculatePercent(a, b) {
     if (b > 0) {
         const percent = (a / b * 100).toFixed(0) - 0; //将percent转化为number
-        const largerThanOne = (a / b) >= 1;
+        const largerThanOne = percent >= 100;
         return {
             percent,
             largerThanOne
