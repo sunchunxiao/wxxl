@@ -233,8 +233,10 @@ export default {
                             if (!bool) {
                                 numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
                             }
-                        }else if(!this.treeProgressLoading){
+                        } else if (!this.treeProgressLoading) {
                             numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
+                        } else {
+                            return;
                         }
                     }
                 }
@@ -243,15 +245,11 @@ export default {
         }
     },
     watch: {
-        // form: {
-        //     handler: function () { },
-        //     deep: true
-        // },
         cid: function () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
             this.getTreePrograss();
             this.getHistory();
-        }
+        },
     },
     mounted () {
         //获取初始时间

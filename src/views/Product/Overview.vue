@@ -217,8 +217,10 @@ export default {
                             if (!bool) {
                                 numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
                             }
-                        }else if(!this.treeProgressLoading){
+                        } else if (!this.treeProgressLoading) {
                             numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
+                        } else {
+                            return;
                         }
                     }
                 }

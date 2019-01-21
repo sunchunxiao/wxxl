@@ -32,7 +32,6 @@
           :span="5"
           :class="{'tree_block_none':isCollapse}"
           class="tree_container">
-          {{ noStandardObj }}
           <div
             size="mini"
             class="clean_btn">
@@ -95,6 +94,7 @@
             v-loading="loading"
             class="min-height-400">
             <Card>
+              {{ noStandardObj }}
               <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
               <el-row v-if="compareArr.length">
                 <slider
@@ -225,9 +225,9 @@ export default {
     watch: {
         cidObjArr(val) {
             if (val.length > 0) {
-                // for (let i of val) {
-                //     this.cid = i.cid;
-                // }
+                for (let i of val) {
+                    this.cid = i.cid;
+                }
             } else if (val.length === 0) {
                 this.$store.dispatch('ClearCompareArr');
             }
@@ -299,6 +299,9 @@ export default {
         startChecked() {
             this.val = this.searchBarValue;
             if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
+                for (let i of this.cidObjArr) {
+                    this.getTreePrograss(i.cid);
+                }
                 this.debounce();
             }
             this.changeDate = this.searchBarValue;
@@ -457,25 +460,10 @@ export default {
             if (!val.cid) {//无精确搜索
                 //数据不为null时
                 if (this.cid) {
-                    this.cidObjArr=[];
-                    if (this.cid !== this.productTree.cid) {
-                        this.cid = this.productTree.cid;
-                        this.treeClone = _.cloneDeep(this.productTree);
-                        this.addProperty([this.treeClone]);
-                        let arr = [];
-                        for (let i = 0; i < 3; i++) {
-                            this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
-                        }
-                        const checkKeys = arr.map(i => i.cid);
-                        this.$store.dispatch('SaveProductTree', this.productTree).then(() => {
-                            this.$refs.tree.setCheckedKeys(checkKeys);
-                        });
-                        this.debounce();
-                    } else {
-                        //公司根节点
-                        this.allRequest();
+                    for (let i of this.cidObjArr) {
+                        this.getTreePrograss(i.cid);
                     }
-                    // this.allRequest();
+                    this.allRequest();
                 } else {
                     this.promise();//数据tree为null时,选择时间后调用接口,
                 }
@@ -531,6 +519,7 @@ export default {
                 // 如果选中的个数不超过 4
                 if (this.cidObjArr.length < 4) {
                     this.cidObjArr.push(data);
+                    // console.log(data);
                     if (data.hasData) {
                         if (data.children) {
                             this.noStandardObj[data.cid]=0;
@@ -543,7 +532,7 @@ export default {
                             }
                         }
                     }
-                    // console.log(data);
+
                 } else if (this.cidObjArr.length === 4) {
                     this.warn('最多对比 4 条');
                     this.cancelKey = data.cid;
