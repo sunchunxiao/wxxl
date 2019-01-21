@@ -32,7 +32,8 @@
           :span="5"
           :class="{'tree_block_none':isCollapse}"
           class="tree_container">
-          <div class="title">毛利润额目标达成率</div>
+          <!-- <div class="title">毛利润额目标达成率</div> -->
+          <div class="title">毛利润额目标未达标数 :{{ noStandard }} </div>
           <div class="tree_content">
             <div
               @click="click"
@@ -189,7 +190,8 @@ export default {
             tabs: OVER_TABS,
             currView: '',
             style: 0,
-            isCollapse: false
+            isCollapse: false,
+            treeProgressLoading: true
         };
     },
     computed: {
@@ -202,6 +204,28 @@ export default {
         },
         activeCid() {
             return this.cid;
+        },
+        noStandard() {
+            let numArr = [];
+            if (this.cid) {
+                //找节点
+                let obj = this.preOrder([this.treeClone], this.cid);
+                if (obj.children) {
+                    for (let i of obj.children) {
+                        if (i.real_total && i.target_total) {
+                            const bool = this.calculatePercent(i.real_total,i.target_total).largerThanOne;
+                            if (!bool) {
+                                numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
+                            }
+                        } else if (!this.treeProgressLoading) {
+                            numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
+                        } else {
+                            return;
+                        }
+                    }
+                }
+            }
+            return numArr.length;
         }
     },
     watch: {
@@ -295,6 +319,7 @@ export default {
                 ...this.getPeriodByPt(),
                 nid: id
             };
+            this.treeProgressLoading = true;
             API.GetProductTreeProduct(params).then(res => {
                 let obj = this.preOrder([this.treeClone], id);
                 if (obj.cid === id) {
@@ -310,6 +335,7 @@ export default {
                         }
                     }
                 }
+                this.treeProgressLoading = false;
             });
         },
         getPt() {
