@@ -282,6 +282,9 @@ export default {
         startChecked() {
             this.val = this.searchBarValue;
             if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
+                for (let i of this.cidObjArr) {
+                    this.getTreePrograss(i.nid);
+                }
                 this.debounce();
             }
             this.changeDate = this.searchBarValue;
@@ -427,6 +430,9 @@ export default {
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
+                for (let i of this.cidObjArr) {
+                    this.getTreePrograss(i.nid);
+                }
                 this.allRequest();
             } else {
                 //搜索相同的id,改变时间
