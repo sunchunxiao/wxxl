@@ -43,8 +43,9 @@
               class="select clean_select">取消全部</span>
           </div>
           <div class="title_target">
-            <span>当前目标: <span class="title">{{ num }}</span></span>
-            <span>毛利目标达成率</span>
+            <span>毛利目标未达标数: <span class="title">{{ noStandardNum }}</span></span>
+            <!-- <span>当前目标: <span class="title">{{ num }}</span></span>
+            <span>毛利目标达成率</span> -->
           </div>
           <div class="tree_content">
             <div class="company">
@@ -201,6 +202,9 @@ export default {
             opcityIndex: undefined,
             opciatyBool: false,
             isCollapse: false,
+            treeProgressLoading: true,
+            noStandardObj: {},
+            noStandardNum: 0
         };
     },
     computed: {
@@ -219,6 +223,9 @@ export default {
     watch: {
         cidObjArr(val) {
             if (val.length > 0) {
+                for (let i of val) {
+                    this.cid = i.nid;
+                }
                 // this.debounce();
             } else if (val.length == 0) {
                 this.$store.dispatch('ClearChannelCompareArr');
@@ -252,6 +259,13 @@ export default {
         }
     },
     methods: {
+        getNoStandardNum() {
+            let num = 0;
+            for (let i in this.noStandardObj) {
+                num += this.noStandardObj[i];
+            }
+            this.noStandardNum = num;
+        },
         getUnit(item) {
             let obj = this.channelSubject.find(el => {
                 return el.subject == item.subject && el.subject_name == item.subject_name;
@@ -296,6 +310,8 @@ export default {
             this.debounce();
         },
         cleanChecked () {
+            this.noStandardObj = {};
+            this.noStandardNum = 0;
             this.cidObjArr = [];
             this.$refs.tree.setCheckedKeys([]);
             this.$store.dispatch('SaveChannelCidObj',_.cloneDeep(this.cidObjArr));
@@ -340,18 +356,33 @@ export default {
                 ...this.getPeriodByPt(),
                 nid: id
             };
-            API.GetChannelTreePrograss(params).then(res=>{
+            API.GetChannelTreePrograss(params).then(res => {
                 let obj = this.preOrder([this.treeClone], id);
+                let arr = [];
                 if (obj.nid === id) {
                     obj.hasData = true;//插入数据的hasData为true
                     obj.real_total = res.data[id].real;
                     obj.target_total = res.data[id].target;
                 }
                 if (obj.children) {
-                    for (let i of obj.children){
+                    for (let i of obj.children) {
                         if (_.has(res.data, i.nid)) {
                             i.real_total = res.data[i.nid].real;
                             i.target_total = res.data[i.nid].target;
+                        }
+                    }
+                }
+                for (let i of this.cidObjArr) {
+                    // console.log(i,i.cid,arr);
+                    arr.push(i.nid);
+                    if (_.includes(arr, obj.nid)) {
+                        // console.log(111,obj.cid);
+                        this.noStandardObj[obj.nid] = 0;
+                        for (let j of obj.children) {
+                            if (!this.calculatePercent(j.real_total,j.target_total).largerThanOne) {
+                                this.noStandardObj[obj.nid] ++;
+                                this.getNoStandardNum();
+                            }
                         }
                     }
                 }
@@ -453,6 +484,12 @@ export default {
             this.cid = data.nid;
         },
         handleCheckChange(data, checked) {
+            if (!checked) {
+                // console.log(data.cid, this.noStandardObj, this.noStandardObj[data.cid]);
+                delete this.noStandardObj[data.nid];
+                this.getNoStandardNum();
+                // console.log(data.cid, this.noStandardObj);
+            }
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             if (!checked && this.cancelKey && data.nid === this.cancelKey) {
                 const index = _.findIndex(this.cidObjArr, item => item.nid === data.nid);
@@ -480,6 +517,18 @@ export default {
                 // 如果选中的个数不超过 4
                 if (this.cidObjArr.length < 4) {
                     this.cidObjArr.push(data);
+                    if (data.hasData) {
+                        if (data.children) {
+                            this.noStandardObj[data.nid]=0;
+                            for (let i of data.children) {
+                                if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
+                                    // console.log(this.noStandardObj, "this.noStandardObj");
+                                    this.noStandardObj[data.nid] ++;
+                                    this.getNoStandardNum();
+                                }
+                            }
+                        }
+                    }
                 } else if (this.cidObjArr.length === 4) {
                     this.warn('最多对比 4 条');
                     this.cancelKey = data.nid;

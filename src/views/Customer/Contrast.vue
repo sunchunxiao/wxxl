@@ -43,8 +43,9 @@
               class="select clean_select">取消全部</span>
           </div>
           <div class="title_target">
-            <span>当前目标: <span class="title">{{ num }}</span></span>
-            <span>毛利目标达成率</span>
+            <span>毛利目标未达标数: <span class="title">{{ noStandardNum }}</span></span>
+            <!-- <span>当前目标: <span class="title">{{ num }}</span></span>
+            <span>毛利目标达成率</span> -->
           </div>
           <div class="tree_content">
             <div class="company">
@@ -93,6 +94,7 @@
             v-loading="loading"
             class="min-height-400">
             <Card>
+              {{ noStandardObj }}
               <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
               <el-row v-if="cuscompareArr.length">
                 <slider
@@ -200,6 +202,9 @@ export default {
             opcityIndex: undefined,
             opciatyBool: false,
             isCollapse: false,
+            treeProgressLoading: true,
+            noStandardObj: {},
+            noStandardNum: 0
         };
     },
     computed: {
@@ -218,6 +223,9 @@ export default {
     watch: {
         cidObjArr(val) {
             if (val.length > 0) {
+                for (let i of val) {
+                    this.cid = i.cid;
+                }
                 // this.debounce();
             } else if (val.length === 0) {
                 this.$store.dispatch('ClearCusCompare');
@@ -251,6 +259,14 @@ export default {
         }
     },
     methods: {
+        getNoStandardNum() {
+            let num = 0;
+            // console.log(this.noStandardObj,111);
+            for (let i in this.noStandardObj) {
+                num += this.noStandardObj[i];
+            }
+            this.noStandardNum = num;
+        },
         getUnit(item) {
             let obj = this.customerSubject.find(el => {
                 return el.subject == item.subject && el.subject_name == item.subject_name;
@@ -282,6 +298,9 @@ export default {
         startChecked() {
             this.val = this.searchBarValue;
             if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
+                for (let i of this.cidObjArr) {
+                    this.getTreePrograss(i.cid);
+                }
                 this.debounce();
             }
             this.changeDate = this.searchBarValue;
@@ -293,8 +312,11 @@ export default {
             this.debounce();
         },
         cleanChecked () {
+            this.noStandardObj = {};
+            this.noStandardNum = 0;
             this.cidObjArr = [];
             this.$refs.tree.setCheckedKeys([]);
+            this.$store.dispatch('SaveCusCidObj',_.cloneDeep(this.cidObjArr));
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
@@ -336,18 +358,35 @@ export default {
                 ...this.getPeriodByPt(),
                 nid: id
             };
-            API.GetCusTreePrograss(params).then(res=>{
+            API.GetCusTreePrograss(params).then(res => {
                 let obj = this.preOrder([this.treeClone], id);
-                if(obj.cid === id){
+                let arr = [];
+                if (obj.cid === id) {
                     obj.hasData = true;//插入数据的hasData为true
                     obj.real_total = res.data[id].real;
                     obj.target_total = res.data[id].target;
                 }
                 if (obj.children) {
-                    for (let i of obj.children){
+                    for (let i of obj.children) {
                         if (_.has(res.data, i.cid)) {
                             i.real_total = res.data[i.cid].real;
                             i.target_total = res.data[i.cid].target;
+                        }
+                    }
+                }
+                for (let i of this.cidObjArr) {
+                    // console.log(i,i.cid,arr);
+                    arr.push(i.cid);
+                    if (_.includes(arr, obj.cid)) {
+                        // console.log(111,obj.cid);
+                        this.noStandardObj[obj.cid] = 0;
+                        if (obj.children) {
+                            for (let j of obj.children) {
+                                if (!this.calculatePercent(j.real_total,j.target_total).largerThanOne) {
+                                    this.noStandardObj[obj.cid] ++;
+                                    this.getNoStandardNum();
+                                }
+                            }
                         }
                     }
                 }
@@ -427,6 +466,9 @@ export default {
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
+                for (let i of this.cidObjArr) {
+                    this.getTreePrograss(i.cid);
+                }
                 this.allRequest();
             } else {
                 //搜索相同的id,改变时间
@@ -474,6 +516,18 @@ export default {
                 // 如果选中的个数不超过 4
                 if (this.cidObjArr.length < 4) {
                     this.cidObjArr.push(data);
+                    if (data.hasData) {
+                        if (data.children) {
+                            this.noStandardObj[data.cid] = 0;
+                            for (let i of data.children) {
+                                if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
+                                    // console.log(this.noStandardObj, "this.noStandardObj");
+                                    this.noStandardObj[data.cid] ++;
+                                    this.getNoStandardNum();
+                                }
+                            }
+                        }
+                    }
                 } else if (this.cidObjArr.length === 4) {
                     this.warn('最多对比 4 条');
                     this.cancelKey = data.cid;
