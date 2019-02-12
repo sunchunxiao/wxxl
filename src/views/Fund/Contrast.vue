@@ -652,7 +652,7 @@ export default {
                     this.cidObjArr.push(data);
                     // 如果选中的个数不超过 4
                     // if (this.cidObjArr.length < 4) {
-                    // 		this.cidObjArr.push(data);
+                    //      this.cidObjArr.push(data);
                     // } else if (this.cidObjArr.length === 4) {
                     // 		this.warn('最多对比 4 条');
                     // 		this.cancelKey = data.cid;

@@ -44,7 +44,6 @@
           </div>
           <div class="title_target">
             <span>毛利目标未达标数: <span class="title">{{ noStandardNum }}</span></span>
-            <!-- <span>毛利目标未达标数: <span class="title">{{ noStandard }}</span></span> -->
             <!-- <span>当前目标: <span class="title">{{ num }}</span></span> -->
             <!-- <span>毛利目标达成率</span> -->
           </div>
@@ -75,7 +74,7 @@
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"
-                      class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
+                      class="margin-bottom-5">宽度 : {{ data.children.length }}</div>
                   </div>
                   <span class="label">
                     <span class="label_left">{{ data.name }}</span>
@@ -96,7 +95,6 @@
             class="min-height-400">
             <Card>
               {{ noStandardObj }}
-              <!-- {{ noStandard }} -->
               <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
               <el-row v-if="compareArr.length">
                 <slider
@@ -574,7 +572,7 @@ export default {
                     // console.log(data);
                     if (data.hasData) {
                         if (data.children) {
-                            this.noStandardObj[data.cid]=0;
+                            this.noStandardObj[data.cid] = 0;
                             for (let i of data.children) {
                                 if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
                                     // console.log(this.noStandardObj, "this.noStandardObj");

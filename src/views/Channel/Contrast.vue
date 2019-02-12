@@ -204,7 +204,9 @@ export default {
             isCollapse: false,
             treeProgressLoading: true,
             noStandardObj: {},
-            noStandardNum: 0
+            noStandardNum: 0,
+            isFirstCheck: true,
+            initCheckKeys: []
         };
     },
     computed: {
@@ -223,10 +225,9 @@ export default {
     watch: {
         cidObjArr(val) {
             if (val.length > 0) {
-                for (let i of val) {
-                    this.cid = i.nid;
-                }
-                // this.debounce();
+                // for (let i of val) {
+                //     this.cid = i.nid;
+                // }
             } else if (val.length == 0) {
                 this.$store.dispatch('ClearChannelCompareArr');
             }
@@ -251,9 +252,19 @@ export default {
                 this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
             }
             const checkKeys = arr.map(i => i.nid);
+            this.initCheckKeys = checkKeys;
             this.$store.dispatch('SaveChannelTree', this.channelTree).then(() => {
                 this.$refs.tree.setCheckedKeys(checkKeys);
+                let promiseArr = [];
+                for (let i of checkKeys) {
+                    promiseArr.push(this.getTreePrograss(i, false));
+                }
+                this.isFirstCheck = false;
+                Promise.all(promiseArr).then(() => {
+                    this.getNoStandardNum();
+                });
             });
+            this.debounce();
         } else {
             this.promise();
         }
@@ -286,19 +297,33 @@ export default {
                         children[i] && arr.push(children[i]);
                     }
                     const checkKeys = arr.map(i => i.nid);
+                    this.initCheckKeys = checkKeys;
                     this.$store.dispatch('SaveChannelTree', treeData.tree).then(() => {
                         this.$refs.tree.setCheckedKeys(checkKeys);
+                        let promiseArr = [];
+                        for (let i of checkKeys) {
+                            promiseArr.push(this.getTreePrograss(i, false));
+                        }
+                        Promise.all(promiseArr).then(() => {
+                            this.isFirstCheck = false;
+                            this.getNoStandardNum();
+                        });
                     });
-                    this.debounce();
                 }
+                this.debounce();
             });
         },
         startChecked() {
             this.val = this.searchBarValue;
             if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
+                let promiseArr = [];
+                // console.log(this.cidObjArr);
                 for (let i of this.cidObjArr) {
-                    this.getTreePrograss(i.nid);
+                    promiseArr.push(this.getTreePrograss(i.nid, false));
                 }
+                Promise.all(promiseArr).then(() => {
+                    this.getNoStandardNum();
+                });
                 this.debounce();
             }
             this.changeDate = this.searchBarValue;
@@ -344,7 +369,7 @@ export default {
             return API.GetChannelTree(params);
         },
         //获取百分比数据
-        getTreePrograss(cid) {
+        getTreePrograss(cid, isGetNoStandardNum = true) {
             let id;
             if (cid) {
                 id = cid;
@@ -356,36 +381,41 @@ export default {
                 ...this.getPeriodByPt(),
                 nid: id
             };
-            API.GetChannelTreePrograss(params).then(res => {
-                let obj = this.preOrder([this.treeClone], id);
-                let arr = [];
-                if (obj.nid === id) {
-                    obj.hasData = true;//插入数据的hasData为true
-                    obj.real_total = res.data[id].real;
-                    obj.target_total = res.data[id].target;
-                }
-                if (obj.children) {
-                    for (let i of obj.children) {
-                        if (_.has(res.data, i.nid)) {
-                            i.real_total = res.data[i.nid].real;
-                            i.target_total = res.data[i.nid].target;
-                        }
+            return new Promise((resolve,reject) => {
+                API.GetChannelTreePrograss(params).then(res => {
+                    let obj = this.preOrder([this.treeClone], id);
+                    let arr = [];
+                    for(let i of this.cidObjArr){
+                        arr.push(i.nid);
                     }
-                }
-                for (let i of this.cidObjArr) {
-                    // console.log(i,i.cid,arr);
-                    arr.push(i.nid);
-                    if (_.includes(arr, obj.nid)) {
-                        // console.log(111,obj.cid);
-                        this.noStandardObj[obj.nid] = 0;
-                        for (let j of obj.children) {
-                            if (!this.calculatePercent(j.real_total,j.target_total).largerThanOne) {
-                                this.noStandardObj[obj.nid] ++;
-                                this.getNoStandardNum();
+                    if (obj.nid === id) {
+                        obj.hasData = true;//插入数据的hasData为true
+                        obj.real_total = res.data[id].real;
+                        obj.target_total = res.data[id].target;
+                    }
+                    if (obj.children) {
+                        if (_.includes(arr, obj.nid)) {
+                            this.noStandardObj[obj.nid] = 0;
+                        }
+                        for (let i of obj.children) {
+                            if (_.has(res.data, i.nid)) {
+                                i.real_total = res.data[i.nid].real;
+                                i.target_total = res.data[i.nid].target;
+                                if (_.includes(arr, obj.nid)) {
+                                    if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
+                                        this.noStandardObj[obj.nid] ++;
+                                        if (isGetNoStandardNum) {
+                                            this.getNoStandardNum();
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                });
             });
         },
         getCompare() {
@@ -400,7 +430,14 @@ export default {
                     v.subject_name = this.channelSubject[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
-                this.$store.dispatch('SaveChannelCidObj',_.cloneDeep(this.cidObjArr));
+                let lastCidObjArr = [];
+                for (let i of resultList[0].nodes) {
+                    let obj = this.cidObjArr.find(el => el.name == i);
+                    if (obj) {
+                        lastCidObjArr.push(obj);
+                    }
+                }
+                this.$store.dispatch('SaveChannelCidObj',_.cloneDeep(lastCidObjArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveChannelCompareArr', resultList);
@@ -461,9 +498,13 @@ export default {
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
+                let promiseArr = [];
                 for (let i of this.cidObjArr) {
-                    this.getTreePrograss(i.nid);
+                    promiseArr.push(this.getTreePrograss(i.nid, false));
                 }
+                Promise.all(promiseArr).then(() => {
+                    this.getNoStandardNum();
+                });
                 this.allRequest();
             } else {
                 //搜索相同的id,改变时间
@@ -517,9 +558,12 @@ export default {
                 // 如果选中的个数不超过 4
                 if (this.cidObjArr.length < 4) {
                     this.cidObjArr.push(data);
+                    if (!this.isFirstCheck || !this.initCheckKeys.includes(data.nid)) {
+                        this.cid = data.nid;
+                    }
                     if (data.hasData) {
                         if (data.children) {
-                            this.noStandardObj[data.nid]=0;
+                            this.noStandardObj[data.nid] = 0;
                             for (let i of data.children) {
                                 if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
                                     // console.log(this.noStandardObj, "this.noStandardObj");
