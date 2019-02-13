@@ -95,7 +95,7 @@
             v-loading="loading"
             class="min-height-400">
             <Card>
-              {{ noStandardObj }}
+              <!-- {{ noStandardObj }} -->
               <el-row class="margin-bottom-20">组织对比分析和平均值分析前端</el-row>
               <el-row v-if="hasConstarst">
                 <slider
@@ -243,7 +243,9 @@ export default {
             isCollapse: false,
             treeProgressLoading: true,
             noStandardObj: {},
-            noStandardNum: 0
+            noStandardNum: 0,
+            isFirstCheck: true,
+            initCheckKeys: []
         };
     },
     computed: {
@@ -265,9 +267,9 @@ export default {
     watch: {
         cidObjArr(val) {
             if (val.length > 0) {
-                for (let i of val) {
-                    this.cid = i.cid;
-                }
+                // for (let i of val) {
+                //     this.cid = i.cid;
+                // }
                 // this.debounce();
             } else if (val.length === 0) {
                 this.$store.dispatch('ClearFundCompareArr');
@@ -275,22 +277,22 @@ export default {
         },
         cidObjBackArr(val) {
             if (val.length > 0) {
-                for (let i of val) {
-                    this.cid = i.cid;
-                }
+                // for (let i of val) {
+                //     this.cid = i.cid;
+                // }
                 // this.debounceBack();
             } else if (val.length === 0) {
                 this.$store.dispatch('ClearFundBackCompareArr');
             }
         },
-        cid(){
+        cid() {
             this.getTreePrograss();
         }
     },
     created() {
         // 防抖函数 减少发请求次数
-        this.debounce = _.debounce(this.getCompare, 1000);
-        this.debounceBack = _.debounce(this.getCompareBack, 1000);
+        this.debounce = _.debounce(this.getCompare, 0);
+        this.debounceBack = _.debounce(this.getCompareBack, 0);
     },
     mounted() {
         //获取初始时间
@@ -311,8 +313,17 @@ export default {
             const checkKeys = arr.map(i => i.cid);
             const checkBackKeys = arrback.map(i => i.cid);
             const allCheckKeys = [...checkKeys,...checkBackKeys];
+            this.initCheckKeys = allCheckKeys;
             this.$store.dispatch('SaveFundTree', this.fundTree).then(() => {
                 this.$refs.tree.setCheckedKeys(allCheckKeys);
+                let promiseArr = [];
+                for (let i of allCheckKeys) {
+                    promiseArr.push(this.getTreePrograss(i, false));
+                }
+                this.isFirstCheck = false;
+                Promise.all(promiseArr).then(() => {
+                    this.getNoStandardNum();
+                });
             });
             this.debounce();
             this.debounceBack();
@@ -326,7 +337,6 @@ export default {
     methods: {
         getNoStandardNum() {
             let num = 0;
-            // console.log(this.noStandardObj,111);
             for (let i in this.noStandardObj) {
                 num += this.noStandardObj[i];
             }
@@ -358,9 +368,17 @@ export default {
                 const checkKeys = arr.map(i => i.cid);
                 const checkBackKeys = arrback.map(i => i.cid);
                 const allCheckKeys = [...checkKeys,...checkBackKeys];
-
+                this.initCheckKeys = allCheckKeys;
                 this.$store.dispatch('SaveFundTree', treeData.tree).then(() => {
                     this.$refs.tree.setCheckedKeys(allCheckKeys);
+                    let promiseArr = [];
+                    for (let i of allCheckKeys) {
+                        promiseArr.push(this.getTreePrograss(i, false));
+                    }
+                    Promise.all(promiseArr).then(() => {
+                        this.isFirstCheck = false;
+                        this.getNoStandardNum();
+                    });
                 });
                 this.debounce();
                 this.debounceBack();
@@ -376,9 +394,13 @@ export default {
             this.val = this.searchBarValue;
             if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
                 const allCidArr = [...this.cidObjArr, ...this.cidObjBackArr];
+                let promiseArr = [];
                 for (let i of allCidArr) {
-                    this.getTreePrograss(i.cid);
+                    promiseArr.push(this.getTreePrograss(i.cid, false));
                 }
+                Promise.all(promiseArr).then(() => {
+                    this.getNoStandardNum();
+                });
                 this.debounce();
                 this.debounceBack();
             }
@@ -426,7 +448,7 @@ export default {
             return API.GetFundTree(params);
         },
         //获取百分比数据
-        getTreePrograss(cid) {
+        getTreePrograss(cid, isGetNoStandardNum = true) {
             let id;
             if (cid) {
                 id = cid;
@@ -439,39 +461,44 @@ export default {
                 nid: id,
                 version: this.form.version
             };
-            API.GetFundTreePrograss(params).then(res=>{
-                let obj = this.preOrder([this.treeClone], id);
-                let arr = [];
-                if(obj.cid == id) {
-                    obj.hasData = true;//插入数据的hasData为true
-                    obj.real_total = res.data[id].real;
-                    obj.target_total = res.data[id].target;
-                }
-                if (obj.children) {
-                    for (let i of obj.children) {
-                        if (_.has(res.data, i.cid)) {
-                            i.real_total = res.data[i.cid].real;
-                            i.target_total = res.data[i.cid].target;
-                        }
+            return new Promise((resolve,reject) => {
+                API.GetFundTreePrograss(params).then(res=>{
+                    let obj = this.preOrder([this.treeClone], id);
+                    let arr = [];
+                    const allCidArr = [...this.cidObjArr, ...this.cidObjBackArr];
+                    for (let i of allCidArr) {
+                        arr.push(i.cid);
                     }
-                }
-                const allCidArr = [...this.cidObjArr, ...this.cidObjBackArr];
-                // console.log(allCidArr);
-                for (let i of allCidArr) {
-                    arr.push(i.cid);
-                    // console.log(i,i.cid,arr);
-                    if (_.includes(arr, obj.cid)) {
-                        // console.log(111,obj.cid);
-                        this.noStandardObj[obj.cid] = 0;
-                        for (let j of obj.children) {
-                            if (!this.calculatePercent(j.real_total,j.target_total).largerThanOne) {
-                                this.noStandardObj[obj.cid] ++;
-                                this.getNoStandardNum();
+                    if(obj.cid == id) {
+                        obj.hasData = true;//插入数据的hasData为true
+                        obj.real_total = res.data[id].real;
+                        obj.target_total = res.data[id].target;
+                    }
+                    if (obj.children) {
+                        if (_.includes(arr, obj.cid)) {
+                            this.noStandardObj[obj.cid] = 0;
+                        }
+                        for (let i of obj.children) {
+                            if (_.has(res.data, i.cid)) {
+                                i.real_total = res.data[i.cid].real;
+                                i.target_total = res.data[i.cid].target;
+                                if (_.includes(arr, obj.cid)) {
+                                    if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
+                                        this.noStandardObj[obj.cid] ++;
+                                        if (isGetNoStandardNum) {
+                                            this.getNoStandardNum();
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                });
             });
+
         },
         getCompare() {
             if (!this.cidObjArr.length) {
@@ -485,7 +512,14 @@ export default {
                     v.subject_name = this.fundSubject[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
-                this.$store.dispatch('SaveFundCidObj',_.cloneDeep(this.cidObjArr));
+                let lastCidObjArr = [];
+                for (let i of resultList[0].nodes) {
+                    let obj = this.cidObjArr.find(el => el.name == i);
+                    if (obj) {
+                        lastCidObjArr.push(obj);
+                    }
+                }
+                this.$store.dispatch('SaveFundCidObj',_.cloneDeep(lastCidObjArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveFundCompareArr', resultList);
@@ -505,7 +539,7 @@ export default {
             return API.GetFundCompare(params);
         },
         getCompareBack() {
-            if(!this.cidObjBackArr.length){
+            if (!this.cidObjBackArr.length) {
                 return;
             }
             this.loading = true;
@@ -516,7 +550,14 @@ export default {
                     v.subject_name = this.fundBackSubject[k].subject_name;
                 });
                 const cidName = this.cidObjBackArr.map(o => o.name);
-                this.$store.dispatch('SaveFundCidObjBack',_.cloneDeep(this.cidObjBackArr));
+                let lastCidObjArr = [];
+                for (let i of resultList[0].nodes) {
+                    let obj = this.cidObjBackArr.find(el => el.name == i);
+                    if (obj) {
+                        lastCidObjArr.push(obj);
+                    }
+                }
+                this.$store.dispatch('SaveFundCidObjBack',_.cloneDeep(lastCidObjArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveFundCompareArrback', resultList);
@@ -577,12 +618,19 @@ export default {
             this.findFatherId = val.cid;
             this.nodeArr = [];
             this.val = val;
-            if (!val.cid){
+            const allCidArr = [...this.cidObjArr, ...this.cidObjBackArr];
+            if (!val.cid) {
+                let promiseArr = [];
+                for (let i of allCidArr) {
+                    promiseArr.push(this.getTreePrograss(i.cid, false));
+                }
+                Promise.all(promiseArr).then(() => {
+                    this.getNoStandardNum();
+                });
                 this.allRequest();
             } else {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
-                    const allCidArr = [...this.cidObjArr, ...this.cidObjBackArr];
                     for (let i of allCidArr) {
                         this.getTreePrograss(i.cid);
                     }
@@ -604,10 +652,8 @@ export default {
         handleCheckChange(data, checked) {
             const type = 2;//1是前端,2是后端
             if (!checked) {
-                // console.log(data.cid, this.noStandardObj, this.noStandardObj[data.cid]);
                 delete this.noStandardObj[data.cid];
                 this.getNoStandardNum();
-                // console.log(data.cid, this.noStandardObj);
             }
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             // 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
@@ -624,7 +670,6 @@ export default {
                     if (this.cidObjBackArr[0] && data.parent_id !== this.cidObjBackArr[0].parent_id) {
                         this.warn('请选择相同父级下的后端进行对比');
                         this.cancelKey = data.cid;
-
                         const checkKeys = this.cidObjArr.map(i => i.cid);
                         const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
                         const allCheckKeys = [...checkKeys,...checkBackKeys];
@@ -632,6 +677,9 @@ export default {
                         return;
                     }
                     this.cidObjBackArr.push(data);
+                    if (!this.isFirstCheck || !this.initCheckKeys.includes(data.cid)) {
+                        this.cid = data.cid;
+                    }
                     // else if (this.cidObjArr.length === 4) {
                     // 		this.warn('最多对比 4 条');
                     // 		this.cancelKey = data.cid;
@@ -650,6 +698,9 @@ export default {
                         return;
                     }
                     this.cidObjArr.push(data);
+                    if (!this.isFirstCheck || !this.initCheckKeys.includes(data.cid)) {
+                        this.cid = data.cid;
+                    }
                     // 如果选中的个数不超过 4
                     // if (this.cidObjArr.length < 4) {
                     //      this.cidObjArr.push(data);
@@ -665,7 +716,6 @@ export default {
                         this.noStandardObj[data.cid] = 0;
                         for (let i of data.children) {
                             if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
-                                // console.log(this.noStandardObj, "this.noStandardObj");
                                 this.noStandardObj[data.cid] ++;
                                 this.getNoStandardNum();
                             }
@@ -674,7 +724,7 @@ export default {
                 }
             } else { // 如果取消选择
                 // 找到取消选择的下标
-                if (data.type === type){
+                if (data.type === type) {
                     // 找到取消选择的下标
                     const index = _.findIndex(this.cidObjBackArr, item => item.cid === data.cid);
                     this.cidObjBackArr.splice(index, 1);
@@ -682,7 +732,6 @@ export default {
                     const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
                     this.cidObjArr.splice(index, 1);
                 }
-
             }
         },
         warn(msg) {

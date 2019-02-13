@@ -45,8 +45,6 @@
           </div>
           <div class="title_target">
             <span>毛利目标未达标数: <span class="title">{{ noStandardNum }}</span></span>
-            <!-- <span>当前目标: <span class="title">{{ num }}</span></span> -->
-            <!-- <span>毛利目标达成率</span> -->
           </div>
           <div class="tree_content">
             <div class="company">
@@ -257,6 +255,7 @@ export default {
         hasConstarstBack () {
             return !_.isEmpty(this.orgcompareArrback);
         },
+        //目前保留
         num () {
             if (this.cidObjArr.length || this.cidObjBackArr.length) {
                 return this.cidObjArr.length + this.cidObjBackArr.length;
@@ -284,7 +283,7 @@ export default {
                 this.$store.dispatch('ClearOrgBackCompareArr');
             }
         },
-        cid(){
+        cid() {
             this.getTreePrograss();
         }
     },
@@ -311,12 +310,12 @@ export default {
             }
             const checkKeys = arr.map(i => i.cid);
             const checkBackKeys = arrback.map(i => i.cid);
-            const allChecKeys = [...checkKeys, ...checkBackKeys];
-            this.initCheckKeys = allChecKeys;
+            const allCheckKeys = [...checkKeys, ...checkBackKeys];
+            this.initCheckKeys = allCheckKeys;
             this.$store.dispatch('SaveOrgTree', this.organizationTree).then(() => {
-                this.$refs.tree.setCheckedKeys(allChecKeys);
+                this.$refs.tree.setCheckedKeys(allCheckKeys);
                 let promiseArr = [];
-                for (let i of allChecKeys) {
+                for (let i of allCheckKeys) {
                     promiseArr.push(this.getTreePrograss(i, false));
                 }
                 this.isFirstCheck = false;
@@ -337,7 +336,6 @@ export default {
     methods: {
         getNoStandardNum() {
             let num = 0;
-            // console.log(this.noStandardObj,111);
             for (let i in this.noStandardObj) {
                 num += this.noStandardObj[i];
             }
@@ -368,12 +366,12 @@ export default {
                 }
                 const checkKeys = arr.map(i => i.cid);
                 const checkBackKeys = arrback.map(i => i.cid);
-                const allChecKeys = [...checkKeys, ...checkBackKeys];
-                this.initCheckKeys = allChecKeys;
+                const allCheckKeys = [...checkKeys, ...checkBackKeys];
+                this.initCheckKeys = allCheckKeys;
                 this.$store.dispatch('SaveOrgTree', treeData.tree).then(() => {
-                    this.$refs.tree.setCheckedKeys(allChecKeys);
+                    this.$refs.tree.setCheckedKeys(allCheckKeys);
                     let promiseArr = [];
-                    for (let i of checkKeys) {
+                    for (let i of allCheckKeys) {
                         promiseArr.push(this.getTreePrograss(i, false));
                     }
                     Promise.all(promiseArr).then(() => {
@@ -650,10 +648,8 @@ export default {
         handleCheckChange (data, checked) {
             const type = 2;//1是前端,2是后端
             if (!checked) {
-                // console.log(data.cid, this.noStandardObj, this.noStandardObj[data.cid]);
                 delete this.noStandardObj[data.cid];
                 this.getNoStandardNum();
-                // console.log(data.cid, this.noStandardObj);
             }
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             // 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
@@ -672,8 +668,8 @@ export default {
                         this.cancelKey = data.cid;
                         const checkKeys = this.cidObjArr.map(i => i.cid);
                         const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                        const allChecKeys = [...checkKeys, ...checkBackKeys];
-                        this.$refs.tree.setCheckedKeys(allChecKeys);
+                        const allCheckKeys = [...checkKeys, ...checkBackKeys];
+                        this.$refs.tree.setCheckedKeys(allCheckKeys);
                         return;
                     }
                     this.cidObjBackArr.push(data);
@@ -693,8 +689,8 @@ export default {
                         this.cancelKey = data.cid;
                         const checkKeys = this.cidObjArr.map(i => i.cid);
                         const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                        const allChecKeys = [...checkKeys, ...checkBackKeys];
-                        this.$refs.tree.setCheckedKeys(allChecKeys);
+                        const allCheckKeys = [...checkKeys, ...checkBackKeys];
+                        this.$refs.tree.setCheckedKeys(allCheckKeys);
                         return;
                     }
                     this.cidObjArr.push(data);
@@ -716,7 +712,6 @@ export default {
                         this.noStandardObj[data.cid]=0;
                         for (let i of data.children) {
                             if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
-                                // console.log(this.noStandardObj, "this.noStandardObj");
                                 this.noStandardObj[data.cid] ++;
                                 this.getNoStandardNum();
                             }
@@ -733,7 +728,6 @@ export default {
                     const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
                     this.cidObjArr.splice(index, 1);
                 }
-
             }
         },
         warn(msg) {

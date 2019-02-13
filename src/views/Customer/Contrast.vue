@@ -272,7 +272,6 @@ export default {
     methods: {
         getNoStandardNum() {
             let num = 0;
-            // console.log(this.noStandardObj,111);
             for (let i in this.noStandardObj) {
                 num += this.noStandardObj[i];
             }
@@ -438,7 +437,6 @@ export default {
                     }
                 }
                 this.$store.dispatch('SaveCusCidObj',_.cloneDeep(lastCidObjArr));
-                // console.log(cidName);
                 // 只有当返回的跟当前选中的一样才更新 store
                 if(resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveCusCompareArr', resultList);
@@ -527,10 +525,8 @@ export default {
         },
         handleCheckChange(data, checked) {
             if (!checked) {
-                // console.log(data.cid, this.noStandardObj, this.noStandardObj[data.cid]);
                 delete this.noStandardObj[data.cid];
                 this.getNoStandardNum();
-                // console.log(data.cid, this.noStandardObj);
             }
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             if (!checked && this.cancelKey && data.cid === this.cancelKey) {
@@ -567,7 +563,6 @@ export default {
                             this.noStandardObj[data.cid] = 0;
                             for (let i of data.children) {
                                 if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
-                                    // console.log(this.noStandardObj, "this.noStandardObj");
                                     this.noStandardObj[data.cid] ++;
                                     this.getNoStandardNum();
                                 }

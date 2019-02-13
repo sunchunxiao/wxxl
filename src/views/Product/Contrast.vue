@@ -94,7 +94,6 @@
             v-loading="loading"
             class="min-height-400">
             <Card>
-              {{ noStandardObj }}
               <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
               <el-row v-if="compareArr.length">
                 <slider
@@ -534,10 +533,8 @@ export default {
         },
         handleCheckChange (data, checked) {
             if (!checked) {
-                // console.log(data.cid, this.noStandardObj, this.noStandardObj[data.cid]);
                 delete this.noStandardObj[data.cid];
                 this.getNoStandardNum();
-                // console.log(data.cid, this.noStandardObj);
             }
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             if (!checked && this.cancelKey && data.cid === this.cancelKey) {
@@ -569,13 +566,11 @@ export default {
                     if (!this.isFirstCheck || !this.initCheckKeys.includes(data.cid)) {
                         this.cid = data.cid;
                     }
-                    // console.log(data);
                     if (data.hasData) {
                         if (data.children) {
                             this.noStandardObj[data.cid] = 0;
                             for (let i of data.children) {
                                 if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
-                                    // console.log(this.noStandardObj, "this.noStandardObj");
                                     this.noStandardObj[data.cid] ++;
                                     this.getNoStandardNum();
                                 }

@@ -317,7 +317,6 @@ export default {
             this.val = this.searchBarValue;
             if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
                 let promiseArr = [];
-                // console.log(this.cidObjArr);
                 for (let i of this.cidObjArr) {
                     promiseArr.push(this.getTreePrograss(i.nid, false));
                 }
@@ -526,10 +525,8 @@ export default {
         },
         handleCheckChange(data, checked) {
             if (!checked) {
-                // console.log(data.cid, this.noStandardObj, this.noStandardObj[data.cid]);
                 delete this.noStandardObj[data.nid];
                 this.getNoStandardNum();
-                // console.log(data.cid, this.noStandardObj);
             }
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             if (!checked && this.cancelKey && data.nid === this.cancelKey) {
@@ -566,7 +563,6 @@ export default {
                             this.noStandardObj[data.nid] = 0;
                             for (let i of data.children) {
                                 if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
-                                    // console.log(this.noStandardObj, "this.noStandardObj");
                                     this.noStandardObj[data.nid] ++;
                                     this.getNoStandardNum();
                                 }
