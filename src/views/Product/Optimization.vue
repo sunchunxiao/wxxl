@@ -26,6 +26,7 @@
     </el-row>
     <div class="optimization">
       <el-row
+        v-if="productTree"
         type="flex"
         class="content_row">
         <el-col
@@ -141,6 +142,11 @@
             </el-row>
           </Card>
         </el-col>
+      </el-row>
+      <el-row
+        v-else
+        class="overview_select">
+        暂无数据
       </el-row>
     </div>
   </div>

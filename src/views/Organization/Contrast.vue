@@ -44,8 +44,7 @@
               class="select clean_select">取消全部</span>
           </div>
           <div class="title_target">
-            <span>当前目标: <span class="title">{{ num }}</span></span>
-            <span>毛利目标达成率</span>
+            <span>毛利目标未达标数: <span class="title">{{ noStandardNum }}</span></span>
           </div>
           <div class="tree_content">
             <div class="company">
@@ -240,6 +239,11 @@ export default {
             opciatyBool0: false,
             opciatyBool1: false,
             isCollapse: false,
+            treeProgressLoading: true,
+            noStandardObj: {},
+            noStandardNum: 0,
+            isFirstCheck: true,
+            initCheckKeys: []
         };
     },
     computed: {
@@ -250,6 +254,7 @@ export default {
         hasConstarstBack () {
             return !_.isEmpty(this.orgcompareArrback);
         },
+        //目前保留
         num () {
             if (this.cidObjArr.length || this.cidObjBackArr.length) {
                 return this.cidObjArr.length + this.cidObjBackArr.length;
@@ -261,24 +266,28 @@ export default {
     watch: {
         cidObjArr (val) {
             if (val.length > 0) {
-                // this.debounce();
+                // for (let i of val) {
+                //     this.cid = i.cid;
+                // }
             } else if (val.length === 0) {
                 this.$store.dispatch('ClearOrgCompareArr');
             }
         },
         cidObjBackArr (val) {
             if (val.length > 0) {
-                // this.debounceBack();
+                // for (let i of val) {
+                //     this.cid = i.cid;
+                // }
             } else if (val.length === 0) {
                 this.$store.dispatch('ClearOrgBackCompareArr');
             }
         },
-        cid(){
+        cid() {
             this.getTreePrograss();
         }
     },
     created () {
-    // 防抖函数 减少发请求次数
+        // 防抖函数 减少发请求次数
         this.debounce = _.debounce(this.getCompare, 0);
         this.debounceBack = _.debounce(this.getCompareBack, 0);
     },
@@ -300,28 +309,43 @@ export default {
             }
             const checkKeys = arr.map(i => i.cid);
             const checkBackKeys = arrback.map(i => i.cid);
-            const cc = [...checkKeys, ...checkBackKeys];
+            const allCheckKeys = [...checkKeys, ...checkBackKeys];
+            this.initCheckKeys = allCheckKeys;
             this.$store.dispatch('SaveOrgTree', this.organizationTree).then(() => {
-                this.$refs.tree.setCheckedKeys(cc);
+                this.$refs.tree.setCheckedKeys(allCheckKeys);
+                let promiseArr = [];
+                for (let i of allCheckKeys) {
+                    promiseArr.push(this.getTreePrograss(i, false));
+                }
+                this.isFirstCheck = false;
+                Promise.all(promiseArr).then(() => {
+                    this.getNoStandardNum();
+                });
             });
             this.debounce();
             this.debounceBack();
         } else {
             this.promise();
         }
-
     },
     destroyed() {
         this.$store.dispatch('SaveOrgCompareArrback', []);
     },
     methods: {
+        getNoStandardNum() {
+            let num = 0;
+            for (let i in this.noStandardObj) {
+                num += this.noStandardObj[i];
+            }
+            this.noStandardNum = num;
+        },
         getUnit(item, sujectData) {
             let obj = sujectData.find(el => {
                 return el.subject == item.subject && el.subject_name == item.subject_name;
             });
             return obj ? obj.subject_unit : "";
         },
-        promise(){
+        promise() {
             Promise.all([this.getTree()]).then(res => {
                 // 树
                 const treeData = res[0];
@@ -340,9 +364,18 @@ export default {
                 }
                 const checkKeys = arr.map(i => i.cid);
                 const checkBackKeys = arrback.map(i => i.cid);
-                const cc = [...checkKeys, ...checkBackKeys];
+                const allCheckKeys = [...checkKeys, ...checkBackKeys];
+                this.initCheckKeys = allCheckKeys;
                 this.$store.dispatch('SaveOrgTree', treeData.tree).then(() => {
-                    this.$refs.tree.setCheckedKeys(cc);
+                    this.$refs.tree.setCheckedKeys(allCheckKeys);
+                    let promiseArr = [];
+                    for (let i of allCheckKeys) {
+                        promiseArr.push(this.getTreePrograss(i, false));
+                    }
+                    Promise.all(promiseArr).then(() => {
+                        this.isFirstCheck = false;
+                        this.getNoStandardNum();
+                    });
                 });
                 this.debounce();
                 this.debounceBack();
@@ -357,6 +390,14 @@ export default {
         startChecked() {
             this.val = this.searchBarValue;
             if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
+                const allCidArr = [...this.cidObjArr, ...this.cidObjBackArr];
+                let promiseArr = [];
+                for (let i of allCidArr) {
+                    promiseArr.push(this.getTreePrograss(i.cid, false));
+                }
+                Promise.all(promiseArr).then(() => {
+                    this.getNoStandardNum();
+                });
                 this.debounce();
                 this.debounceBack();
             }
@@ -372,6 +413,8 @@ export default {
             }
         },
         cleanChecked () {
+            this.noStandardObj = {};
+            this.noStandardNum = 0;
             this.cidObjArr = [];
             this.cidObjBackArr = [];
             this.$refs.tree.setCheckedKeys([]);
@@ -402,7 +445,7 @@ export default {
             return API.GetOrgTree(params);
         },
         //获取百分比数据
-        getTreePrograss(cid) {
+        getTreePrograss(cid, isGetNoStandardNum = true) {
             let id;
             if (cid) {
                 id = cid;
@@ -415,21 +458,42 @@ export default {
                 nid: id,
                 version: this.form.version
             };
-            API.GetOrgTreePrograss(params).then(res=>{
-                let obj = this.preOrder([this.treeClone], id);
-                if (obj.cid === id) {
-                    obj.hasData = true;//插入数据的hasData为true
-                    obj.real_total = res.data[id].real;
-                    obj.target_total = res.data[id].target;
-                }
-                if (obj.children) {
-                    for (let i of obj.children){
-                        if (_.has(res.data, i.cid)) {
-                            i.real_total = res.data[i.cid].real;
-                            i.target_total = res.data[i.cid].target;
+            return new Promise((resolve,reject) => {
+                API.GetOrgTreePrograss(params).then(res=>{
+                    let obj = this.preOrder([this.treeClone], id);
+                    let arr = [];
+                    const allCidArr = [...this.cidObjArr, ...this.cidObjBackArr];
+                    for (let i of allCidArr) {
+                        arr.push(i.cid);
+                    }
+                    if (obj.cid === id) {
+                        obj.hasData = true;//插入数据的hasData为true
+                        obj.real_total = res.data[id].real;
+                        obj.target_total = res.data[id].target;
+                    }
+                    if (obj.children) {
+                        if (_.includes(arr, obj.cid)) {
+                            this.noStandardObj[obj.cid] = 0;
+                        }
+                        for (let i of obj.children) {
+                            if (_.has(res.data, i.cid)) {
+                                i.real_total = res.data[i.cid].real;
+                                i.target_total = res.data[i.cid].target;
+                                if (_.includes(arr, obj.cid)) {
+                                    if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
+                                        this.noStandardObj[obj.cid] ++;
+                                        if (isGetNoStandardNum) {
+                                            this.getNoStandardNum();
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                });
             });
         },
         getCompare () {
@@ -444,7 +508,14 @@ export default {
                     v.subject_name = this.orgSubject[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
-                this.$store.dispatch('SaveOrgCidObj',_.cloneDeep(this.cidObjArr));
+                let lastCidObjArr = [];
+                for (let i of resultList[0].nodes) {
+                    let obj = this.cidObjArr.find(el => el.name == i);
+                    if (obj) {
+                        lastCidObjArr.push(obj);
+                    }
+                }
+                this.$store.dispatch('SaveOrgCidObj',_.cloneDeep(lastCidObjArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if (resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveOrgCompareArr', resultList);
@@ -465,6 +536,13 @@ export default {
                     v.subject_name = this.orgBackSubject[k].subject_name;
                 });
                 const cidName = this.cidObjBackArr.map(o => o.name);
+                let lastCidObjArr = [];
+                for (let i of resultList[0].nodes) {
+                    let obj = this.cidObjBackArr.find(el => el.name == i);
+                    if (obj) {
+                        lastCidObjArr.push(obj);
+                    }
+                }
                 this.$store.dispatch('SaveOrgCidObjBack',_.cloneDeep(this.cidObjBackArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if (resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
@@ -538,6 +616,14 @@ export default {
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
+                let promiseArr = [];
+                const allCidArr = [...this.cidObjArr, ...this.cidObjBackArr];
+                for (let i of allCidArr) {
+                    promiseArr.push(this.getTreePrograss(i.cid, false));
+                }
+                Promise.all(promiseArr).then(() => {
+                    this.getNoStandardNum();
+                });
                 this.allRequest();
             } else {
                 //搜索相同的id,改变时间
@@ -553,13 +639,16 @@ export default {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
             }
-
         },
-        nodeExpand(data){
+        nodeExpand(data) {
             this.cid = data.cid;
         },
         handleCheckChange (data, checked) {
             const type = 2;//1是前端,2是后端
+            if (!checked) {
+                delete this.noStandardObj[data.cid];
+                this.getNoStandardNum();
+            }
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             // 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
             if (!checked && this.cancelKey && data.cid === this.cancelKey) {
@@ -570,37 +659,42 @@ export default {
                 return;
             }
             if (checked) { // 如果选中
-                if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
-                    if (data.type === type) {
-                        // 如果有选中的节点 并且此次选择了不同pid的节点
-                        if (this.cidObjBackArr[0] && data.parent_id !== this.cidObjBackArr[0].parent_id) {
-                            this.warn('请选择相同父级下的后端进行对比');
-                            this.cancelKey = data.cid;
-                            const checkKeys = this.cidObjArr.map(i => i.cid);
-                            const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                            const cc = [...checkKeys, ...checkBackKeys];
-                            this.$refs.tree.setCheckedKeys(cc);
-                            return;
-                        }
-                        this.cidObjBackArr.push(data);
+                if (data.type === type) {
+                    // 如果有选中的节点 并且此次选择了不同pid的节点
+                    if (this.cidObjBackArr[0] && data.parent_id !== this.cidObjBackArr[0].parent_id) {
+                        this.warn('请选择相同父级下的后端进行对比');
+                        this.cancelKey = data.cid;
+                        const checkKeys = this.cidObjArr.map(i => i.cid);
+                        const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
+                        const allCheckKeys = [...checkKeys, ...checkBackKeys];
+                        this.$refs.tree.setCheckedKeys(allCheckKeys);
+                        return;
+                    }
+                    this.cidObjBackArr.push(data);
+                    if (!this.isFirstCheck || !this.initCheckKeys.includes(data.cid)) {
+                        this.cid = data.cid;
+                    }
                     // else if (this.cidObjArr.length === 4) {
                     // 		this.warn('最多对比 4 条');
                     // 		this.cancelKey = data.cid;
                     // 		const checkKeys = this.cidObjArr.map(i => i.cid);
                     // 		this.$refs.tree.setCheckedKeys(checkKeys);
                     // }
-                    } else {
+                } else {
                     // 如果有选中的节点 并且此次选择了不同pid的节点
-                        if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
-                            this.warn('请选择相同父级下的前端进行对比');
-                            this.cancelKey = data.cid;
-                            const checkKeys = this.cidObjArr.map(i => i.cid);
-                            const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                            const cc = [...checkKeys, ...checkBackKeys];
-                            this.$refs.tree.setCheckedKeys(cc);
-                            return;
-                        }
-                        this.cidObjArr.push(data);
+                    if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
+                        this.warn('请选择相同父级下的前端进行对比');
+                        this.cancelKey = data.cid;
+                        const checkKeys = this.cidObjArr.map(i => i.cid);
+                        const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
+                        const allCheckKeys = [...checkKeys, ...checkBackKeys];
+                        this.$refs.tree.setCheckedKeys(allCheckKeys);
+                        return;
+                    }
+                    this.cidObjArr.push(data);
+                    if (!this.isFirstCheck || !this.initCheckKeys.includes(data.cid)) {
+                        this.cid = data.cid;
+                    }
                     // 如果选中的个数不超过 4
                     //   if (this.cidObjArr.length < 4) {
                     //     this.cidObjArr.push(data);
@@ -610,14 +704,17 @@ export default {
                     //     const checkKeys = this.cidObjArr.map(i => i.cid);
                     //     this.$refs.tree.setCheckedKeys(checkKeys);
                     //   }
+                }
+                if (data.hasData) {
+                    if (data.children) {
+                        this.noStandardObj[data.cid]=0;
+                        for (let i of data.children) {
+                            if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
+                                this.noStandardObj[data.cid] ++;
+                                this.getNoStandardNum();
+                            }
+                        }
                     }
-                }else{
-                    this.error('请选择日期');
-                    this.cancelKey = data.cid;
-                    const checkKeys = this.cidObjArr.map(i => i.cid);
-                    const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                    const cc = [...checkKeys, ...checkBackKeys];
-                    this.$refs.tree.setCheckedKeys(cc);
                 }
             } else { // 如果取消选择
                 // 找到取消选择的下标
@@ -629,7 +726,6 @@ export default {
                     const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
                     this.cidObjArr.splice(index, 1);
                 }
-
             }
         },
         warn(msg) {

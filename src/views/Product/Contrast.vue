@@ -43,8 +43,7 @@
               class="select clean_select">取消全部</span>
           </div>
           <div class="title_target">
-            <span>当前目标: <span class="title">{{ num }}</span></span>
-            <span>毛利目标达成率</span>
+            <span>毛利目标未达标数: <span class="title">{{ noStandardNum }}</span></span>
           </div>
           <div class="tree_content">
             <div class="company">
@@ -73,7 +72,7 @@
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"
-                      class="margin-bottom-5">子项目数 : {{ data.children.length }}</div>
+                      class="margin-bottom-5">宽度 : {{ data.children.length }}</div>
                   </div>
                   <span class="label">
                     <span class="label_left">{{ data.name }}</span>
@@ -170,6 +169,7 @@ export default {
     },
     data() {
         return {
+            productSubject: product(),
             form: {
                 date: [],
             },
@@ -201,7 +201,10 @@ export default {
             opcityIndex: undefined,
             opciatyBool: false,
             isCollapse: false,
-            productSubject: product()
+            noStandardObj: {},
+            noStandardNum: 0,
+            isFirstCheck: true,
+            initCheckKeys: []
         };
     },
     computed: {
@@ -220,7 +223,10 @@ export default {
     watch: {
         cidObjArr(val) {
             if (val.length > 0) {
-                // this.debounce();
+                // for (let i of val) {
+                //     console.log(this.cid, i.cid, "i.cid");
+                //     this.cid = i.cid;
+                // }
             } else if (val.length === 0) {
                 this.$store.dispatch('ClearCompareArr');
             }
@@ -230,7 +236,7 @@ export default {
         }
     },
     created() {
-    // 防抖函数 减少发请求次数
+        // 防抖函数 减少发请求次数
         this.debounce = _.debounce(this.getCompare, 0);
     },
     mounted() {
@@ -245,8 +251,17 @@ export default {
                 this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
             }
             const checkKeys = arr.map(i => i.cid);
+            this.initCheckKeys = checkKeys;
             this.$store.dispatch('SaveProductTree', this.productTree).then(() => {
                 this.$refs.tree.setCheckedKeys(checkKeys);
+                let promiseArr = [];
+                for (let i of checkKeys) {
+                    promiseArr.push(this.getTreePrograss(i, false));
+                }
+                this.isFirstCheck = false;
+                Promise.all(promiseArr).then(() => {
+                    this.getNoStandardNum();
+                });
             });
             this.debounce();
         } else {
@@ -254,6 +269,14 @@ export default {
         }
     },
     methods: {
+        getNoStandardNum() {
+            let num = 0;
+            // console.log(this.noStandardObj,111);
+            for (let i in this.noStandardObj) {
+                num += this.noStandardObj[i];
+            }
+            this.noStandardNum = num;
+        },
         getUnit(item) {
             let obj = this.productSubject.find(el => {
                 return el.subject == item.subject && el.subject_name == item.subject_name;
@@ -274,8 +297,17 @@ export default {
                         children[i] && arr.push(children[i]);
                     }
                     const checkKeys = arr.map(i => i.cid);
+                    this.initCheckKeys = checkKeys;
                     this.$store.dispatch('SaveProductTree', treeData.tree).then(() => {
                         this.$refs.tree.setCheckedKeys(checkKeys);
+                        let promiseArr = [];
+                        for (let i of checkKeys) {
+                            promiseArr.push(this.getTreePrograss(i, false));
+                        }
+                        Promise.all(promiseArr).then(() => {
+                            this.isFirstCheck = false;
+                            this.getNoStandardNum();
+                        });
                     });
                 }
                 this.debounce();
@@ -284,6 +316,13 @@ export default {
         startChecked() {
             this.val = this.searchBarValue;
             if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
+                let promiseArr = [];
+                for (let i of this.cidObjArr) {
+                    promiseArr.push(this.getTreePrograss(i.cid, false));
+                }
+                Promise.all(promiseArr).then(() => {
+                    this.getNoStandardNum();
+                });
                 this.debounce();
             }
             this.changeDate = this.searchBarValue;
@@ -295,6 +334,8 @@ export default {
             this.debounce();
         },
         cleanChecked () {
+            this.noStandardObj = {};
+            this.noStandardNum = 0;
             this.cidObjArr = [];
             this.$refs.tree.setCheckedKeys([]);
             this.$store.dispatch('SavecidObjArr', _.cloneDeep(this.cidObjArr));
@@ -327,7 +368,7 @@ export default {
             return API.GetProductTree(params);
         },
         //获取百分比数据
-        getTreePrograss(cid){
+        getTreePrograss(cid, isGetNoStandardNum = true) {
             let id;
             if (cid) {
                 id = cid;
@@ -339,22 +380,41 @@ export default {
                 ...this.getPeriodByPt(),
                 nid: id
             };
-            API.GetProductTreeProduct(params).then(res=>{
-                let obj = this.preOrder([this.treeClone], id);
-                if(obj.cid === id){
-                    obj.hasData = true;//插入数据的hasData为true
-                    obj.real_total = res.data[id].real;
-                    obj.target_total = res.data[id].target;
-                }
-                if (obj.children) {
-                    for (let i of obj.children){
-                        if (_.has(res.data, i.cid)) {
-                            i.real_total = res.data[i.cid].real;
-                            i.target_total = res.data[i.cid].target;
+            return new Promise((resolve,reject) => {
+                API.GetProductTreeProduct(params).then(res => {
+                    let obj = this.preOrder([this.treeClone], id);
+                    let arr = [];
+                    for(let i of this.cidObjArr){
+                        arr.push(i.cid);
+                    }
+                    if (obj.cid === id) {
+                        obj.hasData = true;//插入数据的hasData为true
+                        obj.real_total = res.data[id].real;
+                        obj.target_total = res.data[id].target;
+                    }
+                    if (obj.children) {
+                        if (_.includes(arr, obj.cid)) {
+                            this.noStandardObj[obj.cid] = 0;
+                        }
+                        for (let i of obj.children) {
+                            if (_.has(res.data, i.cid)) {
+                                i.real_total = res.data[i.cid].real;
+                                i.target_total = res.data[i.cid].target;
+                                if (_.includes(arr, obj.cid)) {
+                                    if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
+                                        this.noStandardObj[obj.cid] ++;
+                                        if (isGetNoStandardNum) {
+                                            this.getNoStandardNum();
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                }
-                this.$store.dispatch('SaveProductTreePrograss', res.data);
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                });
             });
         },
         getCompare () {
@@ -369,7 +429,14 @@ export default {
                     v.subject_name = this.productSubject[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
-                this.$store.dispatch('SavecidObjArr',_.cloneDeep(this.cidObjArr));
+                let lastCidObjArr = [];
+                for (let i of resultList[0].nodes) {
+                    let obj = this.cidObjArr.find(el => el.name == i);
+                    if (obj) {
+                        lastCidObjArr.push(obj);
+                    }
+                }
+                this.$store.dispatch('SavecidObjArr',_.cloneDeep(lastCidObjArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if (resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
                     this.$store.dispatch('SaveCompareArr', resultList);
@@ -430,11 +497,18 @@ export default {
             // 默认公司的背景色
             this.nodeArr = [];
             this.val = val;
-            if (!val.cid){//无精确搜索
+            if (!val.cid) {//无精确搜索
                 //数据不为null时
-                if(this.cid){
+                if (this.cid) {
+                    let promiseArr = [];
+                    for (let i of this.cidObjArr) {
+                        promiseArr.push(this.getTreePrograss(i.cid, false));
+                    }
+                    Promise.all(promiseArr).then(() => {
+                        this.getNoStandardNum();
+                    });
                     this.allRequest();
-                }else{
+                } else {
                     this.promise();//数据tree为null时,选择时间后调用接口,
                 }
             } else {
@@ -456,6 +530,10 @@ export default {
             this.cid = data.cid;
         },
         handleCheckChange (data, checked) {
+            if (!checked) {
+                delete this.noStandardObj[data.cid];
+                this.getNoStandardNum();
+            }
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             if (!checked && this.cancelKey && data.cid === this.cancelKey) {
                 const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
@@ -483,6 +561,20 @@ export default {
                 // 如果选中的个数不超过 4
                 if (this.cidObjArr.length < 4) {
                     this.cidObjArr.push(data);
+                    if (!this.isFirstCheck || !this.initCheckKeys.includes(data.cid)) {
+                        this.cid = data.cid;
+                    }
+                    if (data.hasData) {
+                        if (data.children) {
+                            this.noStandardObj[data.cid] = 0;
+                            for (let i of data.children) {
+                                if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
+                                    this.noStandardObj[data.cid] ++;
+                                    this.getNoStandardNum();
+                                }
+                            }
+                        }
+                    }
                 } else if (this.cidObjArr.length === 4) {
                     this.warn('最多对比 4 条');
                     this.cancelKey = data.cid;
@@ -494,7 +586,6 @@ export default {
                 const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
                 this.cidObjArr.splice(index, 1);
             }
-
         },
         warn (msg) {
             this.$message({
