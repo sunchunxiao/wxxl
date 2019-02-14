@@ -44,8 +44,6 @@
           </div>
           <div class="title_target">
             <span>毛利目标未达标数: <span class="title">{{ noStandardNum }}</span></span>
-            <!-- <span>当前目标: <span class="title">{{ num }}</span></span>
-            <span>毛利目标达成率</span> -->
           </div>
           <div class="tree_content">
             <div class="company">
@@ -94,7 +92,6 @@
             v-loading="loading"
             class="min-height-400">
             <Card>
-              {{ noStandardObj }}
               <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
               <el-row v-if="cuscompareArr.length">
                 <slider

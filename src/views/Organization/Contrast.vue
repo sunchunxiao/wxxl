@@ -93,7 +93,6 @@
             v-loading="loading"
             class="min-height-400">
             <Card>
-              {{ noStandardObj }}
               <el-row class="margin-bottom-20">组织对比分析和平均值分析前端</el-row>
               <el-row v-if="hasConstarst">
                 <slider
@@ -288,7 +287,7 @@ export default {
         }
     },
     created () {
-    // 防抖函数 减少发请求次数
+        // 防抖函数 减少发请求次数
         this.debounce = _.debounce(this.getCompare, 0);
         this.debounceBack = _.debounce(this.getCompareBack, 0);
     },
@@ -328,7 +327,6 @@ export default {
         } else {
             this.promise();
         }
-
     },
     destroyed() {
         this.$store.dispatch('SaveOrgCompareArrback', []);
