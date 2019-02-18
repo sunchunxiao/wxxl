@@ -29,10 +29,9 @@
 
 <script>
 // @ is an alias to /src
+import Header from './Header';
 import Menu from './Menu';
 import CollapseMenu from './CollapseMenu';
-
-import Header from './Header';
 import { echartAndSliderResize } from 'utils/common';
 
 export default {

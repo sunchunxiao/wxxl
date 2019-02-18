@@ -68,9 +68,6 @@ export default {
                 });
             }
             const options = {
-                title:{
-                    // text:"综合评估"
-                },
                 tooltip: {
                     formatter: function(params){
                         let result =[];

@@ -80,7 +80,6 @@ export default {
             homeProfitSpace: homeProfitSpace(),
             form: {
                 pt: '', // 周期类型
-                date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
             datye:{},
@@ -105,7 +104,7 @@ export default {
         }
     },
     mounted() {
-        if(Object.keys(this.searchDate).length){
+        if (Object.keys(this.searchDate).length) {
             this.allRequest();
         }
     },
@@ -162,20 +161,11 @@ export default {
             return API.GetOverviewTrend(params);
         },
         getDateObj () {
-            const {
-                date
-            } = this.form;
             if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
                     pt: this.searchDate.pt,
                     sDate: this.searchDate.sDate,
                     eDate: this.searchDate.eDate,
-                };
-            } else {
-                return {
-                    pt: date.pt,
-                    sDate: date.sDate,
-                    eDate: date.eDate,
                 };
             }
         },

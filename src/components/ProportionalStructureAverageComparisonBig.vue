@@ -223,11 +223,11 @@ export default {
                         label: {
                             color: "#fd625e",
                             fontSize: 14,
-                            formatter:function(){
+                            formatter:function() {
                                 if ( nodes.display_rate == 0){
                                     return `平均值${_this.calculateToShow(average)}`;
                                 } else {
-                                    if (average==0){
+                                    if (average == 0) {
                                         return `平均值${average}`;
                                     } else {
                                         return `平均值${(average / nodes.total*100).toFixed(2)}%`;

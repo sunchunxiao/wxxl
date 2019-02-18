@@ -3,7 +3,6 @@
     <el-row
       class="time_header">
       <search-bar
-        @input="input"
         @search="handleSearch"
         :has-search="false"
         ref="child"
@@ -213,51 +212,8 @@ export default {
         outputClick() {
             this.$router.push('/home');
         },
-        inputClick(){
+        inputClick() {
             this.$router.push('/home/profitSpace');
-        },
-        input() {
-        },
-        getDateObj () {
-            const {
-                date
-            } = this.form;
-            if (this.val.sDate && this.val.eDate) {
-                return {
-                    pt: this.val.pt,
-                    sDate: this.val.sDate,
-                    eDate: this.val.eDate,
-                };
-            } else {
-                return {
-                    pt: date.pt,
-                    sDate: date.sDate,
-                    eDate: date.eDate,
-                };
-            }
-        },
-        getPeriodByPt () {
-            const {
-                pt,
-                sDate,
-                eDate
-            } = this.getDateObj();
-            if (sDate && eDate) { // 计算时间周期
-                return {
-                    pt: pt,
-                    sDate: sDate,
-                    eDate: eDate,
-                };
-            } else {
-                return {
-                    pt: '月',
-                    sDate: '2018-01-01',
-                    eDate: '2018-06-01',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
-                };
-            }
         },
         handleSearch(val) {
             // 时间改变

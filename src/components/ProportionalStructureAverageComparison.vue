@@ -70,6 +70,7 @@ export default {
         },
     },
     methods: {
+        //28法则结构
         calculateToShow(val) {
             const { subject } = this.data;
             //日销，投入产出比和库存周转率是显示原值
@@ -212,11 +213,11 @@ export default {
                         name: '平均值',
                         label: {
                             color: "#fd625e",
-                            formatter:function(){
-                                if ( nodes.display_rate == 0){
+                            formatter:function() {
+                                if ( nodes.display_rate == 0) {
                                     return `平均值${_this.calculateToShow(average)}`;
                                 } else {
-                                    if (average==0){
+                                    if (average==0) {
                                         return `平均值${average}`;
                                     } else {
                                         return `平均值${(average / nodes.total*100).toFixed(2)}%`;

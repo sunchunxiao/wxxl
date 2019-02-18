@@ -57,7 +57,7 @@ export default {
                 tooltip: {
                     show: true,
                     trigger: 'axis',
-                    formatter: function(params){
+                    formatter: function(params) {
                         let str = params[0].axisValue + "</br>";
                         for (let i of params) {
                             str += i.marker + " " + i.seriesName + " : " + String(i.value).replace(".00","") + '%' + "</br>";

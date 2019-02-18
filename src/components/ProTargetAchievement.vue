@@ -173,7 +173,7 @@ export default {
                 tooltip: {
                     hideDelay: 0,
                     trigger: 'item',
-                    formatter: function(params){
+                    formatter: function(params) {
                         let result = [];
                         let span = "<span style='width:20px;display:inline-block;'></span>";
                         if (!progress) {
@@ -216,12 +216,12 @@ export default {
                         },
                         label: {
                             normal: {
-                                formatter: function(data){
+                                formatter: function(data) {
                                     //progress为null时显示实际值,0和数值都显示百分比
                                     if (progress == null || progress < 0) {
                                         return '-';
                                     } else {
-                                        if(data.value == null){
+                                        if(data.value == null) {
                                             return '';
                                         }
                                         let str = "";

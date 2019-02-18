@@ -32,7 +32,6 @@
           :span="5"
           :class="{'tree_block_none':isCollapse}"
           class="tree_container">
-          <!-- <div class="title">毛利润额目标达成率</div> -->
           <div class="title">毛利润额目标未达标数 :{{ noStandard }} </div>
           <div class="tree_content">
             <div
@@ -295,7 +294,7 @@ export default {
             };
             API.GetProductTree(params).then(res => {
                 //选择的日期没有数据,res.tree可能为null
-                if(res.tree){
+                if (res.tree) {
                     if (!this.productTree || !this.productTree.cid) {
                         this.cid = res.tree.cid;
                     }

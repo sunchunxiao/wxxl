@@ -51,7 +51,7 @@ export default {
                 return val;
             } else {
                 let tenThousand = parseInt(val / 10000);
-                if (tenThousand / 10000 >= 1){
+                if (tenThousand / 10000 >= 1) {
                     return parseInt(tenThousand / 10000) + '亿';
                 } else if (tenThousand >= 1 || tenThousand <= -1){
                     return parseInt(val / 10000) + 'w';

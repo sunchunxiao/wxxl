@@ -235,7 +235,7 @@ export default {
         }
     },
     created() {
-    // 防抖函数 减少发请求次数
+        // 防抖函数 减少发请求次数
         this.debounce = _.debounce(this.getCompare, 0);
     },
     mounted() {

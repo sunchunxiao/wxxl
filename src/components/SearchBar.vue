@@ -196,7 +196,6 @@ export default {
             pickerBaseOptions: { firstDayOfWeek: 1 },
             form: {
                 pt: '',
-
                 dayRange: [],
 
                 weekStart: '',
