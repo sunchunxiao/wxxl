@@ -79,7 +79,6 @@ export default {
             homeFund: homeFund(),
             form: {
                 pt: '', // 周期类型
-                date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
             cid: '',
@@ -101,9 +100,6 @@ export default {
                 return this.fundHomeTrendArr[this.index].subject_name;
             }
         }
-    },
-    created() {
-        this.form.date = this.searchDate;
     },
     mounted() {
         if(Object.keys(this.searchDate).length){
@@ -165,20 +161,11 @@ export default {
             return API.GetFundTrend(params);
         },
         getDateObj () {
-            const {
-                date
-            } = this.form;
             if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
                     pt: this.searchDate.pt,
                     sDate: this.searchDate.sDate,
                     eDate: this.searchDate.eDate,
-                };
-            } else {
-                return {
-                    pt: date.pt,
-                    sDate: date.sDate,
-                    eDate: date.eDate,
                 };
             }
         },

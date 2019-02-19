@@ -499,17 +499,19 @@ export default {
             this.val = val;
             if (!val.cid) {//无精确搜索
                 //数据不为null时
-                if (this.cid) {
-                    let promiseArr = [];
-                    for (let i of this.cidObjArr) {
-                        promiseArr.push(this.getTreePrograss(i.cid, false));
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
+                    if (this.cid) {
+                        let promiseArr = [];
+                        for (let i of this.cidObjArr) {
+                            promiseArr.push(this.getTreePrograss(i.cid, false));
+                        }
+                        Promise.all(promiseArr).then(() => {
+                            this.getNoStandardNum();
+                        });
+                        this.allRequest();
+                    } else {
+                        this.promise();//数据tree为null时,选择时间后调用接口,
                     }
-                    Promise.all(promiseArr).then(() => {
-                        this.getNoStandardNum();
-                    });
-                    this.allRequest();
-                } else {
-                    this.promise();//数据tree为null时,选择时间后调用接口,
                 }
             } else {
                 //搜索相同的id,改变时间
@@ -517,7 +519,6 @@ export default {
                     this.allRequest();
                     this.treeClone = _.cloneDeep(this.productTree);
                 }
-                this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
                 this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
@@ -525,6 +526,7 @@ export default {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref,绑定的node-key
                 });
             }
+            this.changeDate = this.searchBarValue;
         },
         nodeExpand(data) {
             this.cid = data.cid;

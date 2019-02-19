@@ -79,8 +79,6 @@ export default {
             sales: sales(),
             form: {
                 pt: '', // 周期类型
-                date: [], // date
-                search: '', // 暂时没有接口 先这样
             },
             datye:{},
             //mock
@@ -98,11 +96,8 @@ export default {
     computed: {
         ...mapGetters(['overviewArr', 'overviewTrendArr', 'searchDate', 'homeLastParams']),
     },
-    created() {
-        this.form.date = this.searchDate;
-    },
     mounted() {
-        if(Object.keys(this.searchDate).length){
+        if(Object.keys(this.searchDate).length) {
             this.allRequest();
         }
     },
@@ -159,20 +154,11 @@ export default {
             return API.GetOverviewTrend(params);
         },
         getDateObj () {
-            const {
-                date
-            } = this.form;
             if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
                     pt: this.searchDate.pt,
                     sDate: this.searchDate.sDate,
                     eDate: this.searchDate.eDate,
-                };
-            } else {
-                return {
-                    pt: date.pt,
-                    sDate: date.sDate,
-                    eDate: date.eDate,
                 };
             }
         },
@@ -199,11 +185,6 @@ export default {
                 };
             }
         },
-        handleSearch(searchDate) {
-            // 默认公司的背景色
-            this.searchDate = searchDate;
-        },
-
     }
 };
 </script>

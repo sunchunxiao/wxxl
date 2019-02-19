@@ -84,7 +84,6 @@ export default {
                 search: '', // 暂时没有接口 先这样
             },
             datye:{},
-            // pieSales: pieDataSales,
             profitAbility: profitAbility(),
             dataAbility: dataAbility(),
             cid: '',
@@ -103,12 +102,14 @@ export default {
         }
     },
     mounted() {
-        if(Object.keys(this.searchDate).length){
+        if (Object.keys(this.searchDate).length) {
+            //无接口 暂时注释
             // this.allRequest();
         }
     },
     watch: {
         searchDate() {
+            //无接口 暂时注释
             // this.allRequest();
         }
     },
@@ -206,11 +207,6 @@ export default {
                 };
             }
         },
-        handleSearch(searchDate) {
-            // 默认公司的背景色
-            this.searchDate = searchDate;
-        },
-
     }
 };
 </script>

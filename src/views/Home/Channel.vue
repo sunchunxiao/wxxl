@@ -78,7 +78,6 @@ export default {
             homeChannel: homeChannel(),
             form: {
                 pt: '', // 周期类型
-                date: {}, // date
                 search: '', // 暂时没有接口 先这样
             },
             cid: '',
@@ -101,9 +100,6 @@ export default {
             }
         }
     },
-    created() {
-        this.form.date = this.searchDate;
-    },
     mounted() {
         if(Object.keys(this.searchDate).length){
             this.allRequest();
@@ -119,9 +115,6 @@ export default {
             this.index = idx;
             this.style = idx;
             this.opciatyBool = true;
-        },
-        input(searchDate) {
-            this.form.date = searchDate;
         },
         select(index) {
             this.style = index;
@@ -165,20 +158,11 @@ export default {
             return API.GetChannelTrend(params);
         },
         getDateObj () {
-            const {
-                date
-            } = this.form;
             if (this.searchDate.sDate && this.searchDate.eDate) {
                 return {
                     pt: this.searchDate.pt,
                     sDate: this.searchDate.sDate,
                     eDate: this.searchDate.eDate,
-                };
-            } else {
-                return {
-                    pt: date.pt,
-                    sDate: date.sDate,
-                    eDate: date.eDate,
                 };
             }
         },
@@ -205,11 +189,6 @@ export default {
                 };
             }
         },
-        handleSearch(searchDate) {
-            // 默认公司的背景色
-            this.searchDate = searchDate;
-        },
-
     }
 };
 </script>

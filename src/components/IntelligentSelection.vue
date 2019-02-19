@@ -32,7 +32,7 @@ export default {
         let _this = this;
         this.chart.on('click', function(params) {
             let time = params.seriesId;
-            for (let i=0;i<_this.data.length;i++) {
+            for (let i = 0;i < _this.data.length; i++) {
                 if (_this.data[i].timeLabel == time) {
                     for (let j=0;j<_this.data[i].subjects.length;j++) {
                         if (params.data[0] == j) {

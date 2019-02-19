@@ -81,7 +81,6 @@ export default {
             homeEquity: homeEquity(),
             form: {
                 pt: '', // 周期类型
-                date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
             datye:{},
@@ -137,7 +136,6 @@ export default {
             };
             API.GetProductProgress(params).then(res => {
                 this.$store.dispatch('SaveProductProgressData', res.data);
-
             }).finally(() => {
                 this.loading = false;
             });
@@ -192,16 +190,11 @@ export default {
                 };
             }
         },
-        handleSearch(searchDate) {
-            // 默认公司的背景色
-            this.searchDate = searchDate;
-        },
-
     }
 };
 </script>
 
 <style lang="scss">
    @import '../Product/style/overview.scss';
-	@import './style/home.scss'
+   @import './style/home.scss'
 </style>

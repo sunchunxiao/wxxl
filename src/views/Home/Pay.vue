@@ -81,7 +81,6 @@ export default {
             homePay: homePay(),
             form: {
                 pt: '', // 周期类型
-                date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
             datye:{},
@@ -199,11 +198,6 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
-            // 默认公司的背景色
-            this.val = val;
-        },
-
     }
 };
 </script>

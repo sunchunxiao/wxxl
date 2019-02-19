@@ -15,6 +15,7 @@ function setData(dataArr) {
     }
     return arr;
 }
+
 // 首页-销售
 const sales = function () {
     let arr = [
@@ -63,6 +64,7 @@ const homeChannel = function () {
     ];
     return setData(arr);
 };
+
 // 首页-客户效率
 const homeCustomer = function () {
     let arr = [
@@ -224,6 +226,7 @@ const organization = function () {
     ];
     return setData(arr);
 };
+
 //组织后端
 const orgBack = function () {
     let arr = [
@@ -249,6 +252,7 @@ const fund = function () {
     ];
     return setData(arr);
 };
+
 //资金后端
 const fundBack = function () {
     let arr = [

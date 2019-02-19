@@ -62,8 +62,8 @@ export default {
             let _this = this;
             const { series,timeLabels, subject } = data;
             const seriesClone = _.cloneDeep(series);
-            for(let i = 0;i < seriesClone.length; i++) {
-                if (_.includes(SUBJECT,subject)){
+            for (let i = 0;i < seriesClone.length; i++) {
+                if (_.includes(SUBJECT,subject)) {
                     _.forEach(seriesClone[i], (v,k) => {
                         seriesClone[i][k] = v;
                     });
@@ -134,7 +134,7 @@ export default {
                 series: []
             };
             for (let i = 0; i < seriesClone.length; i++) {
-                let type  = 'solid';
+                let type = 'solid';
                 if (i == seriesClone.length-1) {
                     type = 'dashed';
                 }
