@@ -494,21 +494,22 @@ export default {
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
-                let promiseArr = [];
-                for (let i of this.cidObjArr) {
-                    promiseArr.oush(this.getTreePrograss(i.cid, false));
+                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
+                    let promiseArr = [];
+                    for (let i of this.cidObjArr) {
+                        promiseArr.push(this.getTreePrograss(i.cid, false));
+                    }
+                    Promise.all(promiseArr).then(() => {
+                        this.getNoStandardNum();
+                    });
+                    this.allRequest();
                 }
-                Promise.all(promiseArr).then(() => {
-                    this.getNoStandardNum();
-                });
-                this.allRequest();
             } else {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     this.allRequest();
                     this.treeClone = _.cloneDeep(this.customerTree);
                 }
-                this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
                 this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
@@ -516,6 +517,7 @@ export default {
                     this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref,绑定的node-key
                 });
             }
+            this.changeDate = this.searchBarValue;
         },
         nodeExpand(data) {
             this.cid = data.cid;

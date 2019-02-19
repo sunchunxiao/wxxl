@@ -172,7 +172,6 @@ export default {
         return {
             form: {
                 pt: '', // 周期类型
-                date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
             menuData: MENUDATA,

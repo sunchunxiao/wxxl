@@ -198,11 +198,6 @@ export default {
                 };
             }
         },
-        handleSearch(val) {
-            // 默认公司的背景色
-            this.val = val;
-        },
-
     }
 };
 </script>

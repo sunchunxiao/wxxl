@@ -207,11 +207,6 @@ export default {
                 };
             }
         },
-        handleSearch(searchDate) {
-            // 默认公司的背景色
-            this.searchDate = searchDate;
-        },
-
     }
 };
 </script>
