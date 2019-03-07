@@ -133,7 +133,7 @@ export default {
                     center: true
                 }).then(() => {
                     const data = {
-                        cid: data1.cid,
+                        nid: data1.cid,
                         rank: data1.rank,
                         subject: data1.subject,
                         time_label: data1.time_label,
@@ -234,7 +234,7 @@ export default {
             } = data;
             this.stragetyTitle = `${brand} - ${name} - ${rank}`;
             const params = {
-                cid: cid,
+                nid: cid,
                 subject: subject,
                 rank: rank,
                 time_label: time_label,

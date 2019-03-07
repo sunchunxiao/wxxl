@@ -1,6 +1,6 @@
 // Created by sunchunxiao on 2018/10/16.
 
-import { FetchPostNew, FetchGet } from 'utils/fetch';
+import { FetchGet, FetchPost } from 'utils/fetch';
 // import store from 'store';
 
 export default {
@@ -27,7 +27,7 @@ export default {
         return FetchGet('/channel/strategy/match', params);
     },
     PostChannelSave(params) {
-        return FetchPostNew('/channel/strategy/save', params);
+        return FetchPost('/channel/strategy/save', params);
     },
     GetChannelHistory(params) {
         return FetchGet('/channel/strategy/history', params);

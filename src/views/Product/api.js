@@ -1,4 +1,4 @@
-import { FetchGet, FetchPostNew } from 'utils/fetch';
+import { FetchGet, FetchPost } from 'utils/fetch';
 // import store from 'store';
 
 export default {
@@ -33,7 +33,7 @@ export default {
         return FetchGet('/product/strategy/match', params);
     },
     PostProductSave(params) {
-        return FetchPostNew('/product/strategy/save', params);
+        return FetchPost('/product/strategy/save', params);
     },
     GetProductSearch(params) {
         return FetchGet('/product/search', params);
