@@ -1,6 +1,6 @@
 // Created by sunchunxiao on 2018/10/16.
 
-import { FetchPostNew, FetchGet } from 'utils/fetch';
+import { FetchGet, FetchPost } from 'utils/fetch';
 // import store from 'store';
 
 export default {
@@ -30,7 +30,7 @@ export default {
         return FetchGet('/cus/strategy', params);
     },
     PostCusStrategyLog(params) {
-        return FetchPostNew('/cus/strategyLog', params);
+        return FetchPost('/cus/strategyLog', params);
     },
     GetCusCompare(params) {
         return FetchGet('/cus/compare', params);

@@ -1,6 +1,6 @@
 // Created by sunchunxiao on 2018/10/16.
 
-import { FetchPostNew, FetchGet } from 'utils/fetch';
+import { FetchGet, FetchPost } from 'utils/fetch';
 
 // import store from 'store';
 
@@ -28,7 +28,7 @@ export default {
         return FetchGet('/org/strategy', params);
     },
     PostOrgStrategyLog(params) {
-        return FetchPostNew('/org/strategyLog', params);
+        return FetchPost('/org/strategyLog', params);
     },
     GetOrgCompare(params) {
         return FetchGet('/org/compare', params);

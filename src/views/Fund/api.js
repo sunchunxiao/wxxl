@@ -1,6 +1,6 @@
 // Created by sunchunxiao on 2018/10/22.
 
-import { FetchGet, FetchPostNew } from 'utils/fetch';
+import { FetchGet, FetchPost } from 'utils/fetch';
 // import store from 'store';
 
 export default {
@@ -27,7 +27,7 @@ export default {
         return FetchGet('/fund/strategy', params);
     },
     PostFundStrategyLog(params) {
-        return FetchPostNew('/fund/strategyLog', params);
+        return FetchPost('/fund/strategyLog', params);
     },
     GetFundCompare(params) {
         return FetchGet('/fund/compare', params);
