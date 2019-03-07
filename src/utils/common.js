@@ -149,3 +149,13 @@ export function formatTimeLabel(valueStr) {
     });
     return arr.slice(arr.length-2).join('.');
 }
+
+//比例结构正负方向画圆角
+//值为负数时左侧画圆角，正数右侧画圆角
+export function structureRadius(value) {
+    if (value >= 0) {
+        return [0, 20, 20, 0];
+    } else {
+        return [20, 0, 0, 20];
+    }
+}

@@ -100,9 +100,6 @@ export default {
                     left: 'right',
                     top: '0%',
                     padding: [43,30,0,0],
-                    textStyle: {
-                        // color: '#ffd285',
-                    },
                     data: nodes
                 },
                 tooltip: {

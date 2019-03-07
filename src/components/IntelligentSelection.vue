@@ -34,12 +34,12 @@ export default {
             let time = params.seriesId;
             for (let i = 0;i < _this.data.length; i++) {
                 if (_this.data[i].timeLabel == time) {
-                    for (let j=0;j<_this.data[i].subjects.length;j++) {
+                    for (let j = 0; j < _this.data[i].subjects.length; j++) {
                         if (params.data[0] == j) {
                             this.name = _this.data[i].subjects[j];
                         }
                     }
-                    for (let m=0;m<_this.data[i].categoryNames.length;m++) {
+                    for (let m = 0; m < _this.data[i].categoryNames.length; m++) {
                         if (params.data[1] == m) {
                             this.brand = _this.data[i].categoryNames[m];
                             this.cid = _this.data[i].categoryIds[m];

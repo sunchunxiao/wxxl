@@ -10,7 +10,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
-import { formatNumber, labelNewline } from 'utils/common';
+import { formatNumber, labelNewline, structureRadius } from 'utils/common';
 const SUBJECT = ['ROI','POR','ITO','RY'];
 export default {
     props: {
@@ -91,13 +91,6 @@ export default {
                 return val;
             }
         },
-        radius(value) {
-            if (value >= 0) {
-                return [0, 20, 20, 0];
-            } else {
-                return [20, 0, 0, 20];
-            }
-        },
         renderChart(nodes) {
             let _this = this;
             const {
@@ -112,7 +105,7 @@ export default {
                 percentArr.push({
                     value:nodes.values[i],
                     itemStyle: {
-                        barBorderRadius:this.radius(nodes.values[i])
+                        barBorderRadius: structureRadius(nodes.values[i])
                     }
                 });
             }
