@@ -69,9 +69,9 @@ export default {
             }
             const options = {
                 tooltip: {
-                    formatter: function(params){
+                    formatter: function(params) {
                         let result =[];
-                        for(let i=0;i<params.name.length;i++){
+                        for (let i=0; i<params.name.length; i++) {
                             result += params.name[i] + " : " + _this.getRank(params.value[i]) +"</br>";
                         }
                         return result;
@@ -103,7 +103,6 @@ export default {
                             color: 'rgb(153, 153, 153)'
                         }
                     }
-
                 },
                 series: [{
                     name: '',

@@ -26,7 +26,7 @@ export default {
             default: true
         },
     },
-    data(){
+    data() {
         return{
             time: "",
             timestr: ""

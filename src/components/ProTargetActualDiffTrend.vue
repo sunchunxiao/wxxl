@@ -59,7 +59,7 @@ export default {
     methods: {
         calculateToShow (val) {
             const { subject } = this.data;
-            if (_.includes(SUBJECT, subject)){//显示原值超过万显示w
+            if (_.includes(SUBJECT, subject)) {//显示原值超过万显示w
                 if ((val / 10000) >= 1) {
                     return parseInt(val / 10000) + 'w';
                 } else {

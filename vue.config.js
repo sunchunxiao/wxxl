@@ -68,7 +68,7 @@ module.exports = {
     // },
     // 同时需要把 .env.development 文件中的环境变量 修改为 /api
     devServer: {
-        port:8080,//端口号
+        port:8081,//端口号
         host:'',
         open:true,
         historyApiFallback: true,

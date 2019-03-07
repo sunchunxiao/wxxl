@@ -125,7 +125,7 @@ export default {
         },
         submit() {
             let data1 = JSON.parse(localStorage.data);
-            if(this.stragety.length){
+            if (this.stragety.length) {
                 this.$confirm('确认?', {
                     confirmButtonText: '保存',
                     cancelButtonText: '取消',

@@ -221,7 +221,7 @@ export default {
                                     if (progress == null || progress < 0) {
                                         return '-';
                                     } else {
-                                        if(data.value == null) {
+                                        if (data.value == null) {
                                             return '';
                                         }
                                         let str = "";

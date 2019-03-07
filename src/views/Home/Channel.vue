@@ -101,7 +101,7 @@ export default {
         }
     },
     mounted() {
-        if(Object.keys(this.searchDate).length){
+        if (Object.keys(this.searchDate).length) {
             this.allRequest();
         }
     },
