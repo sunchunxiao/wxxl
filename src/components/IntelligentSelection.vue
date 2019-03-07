@@ -2,6 +2,7 @@
   <div class="heatmap-container">
     <div
       class="heatmap echart"
+      :style="{height: heightValue}"
       :id="`heatmap-${id}`" />
   </div>
 </template>
@@ -10,10 +11,15 @@
 import echarts from 'plugins/echarts';
 import { labelNewline, formatTimeLabel } from 'utils/common';
 const RANK = ['未知', '差', '中', '良', '优'];
+const categoryNamesLength = 8;
 export default {
     props: {
         id: String,
         data: Array,
+        height: {
+            type: String,
+            default: "180px"
+        },
     },
     data() {
         return {
@@ -23,6 +29,22 @@ export default {
             brand: '',
             debounce: null
         };
+    },
+    computed: {
+        heightValue() {
+            if (!this.data[0].categoryNames) {
+                return this.height;
+            }
+            if (this.height.includes("px")) {
+                if(this.data[0].categoryNames.length <= categoryNamesLength){
+                    return 480 +"px";
+                }
+                if ((this.data[0].categoryNames.length * 50) > parseInt(this.height)) {
+                    return this.data[0].categoryNames.length * 50 + "px";
+                }
+            }
+            return this.height;
+        }
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`heatmap-${this.id}`));
@@ -71,6 +93,12 @@ export default {
                 this.renderChart(val);
             },
             deep: true
+        },
+        heightValue() {
+            this.$nextTick(() => {
+                this.renderChart(this.data);
+                this.chart.resize();
+            });
         },
     },
     methods: {
@@ -150,7 +178,7 @@ export default {
                         width:'auto',
                         height: '70%',
                         y: '13%',
-                        x: '15%'
+                        x: '15.5%'
                     },
                     custom: {
                         categoryIds: item.categoryIds,
@@ -262,7 +290,7 @@ export default {
     .heatmap-container {
         .heatmap {
             width: 100%;
-            height: 480px;
+            // height: 480px;
             margin: 0 auto;
         }
         canvas{
