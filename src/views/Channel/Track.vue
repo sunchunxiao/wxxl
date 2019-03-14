@@ -167,7 +167,7 @@ export default {
             return obj[this.dialogType];
         }
     },
-    mounted(){
+    mounted() {
         this.getChannelStrategy();
         this.getFliters();
     },

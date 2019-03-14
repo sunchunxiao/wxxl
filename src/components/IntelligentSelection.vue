@@ -36,7 +36,7 @@ export default {
                 return this.height;
             }
             if (this.height.includes("px")) {
-                if(this.data[0].categoryNames.length <= categoryNamesLength){
+                if (this.data[0].categoryNames.length <= categoryNamesLength) {
                     return 480 +"px";
                 }
                 if ((this.data[0].categoryNames.length * 50) > parseInt(this.height)) {

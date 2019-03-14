@@ -20,8 +20,8 @@ function setData(dataArr) {
 const sales = function () {
     let arr = [
         ["S","销售额","元"],
-        // 未显示
-        ["MOCK","销售增长额","元"]
+        ["GM","销售增长额","元"],
+        ["GR","销售增长率","%"]
     ];
     return setData(arr);
 };
@@ -29,9 +29,10 @@ const sales = function () {
 // 首页-利润
 const profit = function () {
     let arr = [
-        ["P","净利润额","元"],
         ["NIR","净利率","%"],
-        // ["MOCK","净利润增长额","元"]
+        ["P","净利润额","元"],
+        ["GM","净利润增长额","元"],
+        ["GR","净利润增长率","元"]
     ];
     return setData(arr);
 };
@@ -123,15 +124,14 @@ const homeEquity = function () {
 // 首页-盈利空间
 const homeProfitSpace = function () {
     let arr = [
+        ["RM","回款额","元"],
+        ["RMGM","回款增长额","元"],
+        ["RMGR","回款增长率","%"],
         ["C","总成本费用额","元"],
-        // 未显示
-        ["S","毛利率","%"],
-        ["MOCK","回款额","元"],
-        ["MOCK","回款增长额","元"],
-        ["MOCK","回款增长率","%"],
-        ["MOCK","总成本费用增长额","元"],
-        // ["MOCK","成本费用增长率","%"],
-        ["MOCK","盈利空间",""],
+        ["CGM","总成本费用增长额","元"],
+        ["CGR","成本费用增长率","%"],
+        ["PS","盈利空间",""],
+        ["GPM","毛利率","%"],
     ];
     return setData(arr);
 };
@@ -260,6 +260,7 @@ const fundBack = function () {
     ];
     return setData(arr);
 };
+
 export {
     profit,
     sales,

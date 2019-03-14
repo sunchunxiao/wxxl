@@ -102,7 +102,7 @@ export default {
         }
     },
     mounted() {
-        if(Object.keys(this.searchDate).length){
+        if (Object.keys(this.searchDate).length) {
             this.allRequest();
         }
     },
@@ -127,7 +127,7 @@ export default {
                 ...this.getPeriodByPt(),
                 version:0
             };
-            API.GetOrgProgress(params).then(res=>{
+            API.GetOrgProgress(params).then(res => {
                 this.$store.dispatch('SaveOrgHomeProgress', res.data);
             }).finally(() => {
                 this.loading = false;

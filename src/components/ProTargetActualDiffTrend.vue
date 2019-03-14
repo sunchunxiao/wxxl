@@ -14,7 +14,7 @@
 import echarts from 'plugins/echarts';
 import { formatNumber, formatTimeLabel } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率
-const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
+const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR','GR'];
 export default {
     props: {
         id: String,
@@ -89,6 +89,7 @@ export default {
                 realClone = realClone.map(el => el * 100);
                 targetClone = targetClone.map(el => el * 100);
             }
+            // console.log(realClone, targetClone);
             for (let i = 0;i < hasTarget.length;i++) {
                 // value值转换为元
                 if (_.includes(SUBJECT,subject)) {
