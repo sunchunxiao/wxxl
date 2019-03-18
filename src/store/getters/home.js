@@ -19,6 +19,8 @@ const home = {
     profitTrendArr: state => state.home.profitTrendArr,
     gainPrograssArr: state => state.home.gainPrograssArr,
     gainTrendArr: state => state.home.gainTrendArr,
+    payPrograssArr: state => state.home.payPrograssArr,
+    payTrendArr: state => state.home.payTrendArr,
 };
 
 export default home;

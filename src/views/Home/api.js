@@ -58,5 +58,11 @@ export default {
     GetGainTrend(params) {
         return FetchGet('/gain/trend', params);
     },
-
+    //支付能力
+    GetPayProgress(params) {
+        return FetchGet('/pay/progress', params);
+    },
+    GetPayTrend(params) {
+        return FetchGet('/pay/trend', params);
+    },
 };

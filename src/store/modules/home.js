@@ -20,6 +20,8 @@ const home = {
         profitTrendArr: [],
         gainPrograssArr: [],
         gainTrendArr: [],
+        payPrograssArr: [],
+        payTrendArr: [],
     },
     mutations: {
         SAVE_OVERVIEW_ARR: (state, arr) => {
@@ -82,6 +84,12 @@ const home = {
         SAVE_GAINTREND_ARR: (state, arr) => {
             state.gainTrendArr = arr;
         },
+        SAVE_PAY_ARR: (state, arr) => {
+            state.payPrograssArr = arr;
+        },
+        SAVE_PAYTREND_ARR: (state, arr) => {
+            state.payTrendArr = arr;
+        },
     },
     actions: {
         SaveOverviewProgressData({ commit }, arr) {
@@ -143,6 +151,12 @@ const home = {
         },
         SaveGainTrendArr({ commit }, arr) {
             commit('SAVE_GAINTREND_ARR', arr);
+        },
+        SavePayProgressData({ commit }, arr) {
+            commit('SAVE_PAY_ARR', arr);
+        },
+        SavePayTrendArr({ commit }, arr) {
+            commit('SAVE_PAYTREND_ARR', arr);
         },
     }
 };
