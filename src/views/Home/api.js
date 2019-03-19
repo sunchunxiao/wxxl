@@ -65,4 +65,18 @@ export default {
     GetPayTrend(params) {
         return FetchGet('/pay/trend', params);
     },
+    //盈利能力
+    GetAbilityProgress(params) {
+        return FetchGet('/operation/progress', params);
+    },
+    GetAbilityTrend(params) {
+        return FetchGet('/operation/trend', params);
+    },
+    //品牌价值
+    GetBrandProgress(params) {
+        return FetchGet('/brand/progress', params);
+    },
+    GetBrandTrend(params) {
+        return FetchGet('/brand/trend', params);
+    },
 };

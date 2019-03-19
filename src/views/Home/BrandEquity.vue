@@ -10,12 +10,12 @@
             id="brand"
             class="min-height-400">
             <slider
-              v-if="pieEquity.length>0"
+              v-if="brandPrograssArr.length>0"
               height="296px"
               :min-move-num="50">
-              <template v-for="(item, index) in pieEquity">
+              <template v-for="(item, index) in brandPrograssArr">
                 <el-col
-                  v-if="pieEquity.length>0"
+                  v-if="brandPrograssArr.length>0"
                   :key="index"
                   style="width:198px">
                   <ProTargetAchievement
@@ -35,13 +35,13 @@
               </el-row>
               <template>
                 <el-col
-                  v-if="dataEquity.length>0"
+                  v-if="brandTrendArr.length>0"
                   :key="index">
                   <ProTargetActualDiffTrend
                     :unit="homeEquity[index].subject_unit"
                     :show-detail="false"
                     :id="`product${index}`"
-                    :data="dataEquity[index]" />
+                    :data="brandTrendArr[index]" />
                 </el-col>
               </template>
             </div>
@@ -61,9 +61,7 @@ import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-//mock
-import { pieEquity } from './mock/pieData';
-import { dataEquity } from './mock/trendData';
+//vuex
 import { mapGetters } from 'vuex';
 //data
 import { homeEquity } from 'data/subject.js';
@@ -83,10 +81,6 @@ export default {
                 pt: '', // 周期类型
                 search: '', // 暂时没有接口 先这样
             },
-            datye:{},
-            // pieSales: pieDataSales,
-            pieEquity: pieEquity(),
-            dataEquity: dataEquity(),
             cid: '',
             loading: false,
             //index
@@ -97,19 +91,19 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['searchDate']),
+        ...mapGetters(['brandPrograssArr', 'brandTrendArr', 'searchDate','homeLastParams']),
         hasSubjectName() {
-            return this.dataEquity[this.index].subject_name;
+            return this.homeEquity[this.index].subject_name;
         }
     },
     mounted() {
         if (Object.keys(this.searchDate).length) {
-            // this.allRequest();
+            this.allRequest();
         }
     },
     watch: {
         searchDate() {
-            // this.allRequest();
+            this.allRequest();
         }
     },
     methods: {
@@ -128,35 +122,45 @@ export default {
             };
             return API.GetOverviewTrend(params);
         },
-        //产品
-        getProductProgress() {
+        //品牌价值
+        getBrandProgress() {
             this.loading = true;
             const params = {
                 ...this.getPeriodByPt(),
+                version: 0
             };
-            API.GetProductProgress(params).then(res => {
-                this.$store.dispatch('SaveProductProgressData', res.data);
+            API.GetBrandProgress(params).then(res => {
+                this.$store.dispatch('SaveBrandProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
             });
         },
         allRequest() {
-            this.getProductProgress();
-            const promises = _.map(this.homeEquity, o => this.getProductTrend(o.subject));
+            const params = {
+                ...this.getPeriodByPt(),
+            };
+            if (JSON.stringify(this.homeLastParams.homeBrand) == JSON.stringify(params)) {
+                return;
+            }
+            this.newParams.homeBrand = params;
+            this.$store.dispatch("SaveHomeLastParams", this.newParams);
+            this.getBrandProgress();
+            const promises = _.map(this.homeEquity, o => this.getBrandTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
                     v.subject = this.homeEquity[k].subject;
                     v.subject_name = this.homeEquity[k].subject_name;
                 });
-                this.$store.dispatch('SaveProductTrendArr', resultList);
+                this.$store.dispatch('SaveBrandTrendArr', resultList);
             });
         },
-        getProductTrend(subject) {
+        getBrandTrend(subject) {
             const params = {
                 ...this.getPeriodByPt(),
-                subject: subject
+                subject: subject,
+                version: 0
             };
-            return API.GetProductTrend(params);
+            return API.GetBrandTrend(params);
         },
         getDateObj () {
             if (this.searchDate.sDate && this.searchDate.eDate) {

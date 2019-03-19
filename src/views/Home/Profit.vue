@@ -112,7 +112,7 @@ export default {
         select(index) {
             this.style = index;
         },
-        //公司
+        //利润
         getOverviewProgress() {
             this.loading = true;
             const params = {

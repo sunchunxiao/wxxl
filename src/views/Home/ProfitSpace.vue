@@ -60,9 +60,7 @@ import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-//mock
-import { profitSpace } from './mock/pieData';
-import { dataSpace } from './mock/trendData';
+//vuex
 import { mapGetters } from 'vuex';
 //data
 import { homeProfitSpace } from 'data/subject.js';
@@ -82,10 +80,6 @@ export default {
                 pt: '', // 周期类型
                 search: '', // 暂时没有接口 先这样
             },
-            datye:{},
-            //mock
-            profitSpace: profitSpace(),
-            dataSpace: dataSpace(),
             cid: '',
             loading: false,
             //index
@@ -99,7 +93,7 @@ export default {
         ...mapGetters(['gainPrograssArr', 'gainTrendArr', 'searchDate', 'homeLastParams']),
         hasSubjectName() {
             if (this.gainTrendArr.length) {
-                return this.gainTrendArr[this.index].subject_name;
+                return this.homeProfitSpace[this.index].subject_name;
             }
         }
     },

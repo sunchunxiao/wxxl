@@ -60,9 +60,7 @@ import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-//mock
-// import { pieSales } from './mock/pieData';
-import { dataSales } from './mock/trendData';
+
 import { mapGetters } from 'vuex';
 //data
 import { sales } from 'data/subject.js';
@@ -80,10 +78,6 @@ export default {
             form: {
                 pt: '', // 周期类型
             },
-            datye:{},
-            //mock
-            // pieSales:pieSales(),
-            dataSales: dataSales(),
             cid: '',
             loading: false,
             //index
@@ -115,7 +109,7 @@ export default {
         select(index) {
             this.style = index;
         },
-        //公司
+        //销售
         getOverviewProgress() {
             this.loading = true;
             const params = {

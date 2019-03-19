@@ -22,6 +22,10 @@ const home = {
         gainTrendArr: [],
         payPrograssArr: [],
         payTrendArr: [],
+        abilityPrograssArr: [],
+        abilityTrendArr: [],
+        brandPrograssArr: [],
+        brandTrendArr: [],
     },
     mutations: {
         SAVE_OVERVIEW_ARR: (state, arr) => {
@@ -90,6 +94,18 @@ const home = {
         SAVE_PAYTREND_ARR: (state, arr) => {
             state.payTrendArr = arr;
         },
+        SAVE_ABILITY_ARR: (state, arr) => {
+            state.abilityPrograssArr = arr;
+        },
+        SAVE_ABILITYTREND_ARR: (state, arr) => {
+            state.abilityTrendArr = arr;
+        },
+        SAVE_BRAND_ARR: (state, arr) => {
+            state.brandPrograssArr = arr;
+        },
+        SAVE_BRANDTREND_ARR: (state, arr) => {
+            state.brandTrendArr = arr;
+        },
     },
     actions: {
         SaveOverviewProgressData({ commit }, arr) {
@@ -157,6 +173,18 @@ const home = {
         },
         SavePayTrendArr({ commit }, arr) {
             commit('SAVE_PAYTREND_ARR', arr);
+        },
+        SaveAbilityProgressData({ commit }, arr) {
+            commit('SAVE_ABILITY_ARR', arr);
+        },
+        SaveAbilityTrendArr({ commit }, arr) {
+            commit('SAVE_ABILITYTREND_ARR', arr);
+        },
+        SaveBrandProgressData({ commit }, arr) {
+            commit('SAVE_BRAND_ARR', arr);
+        },
+        SaveBrandTrendArr({ commit }, arr) {
+            commit('SAVE_BRANDTREND_ARR', arr);
         },
     }
 };

@@ -62,7 +62,7 @@ import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-
+//vuex
 import { mapGetters } from 'vuex';
 //data
 import { homePay } from 'data/subject.js';
@@ -82,7 +82,6 @@ export default {
                 pt: '', // 周期类型
                 search: '', // 暂时没有接口 先这样
             },
-            datye: {},
             cid: '',
             loading: false,
             //index
@@ -117,7 +116,7 @@ export default {
         select(index) {
             this.style = index;
         },
-        //产品
+        //支付能力
         getPayProgress() {
             this.loading = true;
             const params = {
@@ -147,7 +146,6 @@ export default {
                     v.subject_name = this.homePay[k].subject_name;
                 });
                 this.$store.dispatch('SavePayTrendArr', resultList);
-                // console.log(this.payTrendArr);
             });
         },
         getProductTrend(subject) {

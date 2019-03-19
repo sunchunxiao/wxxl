@@ -114,10 +114,10 @@ const homeFund = function () {
 // 首页-品牌价值
 const homeEquity = function () {
     let arr = [
-        ["S","传播的投入产出比",""],
-        ["MOCK","品质合格率","%"],
-        ["MOCK","传播网点数","个"],
-        ["MOCK","传播成本","元"],
+        ["QPR","品质合格率","%"],
+        ["DN","传播网点数","个"],
+        ["TC","传播成本","元"],
+        ["ROI","传播的投入产出比",""],
     ];
     return setData(arr);
 };
@@ -139,16 +139,13 @@ const homeProfitSpace = function () {
 // 首页-盈利能力
 const homeProfitAbility = function () {
     let arr = [
-        ["S","订单额","元"],
-        ["MOCK","订单增长额","元"],
-        ["MOCK","订单增长率","%"],
-        ["MOCK","库存额","元"],
-        ["MOCK","库龄","天"],
-        ["MOCK","库存增长额","元"],
-        ["MOCK","库存增长率","%"],
-        // 未显示
-        ["MOCK","库存周转率",""],
-        ["MOCK","盈利能力",""],
+        ["OA","订单额","元"],
+        ["OGA","订单增长额","元"],
+        ["SA","库存额","元"],
+        ["SGA","库存增长额","元"],
+        ["ITO","库存周转率","%"],
+        ["LA","库龄","天"],
+        ["PA","盈利能力",""],
     ];
     return setData(arr);
 };
