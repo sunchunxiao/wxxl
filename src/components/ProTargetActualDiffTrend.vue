@@ -158,18 +158,28 @@ export default {
                         type: 'line',
                     },
                     formatter: function (params) {
-                        console.log(params);
+                        // console.log(params);
                         let result = params[0].axisValue + "<br />";
+                        let value1, value2;
                         const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
                             let value = Array.isArray(item.value) ? item.value[item.value.length - 1] : item.value;
+                            if (item.seriesIndex == 5) {
+                                value1 = Math.abs(item.value[item.value.length - 1]);
+                            }
+                            if (item.seriesIndex == 6) {
+                                value2 = Math.abs(item.value[item.value.length - 1]);
+                                if (value1) {
+                                    value = -(value1+value2);
+                                }
+                            }
                             if (!_.isInteger(value)) {
                                 value = value.toFixed(2);
                             }
                             value = _this.formatNumber(value);
                             value = value.toString().replace(".00","") + _this.unit;
-                            if (hasTarget==0){
-                                if (item.seriesIndex != 2&&item.seriesIndex != 3) {
+                            if (hasTarget == 0) {
+                                if (item.seriesIndex != 2 && item.seriesIndex != 3) {
                                     if (item.seriesIndex == 0) {//目标
                                         result += item.marker + " " + item.seriesName + " : " + '未设定' + "</br>";
                                     } else {
@@ -177,7 +187,7 @@ export default {
                                     }
                                 }
                             } else {
-                                if (item.seriesIndex != 2) {
+                                if (item.seriesIndex != 2 && item.seriesIndex != 5) {
                                     result += item.marker + " " + item.seriesName + " : " + value + "</br>";
                                 }
                             }
