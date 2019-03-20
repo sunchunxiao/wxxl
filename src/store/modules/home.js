@@ -14,6 +14,18 @@ const home = {
         cusHomeTrendArr: [],
         searchDate: {},
         homeLastParams: {},
+        salePrograssArr: [],
+        saleTrendArr: [],
+        profitPrograssArr: [],
+        profitTrendArr: [],
+        gainPrograssArr: [],
+        gainTrendArr: [],
+        payPrograssArr: [],
+        payTrendArr: [],
+        abilityPrograssArr: [],
+        abilityTrendArr: [],
+        brandPrograssArr: [],
+        brandTrendArr: [],
     },
     mutations: {
         SAVE_OVERVIEW_ARR: (state, arr) => {
@@ -58,6 +70,42 @@ const home = {
         SAVE_HOMELAST_PARAMS: (state, lastParams) => {
             state.homeLastParams = Object.assign({}, state.homeLastParams, lastParams);
         },
+        SAVE_SALE_ARR: (state, arr) => {
+            state.salePrograssArr = arr;
+        },
+        SAVE_SALETREND_ARR: (state, arr) => {
+            state.saleTrendArr = arr;
+        },
+        SAVE_PROFIT_ARR: (state, arr) => {
+            state.profitPrograssArr = arr;
+        },
+        SAVE_PROFITTREND_ARR: (state, arr) => {
+            state.profitTrendArr = arr;
+        },
+        SAVE_GAIN_ARR: (state, arr) => {
+            state.gainPrograssArr = arr;
+        },
+        SAVE_GAINTREND_ARR: (state, arr) => {
+            state.gainTrendArr = arr;
+        },
+        SAVE_PAY_ARR: (state, arr) => {
+            state.payPrograssArr = arr;
+        },
+        SAVE_PAYTREND_ARR: (state, arr) => {
+            state.payTrendArr = arr;
+        },
+        SAVE_ABILITY_ARR: (state, arr) => {
+            state.abilityPrograssArr = arr;
+        },
+        SAVE_ABILITYTREND_ARR: (state, arr) => {
+            state.abilityTrendArr = arr;
+        },
+        SAVE_BRAND_ARR: (state, arr) => {
+            state.brandPrograssArr = arr;
+        },
+        SAVE_BRANDTREND_ARR: (state, arr) => {
+            state.brandTrendArr = arr;
+        },
     },
     actions: {
         SaveOverviewProgressData({ commit }, arr) {
@@ -101,6 +149,42 @@ const home = {
         },
         SaveHomeLastParams({ commit }, lastParams) {
             commit('SAVE_HOMELAST_PARAMS', lastParams);
+        },
+        SaveSaleProgressData({ commit }, arr) {
+            commit('SAVE_SALE_ARR', arr);
+        },
+        SaveSaleTrendArr({ commit }, arr) {
+            commit('SAVE_SALETREND_ARR', arr);
+        },
+        SaveProfitProgressData({ commit }, arr) {
+            commit('SAVE_PROFIT_ARR', arr);
+        },
+        SaveProfitTrendArr({ commit }, arr) {
+            commit('SAVE_PROFITTREND_ARR', arr);
+        },
+        SaveGainProgressData({ commit }, arr) {
+            commit('SAVE_GAIN_ARR', arr);
+        },
+        SaveGainTrendArr({ commit }, arr) {
+            commit('SAVE_GAINTREND_ARR', arr);
+        },
+        SavePayProgressData({ commit }, arr) {
+            commit('SAVE_PAY_ARR', arr);
+        },
+        SavePayTrendArr({ commit }, arr) {
+            commit('SAVE_PAYTREND_ARR', arr);
+        },
+        SaveAbilityProgressData({ commit }, arr) {
+            commit('SAVE_ABILITY_ARR', arr);
+        },
+        SaveAbilityTrendArr({ commit }, arr) {
+            commit('SAVE_ABILITYTREND_ARR', arr);
+        },
+        SaveBrandProgressData({ commit }, arr) {
+            commit('SAVE_BRAND_ARR', arr);
+        },
+        SaveBrandTrendArr({ commit }, arr) {
+            commit('SAVE_BRANDTREND_ARR', arr);
         },
     }
 };

@@ -126,7 +126,7 @@ export default {
             const params = {
                 ...this.getPeriodByPt(),
             };
-            API.GetCusProgress(params).then(res=>{
+            API.GetCusProgress(params).then(res => {
                 this.$store.dispatch('SaveCusHomeProgress', res.data);
             }).finally(() => {
                 this.loading = false;

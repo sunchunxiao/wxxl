@@ -13,6 +13,18 @@ const home = {
     cusHomeTrendArr: state => state.home.cusHomeTrendArr,
     searchDate: state => state.home.searchDate,
     homeLastParams: state => state.home.homeLastParams,
+    salePrograssArr: state => state.home.salePrograssArr,
+    saleTrendArr: state => state.home.saleTrendArr,
+    profitPrograssArr: state => state.home.profitPrograssArr,
+    profitTrendArr: state => state.home.profitTrendArr,
+    gainPrograssArr: state => state.home.gainPrograssArr,
+    gainTrendArr: state => state.home.gainTrendArr,
+    payPrograssArr: state => state.home.payPrograssArr,
+    payTrendArr: state => state.home.payTrendArr,
+    abilityPrograssArr: state => state.home.abilityPrograssArr,
+    abilityTrendArr: state => state.home.abilityTrendArr,
+    brandPrograssArr: state => state.home.brandPrograssArr,
+    brandTrendArr: state => state.home.brandTrendArr,
 };
 
 export default home;

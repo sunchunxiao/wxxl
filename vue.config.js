@@ -21,22 +21,6 @@ let plugins = [
 // !isProduction && plugins.push(new BundleAnalyzerPlugin());
 
 module.exports = {
-    // pages: {
-    //     index: {
-    //         // entry for the page
-    //         entry: 'src/index.js',
-    //         template: 'public/index.html',
-    //         // output as dist/index.html
-    //         filename: 'index.html',
-    //         chunks: ['index']
-    //     },
-    //     main: {
-    //         entry: 'src/main.js',
-    //         template: 'public/main.html',
-    //         filename: 'main.html',
-    //         chunks: ['main']
-    //     }
-    // },
     css: {
         extract: isProduction,
         sourceMap: true
@@ -68,7 +52,7 @@ module.exports = {
     // },
     // 同时需要把 .env.development 文件中的环境变量 修改为 /api
     devServer: {
-        port:8081,//端口号
+        port:8080,//端口号
         host:'',
         open:true,
         historyApiFallback: true,

@@ -13,8 +13,8 @@
 <script>
 import echarts from 'plugins/echarts';
 import { formatNumber, formatTimeLabel } from 'utils/common';
-//ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率
-const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
+//ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 GPM毛利率 QPR品质合格率
+const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR'];
 export default {
     props: {
         id: String,
@@ -89,8 +89,9 @@ export default {
                 realClone = realClone.map(el => el * 100);
                 targetClone = targetClone.map(el => el * 100);
             }
+            // console.log(realClone, targetClone);
             for (let i = 0;i < hasTarget.length;i++) {
-                // value值转换为元
+                // value值转换为元  SUBJECT显示原值
                 if (_.includes(SUBJECT,subject)) {
                     arr.push({
                         value: targetClone[i],
@@ -157,17 +158,28 @@ export default {
                         type: 'line',
                     },
                     formatter: function (params) {
+                        // console.log(params);
                         let result = params[0].axisValue + "<br />";
+                        let value1, value2;
                         const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
                             let value = Array.isArray(item.value) ? item.value[item.value.length - 1] : item.value;
+                            if (item.seriesIndex == 5) {
+                                value1 = Math.abs(item.value[item.value.length - 1]);
+                            }
+                            if (item.seriesIndex == 6) {
+                                value2 = Math.abs(item.value[item.value.length - 1]);
+                                if (value1) {
+                                    value = -(value1+value2);
+                                }
+                            }
                             if (!_.isInteger(value)) {
                                 value = value.toFixed(2);
                             }
                             value = _this.formatNumber(value);
                             value = value.toString().replace(".00","") + _this.unit;
-                            if (hasTarget==0){
-                                if (item.seriesIndex != 2&&item.seriesIndex != 3) {
+                            if (hasTarget == 0) {
+                                if (item.seriesIndex != 2 && item.seriesIndex != 3) {
                                     if (item.seriesIndex == 0) {//目标
                                         result += item.marker + " " + item.seriesName + " : " + '未设定' + "</br>";
                                     } else {
@@ -175,7 +187,7 @@ export default {
                                     }
                                 }
                             } else {
-                                if (item.seriesIndex != 2) {
+                                if (item.seriesIndex != 2 && item.seriesIndex != 5) {
                                     result += item.marker + " " + item.seriesName + " : " + value + "</br>";
                                 }
                             }

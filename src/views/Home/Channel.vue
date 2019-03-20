@@ -125,7 +125,7 @@ export default {
                 ...this.getPeriodByPt(),
             };
             this.loading = true;
-            API.GetChannelProgress(params).then(res=>{
+            API.GetChannelProgress(params).then(res => {
                 this.$store.dispatch('SaveChannelProgressData', res.data);
             }).finally(() => {
                 this.loading = false;

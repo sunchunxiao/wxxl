@@ -10,12 +10,12 @@
             id="profitability"
             class="min-height-400">
             <slider
-              v-if="profitAbility.length>0"
+              v-if="abilityPrograssArr.length>0"
               height="296px"
               :min-move-num="50">
-              <template v-for="(item, index) in profitAbility">
+              <template v-for="(item, index) in abilityPrograssArr">
                 <el-col
-                  v-if="profitAbility.length>0"
+                  v-if="abilityPrograssArr.length>0"
                   :key="index"
                   style="width:198px">
                   <ProTargetAchievement
@@ -34,13 +34,13 @@
                   v-if="homeProfitAbility[index].subject_unit"> ( {{ homeProfitAbility[index].subject_unit }} )</span></el-row>
               <template>
                 <el-col
-                  v-if="dataAbility.length>0"
+                  v-if="abilityTrendArr.length>0"
                   :key="index">
                   <ProTargetActualDiffTrend
                     :unit="homeProfitAbility[index].subject_unit"
                     :show-detail="false"
                     :id="`product${index}`"
-                    :data="dataAbility[index]" />
+                    :data="abilityTrendArr[index]" />
                 </el-col>
               </template>
             </div>
@@ -83,7 +83,6 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
-            datye:{},
             profitAbility: profitAbility(),
             dataAbility: dataAbility(),
             cid: '',
@@ -96,21 +95,19 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['searchDate', 'homeLastParams']),
+        ...mapGetters(['abilityPrograssArr','abilityTrendArr','searchDate', 'homeLastParams']),
         hasSubjectName() {
-            return this.dataAbility[this.index].subject_name;
+            return this.homeProfitAbility[this.index].subject_name;
         }
     },
     mounted() {
         if (Object.keys(this.searchDate).length) {
-            //无接口 暂时注释
-            // this.allRequest();
+            this.allRequest();
         }
     },
     watch: {
         searchDate() {
-            //无接口 暂时注释
-            // this.allRequest();
+            this.allRequest();
         }
     },
     methods: {
@@ -122,29 +119,15 @@ export default {
         select(index) {
             this.style = index;
         },
-        getOverviewTrend(subject) {
-            const params = {
-                ...this.getPeriodByPt(),
-                subject: subject
-            };
-            return API.GetOverviewTrend(params);
-        },
-        //产品
-        getProductProgress() {
+        //盈利能力
+        getAbilityProgress() {
             this.loading = true;
             const params = {
                 ...this.getPeriodByPt(),
+                version: 0
             };
-            API.GetProductProgress(params).then(res => {
-                this.$store.dispatch('SaveProductProgressData', res.data);
-                const promises = _.map(res.data, o => this.getProductTrend(o.subject));
-                Promise.all(promises).then(resultList => {
-                    _.forEach(resultList, (v, k) => {
-                        v.subject = res.data[k].subject;
-                        v.subject_name = res.data[k].subject_name;
-                    });
-                    this.$store.dispatch('SaveProductTrendArr', resultList);
-                });
+            API.GetAbilityProgress(params).then(res => {
+                this.$store.dispatch('SaveAbilityProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -158,22 +141,23 @@ export default {
             }
             this.newParams.homeAbility = params;
             this.$store.dispatch("SaveHomeLastParams", this.newParams);
-            this.getProductProgress();
-            const promises = _.map(this.homeProfitAbility, o => this.getProductTrend(o.subject));
+            this.getAbilityProgress();
+            const promises = _.map(this.homeProfitAbility, o => this.getAbilityTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
                     v.subject = this.homeProfitAbility[k].subject;
                     v.subject_name = this.homeProfitAbility[k].subject_name;
                 });
-                this.$store.dispatch('SaveProductTrendArr', resultList);
+                this.$store.dispatch('SaveAbilityTrendArr', resultList);
             });
         },
-        getProductTrend(subject) {
+        getAbilityTrend(subject) {
             const params = {
                 ...this.getPeriodByPt(),
-                subject: subject
+                subject: subject,
+                version: 0
             };
-            return API.GetProductTrend(params);
+            return API.GetAbilityTrend(params);
         },
         getDateObj () {
             if (this.searchDate.sDate && this.searchDate.eDate) {

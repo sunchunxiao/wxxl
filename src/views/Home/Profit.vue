@@ -10,16 +10,17 @@
             v-loading="loading"
             class="min-height-400">
             <slider
-              v-if="overviewArr.length"
+              v-if="profitPrograssArr.length"
               height="296px"
               :min-move-num="50">
-              <template v-for="(item, index) in [overviewArr[2]]">
+              <template v-for="(item, index) in profitPrograssArr">
                 <el-col
-                  v-if="overviewArr.length>0"
+                  v-if="profitPrograssArr.length>0"
                   :key="index"
                   style="width:198px">
                   <ProTargetAchievement
                     :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                    @click.native="clickIndex(index)"
                     :id="`${index}`"
                     :data="item" />
                 </el-col>
@@ -34,13 +35,13 @@
               </el-row>
               <template>
                 <el-col
-                  v-if="overviewTrendArr.length>0"
+                  v-if="profitTrendArr.length>0"
                   :key="index">
                   <ProTargetActualDiffTrend
                     :unit="profit[index].subject_unit"
                     :show-detail="false"
                     :id="`overview${index}`"
-                    :data="overviewTrendArr[index]" />
+                    :data="profitTrendArr[index]" />
                 </el-col>
               </template>
             </div>
@@ -90,7 +91,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['overviewArr','overviewTrendArr', 'searchDate', 'homeLastParams']),
+        ...mapGetters(['profitPrograssArr','profitTrendArr', 'searchDate', 'homeLastParams']),
     },
     mounted() {
         if(Object.keys(this.searchDate).length){
@@ -111,14 +112,15 @@ export default {
         select(index) {
             this.style = index;
         },
-        //公司
+        //利润
         getOverviewProgress() {
             this.loading = true;
             const params = {
                 ...this.getPeriodByPt(),
+                version:0
             };
-            API.GetOverviewProgress(params).then(res => {
-                this.$store.dispatch('SaveOverviewProgressData', res.data);
+            API.GetProfitProgress(params).then(res => {
+                this.$store.dispatch('SaveProfitProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -139,15 +141,16 @@ export default {
                     v.subject = this.profit[k].subject;
                     v.subject_name = this.profit[k].subject_name;
                 });
-                this.$store.dispatch('SaveOverviewTrendArr', resultList);
+                this.$store.dispatch('SaveProfitTrendArr', resultList);
             });
         },
         getOverviewTrend(subject) {
             const params = {
                 ...this.getPeriodByPt(),
-                subject: subject
+                subject: subject,
+                version: 0
             };
-            return API.GetOverviewTrend(params);
+            return API.GetProfitTrend(params);
         },
         getDateObj () {
             if (this.searchDate.sDate && this.searchDate.eDate) {

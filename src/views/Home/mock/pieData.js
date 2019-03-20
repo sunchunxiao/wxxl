@@ -72,12 +72,13 @@ function rand(limit, option) {
 //     }
 //     return arr;
 // };
+
 //销售
 const pieSales = function mockPieData6() {
     let arr = [];
     let subject = ["S", 'SR'];
     let subject_name = ["销售额", '销售增长额'];
-    for(let i = 0; i < 2; i++) {
+    for (let i = 0; i < 2; i++) {
         arr.push(_.cloneDeep(pieDataSales));
         arr[i].progress = getRandomNumArr(1, 2);
         arr[i].subject = subject[i];

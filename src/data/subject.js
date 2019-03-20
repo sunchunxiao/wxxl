@@ -20,8 +20,8 @@ function setData(dataArr) {
 const sales = function () {
     let arr = [
         ["S","销售额","元"],
-        // 未显示
-        ["MOCK","销售增长额","元"]
+        ["GM","销售增长额","元"],
+        ["GR","销售增长率","%"]
     ];
     return setData(arr);
 };
@@ -30,8 +30,9 @@ const sales = function () {
 const profit = function () {
     let arr = [
         ["P","净利润额","元"],
+        ["GM","净利润增长额","元"],
         ["NIR","净利率","%"],
-        // ["MOCK","净利润增长额","元"]
+        // ["GR","净利润增长率","元"]
     ];
     return setData(arr);
 };
@@ -113,25 +114,24 @@ const homeFund = function () {
 // 首页-品牌价值
 const homeEquity = function () {
     let arr = [
-        ["S","传播的投入产出比",""],
-        ["MOCK","品质合格率","%"],
-        ["MOCK","传播网点数","个"],
-        ["MOCK","传播成本","元"],
+        ["QPR","品质合格率","%"],
+        ["DN","传播网点数","个"],
+        ["TC","传播成本","元"],
+        ["ROI","传播的投入产出比",""],
     ];
     return setData(arr);
 };
 // 首页-盈利空间
 const homeProfitSpace = function () {
     let arr = [
+        ["RM","回款额","元"],
+        ["RMGM","回款增长额","元"],
+        ["RMGR","回款增长率","%"],
         ["C","总成本费用额","元"],
-        // 未显示
-        ["S","毛利率","%"],
-        ["MOCK","回款额","元"],
-        ["MOCK","回款增长额","元"],
-        ["MOCK","回款增长率","%"],
-        ["MOCK","总成本费用增长额","元"],
-        // ["MOCK","成本费用增长率","%"],
-        ["MOCK","盈利空间",""],
+        ["CGM","总成本费用增长额","元"],
+        ["CGR","成本费用增长率","%"],
+        ["PS","盈利空间",""],
+        ["GPM","毛利率","%"],
     ];
     return setData(arr);
 };
@@ -139,16 +139,13 @@ const homeProfitSpace = function () {
 // 首页-盈利能力
 const homeProfitAbility = function () {
     let arr = [
-        ["S","订单额","元"],
-        ["MOCK","订单增长额","元"],
-        ["MOCK","订单增长率","%"],
-        ["MOCK","库存额","元"],
-        ["MOCK","库龄","天"],
-        ["MOCK","库存增长额","元"],
-        ["MOCK","库存增长率","%"],
-        // 未显示
-        ["MOCK","库存周转率",""],
-        ["MOCK","盈利能力",""],
+        ["OA","订单额","元"],
+        ["OGA","订单增长额","元"],
+        ["SA","库存额","元"],
+        ["SGA","库存增长额","元"],
+        ["ITO","库存周转率","%"],
+        ["LA","库龄","天"],
+        ["PA","盈利能力",""],
     ];
     return setData(arr);
 };
@@ -156,20 +153,17 @@ const homeProfitAbility = function () {
 // 首页-支付能力
 const homePay = function () {
     let arr = [
-        ["S","净现金流","元"],
-        ["MOCK","现金流入","元"],
-        ["MOCK","现金流出","元"],
-        ["MOCK","应收额","元"],
-        ["MOCK","应收增长额","元"],
-        ["MOCK","应收增长率","%"],
-        ["MOCK","应付额","元"],
-        // 未显示
-        ["MOCK","应付增长额","元"],
-        ["MOCK","应付增长率","%"],
-        ["MOCK","支付能力1",""],
-        ["MOCK","支付能力2",""],
-        ["MOCK","资金周转率",""],
-        ["MOCK","固定资产占用率","%"],
+        ["CTR","资金周转率",""],
+        ["FAO","固定资产占用率","%"],
+        ["CI","现金流入","元"],
+        ["CO","现金流出","元"],
+        ["NCF","净现金流","元"],
+        ["RA","应收额","元"],
+        ["RGA","应收增长额","元"],
+        ["PA","应付额","元"],
+        ["PGA","应付增长额","元"],
+        ["PO","支付能力1",""],
+        ["PT","支付能力2",""],
     ];
     return setData(arr);
 };
@@ -260,6 +254,7 @@ const fundBack = function () {
     ];
     return setData(arr);
 };
+
 export {
     profit,
     sales,

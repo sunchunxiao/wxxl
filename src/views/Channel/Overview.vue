@@ -249,6 +249,7 @@ export default {
         }
     },
     methods: {
+        //
         handleChangeCid(cid) {
             this.cid = cid;
             this.nodeArr = [];
@@ -295,7 +296,7 @@ export default {
                 version: this.form.version
             };
             API.GetChannelTree(params).then(res => {
-                if(res.tree){
+                if (res.tree) {
                     if (!this.channelTree || !this.channelTree.nid) {
                         this.cid = res.tree.nid;
                     }
@@ -344,7 +345,7 @@ export default {
             } = this.form;
             if (this.val.sDate && this.val.eDate) {
                 this.pt = this.val.pt;
-            }else{
+            } else {
                 this.pt = date.pt;
             }
             return this.pt;
@@ -367,13 +368,11 @@ export default {
         },
         getPeriodByPt() {
             const {
-                // pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
-                    // pt: pt,
                     sDate: sDate,
                     eDate: eDate,
                 };

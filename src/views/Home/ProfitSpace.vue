@@ -10,12 +10,12 @@
             id="profitSpace"
             class="min-height-400">
             <slider
-              v-if="overviewArr.length>0"
+              v-if="gainPrograssArr.length>0"
               height="296px"
               :min-move-num="50">
-              <template v-for="(item, index) in [overviewArr[1]]">
+              <template v-for="(item, index) in gainPrograssArr">
                 <el-col
-                  v-if="overviewArr.length>0"
+                  v-if="gainPrograssArr.length>0"
                   :key="index"
                   style="width:198px">
                   <ProTargetAchievement
@@ -34,13 +34,13 @@
                   v-if="homeProfitSpace[index].subject_unit"> ( {{ homeProfitSpace[index].subject_unit }} )</span></el-row>
               <template>
                 <el-col
-                  v-if="overviewTrendArr.length>0"
+                  v-if="gainTrendArr.length>0"
                   :key="index">
                   <ProTargetActualDiffTrend
                     :unit="homeProfitSpace[index].subject_unit"
                     :show-detail="false"
                     :id="`product${index}`"
-                    :data="overviewTrendArr[index]" />
+                    :data="gainTrendArr[index]" />
                 </el-col>
               </template>
             </div>
@@ -60,9 +60,7 @@ import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-//mock
-import { profitSpace } from './mock/pieData';
-import { dataSpace } from './mock/trendData';
+//vuex
 import { mapGetters } from 'vuex';
 //data
 import { homeProfitSpace } from 'data/subject.js';
@@ -82,10 +80,6 @@ export default {
                 pt: '', // 周期类型
                 search: '', // 暂时没有接口 先这样
             },
-            datye:{},
-            //mock
-            profitSpace: profitSpace(),
-            dataSpace: dataSpace(),
             cid: '',
             loading: false,
             //index
@@ -96,10 +90,10 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['overviewArr', 'overviewTrendArr', 'searchDate', 'homeLastParams']),
+        ...mapGetters(['gainPrograssArr', 'gainTrendArr', 'searchDate', 'homeLastParams']),
         hasSubjectName() {
-            if (this.overviewTrendArr.length) {
-                return this.overviewTrendArr[this.index].subject_name;
+            if (this.gainTrendArr.length) {
+                return this.homeProfitSpace[this.index].subject_name;
             }
         }
     },
@@ -122,14 +116,15 @@ export default {
         select(index) {
             this.style = index;
         },
-        //公司
+        //盈利空间
         getOverviewProgress() {
             this.loading = true;
             const params = {
                 ...this.getPeriodByPt(),
+                version: 0
             };
-            API.GetOverviewProgress(params).then(res => {
-                this.$store.dispatch('SaveOverviewProgressData', res.data);
+            API.GetGainProgress(params).then(res => {
+                this.$store.dispatch('SaveGainProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -150,15 +145,16 @@ export default {
                     v.subject = this.homeProfitSpace[k].subject;
                     v.subject_name = this.homeProfitSpace[k].subject_name;
                 });
-                this.$store.dispatch('SaveOverviewTrendArr', resultList);
+                this.$store.dispatch('SaveGainTrendArr', resultList);
             });
         },
         getOverviewTrend(subject) {
             const params = {
                 ...this.getPeriodByPt(),
-                subject: subject
+                subject: subject,
+                version: 0
             };
-            return API.GetOverviewTrend(params);
+            return API.GetGainTrend(params);
         },
         getDateObj () {
             if (this.searchDate.sDate && this.searchDate.eDate) {

@@ -102,7 +102,7 @@ export default {
         }
     },
     mounted() {
-        if(Object.keys(this.searchDate).length){
+        if (Object.keys(this.searchDate).length) {
             this.allRequest();
         }
     },
@@ -127,7 +127,7 @@ export default {
                 ...this.getPeriodByPt(),
                 version:0
             };
-            API.GetFundProgress(params).then(res=>{
+            API.GetFundProgress(params).then(res => {
                 this.$store.dispatch('SaveFundHomeProgress', res.data);
             }).finally(() => {
                 this.loading = false;

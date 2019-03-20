@@ -11,11 +11,11 @@
             class="min-height-400">
             <slider
               height="296px"
-              v-if="overviewArr.length"
+              v-if="salePrograssArr.length"
               :min-move-num="50">
-              <template v-for="(item, index) in [overviewArr[0]]">
+              <template v-for="(item, index) in salePrograssArr">
                 <el-col
-                  v-if="overviewArr.length>0"
+                  v-if="salePrograssArr.length>0"
                   :key="index"
                   style="width:198px">
                   <ProTargetAchievement
@@ -34,13 +34,13 @@
                   v-if="sales[index].subject_unit"> ( {{ sales[index].subject_unit }} )</span></el-row>
               <template>
                 <el-col
-                  v-if="overviewTrendArr.length>0"
+                  v-if="saleTrendArr.length>0"
                   :key="index">
                   <ProTargetActualDiffTrend
                     :unit="sales[index].subject_unit"
                     :show-detail="false"
                     :id="`overview${index}`"
-                    :data="overviewTrendArr[index]" />
+                    :data="saleTrendArr[index]" />
                 </el-col>
               </template>
             </div>
@@ -60,9 +60,7 @@ import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-//mock
-import { pieSales } from './mock/pieData';
-import { dataSales } from './mock/trendData';
+
 import { mapGetters } from 'vuex';
 //data
 import { sales } from 'data/subject.js';
@@ -80,10 +78,6 @@ export default {
             form: {
                 pt: '', // 周期类型
             },
-            datye:{},
-            //mock
-            pieSales:pieSales(),
-            dataSales: dataSales(),
             cid: '',
             loading: false,
             //index
@@ -94,7 +88,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['overviewArr', 'overviewTrendArr', 'searchDate', 'homeLastParams']),
+        ...mapGetters(['salePrograssArr', 'saleTrendArr', 'searchDate', 'homeLastParams']),
     },
     mounted() {
         if(Object.keys(this.searchDate).length) {
@@ -115,14 +109,15 @@ export default {
         select(index) {
             this.style = index;
         },
-        //公司
+        //销售
         getOverviewProgress() {
             this.loading = true;
             const params = {
                 ...this.getPeriodByPt(),
+                version:0
             };
-            API.GetOverviewProgress(params).then(res => {
-                this.$store.dispatch('SaveOverviewProgressData', res.data);
+            API.GetSaleProgress(params).then(res => {
+                this.$store.dispatch('SaveSaleProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -143,15 +138,16 @@ export default {
                     v.subject = this.sales[k].subject;
                     v.subject_name = this.sales[k].subject_name;
                 });
-                this.$store.dispatch('SaveOverviewTrendArr', resultList);
+                this.$store.dispatch('SaveSaleTrendArr', resultList);
             });
         },
         getOverviewTrend(subject) {
             const params = {
                 ...this.getPeriodByPt(),
-                subject: subject
+                subject: subject,
+                version:0
             };
-            return API.GetOverviewTrend(params);
+            return API.GetSaleTrend(params);
         },
         getDateObj () {
             if (this.searchDate.sDate && this.searchDate.eDate) {
