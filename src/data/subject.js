@@ -21,7 +21,6 @@ const sales = function () {
     let arr = [
         ["S","销售额","元"],
         ["GM","销售增长额","元"],
-        ["GR","销售增长率","%"]
     ];
     return setData(arr);
 };
