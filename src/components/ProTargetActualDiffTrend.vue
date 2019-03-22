@@ -164,13 +164,13 @@ export default {
                         const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
                             let value = Array.isArray(item.value) ? item.value[item.value.length - 1] : item.value;
-                            if (item.seriesIndex == 5) {
+                            if (item.seriesIndex == 5 || item.seriesIndex == 3) {
                                 value1 = Math.abs(item.value[item.value.length - 1]);
                             }
-                            if (item.seriesIndex == 6) {
+                            if (item.seriesIndex == 6 || item.seriesIndex == 4) {
                                 value2 = Math.abs(item.value[item.value.length - 1]);
                                 if (value1) {
-                                    value = -(value1+value2);
+                                    value = value1+value2;
                                 }
                             }
                             if (!_.isInteger(value)) {
@@ -187,7 +187,7 @@ export default {
                                     }
                                 }
                             } else {
-                                if (item.seriesIndex != 2 && item.seriesIndex != 5) {
+                                if (item.seriesIndex != 2 && item.seriesIndex != 5 && item.seriesIndex != 3) {
                                     result += item.marker + " " + item.seriesName + " : " + value + "</br>";
                                 }
                             }
