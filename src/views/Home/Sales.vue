@@ -170,16 +170,17 @@ export default {
                     sDate: sDate,
                     eDate: eDate,
                 };
-            } else {
-                return {
-                    pt: '月',
-                    sDate: '2018-01-01',
-                    eDate: '2018-06-01',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
-                };
             }
+            // else {
+            //     return {
+            //         pt: '月',
+            //         sDate: '2018-01-01',
+            //         eDate: '2018-06-01',
+            //         // 先写死个时间
+            //         // sDate: moment().startOf('week').format('YYYY-MM-DD'),
+            //         // eDate: moment().format('YYYY-MM-DD'),
+            //     };
+            // }
         },
     }
 };
