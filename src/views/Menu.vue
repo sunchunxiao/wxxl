@@ -3,7 +3,7 @@
     id="menu"
     :default-active="activePath"
     router>
-    <el-menu-item
+    <!-- <el-menu-item
       class="home"
       index="/home"
       @click="home">
@@ -11,7 +11,7 @@
         class="menu_icon"
         src="../assets/3.png">
       <span slot="title">首页</span>
-    </el-menu-item>
+    </el-menu-item> -->
     <template v-for="item in menuData">
       <el-submenu
         :index="item.path"
@@ -39,6 +39,41 @@
 
 <script>
 const MENUDATA = [
+    {
+        title: "首页",
+        path: "/home",
+        icon: "3.png",
+        children: [
+            {
+                title: "基本竞争力",
+                path: "/sales"
+            },
+            {
+                title: "持续竞争力",
+                path: "/profit"
+            },
+            {
+                title: "核心竞争力",
+                path: "/core/product"
+            },
+            {
+                title: "品牌价值",
+                path: "/equity"
+            },
+            {
+                title: "盈利空间",
+                path: "/profitSpace"
+            },
+            {
+                title: "盈利能力",
+                path: "/profitability"
+            },
+            {
+                title: "支付能力",
+                path: "/pay"
+            }
+        ]
+    },
     {
         title: "产品效率",
         path: "/product",
@@ -167,16 +202,20 @@ export default {
         }
     },
     methods:{
-        home() {
-            this.$router.push('/home');
-        },
+        // home() {
+        //     this.$router.push('/home');
+        // },
         getActivePath(fullPath) {
+            // console.log(fullPath);
             let activePath;
             if (fullPath.includes("/overview")) {
                 activePath = fullPath.split("/overview")[0] + "/overview";
-            } else if (fullPath.includes("/home")) {
-                activePath = "/home";
-            } else {
+            }
+            // else if (fullPath.includes("/home")) {
+            //     // activePath = fullPath.split("/home")[0] + "/home";
+            //     activePath = "/home";
+            // }
+            else {
                 activePath = fullPath;
             }
             return activePath;

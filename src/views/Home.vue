@@ -47,9 +47,9 @@ export default {
         };
     },
     methods: {
-        home () {
-            this.$router.push('/home');
-        },
+        // home () {
+        //     this.$router.push('/home');
+        // },
         handleClick () {
             this.isCollapse = !this.isCollapse;
             setTimeout(() => {
