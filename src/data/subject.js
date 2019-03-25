@@ -123,14 +123,13 @@ const homeEquity = function () {
 // 首页-盈利空间
 const homeProfitSpace = function () {
     let arr = [
+        ["GPM","毛利率","%"],
         ["RM","回款额","元"],
         ["RMGM","回款增长额","元"],
-        ["RMGR","回款增长率","%"],
         ["C","总成本费用额","元"],
         ["CGM","总成本费用增长额","元"],
-        ["CGR","成本费用增长率","%"],
         ["PS","盈利空间",""],
-        ["GPM","毛利率","%"],
+
     ];
     return setData(arr);
 };

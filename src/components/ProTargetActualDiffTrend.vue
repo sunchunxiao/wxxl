@@ -13,8 +13,8 @@
 <script>
 import echarts from 'plugins/echarts';
 import { formatNumber, formatTimeLabel } from 'utils/common';
-//ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 GPM毛利率 QPR品质合格率
-const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR'];
+//ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 GPM毛利率 QPR品质合格率 PS盈利空间
+const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR','PS'];
 export default {
     props: {
         id: String,
