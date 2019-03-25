@@ -133,7 +133,7 @@ export default {
                     center: true
                 }).then(() => {
                     const data = {
-                        cid: data1.cid,
+                        // cid: data1.cid,
                         rank: data1.rank,
                         subject: data1.subject,
                         time_label: data1.time_label,

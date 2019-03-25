@@ -53,66 +53,25 @@ export default [
                 },
                 component: () => import('views/Home/Pay.vue')
             },
+            {
+                path: '/home/core',
+                redirect: '/home/core/product'
+            },
+
         ]
-    },
-    {
-        path: '/home/core',
-        redirect: '/home/core/product'
     },
     {
         path: '/home/core/:name',
         name: 'homeCore',
         meta: {
             path: {
-                product: ['产品效率'],
-                channel: ['渠道效率'],
-                customer: ['客户效率'],
-                organization: ['组织效率'],
-                fund: ['资金效率']
+                product: ['核心竞争力', '产品效率'],
+                channel: ['核心竞争力', '渠道效率'],
+                customer: ['核心竞争力', '客户效率'],
+                organization: ['核心竞争力', '组织效率'],
+                fund: ['核心竞争力', '资金效率']
             }
         },
         component: () => import('views/Home/CoreCompetence.vue'),
-        // children:[
-        //     {
-        //         path: '/home/core/product',
-        //         name: 'homeProduct',
-        //         meta: {
-        //             path: ['首页', '核心竞争力一一五项效率', '产品效率 ( 单品平均效率 ) ']
-        //         },
-        //         component: () => import('views/Home/Product.vue')
-        //     },
-        //     {
-        //         path: '/home/core/channel',
-        //         name: 'homeChannel',
-        //         meta: {
-        //             path: ['首页', '核心竞争力一一五项效率', '渠道效率 ( 单店平均效率 ) ']
-        //         },
-        //         component: () => import('views/Home/Channel.vue')
-        //     },
-        //     {
-        //         path: '/home/core/customer',
-        //         name: 'homeCustomer',
-        //         meta: {
-        //             path: ['首页', '核心竞争力一一五项效率', '客户效率 ( 消费者人均效率 ) ']
-        //         },
-        //         component: () => import('views/Home/Customer.vue')
-        //     },
-        //     {
-        //         path: '/home/core/organization',
-        //         name: 'homeOrganization',
-        //         meta: {
-        //             path: ['首页', '核心竞争力一一五项效率', '组织效率 ( 企业人均效率 ) ']
-        //         },
-        //         component: () => import('views/Home/Organization.vue')
-        //     },
-        //     {
-        //         path: '/home/core/fund',
-        //         name: 'Fund',
-        //         meta: {
-        //             path: ['首页', '核心竞争力一一五项效率','资金效率 ( 企业人均效率 ) ']
-        //         },
-        //         component: () => import('views/Home/Fund.vue')
-        //     },
-        // ]
     },
 ];

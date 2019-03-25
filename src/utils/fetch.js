@@ -1,6 +1,7 @@
 // request
 
 import axios from 'axios';
+import qs from 'qs';
 import { Message } from 'element-ui';
 // eslint-disable-next-line
 import { getToken, removeToken } from './auth';
@@ -75,16 +76,16 @@ const FetchGet = (url, params) => {
     return service(options);
 };
 
-const FetchPostNew = (url, params) => {
-    const options = {
-        url,
-        method: 'post'
-    };
-    if (params) {
-        options.params = params;
-    }
-    return service(options);
-};
+// const FetchPostNew = (url, data) => {
+//     const options = {
+//         url,
+//         method: 'post'
+//     };
+//     if (data) {
+//         options.data = data;
+//     }
+//     return service(options);
+// };
 
 const FetchPost = (url, data, params) => {
     const options = {
@@ -92,7 +93,7 @@ const FetchPost = (url, data, params) => {
         method: 'post'
     };
     if (data) {
-        options.data = data;
+        options.data = qs.stringify(data) ;
     }
     if (params) {
         options.params = params;
@@ -100,4 +101,4 @@ const FetchPost = (url, data, params) => {
     return service(options);
 };
 
-export { FetchGet, FetchPost, FetchPostNew };
+export { FetchGet, FetchPost };

@@ -54,7 +54,7 @@ const MENUDATA = [
             },
             {
                 title: "核心竞争力",
-                path: "/core/product"
+                path: "/core"
             },
             {
                 title: "品牌价值",
@@ -206,15 +206,14 @@ export default {
         //     this.$router.push('/home');
         // },
         getActivePath(fullPath) {
-            // console.log(fullPath);
             let activePath;
             if (fullPath.includes("/overview")) {
                 activePath = fullPath.split("/overview")[0] + "/overview";
             }
-            // else if (fullPath.includes("/home")) {
-            //     // activePath = fullPath.split("/home")[0] + "/home";
-            //     activePath = "/home";
-            // }
+            else if (fullPath.includes("/core")) {
+                activePath = fullPath.split("/core")[0] + "/core";
+                // activePath = "/home";
+            }
             else {
                 activePath = fullPath;
             }
