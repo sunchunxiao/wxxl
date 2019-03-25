@@ -46,7 +46,7 @@
           label="序号" />
         <el-table-column
           prop="level"
-          label="产品层级"
+          label="渠道层级"
           column-key="level"
           :filters="filtersLevel" />
         <el-table-column
