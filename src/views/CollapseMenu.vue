@@ -3,14 +3,14 @@
     id="collapse-menu"
     :default-active="activePath"
     router>
-    <el-menu-item
+    <!-- <el-menu-item
       class="home"
       index="/home"
       @click="home">
       <img
         class="menu_icon"
         src="../assets/3.png">
-    </el-menu-item>
+    </el-menu-item> -->
     <template v-for="item in menuData">
       <el-submenu
         :index="item.path"
@@ -37,6 +37,41 @@
 
 <script>
 const MENUDATA = [
+    {
+        title: "首页",
+        path: "/home",
+        icon: "3.png",
+        children: [
+            {
+                title: "基",
+                path: "/sales"
+            },
+            {
+                title: "持",
+                path: "/profit"
+            },
+            {
+                title: "核",
+                path: "/core"
+            },
+            {
+                title: "牌",
+                path: "/equity"
+            },
+            {
+                title: "间",
+                path: "/profitSpace"
+            },
+            {
+                title: "利",
+                path: "/profitability"
+            },
+            {
+                title: "付",
+                path: "/pay"
+            }
+        ]
+    },
     {
         title: "产品效率",
         path: "/product",
