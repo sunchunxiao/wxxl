@@ -207,8 +207,8 @@ export default {
             let activePath;
             if (fullPath.includes("/overview")) {
                 activePath = fullPath.split("/overview")[0] + "/overview";
-            } else if (fullPath.includes("/home")) {
-                activePath = "/home";
+            } else if (fullPath.includes("/core")) {
+                activePath = fullPath.split("/core")[0] + "/core";
             } else {
                 activePath = fullPath;
             }
