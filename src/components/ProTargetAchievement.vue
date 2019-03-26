@@ -30,7 +30,8 @@ import { formatNumber, labelNewline } from 'utils/common';
 const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
 //主要指标 SD日销,SA库存额,PP净利润率,NIR净利率,GPM毛利率,RM回款额,NCF净现金流,RA应收额,PA应付额
-const MAIN_SUNBJECT = ['S', 'P', 'C', 'ROI', 'ITO', 'NIR', 'PP', 'GPM', 'RM', 'NCF', 'RA', 'PA'];
+// const MAIN_SUNBJECT = ['S', 'P', 'C', 'ROI', 'ITO', 'NIR', 'PP', 'GPM', 'RM', 'NCF', 'RA', 'PA'];
+const MAIN_SUNBJECT = 1;
 const COLORMAP = { over: '#FD625E', below: '#01B8AA' }; // #FD625E粉红色
 const colorLeft = '#E0E3E9';
 const FONTSIZE1 = 28;
@@ -109,7 +110,7 @@ export default {
         },
         renderChart(data) {
             let  _this = this;
-            const { subject, subject_name, progress, real, target } = data;
+            const { subject, subject_name, progress, real, target, is_main } = data;
             let valuePercent, realValue, toolTipValue, fontSize, valueOutside, valueLeft1;
             if (progress == null || progress < 0) {//目标未设定或者进度为负值
                 if (!target) {
@@ -131,7 +132,7 @@ export default {
                 fontSize = FONTSIZE1;//显示百分比的数据字体大小都为FONTSIZE1
             }
             let radiusInside, radiusOutside, center;
-            if (_.includes(MAIN_SUNBJECT, subject)) {
+            if (is_main == MAIN_SUNBJECT) {
                 radiusInside = ['67', '73'];  //内环大小
                 radiusOutside = ['75', '81']; //外环大小
                 center = ['50%', '50%'];
@@ -227,8 +228,8 @@ export default {
                                         }
                                         let str = "";
                                         let valueStyle, percentStyle;
-                                        valueStyle = _.includes(MAIN_SUNBJECT, subject) ? "valueSize" : "smallSize";
-                                        percentStyle = _.includes(MAIN_SUNBJECT, subject) ? "percentSize" : "smallPercentSize";
+                                        valueStyle = is_main == MAIN_SUNBJECT ? "valueSize" : "smallSize";
+                                        percentStyle = is_main == MAIN_SUNBJECT ? "percentSize" : "smallPercentSize";
                                         for (let i of data.value.split("")) {
                                             str += `{${valueStyle}|${i}}`;
                                         }
@@ -276,7 +277,7 @@ export default {
                         label: {
                             normal: {
                                 formatter: function(data) {
-                                    let isMain = _.includes(MAIN_SUNBJECT, subject);
+                                    let isMain = (is_main == MAIN_SUNBJECT );
                                     if(data.name.length < 8){//显示字体过长换行显示
                                         return !isMain ? `{smallSize|${data.name}}`: `{valueSize|${data.name}}`;
                                     }else {
