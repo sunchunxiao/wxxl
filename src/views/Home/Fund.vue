@@ -129,6 +129,7 @@ export default {
             };
             API.GetFundProgress(params).then(res => {
                 this.$store.dispatch('SaveFundHomeProgress', res.data);
+                console.log(this.fundHomeArr);
             }).finally(() => {
                 this.loading = false;
             });

@@ -96,7 +96,6 @@ const homeOrganization = function () {
 // 首页-资金效率
 const homeFund = function () {
     let arr = [
-        ["PER","企业人员数量","人"],
         ["S","销售额","元"],
         ["P","净利润额","元"],
         ["C","总成本费用额","元"],

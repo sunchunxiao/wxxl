@@ -46,7 +46,7 @@
           label="序号" />
         <el-table-column
           prop="level_name"
-          label="客户层级"
+          label="资金层级"
           column-key="level"
           :filters="filtersLevel" />
         <el-table-column

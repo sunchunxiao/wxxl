@@ -13,8 +13,8 @@
 <script>
 import echarts from 'plugins/echarts';
 import { formatNumber, formatTimeLabel } from 'utils/common';
-//ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 GPM毛利率 QPR品质合格率
-const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR'];
+//ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 GPM毛利率 QPR品质合格率 CTR资金周转率 FAO固定资产占用率 LA库龄 PS盈利空间
+const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA'];
 export default {
     props: {
         id: String,
@@ -164,13 +164,13 @@ export default {
                         const hasTarget = params[0].data.hasTarget;
                         params.forEach(function (item) {
                             let value = Array.isArray(item.value) ? item.value[item.value.length - 1] : item.value;
-                            if (item.seriesIndex == 5) {
+                            if (item.seriesIndex == 5 || item.seriesIndex == 3) {
                                 value1 = Math.abs(item.value[item.value.length - 1]);
                             }
-                            if (item.seriesIndex == 6) {
+                            if (item.seriesIndex == 6 || item.seriesIndex == 4) {
                                 value2 = Math.abs(item.value[item.value.length - 1]);
                                 if (value1) {
-                                    value = -(value1+value2);
+                                    value = value1+value2;
                                 }
                             }
                             if (!_.isInteger(value)) {
@@ -187,7 +187,7 @@ export default {
                                     }
                                 }
                             } else {
-                                if (item.seriesIndex != 2 && item.seriesIndex != 5) {
+                                if (item.seriesIndex != 2 && item.seriesIndex != 5 && item.seriesIndex != 3) {
                                     result += item.marker + " " + item.seriesName + " : " + value + "</br>";
                                 }
                             }

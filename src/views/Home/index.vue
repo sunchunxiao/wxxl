@@ -10,78 +10,6 @@
         v-model="searchBarValue"
         :pt-options="['月', '季', '年']" />
     </el-row>
-    <!-- <div class="home_menu">
-      <el-menu
-        router
-        :default-active="activePath"
-        mode="horizontal">
-        <el-submenu
-          class="collapse_outernal"
-          :index="outernalAssessment.title">
-          <template slot="title">
-            <span class="dot" />{{ outernalAssessment.title }}
-          </template>
-          <template v-for="itm in outernalAssessment.children">
-            <el-menu-item
-              :index="itm.path"
-              :key="itm.path">
-              <span>
-                <span class="dot" /> {{ itm.title }}
-              </span>
-            </el-menu-item>
-          </template>
-        </el-submenu>
-        <el-menu-item
-          index="/home/sales"
-          class="outernal"><span class="dot" />销售</el-menu-item>
-        <el-menu-item
-          index="/home/profit"
-          class="outernal"><span class="dot" />利润</el-menu-item>
-        <template v-for="item in menuData">
-          <el-submenu
-            :index="item.path"
-            :key="item.path">
-            <template slot="title">
-              <span class="dot" />{{ item.title }}
-            </template>
-            <template v-for="itm in item.children">
-              <el-menu-item
-                :index="`${item.path}${itm.path}`"
-                :key="`${item.path}${itm.path}`">
-                <span>
-                  <span class="dot" /> {{ itm.title }}
-                </span>
-              </el-menu-item>
-            </template>
-          </el-submenu>
-        </template>
-        <el-menu-item index="/home/equity"><span class="dot" />品牌价值</el-menu-item>
-        <template v-for="item in menuDataInput">
-          <el-menu-item
-            class="internal"
-            :key="'internal'+item.path"
-            :index="item.path">
-            <span class="dot" />{{ item.title }}
-          </el-menu-item>
-        </template>
-        <el-submenu
-          class="collapse_internal"
-          :index="internalAssessment.title">
-          <template slot="title">
-            <span class="dot" />{{ internalAssessment.title }}
-          </template>
-          <template v-for="itm in internalAssessment.children">
-            <el-menu-item
-              :index="itm.path"
-              :key="itm.path">
-              <span>
-                <span class="dot" /> {{ itm.title }}
-              </span>
-            </el-menu-item>
-          </template>
-        </el-submenu>
-      </el-menu>
-    </div> -->
     <div
       class="overview">
       <el-row>
@@ -95,68 +23,6 @@
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
 
-const menuDataInput = [
-    {
-        title: "盈利空间",
-        path: "/home/profitSpace",
-    },
-    {
-        title: "盈利能力",
-        path: "/home/profitability",
-    },
-    {
-        title: "支付能力",
-        path: "/home/pay",
-    }
-];
-const internalAssessment = {
-    title: "内部评估",
-    children: menuDataInput
-};
-const menuDataInput2 = [
-    {
-        title: "销售",
-        path: "/home/sales",
-    },
-    {
-        title: "利润",
-        path: "/home/profit",
-    }
-];
-const outernalAssessment = {
-    title: "外部评估",
-    children: menuDataInput2
-};
-
-const MENUDATA = [
-    {
-        title: "五项效率",
-        path: "/home",
-        children: [
-            {
-                title: "产品效率",
-                path: "/product"
-            },
-            {
-                title: "渠道效率",
-                path: "/channel"
-            },
-            {
-                title: "客户效率",
-                path: "/customer"
-            },
-            {
-                title: "组织效率",
-                path: "/organization"
-            },
-            {
-                title: "资金效率",
-                path: "/fund"
-            }
-        ]
-    }
-];
-
 export default {
     components: {
         Card,
@@ -168,10 +34,6 @@ export default {
                 pt: '', // 周期类型
                 search: '', // 暂时没有接口 先这样
             },
-            menuData: MENUDATA,
-            menuDataInput: menuDataInput,
-            internalAssessment: internalAssessment,
-            outernalAssessment: outernalAssessment,
             loading: false,
             activePath: "/home",
             val: {},
@@ -202,12 +64,6 @@ export default {
         }
     },
     methods: {
-        outputClick() {
-            this.$router.push('/home');
-        },
-        inputClick() {
-            this.$router.push('/home/profitSpace');
-        },
         handleSearch(val) {
             // 时间改变
             this.$store.dispatch('SaveSearchDate', val);

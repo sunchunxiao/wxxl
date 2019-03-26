@@ -91,7 +91,6 @@ export default {
         this.currView = this.$route.params.name;
         this.$store.dispatch('SaveSearchDate', this.changeDate);
         this.activePath = this.$route.fullPath;
-        this.currView = this.$route.params.name;
     },
     watch: {
         ['$route.fullPath']: function (val) {
