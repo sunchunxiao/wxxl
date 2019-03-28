@@ -124,6 +124,7 @@ export default {
                 version: 0
             };
             API.GetPayProgress(params).then(res => {
+                res.data.map(i=>{i.divide=1;});
                 this.$store.dispatch('SavePayProgressData', res.data);
             }).finally(() => {
                 this.loading = false;

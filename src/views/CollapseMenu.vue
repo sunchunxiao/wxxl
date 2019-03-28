@@ -234,7 +234,7 @@ $scale: 1.8;
     overflow: hidden;
     background-color: $bgcolor;
     border-right: none;
-    .home{
+    .home {
         font-size: 18px
     }
     .el-menu-item:focus,
@@ -254,7 +254,7 @@ $scale: 1.8;
     .menu_icon {
         margin: 0 10px 0 -5px;
     }
-    .el-menu-item, .el-submenu__title{
+    .el-menu-item, .el-submenu__title {
         height: $subtitle-height;
         line-height: $subtitle-height;
     }

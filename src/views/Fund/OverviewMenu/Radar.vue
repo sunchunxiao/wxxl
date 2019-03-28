@@ -121,6 +121,7 @@ export default {
             this.loading = true;
             API.GetFundProgress(params).then(res => {
                 this.sliderKey = new Date().getTime();
+                res.data.map(i=>{i.divide=1;});
                 this.$store.dispatch('SaveFundProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
