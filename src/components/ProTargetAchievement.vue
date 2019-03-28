@@ -26,11 +26,10 @@
 <script>
 import echarts from 'plugins/echarts';
 import { formatNumber, labelNewline } from 'utils/common';
-//ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 NIR净利率 CTR资金周转率
-const SUBJECT = ['ITO','ROI','SKU','PER','SHP','RY','POR','NIR','CTR'];
+//ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 GPM毛利率 QPR品质合格率 CTR资金周转率 FAO固定资产占用率 LA库龄 PS盈利空间 PA盈利能力 PO支付能力1 PT支付能力2
+const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT'];
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
-//主要指标 SD日销,SA库存额,PP净利润率,NIR净利率,GPM毛利率,RM回款额,NCF净现金流,RA应收额,PA应付额
-// const MAIN_SUNBJECT = ['S', 'P', 'C', 'ROI', 'ITO', 'NIR', 'PP', 'GPM', 'RM', 'NCF', 'RA', 'PA'];
+const DIVIDESUBJECT = ['RY', 'PA'];
 const MAIN_SUNBJECT = 1;
 const COLORMAP = { over: '#FD625E', below: '#01B8AA' }; // #FD625E粉红色
 const colorLeft = '#E0E3E9';
@@ -74,7 +73,28 @@ export default {
         },
     },
     methods: {
+        //数据为金额统一换算
+        divide(val) {
+            let obj = {
+                value: "",
+                unit: ""
+            };
+            let tenThousand = val / 10000 / 100;
+            if (tenThousand / 10000 >= 1) {
+                obj.value = (val / 10000 / 10000 / 100).toFixed(2);
+                obj.unit = "亿";
+            } else if (tenThousand >= 1 || tenThousand <= -1) {
+                obj.value = (val / 10000 / 100).toFixed(2);
+                obj.unit = "万";
+            } else if (tenThousand < 1 && tenThousand > 0) {
+                obj.value = (val / 100).toFixed(2);
+            } else {
+                obj.value = val;
+            }
+            return obj;
+        },
         calculateToShow(val) {
+            // console.log(this.data,this.data.divide);
             const { subject } = this.data;
             //目标值为null,是未设定,为数值显示数值(0显示0)
             let obj = {
@@ -85,24 +105,20 @@ export default {
                 obj.value = "未设定";
             } else {
                 if (_.includes(SUBJECT, subject)) {
-                    if ((val / 10000) >= 1) {
-                        obj.value = (val / 10000).toFixed(2);
-                        obj.unit = " 万";
+                    //首页五项效率各个冗余值单位不同
+                    if (this.data.divide && _.includes(DIVIDESUBJECT, subject)) {
+                        obj = this.divide(val);
                     } else {
-                        obj.value = val;
+                        if ((val / 10000) >= 1) {
+                            obj.value = (val / 10000).toFixed(2);
+                            obj.unit = " 万";
+                        } else {
+                            obj.value = val;
+                        }
                     }
-                }
-                let tenThousand = val / 10000 / 100;
-                if (tenThousand / 10000 >= 1) {
-                    obj.value = (val / 10000 / 10000 / 100).toFixed(2);
-                    obj.unit = "亿";
-                } else if (tenThousand >= 1 || tenThousand <= -1) {
-                    obj.value = (val / 10000 / 100).toFixed(2);
-                    obj.unit = "万";
-                } else if (tenThousand < 1 && tenThousand > 0) {
-                    obj.value = (val / 100).toFixed(2);
+
                 } else {
-                    obj.value = val;
+                    obj = this.divide(val);
                 }
             }
             obj.value = this.formatNumber(obj.value);

@@ -126,6 +126,7 @@ export default {
             };
             this.loading = true;
             API.GetChannelProgress(params).then(res => {
+                res.data.map(i=>{i.divide=1;});
                 this.$store.dispatch('SaveChannelProgressData', res.data);
             }).finally(() => {
                 this.loading = false;

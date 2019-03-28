@@ -128,6 +128,7 @@ export default {
                 version:0
             };
             API.GetFundProgress(params).then(res => {
+                res.data.map(i=>{i.divide=1;});
                 this.$store.dispatch('SaveFundHomeProgress', res.data);
             }).finally(() => {
                 this.loading = false;
