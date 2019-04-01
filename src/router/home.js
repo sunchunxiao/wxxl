@@ -53,12 +53,11 @@ export default [
                 },
                 component: () => import('views/Home/Pay.vue')
             },
-            {
-                path: '/home/core',
-                redirect: '/home/core/product'
-            },
-
         ]
+    },
+    {
+        path: '/home/core',
+        redirect: '/home/core/product'
     },
     {
         path: '/home/core/:name',

@@ -70,7 +70,7 @@ export default {
                     firstNum = 0;
                 }
                 let translateXNum = firstNum + this.sliderWrap.offsetWidth - lastNum - lastSliderItem.offsetWidth;
-                translateXNum > 0 && (translateXNum =0);
+                translateXNum > 0 && (translateXNum = 0);
                 this.sliderItems[0].style.transform = "translateX(" + translateXNum + "px)";
                 this.clearTransition();
                 this.setTranslateX();

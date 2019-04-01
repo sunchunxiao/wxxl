@@ -27,7 +27,7 @@
 import echarts from 'plugins/echarts';
 import { formatNumber, labelNewline } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 GPM毛利率 QPR品质合格率 CTR资金周转率 FAO固定资产占用率 LA库龄 PS盈利空间 PA盈利能力 PO支付能力1 PT支付能力2
-const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT'];
+const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN'];
 const REVERSE_TARGET = ['C', 'SA']; // 成本 库存额 是反向指标
 const DIVIDESUBJECT = ['RY', 'PA'];
 const MAIN_SUNBJECT = 1;
@@ -94,7 +94,6 @@ export default {
             return obj;
         },
         calculateToShow(val) {
-            // console.log(this.data,this.data.divide);
             const { subject } = this.data;
             //目标值为null,是未设定,为数值显示数值(0显示0)
             let obj = {
@@ -116,7 +115,6 @@ export default {
                             obj.value = val;
                         }
                     }
-
                 } else {
                     obj = this.divide(val);
                 }
@@ -149,7 +147,7 @@ export default {
             }
             let radiusInside, radiusOutside, center;
             if (is_main == MAIN_SUNBJECT) {
-                radiusInside = ['67', '73'];  //内环大小
+                radiusInside = ['67', '73']; //内环大小
                 radiusOutside = ['75', '81']; //外环大小
                 center = ['50%', '50%'];
             } else {
