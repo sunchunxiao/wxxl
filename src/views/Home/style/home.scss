@@ -9,47 +9,47 @@ $border-right: #7F7F7F;
         flex-shrink: 0;
     }
     .home_menu {
-        background-color: gray;
-        // flex-shrink: 0;
-        // display: flex;
-        // align-items: center;
-        // background-color: #333;
-        // height: 50px;
-        // color: rgb(255, 255, 255);
-        // background-color: #333;
-        // border-top: 1px solid $border-right;
+        background-color: #fff;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+        height: 100%;
         .el-menu {
             >li,>div {
                 float: left;
             }
         }
-        .bacground{
-            background-color: #1a1a1a!important;
-        }
-        .span {
-            display: inline-block;
-            width: 200px;
-            height: 50px;
-            line-height: 40px;
+        .common-wrap{
             background-color: gray;
-            text-align: center;
-            box-sizing: border-box;
-            padding: 5px;
-            color: #fff;
-            border-left: 1px solid #a29e9e;
-            & +.span:last-child {
-                border-right: 1px solid #a29e9e;
+            .bacground{
+                background-color: #1a1a1a!important;
             }
-            cursor: pointer;
-            .dot {
+            .span {
                 display: inline-block;
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                position: relative;
-                left: -8px;
-                top: -1px;
-                background-color: #fff;
+                width: 200px;
+                height: 50px;
+                line-height: 40px;
+                background-color: gray;
+                text-align: center;
+                box-sizing: border-box;
+                padding: 5px;
+                color: #fff;
+                border-left: 1px solid #a29e9e;
+                & +.span:last-child {
+                    border-right: 1px solid #a29e9e;
+                }
+                cursor: pointer;
+                .dot {
+                    display: inline-block;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    position: relative;
+                    left: -8px;
+                    top: -1px;
+                    background-color: #fff;
+                }
             }
         }
         .collapse_internal {
@@ -185,6 +185,8 @@ ul.el-menu{
 
 .container {
     height:100%;
+    flex: 1;
+        overflow: auto;
     .time_header {
         background-color:#504b4b;
         height: 40px;
