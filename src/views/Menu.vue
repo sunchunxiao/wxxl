@@ -39,41 +39,41 @@
 
 <script>
 const MENUDATA = [
-    {
-        title: "首页",
-        path: "/home",
-        icon: "3.png",
-        children: [
-            {
-                title: "基本竞争力",
-                path: "/sales"
-            },
-            {
-                title: "持续竞争力",
-                path: "/profit"
-            },
-            {
-                title: "核心竞争力",
-                path: "/core"
-            },
-            {
-                title: "品牌价值",
-                path: "/equity"
-            },
-            {
-                title: "盈利空间",
-                path: "/profitSpace"
-            },
-            {
-                title: "盈利能力",
-                path: "/profitability"
-            },
-            {
-                title: "支付能力",
-                path: "/pay"
-            }
-        ]
-    },
+    // {
+    //     title: "首页",
+    //     path: "/home",
+    //     icon: "3.png",
+    //     children: [
+    //         {
+    //             title: "基本竞争力",
+    //             path: "/sales"
+    //         },
+    //         {
+    //             title: "持续竞争力",
+    //             path: "/profit"
+    //         },
+    //         {
+    //             title: "核心竞争力",
+    //             path: "/core"
+    //         },
+    //         {
+    //             title: "品牌价值",
+    //             path: "/equity"
+    //         },
+    //         {
+    //             title: "盈利空间",
+    //             path: "/profitSpace"
+    //         },
+    //         {
+    //             title: "盈利能力",
+    //             path: "/profitability"
+    //         },
+    //         {
+    //             title: "支付能力",
+    //             path: "/pay"
+    //         }
+    //     ]
+    // },
     {
         title: "产品效率",
         path: "/product",

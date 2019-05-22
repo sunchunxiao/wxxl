@@ -3,14 +3,6 @@
     id="collapse-menu"
     :default-active="activePath"
     router>
-    <!-- <el-menu-item
-      class="home"
-      index="/home"
-      @click="home">
-      <img
-        class="menu_icon"
-        src="../assets/3.png">
-    </el-menu-item> -->
     <template v-for="item in menuData">
       <el-submenu
         :index="item.path"
@@ -37,41 +29,41 @@
 
 <script>
 const MENUDATA = [
-    {
-        title: "首页",
-        path: "/home",
-        icon: "3.png",
-        children: [
-            {
-                title: "基",
-                path: "/sales"
-            },
-            {
-                title: "持",
-                path: "/profit"
-            },
-            {
-                title: "核",
-                path: "/core"
-            },
-            {
-                title: "牌",
-                path: "/equity"
-            },
-            {
-                title: "间",
-                path: "/profitSpace"
-            },
-            {
-                title: "利",
-                path: "/profitability"
-            },
-            {
-                title: "付",
-                path: "/pay"
-            }
-        ]
-    },
+    // {
+    //     title: "首页",
+    //     path: "/home",
+    //     icon: "3.png",
+    //     children: [
+    //         {
+    //             title: "基",
+    //             path: "/sales"
+    //         },
+    //         {
+    //             title: "持",
+    //             path: "/profit"
+    //         },
+    //         {
+    //             title: "核",
+    //             path: "/core"
+    //         },
+    //         {
+    //             title: "牌",
+    //             path: "/equity"
+    //         },
+    //         {
+    //             title: "间",
+    //             path: "/profitSpace"
+    //         },
+    //         {
+    //             title: "利",
+    //             path: "/profitability"
+    //         },
+    //         {
+    //             title: "付",
+    //             path: "/pay"
+    //         }
+    //     ]
+    // },
     {
         title: "产品效率",
         path: "/product",
@@ -99,29 +91,6 @@ const MENUDATA = [
         title: "组织效率",
         path: "/organization",
         icon: "5.png",
-        children: [
-            {
-                title: "全",
-                path: "/overview"
-            },
-            {
-                title: "对",
-                path: "/contrast"
-            },
-            {
-                title: "优",
-                path: "/optimization"
-            },
-            {
-                title: "略",
-                path: "/track"
-            }
-        ]
-    },
-    {
-        title: "客户效率",
-        path: "/customer",
-        icon: "6.png",
         children: [
             {
                 title: "全",
@@ -186,7 +155,30 @@ const MENUDATA = [
                 path: "/track"
             }
         ]
-    }
+    },
+    {
+        title: "客户效率",
+        path: "/customer",
+        icon: "6.png",
+        children: [
+            {
+                title: "全",
+                path: "/overview"
+            },
+            {
+                title: "对",
+                path: "/contrast"
+            },
+            {
+                title: "优",
+                path: "/optimization"
+            },
+            {
+                title: "略",
+                path: "/track"
+            }
+        ]
+    },
 ];
 export default {
     data () {
