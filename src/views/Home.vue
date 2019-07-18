@@ -120,8 +120,6 @@ $width_collapse: 55px;
             overflow: auto;
             >div:first-child {
                 flex: 1;
-                overflow-x: auto;
-                overflow-y: hidden;
                 min-width: 1200px;
             }
         }
