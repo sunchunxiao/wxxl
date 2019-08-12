@@ -44,7 +44,7 @@ export default {
     },
     computed:{
         path() {
-            if(this.$route.meta.path.constructor == Object) {
+            if (this.$route.meta.path.constructor == Object) {
                 let name = this.$route.params.name;
                 return this.$route.meta.path[name];
             } else if (Array.isArray(this.$route.meta.path)) {

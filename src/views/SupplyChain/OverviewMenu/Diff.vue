@@ -1,7 +1,7 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="productTree"
+      v-if="organizationTree"
       class="nav-content-row">
       <div
         class="overflow">
@@ -9,14 +9,15 @@
           v-loading="loading"
           class="min-height-400">
           <Card>
-            <el-row class="margin-bottom-20 overview_title">同比环比趋势分析</el-row>
+            <el-row class="margin-bottom-20 overview_title">目标-实际-差异趋势分析</el-row>
             <el-row>
-              <template v-for="(item, index) in trendArr">
+              <template v-for="(item, index) in orgtrendArr">
                 <el-col
                   :key="index"
                   :span="12">
-                  <ProYearOnYearTrend
-                    v-if="trendArr.length"
+                  <ProTargetActualDiffTrend
+                    v-if="orgtrendArr.length"
+                    :unit="getUnit(item)"
                     :id="`${index}`"
                     :data="item" />
                 </el-col>
@@ -37,47 +38,45 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
-//data 指标
-import { product } from '../../../data/subject';
+//data
+import { organization, orgBack } from '../../../data/subject';
 
 // 目标-实际-差异趋势分析
-import ProYearOnYearTrend from 'components/ProYearOnYearTrend';
+import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
 
 //vuex
 import { mapGetters } from 'vuex';
 export default {
     props: {
         cid: String,
-        val: Object
+        val: Object,
+        type: Number
     },
     components: {
         Card,
-        ProYearOnYearTrend
+        ProTargetActualDiffTrend,
     },
     data () {
         return {
-            form: {
-                pt: '', // 周期类型
-                date: [], // date
-                search: '', // 暂时没有接口 先这样
-            },
+            version: 0,
             //tree
             pt: '',
             loading: false,
-            changeDate: {},
             newParams: {},
-            productSubject: product(),
+            //data
+            orgSubject: organization(),
+            orgBackSubject: orgBack()
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'trendArr', 'lastParams']),
+        ...mapGetters(['organizationTree', 'orgtrendArr', 'orglastParams']),
         hasTree () {
-            return !_.isEmpty(this.productTree);
+            return !_.isEmpty(this.organizationTree);
         },
     },
     watch: {
         cid: {
-            handler () {
+            handler() {
                 this.allRequest();
             },
             immediate: true
@@ -87,31 +86,40 @@ export default {
         }
     },
     methods: {
+        getUnit(item) {
+            let subjectData = this.type != 2 ? this.orgSubject : this.orgBackSubject;
+            let obj = subjectData.find(el => {
+                return el.subject == item.subject && el.subject_name == item.subject_name;
+            });
+            return obj ? obj.subject_unit : "";
+        },
         allRequest() {
             if (!this.cid) {
                 return;
             }
             this.getProgress();
-            this.$store.dispatch("SaveLastParams", this.newParams);
+            this.$store.dispatch("SaveOrgLastParams", this.newParams);
         },
         getProgress() {
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
+                version: this.version
             };
-            this.newParams.trend = params;
-            if (JSON.stringify(this.lastParams.trend) == JSON.stringify(params)) {
+            this.newParams.diff = params;
+            if (JSON.stringify(this.orglastParams.diff) == JSON.stringify(params)) {
                 return;
             }
+            let subjectData = this.type != 2 ? this.orgSubject : this.orgBackSubject;
             this.loading = true;
-            const promises = _.map(this.productSubject, o => this.getTrend(o.subject));
+            const promises = _.map(subjectData, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = this.productSubject[k].subject;
-                    v.subject_name = this.productSubject[k].subject_name;
+                    v.subject = subjectData[k].subject;
+                    v.subject_name = subjectData[k].subject_name;
                 });
-                this.$store.dispatch('SaveTrendArr', resultList);
+                this.$store.dispatch('SaveOrgTrendArr', resultList);
             }).finally(() => {
                 this.loading = false;
             });
@@ -121,11 +129,12 @@ export default {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                subject: subject
+                subject: subject,
+                version: this.version
             };
-            this.newParams.trend = _.cloneDeep(params);
-            delete this.newParams.trend.subject;
-            return API.GetProductTrend(params);
+            this.newParams.diff = _.cloneDeep(params);
+            delete this.newParams.diff.subject;
+            return API.GetOrgTrend(params);
         },
         getPt() {
             if (this.val.sDate && this.val.eDate) {
@@ -141,11 +150,13 @@ export default {
         },
         getPeriodByPt() {
             const {
+                // pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
+                    // pt: pt,
                     sDate: sDate,
                     eDate: eDate,
                 };
@@ -165,5 +176,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../style/overview.scss';
+    @import '../../Product/style/overview.scss';
 </style>
