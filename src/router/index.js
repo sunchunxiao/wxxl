@@ -6,7 +6,7 @@ import organizationRoute from './organization';
 import customerRoute from './customer';
 import fundRoute from './fund';
 import channelRoute from './channel';
-import supplyChainRoute from './supplyChain';
+// import supplyChainRoute from './supplyChain';
 import homeRoute from './home';
 
 Vue.use(Router);
@@ -27,7 +27,7 @@ export default new Router({
             ...customerRoute,
             ...fundRoute,
             ...channelRoute,
-            ...supplyChainRoute,
+            // ...supplyChainRoute,
             ...homeRoute
         ]
     },
