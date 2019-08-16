@@ -178,6 +178,20 @@ const product = function () {
     return setData(arr);
 };
 
+//产品
+const supply = function () {
+    let arr = [
+        ["S","销售额","元"],
+        ["P","毛利润额","元"],
+        ["C","产品成本额","元"],
+        ["SD","日销","元"],
+        ["ROI","产品投入产出比",""],
+        ["SA","库存额","元"],
+        ["ITO","库存周转率",""]
+    ];
+    return setData(arr);
+};
+
 //渠道
 const channel = function () {
     let arr = [
@@ -263,6 +277,7 @@ export {
     homeProfitSpace,
     homeProfitAbility,
     homePay,
+    supply,
     product,
     channel,
     customer,

@@ -17,15 +17,16 @@
       </div>
       <search-bar
         ref="child"
-        @input="input"
-        url="/org/search"
         @search="handleSearch"
         v-model="searchBarValue"
-        placeholder="组织编号/组织名称"
+        placeholder="产品编号/产品名称"
+        @input="input"
+        url="/supply/search"
         :pt-options="['周', '月', '季', '年']" />
     </el-row>
     <div class="optimization">
       <el-row
+        v-if="supplyTree"
         type="flex"
         class="content_row">
         <el-col
@@ -37,7 +38,7 @@
           <div class="tree_content">
             <div
               @click="click"
-              v-if="organizationTree"
+              v-if="supplyTree"
               class="company">
               <span
                 :class="['left','label',
@@ -74,7 +75,7 @@
                   <span class="label">
                     <span
                       :class="['label_left',
-                               {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.cid}]"><span v-if="data.type==2">* </span>{{ data.name }}</span>
+                               {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.cid}]">{{ data.name }}</span>
                   </span>
                 </el-tooltip>
                 <div
@@ -92,26 +93,28 @@
             class="min-height-400">
             <el-row class="margin-bottom-20 overview_title">策略优化</el-row>
             <el-row :gutter="20">
-              <template v-for="(item,index) in orghistoryArr">
+              <template v-for="(item,index) in supplyHistoryArr">
                 <el-col
                   :span="getColSpan(item, index)"
                   :key="index">
                   <el-table
                     class="margin-bottom-20"
-                    :data="item.strategies"
-                    :span-method="arraySpanMethod(item.strategies)">
-                    <el-table-column :label="`周期: ${item.start_date} 至 ${item.end_date}`">
+                    :span-method="arraySpanMethod(item.strategies)"
+                    :data="item.strategies">
+                    <el-table-column
+                      :label="`周期: ${item.start_date} 至 ${item.end_date}`"
+                      class="date">
                       <el-table-column
-                        prop="subject_name"
+                        prop="subject"
                         label="指标" />
                       <el-table-column
-                        prop="inf_name"
+                        prop="package"
                         label="影响因素" />
                       <el-table-column
                         prop="strategy"
                         label="应用策略" />
                       <el-table-column
-                        prop="rank_name"
+                        prop="rank"
                         label="评选结果" />
                       <el-table-column
                         prop="ring_rate"
@@ -125,7 +128,7 @@
                             v-if="lessThanZero(scope.row.ring_rate)"
                             src="../../assets/opt2.png"
                             alt="">
-                          <span style="margin-left: 10px">{{ scope.row.ring_rate + '%' }}</span>
+                          <span style="margin-left: 10px">{{ `${parseInt(scope.row.ring_rate*100)}` + '%' }}</span>
                         </template>
                       </el-table-column>
                     </el-table-column>
@@ -140,25 +143,37 @@
           </Card>
         </el-col>
       </el-row>
+      <el-row
+        v-else
+        class="overview_select">
+        暂无数据
+      </el-row>
     </div>
   </div>
 </template>
 
 <script>
 import API from './api';
-import Card from '../../components/Card';
 import SearchBar from 'components/SearchBar';
+import Card from '../../components/Card';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
+
 import { mapGetters } from 'vuex';
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
+// const TIMEPT = {
+// 	'周': 'week',
+// 	'月': 'month',
+// 	'季': 'quarter',
+// 	'年': 'year'
+// };
 
 export default {
     components: {
@@ -167,14 +182,14 @@ export default {
         ConOrgComparisonAverage,
         ConOrgComparisonAverageBig
     },
-    data() {
+    data () {
         return {
             form: {
                 date: [],
                 search: '',
                 version: '0'
             },
-            cid: '',
+            cid: 0,
             loading: false,
             error: error,
             find: find,
@@ -199,9 +214,9 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['organizationTree','orghistoryArr']),
-        hasTree() {
-            return !_.isEmpty(this.organizationTree);
+        ...mapGetters(['supplyTree','supplyHistoryArr']),
+        hasTree () {
+            return !_.isEmpty(this.supplyTree);
         },
         activeCid() {
             return this.cid;
@@ -218,7 +233,7 @@ export default {
                             if (!bool) {
                                 numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
                             }
-                        } else if(!this.treeProgressLoading) {
+                        } else if (!this.treeProgressLoading) {
                             numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
                         } else {
                             return;
@@ -230,20 +245,20 @@ export default {
         }
     },
     watch: {
-        cid: function() {
+        cid: function () {
             // 点击左侧树节点时, 请求右侧数据 看下是在点击树节点的时候做还是在这里做
             this.getTreePrograss();
             this.getHistory();
-        }
+        },
     },
-    mounted() {
+    mounted () {
         //获取初始时间
         this.changeDate = this.searchBarValue;
         if (!this.hasTree) {
             this.getTree();
         } else {
-            this.treeClone = _.cloneDeep(this.organizationTree);
-            this.cid = this.organizationTree.cid;
+            this.treeClone = _.cloneDeep(this.supplyTree);
+            this.cid = this.supplyTree.cid;
             this.addProperty([this.treeClone]);
         }
     },
@@ -252,7 +267,7 @@ export default {
             if (item.strategies && item.strategies.length) {
                 return 24;
             }
-            if (this.orghistoryArr[index+1] && this.orghistoryArr[index+1].strategies.length && ((index + 1) % 2)) {
+            if (this.supplyHistoryArr[index+1] && this.supplyHistoryArr[index+1].strategies.length && ((index + 1) % 2)) {
                 return 24;
             }
             return 12;
@@ -267,24 +282,24 @@ export default {
         input (val) {
             this.form.date = val;
         },
-        click(){
-            //点击发送请求清除搜索框
-            this.$refs.child.clearKw();
-            if (this.cid === this.organizationTree.cid) {
+        click () {
+            if (this.cid === this.supplyTree.cid) {
                 return;
             } else {
-                this.cid = this.organizationTree.cid;
+                //点击发送请求清除搜索框
+                this.$refs.child.clearKw();
+                this.cid = this.supplyTree.cid;
             }
         },
-        getHistory() {
+        getHistory () {
             this.loading = true;
             const params = {
-                cid:this.cid,
-                version: this.form.version,
+                cid: this.cid,
+                // subject: SUBJECT,
                 ...this.getPeriodByPt(),
             };
-            API.GetOrgStrategiesOpt(params).then(res => {
-                this.$store.dispatch('SaveOrgtHistory', res.data);
+            API.GetSupplyHistory(params).then(res => {
+                this.$store.dispatch('SaveSupplyHistory', res.data);
                 if (!res.data.length) {
                     this.message = '暂无数据';
                 }
@@ -292,31 +307,34 @@ export default {
                 this.loading = false;
             });
         },
-        findParent(node,cid) { //找父节点id
+        findParent(node,cid) {//找父节点id
             let hasfatherCid = [];
             this.find(cid, node, hasfatherCid);
             for (let i of hasfatherCid) {
                 this.getTreePrograss(i);
             }
         },
-        getTree() {
+        getTree () {
+            this.loading = true;
             const params = {
                 subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                version: this.form.version
             };
-            API.GetOrgTree(params).then(res => {
-                if (!this.organizationTree.cid) {
-                    this.cid = res.tree.cid;
+            API.GetSupplyTree(params).then(res => {
+                if (res.tree) {
+                    if (!this.supplyTree || !this.supplyTree.cid) {
+                        this.cid = res.tree.cid;
+                    }
+                    this.treeClone = _.cloneDeep(res.tree);
+                    this.addProperty([this.treeClone]);
                 }
-                this.type = res.tree.type;
-                this.treeClone = _.cloneDeep(res.tree);
-                this.addProperty([this.treeClone]);
-                this.$store.dispatch('SaveOrgTree', res.tree);
+                this.$store.dispatch('SaveSupplyTree', res.tree);
+            }).finally(() => {
+                this.loading = false;
             });
         },
         //获取百分比数据
-        getTreePrograss(cid){
+        getTreePrograss (cid) {
             let id;
             if (cid) {
                 id = cid;
@@ -326,14 +344,13 @@ export default {
             const params = {
                 subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid: id,
-                version: this.form.version
+                nid: id
             };
             this.treeProgressLoading = true;
-            API.GetOrgTreePrograss(params).then(res=>{
+            API.GetSupplyTreeProgress(params).then(res => {
                 let obj = this.preOrder([this.treeClone], id);
                 if (obj.cid === id) {
-                    obj.hasData = true;//插入数据的hasData为true
+                    obj.hasData = true; //插入数据的hasData为true
                     obj.real_total = res.data[id].real;
                     obj.target_total = res.data[id].target;
                 }
@@ -380,22 +397,22 @@ export default {
                 };
             } else {
                 return {
-                    pt: '月',
-                    sDate: '2018-03-01',
-                    eDate: '2018-06-30',
+                    pt: '日',
+                    sDate: '2018-01-01',
+                    eDate: '2018-01-07',
                     // 先写死个时间
                     // sDate: moment().startOf('week').format('YYYY-MM-DD'),
                     // eDate: moment().format('YYYY-MM-DD'),
                 };
             }
         },
-        largerThanZero(val) {
-            return val && _.isNumber(parseFloat(val)) && parseFloat(val) >= 0;
+        largerThanZero (val) {
+            return val && _.isNumber(parseFloat(val * 100)) && parseFloat(val) > 0;
         },
-        lessThanZero(val) {
-            return val && _.isNumber(parseFloat(val)) && parseFloat(val) < 0;
+        lessThanZero (val) {
+            return val && _.isNumber(parseFloat(val * 100)) && parseFloat(val) < 0;
         },
-        arraySpanMethod(strategies) {
+        arraySpanMethod (strategies) {
             if (!strategies || strategies.length === 0) {
                 return;
             }
@@ -403,8 +420,8 @@ export default {
                 return o.subject;
             });
             const newStrategies = _.cloneDeep(strategies);
-            for(let i = 1; i < newStrategies.length; i++) {
-                let prev = newStrategies[i-1];
+            for (let i = 1; i < newStrategies.length; i++) {
+                let prev = newStrategies[i - 1];
                 let current = newStrategies[i];
                 if (current.subject === prev.subject) {
                     current.hidden = true;
@@ -430,48 +447,56 @@ export default {
             this.nodeArr = [];
             this.val = val;
             if (!val.cid) {
-                if (this.cid !== this.organizationTree.cid) {
-                    this.cid = this.organizationTree.cid;
-                    this.treeClone = _.cloneDeep(this.organizationTree);
-                } else {
-                    this.allRequest();
+                //数据为空时,没有id
+                if(this.cid){
+                    if (this.cid !== this.supplyTree.cid) {
+                        this.cid = this.supplyTree.cid;
+                        this.treeClone = _.cloneDeep(this.supplyTree);
+                    } else {
+                        this.allRequest();
+                    }
+                }else{
+                    this.getTree();
                 }
             } else {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     this.allRequest();
-                    this.treeClone = _.cloneDeep(this.organizationTree);
+                    this.treeClone = _.cloneDeep(this.supplyTree);
                 }
                 this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
                 this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // treeBox 元素的ref   value 绑定的node-key
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
                 });
             }
         },
-        nodeExpand(data){
+        nodeExpand (data) {
             this.cid = data.cid;
         },
-        handleNodeClick(data) {
-            this.$refs.child.clearKw();
-            this.type = data.type;
-            if (this.cid === data.cid) {
-                return ;
+        handleNodeClick (data) {
+            if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
+                this.val = this.searchBarValue;
+                this.$refs.child.clearKw();
+                if (this.cid === data.cid) {
+                    return;
+                } else {
+                    this.cid = data.cid;
+                }
             } else {
-                this.type = data.type;
-                this.cid = data.cid;
+                this.error('请选择日期');
             }
         },
-        clickIndex(i, idx) {
+        clickIndex (i, idx) {
             this[`index${i}`] = idx;
         },
     }
+
 };
 </script>
-
 <style lang="scss">
-    @import '../Product/style/optimization.scss';
-    @import '../../style/tree.scss';
+@import '../Product/style/optimization.scss';
+@import '../../style/tree.scss';
 </style>

@@ -1,61 +1,27 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="organizationTree"
+      v-if="supplyTree"
       class="nav-content-row">
       <div
         class="overflow">
         <el-row
           v-loading="loading"
-          v-if="hasStructure"
           class="min-height-400">
           <Card>
-            <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析前端</el-row>
-            <el-row type="flex">
+            <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析</el-row>
+            <el-row
+              v-if="supplyStructureArr.length"
+              type="flex">
               <el-col :span="16">
-                <template v-for="(item, index) in orgstructureArr1">
+                <template v-for="(item, index) in supplyStructureArr">
                   <el-col
                     :key="index"
                     :span="6"
                     @click.native="clickIndex(3 ,index)">
                     <ProportionalStructureAverageComparison
-                      :unit="getUnit(item, organizationSubject)"
                       :id="`${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </el-col>
-              <el-col
-                :span="8"
-                class="border-left-2-gray">
-                <ProportionalStructureAverageComparisonBig
-                  @id="structureID"
-                  id="ProportionalStructureAverageComparisonBig"
-                  v-if="orgstructureArr1.length>0"
-                  :unit="getUnit(orgstructureArr1[index3], organizationSubject)"
-                  :data="orgstructureArr1[index3]" />
-              </el-col>
-            </el-row>
-          </Card>
-        </el-row>
-        <el-row
-          v-if="hasStructureBack"
-          v-loading="loading"
-          class="min-height-400">
-          <Card>
-            <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析后端</el-row>
-            <el-row
-              v-if="orgstructureArr2.length"
-              type="flex">
-              <el-col :span="16">
-                <template v-for="(item, index) in orgstructureArr2">
-                  <el-col
-                    :key="index"
-                    :span="6"
-                    @click.native="clickIndex(4 ,index)">
-                    <ProportionalStructureAverageComparison
-                      :id="`orgstructureArr2${index}`"
-                      :unit="getUnit(item, orgBackSubject)"
+                      :unit="getUnit(item)"
                       :data="sliceData(item)" />
                   </el-col>
                 </template>
@@ -65,20 +31,19 @@
                 class="border-left-2-gray">
                 <ProportionalStructureAverageComparisonBig
                   @id="structureID"
-                  v-if="orgstructureArr2"
-                  :unit="getUnit(orgstructureArr2[index4], orgBackSubject)"
-                  id="ProportionalStructureAverageComparisonBig1"
-                  :data="orgstructureArr2[index4]" />
+                  :unit="getUnit(supplyStructureArr[index3])"
+                  id="ProportionalStructureAverageComparisonBig"
+                  :data="supplyStructureArr[index3]" />
               </el-col>
+            </el-row>
+            <el-row
+              v-if="!loading && !supplyStructureArr.length"
+              class="overview_select">
+              暂无数据
             </el-row>
           </Card>
         </el-row>
       </div>
-    </el-row>
-    <el-row
-      v-else
-      class="overview_select">
-      暂无数据
     </el-row>
   </div>
 </template>
@@ -92,7 +57,7 @@ import ProportionalStructureAverageComparison from 'components/ProportionalStruc
 import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
 //vuex
 import { mapGetters } from 'vuex';
-import { organization, orgBack } from 'data/subject';
+import { supply } from 'data/subject';
 
 export default {
     props: {
@@ -106,29 +71,22 @@ export default {
     },
     data () {
         return {
-            version: 0,
+            form: {
+                pt: '', // 周期类型
+                date: [], // date
+                search: '', // 暂时没有接口 先这样
+            },
             //index
             index3: 0,
-            index4: 0,
             pt: '',
             loading: false,
             changeDate: {},
             newParams: {},
-            organizationSubject: organization(),
-            orgBackSubject: orgBack()
+            supplySubject: supply()
         };
     },
     computed: {
-        ...mapGetters(['organizationTree',  'orgstructureArr1', 'orgstructureArr2', 'orglastParams']),
-        hasTree () {
-            return !_.isEmpty(this.organizationTree);
-        },
-        hasStructure () {
-            return !_.isEmpty(this.orgstructureArr1);
-        },
-        hasStructureBack () {
-            return !_.isEmpty(this.orgstructureArr2);
-        }
+        ...mapGetters(['supplyTree', 'supplyStructureArr','supplyLastParams']),
     },
     watch: {
         cid: {
@@ -139,11 +97,11 @@ export default {
         },
         val() {
             this.allRequest();
-        }
+        },
     },
     methods: {
-        getUnit(item, sujectData) {
-            let obj = sujectData.find(el => {
+        getUnit(item) {
+            let obj = this.supplySubject.find(el => {
                 return el.subject == item.subject && el.subject_name == item.subject_name;
             });
             return obj ? obj.subject_unit : "";
@@ -166,46 +124,22 @@ export default {
             if (!this.cid) {
                 return;
             }
-            this.getStructure1();
-            this.getStructure2();
-            this.$store.dispatch("SaveOrgLastParams", this.newParams);
+            this.getStructure();
+            this.$store.dispatch("SaveSupplyLastParams", this.newParams);
         },
-        //前端
-        getStructure1() {
+        getStructure() {
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                version: this.version,
-                rType: 1
             };
             this.newParams.structure = params;
-            if (JSON.stringify(this.orglastParams.structure) == JSON.stringify(params)) {
+            if (JSON.stringify(this.supplyLastParams.structure) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetOrgStructure(params).then(res => {
-                this.$store.dispatch('SaveOrgStructureArr1', res.data);
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
-        //后端
-        getStructure2() {
-            const params = {
-                cid: this.cid,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-                version: this.version,
-                rType: 2
-            };
-            // this.newParams.structure = params;
-            // if (JSON.stringify(this.orglastParams.structure) == JSON.stringify(params)) {
-            //     return;
-            // }
-            this.loading = true;
-            API.GetOrgStructure(params).then(res => {
-                this.$store.dispatch('SaveOrgStructureArr2', res.data);
+            API.GetSupplyStructure(params).then(res => {
+                this.$store.dispatch('SaveSupplyStructureArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -250,5 +184,5 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../../Product/style/overview.scss';
+@import '../../Product/style/overview.scss';
 </style>

@@ -45,45 +45,44 @@
           width="50px"
           label="序号" />
         <el-table-column
-          prop="level_name"
-          label="组织层级"
+          prop="level"
+          label="产品层级"
           column-key="level"
           :filters="filtersLevel" />
         <el-table-column
-          prop="subject_name"
+          prop="subject"
           label="指标"
           column-key="subject"
           :filters="filtersSubject" />
         <el-table-column
-          prop="rank_name"
+          prop="rank"
           label="评选等级"
           column-key="rank"
           :filters="filtersRank" />
         <el-table-column
-          prop="inf_name"
+          prop="package"
           label="影响因素"
-          column-key="inf_id"
-          :filters="filtersInfo" />
+          column-key="package"
+          :filters="filtersPackage" />
         <el-table-column
           prop="strategy"
           min-width="200"
           label="策略" />
         <el-table-column
-          prop="use_num"
+          prop="count_use"
           label="采纳次数"
           sortable='custom'>
-          <!-- 点击策略准确度,弹出下面这个窗口的所有策略应用情况 -->
           <template
             slot-scope="scope">
             <div
               @click="handleCountUseClick($event, scope.row)"
               class="name-wrapper cell_count count_use">
-              {{ scope.row.use_num }}
+              {{ scope.row.count_use }}
             </div>
           </template>
         </el-table-column>
         <el-table-column
-          prop="suc_num"
+          prop="count_eff"
           label="有效次数"
           sortable='custom'>
           <template
@@ -91,21 +90,20 @@
             <div
               @click='handleCountEff($event, scope.row)'
               class="name-wrapper cell_count count_eff">
-              {{ scope.row.suc_num }}
+              {{ scope.row.count_eff }}
             </div>
           </template>
         </el-table-column>
         <el-table-column
-          prop="acc_rate"
+          prop="rate"
           label="策略准确度/适用度"
           sortable='custom'>
           <!-- 点击策略准确度,弹出下面这个窗口的所有策略应用情况 -->
-          <template
-            slot-scope="scope">
+          <template slot-scope="scope">
             <div
               @click="handleCountUseClick($event, scope.row)"
               class="name-wrapper cell_count count_rate">
-              {{ scope.row.acc_rate }}
+              {{ scope.row.rate }}
             </div>
           </template>
         </el-table-column>
@@ -128,26 +126,25 @@
 <script>
 import API from './api';
 
-// const DESC = 1, ASC = 2;
+// const SUBJECT = ['level','subject']; // S: 销售额 P: 利润额
 export default {
     components: {},
     data() {
         return {
             form: {
-                pt: '月',
-                date: [],
-                search: '',
-                version: '0'
+                pt: '日', // 周期类型
+                date: [], // date
+                search: '', // 暂时没有接口 先这样
             },
             loading: false,
             trackList: [],
             filtersLevel: [],
             filtersSubject: [],
             filtersRank: [],
-            filtersInfo: [],
+            filtersPackage: [],
             total: 0,
             level: '',
-            inf_id: '',
+            package: '',
             rank: '',
             subject: '',
             sort: '',
@@ -173,7 +170,7 @@ export default {
         }
     },
     mounted() {
-        this.getOrgStrategy();
+        this.getsupplyStrategy();
         this.getFliters();
     },
     methods: {
@@ -214,8 +211,7 @@ export default {
             this.showDialog = true;
             this.showEff(row);
         },
-        sortChange(val) {
-            this.trackList = this.trackList;
+        sortChange(val) {//筛选
             let order;
             if (val.prop && val.order) {
                 if (val.order === "ascending") {
@@ -224,40 +220,48 @@ export default {
                     order = 'desc';
                 }
                 this.sort = val.prop + ':' + order;
-                this.getOrgStrategy();
+                this.getsupplyStrategy();
             }
         },
-        showEff(val) {
+        showEff(val) {//有效次数接口
+            if (val.id == this.lastCountEffId) {
+                return;
+            }
+            this.lastCountEffId = val.id;
             this.trackListEff = [];
             const effRecord = 1;//是否只返回有效的应用记录 1是 0否
             const params = {
                 strategyId: val.id,
                 goodOnly: effRecord
             };
-            API.GetOrgApplog(params).then(res => {
+            this.countEffLoading = true;
+            API.GetSupplyApplog(params).then(res => {
                 this.trackListEff = res.data;
+                this.countEffLoading = false;
+            }).catch(() => {
+                this.lastCountEffId = "";
             });
         },
-        show(val) {
+        show(val) {//采纳次数
+            if (val.id == this.lastCountUseId) {
+                return;
+            }
+            this.lastCountUseId = val.id;
             this.trackListAll = [];
             const unEffRecord = 0;//是否只返回有效的应用记录 1是 0否(全部)
             const params = {
                 strategyId: val.id,
                 goodOnly: unEffRecord
             };
-            API.GetOrgApplog(params).then(res => {
+            this.countUseLoading = true;
+            API.GetSupplyApplog(params).then(res => {
                 this.trackListAll = res.data;
+                this.countUseLoading = false;
+            }).catch(() => {
+                this.lastCountUseId = "";
             });
         },
-        getFliters() {
-            API.GetOrgFilter().then(res => {
-                this.filtersLevel = res.level;
-                this.filtersSubject = res.subject;
-                this.filtersRank = res.rank;
-                this.filtersInfo = res.package;
-            });
-        },
-        filterChange(filter){
+        filterChange(filter) {
             this.filterArr.push(filter);
             for (let i of this.filterArr) {
                 if (Object.keys(i)[0] === "level") {
@@ -266,25 +270,33 @@ export default {
                     this.subject = i.subject.join();
                 } else if (Object.keys(i)[0] === "rank") {
                     this.rank = i.rank.join();
-                } else if (Object.keys(i)[0] === "inf_id") {
-                    this.inf_id = i.inf_id.join();
+                } else if (Object.keys(i)[0] === "package") {
+                    this.package = i.package.join();
                 }
             }
             this.currentPage = 1,//更改筛选条件时从第一页查找
-            this.getOrgStrategy();
+            this.getsupplyStrategy();
         },
-        getOrgStrategy() {
+        getFliters() {
+            API.GetSupplyFilter().then(res => {
+                this.filtersLevel = res.level;
+                this.filtersSubject = res.subject;
+                this.filtersRank = res.rank;
+                this.filtersPackage = res.package;
+            });
+        },
+        getsupplyStrategy() {
             this.loading = true;
             const params = {
                 page: this.currentPage,
-                limit: 10,
+                per_page: 10,
                 level: this.level,
                 subject: this.subject,
-                rank: this.rank,
-                inf_id: this.inf_id,
+                rank:this.rank,
+                package: this.package,
                 sort: this.sort
             };
-            API.GetOrgStrategiesTrack(params).then(res => {
+            API.GetSupplyStrategy(params).then(res => {
                 this.trackList = res.data;
                 this.total = res.total;
             }).finally(() => {
@@ -296,14 +308,14 @@ export default {
             this.currentPage = val;
             const params = {
                 page: this.currentPage,
-                limit: 10,
+                per_page: 10,
                 level: this.level,
                 subject: this.subject,
                 rank: this.rank,
-                inf_id: this.inf_id,
+                package: this.package,
                 sort: this.sort
             };
-            API.GetOrgStrategiesTrack(params).then(res => {
+            API.GetSupplyStrategy(params).then(res => {
                 this.trackList = res.data;
             }).finally(() => {
                 this.loading = false;
@@ -314,5 +326,5 @@ export default {
 </script>
 
 <style lang="scss">
-	@import '../Product/style/track.scss'
+@import '../Product/style/track.scss'
 </style>

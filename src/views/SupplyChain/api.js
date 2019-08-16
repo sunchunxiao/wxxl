@@ -1,51 +1,46 @@
-// Created by sunchunxiao on 2018/10/16.
-
 import { FetchGet, FetchPost } from 'utils/fetch';
 
-// import store from 'store';
-
 export default {
-    //查询组织结构
-    GetOrgTree(params) {
-        return FetchGet('/org/tree', params);
+    GetSupplyTree(params) {
+        return FetchGet('/supply/tree', params);
     },
-    GetOrgTreePrograss(params) {
-        return FetchGet('/org/tree/progress', params);
+    GetSupplyTreeProgress(params) {
+        return FetchGet('/supply/tree/progress', params);
     },
-    GetOrgProgress(params) {
-        return FetchGet('/org/progress', params);
+    GetSupplyProgress(params) {
+        return FetchGet('/supply/progress', params);
     },
-    GetOrgTrend(params) {
-        return FetchGet('/org/trend', params);
+    GetSupplyTrend(params) {
+        return FetchGet('/supply/trend', params);
     },
-    GetOrgStructure(params) {
-        return FetchGet('/org/structure', params);
+    GetSupplyStructure(params) {
+        return FetchGet('/supply/structure', params);
     },
-    GetOrgRank(params) {
-        return FetchGet('/org/rank', params);
+    GetSupplyRank(params) {
+        return FetchGet('/supply/rank', params);
     },
-    GetOrgStrategy(params) {
-        return FetchGet('/org/strategy', params);
+    GetSupplyCompare(params) {
+        return FetchGet('/supply/compare', params);
     },
-    PostOrgStrategyLog(params) {
-        return FetchPost('/org/strategyLog', params);
+    GetSupplyHistory(params) {
+        return FetchGet('/supply/strategy/history', params);
     },
-    GetOrgCompare(params) {
-        return FetchGet('/org/compare', params);
+    GetSupplyStrategy(params) {
+        return FetchGet('/supply/strategy', params);
     },
-    GetOrgSubject(params) {
-        return FetchGet('/org/subject', params);
+    GetSupplyMatch(params) {
+        return FetchGet('/supply/strategy/match', params);
     },
-    GetOrgStrategiesOpt(params) {
-        return FetchGet('/org/strategiesOpt', params);
+    PostSupplySave(params) {
+        return FetchPost('/supply/strategy/save', params);
     },
-    GetOrgStrategiesTrack(params) {
-        return FetchGet('/org/strategiesTrack', params);
+    GetSupplySearch(params) {
+        return FetchGet('/supply/search', params);
     },
-    GetOrgApplog(params) {
-        return FetchGet('/org/strategy/app_log', params);
+    GetSupplyApplog(params) {
+        return FetchGet('/supply/strategy/app_log', params);
     },
-    GetOrgFilter(params) {
-        return FetchGet('/org/strategy/filter', params);
+    GetSupplyFilter(params) {
+        return FetchGet('/supply/strategy/filter', params);
     },
 };

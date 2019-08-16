@@ -1,7 +1,7 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="organizationTree"
+      v-if="supplyTree"
       class="nav-content-row">
       <div
         class="overflow">
@@ -10,21 +10,22 @@
           class="min-height-400">
           <Card>
             <el-row class="margin-bottom-20 overview_title">智能评选和智能策略</el-row>
-            <el-row v-if="orgrankArr.length">
+            <el-row v-if="supplyRankArr.length">
               <el-col :span="14">
                 <IntelligentSelection
                   id="rank"
                   @changeTime="changeTime"
                   @showStragety="showStragety"
-                  :data="orgrankArr" />
+                  :data="supplyRankArr" />
               </el-col>
               <el-col :span="10">
                 <div class="stragety">
                   <div class="stragety-title">智能策略</div>
-                  <div class="stragety-box">
+                  <div
+                    class="stragety-box">
                     <div class="margin-bottom-10">{{ stragetyTitle }}</div>
                     <el-checkbox-group
-                      v-if="stragety"
+                      v-if="stragety.length"
                       v-model="stragetyCheckList">
                       <el-checkbox
                         v-for="(item,index) in stragety"
@@ -44,14 +45,14 @@
                 </div>
               </el-col>
             </el-row>
+            <el-row
+              v-else
+              class="overview_select">
+              暂无数据
+            </el-row>
           </Card>
         </el-row>
       </div>
-    </el-row>
-    <el-row
-      v-else
-      class="overview_select">
-      暂无数据
     </el-row>
   </div>
 </template>
@@ -81,7 +82,6 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
-            version: 0,
             //tree
             pt: '',
             loading: false,
@@ -93,13 +93,13 @@ export default {
             idArr: [],
             post: 1,
             changeDate: {},
-            newParams: {}
+            newParams: {},
         };
     },
     computed: {
-        ...mapGetters(['organizationTree', 'orgrankArr','orglastParams']),
+        ...mapGetters(['supplyTree', 'supplyRankArr','supplyLastParams']),
         hasTree () {
-            return !_.isEmpty(this.organizationTree);
+            return !_.isEmpty(this.supplyTree);
         },
     },
     watch: {
@@ -125,7 +125,7 @@ export default {
         },
         submit() {
             let data1 = JSON.parse(localStorage.data);
-            if (this.stragety.length) {
+            if(this.stragety.length){
                 this.$confirm('确认?', {
                     confirmButtonText: '保存',
                     cancelButtonText: '取消',
@@ -134,12 +134,12 @@ export default {
                 }).then(() => {
                     const data = {
                         cid: data1.cid,
-                        rank: data1.rank,
+                        // rank: data1.rank,
                         subject: data1.subject,
                         time_label: data1.time_label,
                         strategies: this.idArr.join(',')
                     };
-                    API.PostOrgStrategyLog(data).then(() => {
+                    API.PostSupplySave(data).then(() => {
                         this.$message({
                             showClose: true,
                             message: '保存成功'
@@ -161,7 +161,7 @@ export default {
                 return;
             }
             this.getRank();
-            this.$store.dispatch("SaveOrgLastParams", this.newParams);
+            this.$store.dispatch("SaveSupplyLastParams", this.newParams);
         },
         getRank() {
             if (this.getPt() === '日') {
@@ -172,16 +172,15 @@ export default {
             const params = {
                 cid: this.cid,
                 pt: this.pt,
-                version:this.version,
                 ...this.getPeriodByPt(),
             };
             this.newParams.rank = params;
-            if (JSON.stringify(this.orglastParams.rank) == JSON.stringify(params)) {
+            if (JSON.stringify(this.supplyLastParams.rank) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetOrgRank(params).then(res => {
-                this.$store.dispatch('SaveOrgRankArr', res.data);
+            API.GetSupplyRank(params).then(res => {
+                this.$store.dispatch('SaveSupplyRankArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -237,7 +236,7 @@ export default {
             const params = {
                 cid: cid,
                 subject: subject,
-                rank: rank,
+                // rank: rank,
                 time_label: time_label,
             };
             if (this.showStragetyId === cid && this.subject === subject) {
@@ -247,7 +246,7 @@ export default {
             this.subject = subject;
             this.stragety = [];
             this.stragetyMessage = '';
-            API.GetOrgStrategy(params).then(res => {
+            API.GetSupplyMatch(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];
                 this.stragety = res.data;
@@ -256,7 +255,7 @@ export default {
                 }
                 const checked = 1;//1是选中,0是不选中
                 for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].status === checked) {
+                    if (res.data[i].is_selected === checked) {
                         this.stragetyCheckList.push(res.data[i].id);
                         this.idArr.push(res.data[i].id);
                     }
@@ -268,5 +267,5 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../../Product/style/overview.scss';
+@import '../../Product/style/overview.scss';
 </style>
