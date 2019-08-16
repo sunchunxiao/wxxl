@@ -124,7 +124,7 @@ export default {
                         } else {
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + "</br>" +
-                                `占比 : ${(item.value / nodes.total * 100).toFixed(2)}%` + "</br>" +
+                                `占比 : ${nodes.total?(item.value / nodes.total * 100).toFixed(2):0}%` + "</br>" +
                                 `&nbsp;&nbsp;&nbsp;额 : ${_this.formatNumber(parseInt(item.value / 100)) + _this.unit}`;
                             });
                         }
