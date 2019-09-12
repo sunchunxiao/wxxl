@@ -199,7 +199,7 @@ const MENUDATA = [
                 path: "/overview"
             },
             {
-                title: "客户对比",
+                title: "对比分析",
                 path: "/contrast"
             },
             {
@@ -232,12 +232,10 @@ export default {
             let activePath;
             if (fullPath.includes("/overview")) {
                 activePath = fullPath.split("/overview")[0] + "/overview";
-            }
-            else if (fullPath.includes("/core")) {
+            } else if (fullPath.includes("/core")) {
                 activePath = fullPath.split("/core")[0] + "/core";
                 // activePath = "/home";
-            }
-            else {
+            } else {
                 activePath = fullPath;
             }
             return activePath;
@@ -261,7 +259,7 @@ $scale: 1.5;
     width: 100%;
     background-color: $bgcolor;
     border-right: none;
-    .home{
+    .home {
         font-size: 18px
     }
     .el-menu-item:focus,
@@ -277,12 +275,11 @@ $scale: 1.5;
     .el-menu-item.is-active {
         color: $white;
         background-color: $bg-color-active;
-        // border-left: 5px solid $border-color-active;
     }
     .menu_icon {
         margin: 0 12px 0 -5px;
     }
-    .el-menu-item, .el-submenu__title{
+    .el-menu-item, .el-submenu__title {
         height: $subtitle-height;
         line-height: $subtitle-height;
     }

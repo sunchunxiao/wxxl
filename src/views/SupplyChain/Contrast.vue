@@ -271,7 +271,6 @@ export default {
     methods: {
         getNoStandardNum() {
             let num = 0;
-            // console.log(this.noStandardObj,111);
             for (let i in this.noStandardObj) {
                 num += this.noStandardObj[i];
             }
@@ -599,6 +598,7 @@ export default {
             this.index0 = idx;
             this.opcityIndex = idx;
             this.opciatyBool = true;
+
         },
     }
 };

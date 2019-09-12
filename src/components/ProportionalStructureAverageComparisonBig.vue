@@ -120,16 +120,16 @@ export default {
                     axisPointer : { // 坐标轴指示器，坐标轴触发有效
                         type : 'none' // 默认为直线，可选为：'line' | 'shadow'
                     },
-                    formatter: function(params){
+                    formatter: function(params) {
                         let result = [];
-                        if (_.includes(SUBJECT, subject)){
+                        if (_.includes(SUBJECT, subject)) {
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + " : " + _this.formatNumber(item.value) + _this.unit + "</br>";
                             });
                         } else {
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + "</br>" +
-                                `占比 : ${(item.value / nodes.total * 100).toFixed(2)}%` + "</br>" +
+                                `占比 : ${nodes.total?(item.value / nodes.total * 100).toFixed(2):0}%` + "</br>" +
                                 `&nbsp;&nbsp;&nbsp;额 : ${_this.formatNumber(parseInt(item.value / 100)) + _this.unit}`;
                             });
                         }
