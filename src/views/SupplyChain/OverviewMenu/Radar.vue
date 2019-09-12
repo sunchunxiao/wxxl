@@ -1,29 +1,27 @@
 <template>
   <div class="nav-content">
     <el-row
+      v-if="supplyTree"
       class="nav-content-row">
       <el-row
         class="overflow">
         <el-row
           v-loading="loading"
           class="min-height-400">
-          <Card v-if="orgrankArr.length || orgprogressArr.length">
+          <Card v-if="supplyRankArr.length || supplyProgressArr.length">
             <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
             <div
               class="margin-bottom-20"
               style="height:250px;">
               <slider
+                v-if="supplyProgressArr.length"
                 height="250px"
-                :key="sliderKey"
-                v-if="orgprogressArr.length"
-                class="margin-bottom-20"
                 :min-move-num="50">
-                <template v-for="(item, index) in orgprogressArr">
+                <template v-for="(item, index) in supplyProgressArr">
                   <el-col
                     :key="index"
                     style="width:198px">
                     <ProTargetAchievement
-                      v-if="orgprogressArr.length"
                       :id="`${index}`"
                       :data="item" />
                   </el-col>
@@ -32,17 +30,22 @@
             </div>
             <el-row class="margin-bottom-20 overview_title">综合评估</el-row>
             <Radar
-              v-if="orgrankArr.length"
+              v-if="supplyRankArr.length"
               :id="'select'"
-              :data="orgrankArr[orgrankArr.length-1]" />
+              :data="supplyRankArr[supplyRankArr.length-1]" />
             <el-row
-              v-if="!loading && !orgrankArr.length"
+              v-if="!loading && !supplyRankArr.length"
               class="overview_select">
               暂无数据
             </el-row>
           </Card>
         </el-row>
       </el-row>
+    </el-row>
+    <el-row
+      v-else
+      class="overview_select">
+      暂无数据
     </el-row>
   </div>
 </template>
@@ -74,18 +77,21 @@ export default {
     },
     data () {
         return {
-            version: 0,
+            form: {
+                pt: '', // 周期类型
+                date: [], // date
+                search: '', // 暂时没有接口 先这样
+            },
             pt: '',
             loading: false,
             // val: {},
-            newParams: {},
-            sliderKey: "",
+            newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['organizationTree', 'orgprogressArr', 'orgrankArr', 'orglastParams']),
+        ...mapGetters(['supplyTree', 'supplyProgressArr', 'supplyRankArr', 'supplyLastParams']),
         hasTree () {
-            return !_.isEmpty(this.organizationTree);
+            return !_.isEmpty(this.supplyTree);
         }
     },
     watch: {
@@ -106,7 +112,7 @@ export default {
             }
             this.getProgress();
             this.getRank();
-            this.$store.dispatch("SaveOrgLastParams", this.newParams);
+            this.$store.dispatch("SaveSupplyLastParams", this.newParams);
         },
         //目标达成
         getProgress() {
@@ -114,16 +120,14 @@ export default {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                version: this.version
             };
             this.newParams.progress = params;
-            if (JSON.stringify(this.orglastParams.progress) == JSON.stringify(params)) {
+            if (JSON.stringify(this.supplyLastParams.progress) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetOrgProgress(params).then(res => {
-                this.sliderKey = new Date().getTime();
-                this.$store.dispatch('SaveOrgProgressData', res.data);
+            API.GetSupplyProgress(params).then(res => {
+                this.$store.dispatch('SaveSupplyProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -132,22 +136,21 @@ export default {
         getRank() {
             if (this.getPt() === '日') {
                 this.pt = '周';
-            } else {
+            }else{
                 this.pt = this.getPt();
             }
             const params = {
                 cid: this.cid,
                 pt: this.pt,
                 ...this.getPeriodByPt(),
-                version: this.version
             };
             this.newParams.rank = params;
-            if (JSON.stringify(this.orglastParams.rank) == JSON.stringify(params)) {
+            if (JSON.stringify(this.supplyLastParams.rank) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetOrgRank(params).then(res => {
-                this.$store.dispatch('SaveOrgRankArr', res.data);
+            API.GetSupplyRank(params).then(res => {
+                this.$store.dispatch('SaveSupplyRankArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -193,5 +196,5 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../../Product/style/overview.scss';
+@import '../../Product/style/overview.scss';
 </style>

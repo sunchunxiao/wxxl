@@ -125,7 +125,7 @@ export default {
         },
         submit() {
             let data1 = JSON.parse(localStorage.data);
-            if(this.stragety.length){
+            if (this.stragety.length) {
                 this.$confirm('确认?', {
                     confirmButtonText: '保存',
                     cancelButtonText: '取消',
@@ -133,8 +133,7 @@ export default {
                     center: true
                 }).then(() => {
                     const data = {
-                        // cid: data1.cid,
-                        rank: data1.rank,
+                        cid: data1.cid,
                         subject: data1.subject,
                         time_label: data1.time_label,
                         strategies: this.idArr.join(',')
@@ -152,7 +151,7 @@ export default {
                         duration: 1500
                     });
                 });
-            }else{
+            } else {
                 this.error('无应用策略');
             }
         },

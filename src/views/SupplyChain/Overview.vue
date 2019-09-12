@@ -18,26 +18,25 @@
       <search-bar
         ref="child"
         @search="handleSearch"
-        url="/org/search"
-        placeholder="组织编号/组织名称"
+        url="/supply/search"
+        placeholder="产品编号/产品名称"
         v-model="searchBarValue"
-        :pt-options="['月', '季', '年']" />
+        :pt-options="['日', '周', '月', '季', '年']" />
     </el-row>
     <div class="overview">
       <el-row
-        v-if="organizationTree"
+        v-if="supplyTree"
         type="flex"
         class="content_row">
         <el-col
           :span="5"
           :class="{'tree_block_none':isCollapse}"
           class="tree_container">
-          <!-- <div class="title">毛利润额目标达成率</div> -->
           <div class="title">毛利润额目标未达标数 :{{ noStandard }} </div>
           <div class="tree_content">
             <div
               @click="click"
-              v-if="organizationTree.children"
+              v-if="supplyTree.children"
               class="company">
               <span
                 :class="['left','label',
@@ -66,7 +65,7 @@
                   effect="dark"
                   placement="right">
                   <div slot="content">
-                    <div class="margin-bottom-5">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                    <div class="margin-bottom-5 ">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"
@@ -75,7 +74,7 @@
                   <span class="label">
                     <span
                       :class="['label-left',
-                               {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.cid}]"><span v-if="data.type==2">* </span>{{ data.name }}</span>
+                               {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.cid}]">{{ data.name }}</span>
                   </span>
                 </el-tooltip>
                 <div
@@ -97,9 +96,8 @@
               @click="handleClick(item.id)"><span class="dot" />{{ item.value }}</span>
           </div>
           <component
-            @changeCid="handleChangeCid"
+            @changeCid='handleChangeCid'
             :cid="cid"
-            :type="type"
             :val="val"
             :is="currentTabComponent" />
         </el-col>
@@ -150,13 +148,13 @@ const TREE_PROPS = {
 const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {
-        'reach': viewRadar,
-        'diff': Diff,
-        'trend': Trend,
-        'structure': Structure,
-        'rank': Rank,
+        "reach": viewRadar,
+        "diff": Diff,
+        "trend": Trend,
+        "structure": Structure,
+        "rank": Rank,
         Card,
-        SearchBar
+        SearchBar,
     },
     data () {
         return {
@@ -165,10 +163,8 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
-            version: 0,
             //tree
             cid: '',
-            type: 0, // 前后端类型, 1,3属于前端,2:后端
             pt: '',
             //js
             error: error,
@@ -198,9 +194,9 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['organizationTree']),
+        ...mapGetters(['supplyTree']),
         hasTree () {
-            return !_.isEmpty(this.organizationTree);
+            return !_.isEmpty(this.supplyTree);
         },
         currentTabComponent: function() {
             return this.currView;
@@ -220,7 +216,7 @@ export default {
                             if (!bool) {
                                 numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
                             }
-                        } else if(!this.treeProgressLoading) {
+                        } else if (!this.treeProgressLoading) {
                             numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
                         } else {
                             return;
@@ -246,9 +242,8 @@ export default {
                 this.getTree();
             });
         } else {
-            this.treeClone = _.cloneDeep(this.organizationTree);
-            this.cid = this.organizationTree.cid;
-            this.type = this.organizationTree.type;
+            this.treeClone = _.cloneDeep(this.supplyTree);
+            this.cid = this.supplyTree.cid;
             this.addProperty([this.treeClone]);
         }
     },
@@ -261,7 +256,6 @@ export default {
                 this.$refs.tree.setCurrentKey(this.cid); // tree元素的ref 绑定的node-key
             });
         },
-
         handleCollpase () {
             this.isCollapse = !this.isCollapse;
             setTimeout(() =>{
@@ -276,16 +270,15 @@ export default {
             this.getTreePrograss();
         },
         click() {
-            if (this.cid === this.organizationTree.cid) {
+            if (this.cid === this.supplyTree.cid) {
                 return;
             } else {
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
-                this.cid = this.organizationTree.cid;
-                this.type = this.organizationTree.type;
+                this.cid = this.supplyTree.cid;
             }
         },
-        findParent(node,cid) { //找父节点id
+        findParent(node,cid) {//找父节点id
             let hasfatherCid = [];
             this.find(cid, node, hasfatherCid);
             for (let i of hasfatherCid) {
@@ -298,18 +291,17 @@ export default {
                 subject: SUBJECT,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                version: this.version
             };
-            API.GetOrgTree(params).then(res => {
+            API.GetSupplyTree(params).then(res => {
                 //选择的日期没有数据,res.tree可能为null
                 if (res.tree) {
-                    if (!this.organizationTree || !this.organizationTree.cid) {
+                    if (!this.supplyTree || !this.supplyTree.cid) {
                         this.cid = res.tree.cid;
                     }
                     this.treeClone = _.cloneDeep(res.tree);
                     this.addProperty([this.treeClone]);
                 }
-                this.$store.dispatch('SaveOrgTree', res.tree);
+                this.$store.dispatch('SaveSupplyTree', res.tree);
             });
         },
         //获取百分比数据
@@ -324,11 +316,10 @@ export default {
                 subject: SUBJECT,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                nid: id,
-                version: this.version
+                nid: id
             };
             this.treeProgressLoading = true;
-            API.GetOrgTreePrograss(params).then(res => {
+            API.GetSupplyTreeProgress(params).then(res => {
                 let obj = this.preOrder([this.treeClone], id);
                 if (obj.cid === id) {
                     obj.hasData = true;//插入数据的hasData为true
@@ -375,13 +366,11 @@ export default {
         },
         getPeriodByPt() {
             const {
-                // pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
-                    // pt: pt,
                     sDate: sDate,
                     eDate: eDate,
                 };
@@ -402,10 +391,9 @@ export default {
             this.val = val;
             if (!val.cid) {
                 if (this.cid) {//数据tree不为null时
-                    if (this.cid !== this.organizationTree.cid) {
-                        this.cid = this.organizationTree.cid;
-                        this.type = this.organizationTree.type;
-                        this.treeClone = _.cloneDeep(this.organizationTree);
+                    if (this.cid !== this.supplyTree.cid) {
+                        this.cid = this.supplyTree.cid;
+                        this.treeClone = _.cloneDeep(this.supplyTree);
                     } else {
                         //公司根节点
                         this.allRequest();
@@ -417,21 +405,19 @@ export default {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     this.allRequest();
-                    this.treeClone = _.cloneDeep(this.organizationTree);
+                    this.treeClone = _.cloneDeep(this.supplyTree);
                 }
                 this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
-                this.type = val.type;
                 this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref 绑定的node-key
                 });
             }
         },
         nodeExpand(data) {
             this.cid = data.cid;
-            this.type = data.type;
         },
         handleNodeClick(data) {
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
@@ -440,7 +426,6 @@ export default {
                     return;
                 }
                 this.cid = data.cid;
-                this.type = data.type;
             } else {
                 this.error('请选择日期');
             }

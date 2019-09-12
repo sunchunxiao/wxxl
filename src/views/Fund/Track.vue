@@ -313,5 +313,5 @@ export default {
 </script>
 
 <style lang="scss">
-	@import '../Product/style/track.scss'
+@import '../Product/style/track.scss'
 </style>

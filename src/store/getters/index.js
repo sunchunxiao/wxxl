@@ -3,6 +3,7 @@ import organization from './organization';
 import fund from './fund';
 import channel from './channel';
 import customer from './customer';
+import supply from './supply';
 import date from './date';
 import home from './home';
 
@@ -12,6 +13,7 @@ const getters = {
     ...fund,
     ...channel,
     ...customer,
+    ...supply,
     ...date,
     ...home
 };

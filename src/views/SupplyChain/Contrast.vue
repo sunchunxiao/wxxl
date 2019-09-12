@@ -18,15 +18,14 @@
       <search-bar
         ref="child"
         @input="input"
-        url="/org/search"
         @search="handleSearch"
         v-model="searchBarValue"
-        placeholder="组织编号/组织名称"
-        :pt-options="['月', '季', '年']" />
+        placeholder="产品编号/产品名称"
+        url="/supply/search" />
     </el-row>
     <div class="contrast">
       <el-row
-        v-if="organizationTree"
+        v-if="supplyTree"
         type="flex"
         class="content_row">
         <el-col
@@ -69,14 +68,14 @@
                   effect="dark"
                   placement="right">
                   <div slot="content">
-                    <div class="margin-bottom-5">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                    <div class="margin-bottom-5 bold">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"
                       class="margin-bottom-5">宽度 : {{ data.children.length }}</div>
                   </div>
                   <span class="label">
-                    <span class="label_left"><span v-if="data.type==2">* </span>{{ data.name }}</span>
+                    <span class="label_left">{{ data.name }}</span>
                   </span>
                 </el-tooltip>
                 <div
@@ -93,76 +92,45 @@
             v-loading="loading"
             class="min-height-400">
             <Card>
-              <el-row class="margin-bottom-20">组织对比分析和平均值分析前端</el-row>
-              <el-row v-if="hasConstarst">
+              <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
+              <el-row v-if="supplyCompareArr.length">
                 <slider
-                  height="170px"
                   class="margin-bottom-20"
+                  height="170px"
                   :min-move-num="50">
-                  <template v-for="(item, index) in orgcompareArr">
+                  <template v-for="(item, index) in supplyCompareArr">
                     <el-col
                       :key="index"
-                      style="width:200px"
-                      @click.native="clickIndex(0 ,index)">
+                      style="width:200px">
                       <ConOrgComparisonAverage
-                        :class="{'menu_list_opciaty':opcityIndex0==index, 'menu_list_opciatyAll':opciatyBool0}"
-                        :title="item.subject_name"
+                        :class="{'menu_list_opciaty':opcityIndex==index, 'menu_list_opciatyAll':opciatyBool}"
+                        @click.native="clickIndex(index)"
                         :id="`${index}`"
-                        :unit="getUnit(item, orgSubject)"
+                        :unit="getUnit(item)"
                         :data="item" />
                     </el-col>
                   </template>
                 </slider>
                 <ConOrgComparisonAverageBig
-                  v-if="orgcompareArr.length > 0"
-                  :title="orgcompareArr[index0].subject_name"
-                  :data="orgcompareArr[index0]"
+                  :title="supplyCompareArr[index0].subject_name"
+                  :data="supplyCompareArr[index0]"
+                  :unit="getUnit(supplyCompareArr[index0])"
                   id="ConOrgComparisonAverage"
-                  :unit="getUnit(orgcompareArr[index0], orgSubject)"
                   :index="index0" />
               </el-row>
-              <el-row
-                v-if="!loading&&!hasConstarst"
-                class="please_select">请选择要对比的项目</el-row>
-            </Card>
-            <Card
-              v-if="hasConstarstBack"
-              class="padding-top-0">
-              <el-row class="margin-bottom-20">组织对比分析和平均值分析后端</el-row>
-              <el-row
-                v-if="orgcompareArrback.length > 0">
-                <slider
-                  class="margin-bottom-20"
-                  height="170px"
-                  :min-move-num="50">
-                  <template v-for="(item, index) in orgcompareArrback">
-                    <el-col
-                      :key="index"
-                      style="width:200px"
-                      @click.native="clickIndex(1 ,index)">
-                      <ConOrgComparisonAverage
-                        :class="{'menu_list_opciaty':opcityIndex1==index, 'menu_list_opciatyAll':opciatyBool1}"
-                        :title="item.subject_name"
-                        :id="`orgcompareArrback${index}`"
-                        :unit="getUnit(item, orgBackSubject)"
-                        :data="item" />
-                    </el-col>
-                  </template>
-                </slider>
-                <ConOrgComparisonAverageBig
-                  v-if="orgcompareArrback.length > 0"
-                  :title="orgcompareArrback[index1].subject_name"
-                  :data="orgcompareArrback[index1]"
-                  :unit="getUnit(orgcompareArrback[index1], orgBackSubject)"
-                  id="ConOrgComparisonAverage1"
-                  :index="index0" />
-              </el-row>
-              <el-row
-                v-if="!loading&&!orgcompareArrback.length"
-                class="please_select">请选择要对比的项目</el-row>
+              <div
+                class="please_select"
+                v-if="!loading&&!supplyCompareArr.length">
+                请选择要对比的项目
+              </div>
             </Card>
           </div>
         </el-col>
+      </el-row>
+      <el-row
+        v-else
+        class="overview_select">
+        暂无数据
       </el-row>
     </div>
   </div>
@@ -170,22 +138,26 @@
 
 <script>
 import API from './api';
-import Card from '../../components/Card';
 import SearchBar from 'components/SearchBar';
 import Slider from 'components/Slider';
-//data 指标
-import { organization, orgBack } from '../../data/subject';
+import Card from '../../components/Card';
 // 组织对比分析和平均值分析
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
+//data 指标
+import { supply } from '../../data/subject';
+
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
+//vuex
 import { mapGetters } from 'vuex';
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
+const BTN = ['开始对比','取消选择'];
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
+
+const SUBJECT = 'P'; // S: 销售额 P: 利润额
 
 export default {
     components: {
@@ -195,51 +167,40 @@ export default {
         ConOrgComparisonAverage,
         ConOrgComparisonAverageBig
     },
-    data () {
+    data() {
         return {
+            supplySubject: supply(),
             form: {
-                pt: '月',
                 date: [],
-                search: '',
-                version: '0'
             },
-            //data
-            orgSubject: organization(),
-            orgBackSubject: orgBack(),
-            loading: false,
             cid: '',
-            error:error,
+            btn: BTN,
+            error: error,
             find: find,
             preOrder: preOrder,
             addProperty: addProperty,
-            calculatePercent:calculatePercent,
+            calculatePercent: calculatePercent,
             defaultProps: TREE_PROPS,
             index0: 0,
-            index1: 0,
-            type: 3,
-            val: {},
-            post: 1,
-            nodeArr: [],
+            loading: false,
             cidObjArr: [],
-            cidObjBackArr: [],
+            cidObjArrBefore: [],
             cancelKey: '',
             debounce: null,
-            debounceBack: null,
+            val: {},
+            nodeArr: [],
             searchBarValue: {
                 pt: '',
                 sDate: '',
                 eDate: ''
             },
-            changeDate: {},
             treeClone: {},
+            changeDate: {},
             findFatherId: '',
             style: 0,
-            opcityIndex0: undefined,
-            opcityIndex1: undefined,
-            opciatyBool0: false,
-            opciatyBool1: false,
+            opcityIndex: undefined,
+            opciatyBool: false,
             isCollapse: false,
-            treeProgressLoading: true,
             noStandardObj: {},
             noStandardNum: 0,
             isFirstCheck: true,
@@ -247,74 +208,54 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['organizationTree', 'orgcompareArr', 'orgcompareArrback', 'orgLastcidObjArr', 'orgLastcidObjArrBack']),
-        hasConstarst () {
-            return !_.isEmpty(this.orgcompareArr);
+        ...mapGetters(['supplyTree', 'progressArr', 'supplyCompareArr', 'lastcidObjArr']),
+        hasTree() {
+            return !_.isEmpty(this.supplyTree);
         },
-        hasConstarstBack () {
-            return !_.isEmpty(this.orgcompareArrback);
-        },
-        //目前保留
         num () {
-            if (this.cidObjArr.length || this.cidObjBackArr.length) {
-                return this.cidObjArr.length + this.cidObjBackArr.length;
+            if (this.cidObjArr.length) {
+                return this.cidObjArr.length;
             } else {
                 return 0;
             }
         },
     },
     watch: {
-        cidObjArr (val) {
+        cidObjArr(val) {
             if (val.length > 0) {
                 // for (let i of val) {
+                //     console.log(this.cid, i.cid, "i.cid");
                 //     this.cid = i.cid;
                 // }
             } else if (val.length === 0) {
-                this.$store.dispatch('ClearOrgCompareArr');
-            }
-        },
-        cidObjBackArr (val) {
-            if (val.length > 0) {
-                // for (let i of val) {
-                //     this.cid = i.cid;
-                // }
-            } else if (val.length === 0) {
-                this.$store.dispatch('ClearOrgBackCompareArr');
+                this.$store.dispatch('ClearSupplyCompareArr');
             }
         },
         cid() {
             this.getTreePrograss();
         }
     },
-    created () {
+    created() {
         // 防抖函数 减少发请求次数
         this.debounce = _.debounce(this.getCompare, 0);
-        this.debounceBack = _.debounce(this.getCompareBack, 0);
     },
-    mounted () {
+    mounted() {
         //获取初始时间
         this.changeDate = this.searchBarValue;
-        if (this.orgcompareArr.length) {
-            this.cid = this.organizationTree.cid;
-            this.treeClone = _.cloneDeep(this.organizationTree);
+        if (this.supplyCompareArr.length) {
+            this.cid = this.supplyTree.cid;
+            this.treeClone = _.cloneDeep(this.supplyTree);
             this.addProperty([this.treeClone]);
             let arr = [];
-            let arrback = [];
-            for (let i = 0; i < this.treeClone.children.length; i++) {
-                if (this.treeClone.children[i].type === 1 || this.treeClone.children[i].type ===3) {
-                    this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
-                } else if (this.treeClone.children[i].type == 2) {
-                    this.treeClone.children[i] && arrback.push(this.treeClone.children[i]);
-                }
+            for (let i = 0; i < 3; i++) {
+                this.treeClone.children[i] && arr.push(this.treeClone.children[i]);
             }
             const checkKeys = arr.map(i => i.cid);
-            const checkBackKeys = arrback.map(i => i.cid);
-            const allCheckKeys = [...checkKeys, ...checkBackKeys];
-            this.initCheckKeys = allCheckKeys;
-            this.$store.dispatch('SaveOrgTree', this.organizationTree).then(() => {
-                this.$refs.tree.setCheckedKeys(allCheckKeys);
+            this.initCheckKeys = checkKeys;
+            this.$store.dispatch('SaveSupplyTree', this.supplyTree).then(() => {
+                this.$refs.tree.setCheckedKeys(checkKeys);
                 let promiseArr = [];
-                for (let i of allCheckKeys) {
+                for (let i of checkKeys) {
                     promiseArr.push(this.getTreePrograss(i, false));
                 }
                 this.isFirstCheck = false;
@@ -323,24 +264,21 @@ export default {
                 });
             });
             this.debounce();
-            this.debounceBack();
         } else {
             this.promise();
         }
     },
-    destroyed() {
-        this.$store.dispatch('SaveOrgCompareArrback', []);
-    },
     methods: {
         getNoStandardNum() {
             let num = 0;
+            // console.log(this.noStandardObj,111);
             for (let i in this.noStandardObj) {
                 num += this.noStandardObj[i];
             }
             this.noStandardNum = num;
         },
-        getUnit(item, sujectData) {
-            let obj = sujectData.find(el => {
+        getUnit(item) {
+            let obj = this.supplySubject.find(el => {
                 return el.subject == item.subject && el.subject_name == item.subject_name;
             });
             return obj ? obj.subject_unit : "";
@@ -349,37 +287,58 @@ export default {
             Promise.all([this.getTree()]).then(res => {
                 // 树
                 const treeData = res[0];
-                this.cid = treeData.tree.cid;
-                this.treeClone = _.cloneDeep(treeData.tree);
-                this.addProperty([this.treeClone]);
-                const children = this.treeClone.children;
-                let arr = [];
-                let arrback = [];
-                for (let i = 0; i < children.length; i++) {
-                    if (children[i].type == 1 || children[i].type == 3) {
+                if (treeData.tree) {
+                    this.cid = treeData.tree.cid;
+                    this.treeClone = _.cloneDeep(treeData.tree);
+                    this.addProperty([this.treeClone]);
+                    const children = treeData.tree.children;
+                    let arr = [];
+                    for (let i = 0; i < 3; i++) {
                         children[i] && arr.push(children[i]);
-                    } else if (children[i].type == 2) {
-                        children[i] && arrback.push(children[i]);
                     }
-                }
-                const checkKeys = arr.map(i => i.cid);
-                const checkBackKeys = arrback.map(i => i.cid);
-                const allCheckKeys = [...checkKeys, ...checkBackKeys];
-                this.initCheckKeys = allCheckKeys;
-                this.$store.dispatch('SaveOrgTree', treeData.tree).then(() => {
-                    this.$refs.tree.setCheckedKeys(allCheckKeys);
-                    let promiseArr = [];
-                    for (let i of allCheckKeys) {
-                        promiseArr.push(this.getTreePrograss(i, false));
-                    }
-                    Promise.all(promiseArr).then(() => {
-                        this.isFirstCheck = false;
-                        this.getNoStandardNum();
+                    const checkKeys = arr.map(i => i.cid);
+                    this.initCheckKeys = checkKeys;
+                    this.$store.dispatch('SaveSupplyTree', treeData.tree).then(() => {
+                        this.$refs.tree.setCheckedKeys(checkKeys);
+                        let promiseArr = [];
+                        for (let i of checkKeys) {
+                            promiseArr.push(this.getTreePrograss(i, false));
+                        }
+                        Promise.all(promiseArr).then(() => {
+                            this.isFirstCheck = false;
+                            this.getNoStandardNum();
+                        });
                     });
+                }
+                this.debounce();
+            });
+        },
+        startChecked() {
+            this.val = this.searchBarValue;
+            if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
+                let promiseArr = [];
+                for (let i of this.cidObjArr) {
+                    promiseArr.push(this.getTreePrograss(i.cid, false));
+                }
+                Promise.all(promiseArr).then(() => {
+                    this.getNoStandardNum();
                 });
                 this.debounce();
-                this.debounceBack();
-            });
+            }
+            this.changeDate = this.searchBarValue;
+            this.$refs.child.clearKw();
+            const bool = JSON.stringify(this.lastcidObjArr) == JSON.stringify(this.cidObjArr);
+            if (bool) {
+                return;
+            }
+            this.debounce();
+        },
+        cleanChecked () {
+            this.noStandardObj = {};
+            this.noStandardNum = 0;
+            this.cidObjArr = [];
+            this.$refs.tree.setCheckedKeys([]);
+            this.$store.dispatch('SaveSupplycidObjArr', _.cloneDeep(this.cidObjArr));
         },
         handleCollapse () {
             this.isCollapse = !this.isCollapse;
@@ -387,44 +346,9 @@ export default {
                 echartAndSliderResize();
             }, 300);
         },
-        startChecked() {
-            this.val = this.searchBarValue;
-            if (this.changeDate.sDate !== this.val.sDate || this.changeDate.eDate !== this.val.eDate) {
-                const allCidArr = [...this.cidObjArr, ...this.cidObjBackArr];
-                let promiseArr = [];
-                for (let i of allCidArr) {
-                    promiseArr.push(this.getTreePrograss(i.cid, false));
-                }
-                Promise.all(promiseArr).then(() => {
-                    this.getNoStandardNum();
-                });
-                this.debounce();
-                this.debounceBack();
-            }
-            this.changeDate = this.searchBarValue;
-            this.$refs.child.clearKw();
-            const bool = JSON.stringify(this.orgLastcidObjArr) == JSON.stringify(this.cidObjArr);
-            const boolBack = JSON.stringify(this.orgLastcidObjArrBack) == JSON.stringify(this.cidObjBackArr);
-            if (!bool) {
-                this.debounce();
-            }
-            if (!boolBack) {
-                this.debounceBack();
-            }
-        },
-        cleanChecked () {
-            this.noStandardObj = {};
-            this.noStandardNum = 0;
-            this.cidObjArr = [];
-            this.cidObjBackArr = [];
-            this.$refs.tree.setCheckedKeys([]);
-            this.$store.dispatch('SaveOrgCidObj',_.cloneDeep(this.cidObjArr));
-            this.$store.dispatch('SaveOrgCidObjBack',_.cloneDeep(this.cidObjBackArr));
-        },
         allRequest() {
             this.getTreePrograss();
             this.getCompare();
-            this.getCompareBack();
         },
         input (val) {
             this.form.date = val;
@@ -440,9 +364,8 @@ export default {
             const params = {
                 subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                version: this.form.version
             };
-            return API.GetOrgTree(params);
+            return API.GetSupplyTree(params);
         },
         //获取百分比数据
         getTreePrograss(cid, isGetNoStandardNum = true) {
@@ -455,15 +378,13 @@ export default {
             const params = {
                 subject: SUBJECT,
                 ...this.getPeriodByPt(),
-                nid: id,
-                version: this.form.version
+                nid: id
             };
             return new Promise((resolve,reject) => {
-                API.GetOrgTreePrograss(params).then(res=>{
+                API.GetSupplyTreeProgress(params).then(res => {
                     let obj = this.preOrder([this.treeClone], id);
                     let arr = [];
-                    const allCidArr = [...this.cidObjArr, ...this.cidObjBackArr];
-                    for (let i of allCidArr) {
+                    for(let i of this.cidObjArr){
                         arr.push(i.cid);
                     }
                     if (obj.cid === id) {
@@ -501,11 +422,11 @@ export default {
                 return;
             }
             this.loading = true;
-            const promises = _.map(this.orgSubject, o => this.getTrend(o.subject));
+            const promises = _.map(this.supplySubject, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = this.orgSubject[k].subject;
-                    v.subject_name = this.orgSubject[k].subject_name;
+                    v.subject = this.supplySubject[k].subject;
+                    v.subject_name = this.supplySubject[k].subject_name;
                 });
                 const cidName = this.cidObjArr.map(o => o.name);
                 let lastCidObjArr = [];
@@ -515,38 +436,10 @@ export default {
                         lastCidObjArr.push(obj);
                     }
                 }
-                this.$store.dispatch('SaveOrgCidObj',_.cloneDeep(lastCidObjArr));
+                this.$store.dispatch('SaveSupplycidObjArr',_.cloneDeep(lastCidObjArr));
                 // 只有当返回的跟当前选中的一样才更新 store
                 if (resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
-                    this.$store.dispatch('SaveOrgCompareArr', resultList);
-                }
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
-        getCompareBack () {
-            if (!this.cidObjBackArr.length) {
-                return;
-            }
-            this.loading = true;
-            const promises = _.map(this.orgBackSubject, o => this.getTrendback(o.subject));
-            Promise.all(promises).then(resultList => {
-                _.forEach(resultList, (v, k) => {
-                    v.subject = this.orgBackSubject[k].subject;
-                    v.subject_name = this.orgBackSubject[k].subject_name;
-                });
-                const cidName = this.cidObjBackArr.map(o => o.name);
-                let lastCidObjArr = [];
-                for (let i of resultList[0].nodes) {
-                    let obj = this.cidObjBackArr.find(el => el.name == i);
-                    if (obj) {
-                        lastCidObjArr.push(obj);
-                    }
-                }
-                this.$store.dispatch('SaveOrgCidObjBack',_.cloneDeep(this.cidObjBackArr));
-                // 只有当返回的跟当前选中的一样才更新 store
-                if (resultList[0] && resultList[0].nodes && _.isEqual(cidName, resultList[0].nodes.slice(0, resultList[0].nodes.length - 1))) {
-                    this.$store.dispatch('SaveOrgCompareArrback', resultList);
+                    this.$store.dispatch('SaveSupplyCompareArr', resultList);
                 }
             }).finally(() => {
                 this.loading = false;
@@ -555,23 +448,11 @@ export default {
         getTrend (subject) {
             let params = {
                 ...this.getPeriodByPt(),
-                subject: subject,
-                version: this.form.version,
-                rType: 1
+                subject: subject
             };
             const checkKeys = this.cidObjArr.map(i => i.cid);
             params.targets = checkKeys.join(',');
-            return API.GetOrgCompare(params);
-        },
-        getTrendback (subject) {
-            let params = {
-                ...this.getPeriodByPt(),
-                subject: subject,
-                version: this.form.version,
-            };
-            const checkKeys = this.cidObjBackArr.map(i => i.cid);
-            params.targets = checkKeys.join(',');
-            return API.GetOrgCompare(params);
+            return API.GetSupplyCompare(params);
         },
         getDateObj () {
             const {
@@ -605,39 +486,44 @@ export default {
                 };
             } else {
                 return {
-                    pt: '月',
-                    sDate: '2018-03-01',
-                    eDate: '2018-06-30',
+                    pt: '日',
+                    sDate: '2018-01-01',
+                    eDate: '2018-01-07',
                 };
             }
         },
-        handleSearch (val) {
+        handleSearch(val) {
             this.findFatherId = val.cid;
+            // 默认公司的背景色
             this.nodeArr = [];
             this.val = val;
-            if (!val.cid) {
+            if (!val.cid) {//无精确搜索
+                //数据不为null时
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
-                    let promiseArr = [];
-                    const allCidArr = [...this.cidObjArr, ...this.cidObjBackArr];
-                    for (let i of allCidArr) {
-                        promiseArr.push(this.getTreePrograss(i.cid, false));
+                    if (this.cid) {
+                        let promiseArr = [];
+                        for (let i of this.cidObjArr) {
+                            promiseArr.push(this.getTreePrograss(i.cid, false));
+                        }
+                        Promise.all(promiseArr).then(() => {
+                            this.getNoStandardNum();
+                        });
+                        this.allRequest();
+                    } else {
+                        this.promise();//数据tree为null时,选择时间后调用接口,
                     }
-                    Promise.all(promiseArr).then(() => {
-                        this.getNoStandardNum();
-                    });
-                    this.allRequest();
                 }
             } else {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     this.allRequest();
-                    this.treeClone = _.cloneDeep(this.organizationTree);
+                    this.treeClone = _.cloneDeep(this.supplyTree);
                 }
                 this.cid = val.cid;
                 this.findParent([this.treeClone], this.findFatherId);
                 this.nodeArr.push(val.cid);
                 this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref  绑定的node-key
+                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref,绑定的node-key
                 });
             }
             this.changeDate = this.searchBarValue;
@@ -646,13 +532,11 @@ export default {
             this.cid = data.cid;
         },
         handleCheckChange (data, checked) {
-            const type = 2;//1是前端,2是后端
             if (!checked) {
                 delete this.noStandardObj[data.cid];
                 this.getNoStandardNum();
             }
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
-            // 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
             if (!checked && this.cancelKey && data.cid === this.cancelKey) {
                 const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
                 if (index >= 0) {
@@ -661,85 +545,60 @@ export default {
                 return;
             }
             if (checked) { // 如果选中
-                if (data.type === type) {
-                    // 如果有选中的节点 并且此次选择了不同pid的节点
-                    if (this.cidObjBackArr[0] && data.parent_id !== this.cidObjBackArr[0].parent_id) {
-                        this.warn('请选择相同父级下的后端进行对比');
-                        this.cancelKey = data.cid;
-                        const checkKeys = this.cidObjArr.map(i => i.cid);
-                        const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                        const allCheckKeys = [...checkKeys, ...checkBackKeys];
-                        this.$refs.tree.setCheckedKeys(allCheckKeys);
-                        return;
-                    }
-                    this.cidObjBackArr.push(data);
-                    if (!this.isFirstCheck || !this.initCheckKeys.includes(data.cid)) {
-                        this.cid = data.cid;
-                    }
-                    // else if (this.cidObjArr.length === 4) {
-                    // 		this.warn('最多对比 4 条');
-                    // 		this.cancelKey = data.cid;
-                    // 		const checkKeys = this.cidObjArr.map(i => i.cid);
-                    // 		this.$refs.tree.setCheckedKeys(checkKeys);
-                    // }
-                } else {
-                    // 如果有选中的节点 并且此次选择了不同pid的节点
-                    if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
-                        this.warn('请选择相同父级下的前端进行对比');
-                        this.cancelKey = data.cid;
-                        const checkKeys = this.cidObjArr.map(i => i.cid);
-                        const checkBackKeys = this.cidObjBackArr.map(i => i.cid);
-                        const allCheckKeys = [...checkKeys, ...checkBackKeys];
-                        this.$refs.tree.setCheckedKeys(allCheckKeys);
-                        return;
-                    }
+                if (!this.searchBarValue.sDate || !this.searchBarValue.eDate) {
+                    this.cancelKey = data.cid;
+                    const checkKeys = this.cidObjArr.map(i => i.cid);
+                    this.$refs.tree.setCheckedKeys(checkKeys);
+                    this.error('请选择日期');
+                    return;
+                }
+                // 如果有选中的节点 并且此次选择了不同pid的节点
+                if (this.cidObjArr[0] && data.parent_id !== this.cidObjArr[0].parent_id) {
+                    this.warn('请选择相同父级下的进行对比');
+                    this.cancelKey = data.cid;
+                    const checkKeys = this.cidObjArr.map(i => i.cid);
+                    this.$refs.tree.setCheckedKeys(checkKeys);
+                    return;
+                }
+                // 如果选中的个数不超过 4
+                if (this.cidObjArr.length < 4) {
                     this.cidObjArr.push(data);
                     if (!this.isFirstCheck || !this.initCheckKeys.includes(data.cid)) {
                         this.cid = data.cid;
                     }
-                    // 如果选中的个数不超过 4
-                    //   if (this.cidObjArr.length < 4) {
-                    //     this.cidObjArr.push(data);
-                    //   } else if (this.cidObjArr.length === 4) {
-                    //     this.warn('最多对比 4 条');
-                    //     this.cancelKey = data.cid;
-                    //     const checkKeys = this.cidObjArr.map(i => i.cid);
-                    //     this.$refs.tree.setCheckedKeys(checkKeys);
-                    //   }
-                }
-                if (data.hasData) {
-                    if (data.children) {
-                        this.noStandardObj[data.cid]=0;
-                        for (let i of data.children) {
-                            if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
-                                this.noStandardObj[data.cid] ++;
-                                this.getNoStandardNum();
+                    if (data.hasData) {
+                        if (data.children) {
+                            this.noStandardObj[data.cid] = 0;
+                            for (let i of data.children) {
+                                if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
+                                    this.noStandardObj[data.cid] ++;
+                                    this.getNoStandardNum();
+                                }
                             }
                         }
                     }
+                } else if (this.cidObjArr.length === 4) {
+                    this.warn('最多对比 4 条');
+                    this.cancelKey = data.cid;
+                    const checkKeys = this.cidObjArr.map(i => i.cid);
+                    this.$refs.tree.setCheckedKeys(checkKeys);
                 }
             } else { // 如果取消选择
                 // 找到取消选择的下标
-                if (data.type === type) {
-                    // 找到取消选择的下标
-                    const index = _.findIndex(this.cidObjBackArr, item => item.cid === data.cid);
-                    this.cidObjBackArr.splice(index, 1);
-                } else {
-                    const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
-                    this.cidObjArr.splice(index, 1);
-                }
+                const index = _.findIndex(this.cidObjArr, item => item.cid === data.cid);
+                this.cidObjArr.splice(index, 1);
             }
         },
-        warn(msg) {
+        warn (msg) {
             this.$message({
                 message: msg,
                 type: 'warning'
             });
         },
-        clickIndex(i, idx) {
-            this[`index${i}`] = idx;
-            this[`opcityIndex${i}`] = idx;
-            this[`opciatyBool${i}`] = true;
+        clickIndex (idx) {
+            this.index0 = idx;
+            this.opcityIndex = idx;
+            this.opciatyBool = true;
         },
     }
 };
