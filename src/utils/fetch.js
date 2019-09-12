@@ -12,7 +12,7 @@ axios.defaults.withCredentials = true;
 // 创建axios实例
 // const SUCCESS_CODE = 0;
 const AUTH_FAILED = 401;
-const MESSAGEDURATION = 5 * 1000;
+const MESSAGEDURATION = 3 * 1000;
 
 const service = axios.create({
     baseURL: process.env.VUE_APP_BASE_API, // api的base_url

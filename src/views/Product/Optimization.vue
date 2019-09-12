@@ -295,7 +295,7 @@ export default {
             this.loading = true;
             const params = {
                 cid: this.cid,
-                subject: SUBJECT,
+                // subject: SUBJECT,
                 ...this.getPeriodByPt(),
             };
             API.GetProductHistory(params).then(res => {

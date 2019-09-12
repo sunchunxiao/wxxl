@@ -1,7 +1,7 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="organizationTree"
+      v-if="supplyTree"
       class="nav-content-row">
       <div
         class="overflow">
@@ -11,13 +11,13 @@
           <Card>
             <el-row class="margin-bottom-20 overview_title">目标-实际-差异趋势分析</el-row>
             <el-row>
-              <template v-for="(item, index) in orgtrendArr">
+              <template v-for="(item, index) in supplyTrendArr">
                 <el-col
                   :key="index"
                   :span="12">
                   <ProTargetActualDiffTrend
-                    v-if="orgtrendArr.length"
                     :unit="getUnit(item)"
+                    v-if="supplyTrendArr.length"
                     :id="`${index}`"
                     :data="item" />
                 </el-col>
@@ -38,8 +38,8 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
-//data
-import { organization, orgBack } from '../../../data/subject';
+//data 指标
+import { supply } from '../../../data/subject';
 
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
@@ -49,8 +49,7 @@ import { mapGetters } from 'vuex';
 export default {
     props: {
         cid: String,
-        val: Object,
-        type: Number
+        val: Object
     },
     components: {
         Card,
@@ -58,20 +57,22 @@ export default {
     },
     data () {
         return {
-            version: 0,
+            form: {
+                pt: '', // 周期类型
+                date: [], // date
+                search: '', // 暂时没有接口 先这样
+            },
             //tree
             pt: '',
             loading: false,
             newParams: {},
-            //data
-            orgSubject: organization(),
-            orgBackSubject: orgBack()
+            supplySubject: supply(),
         };
     },
     computed: {
-        ...mapGetters(['organizationTree', 'orgtrendArr', 'orglastParams']),
+        ...mapGetters(['supplyTree', 'supplyTrendArr', 'supplyLastParams']),
         hasTree () {
-            return !_.isEmpty(this.organizationTree);
+            return !_.isEmpty(this.supplyTree);
         },
     },
     watch: {
@@ -87,8 +88,7 @@ export default {
     },
     methods: {
         getUnit(item) {
-            let subjectData = this.type != 2 ? this.orgSubject : this.orgBackSubject;
-            let obj = subjectData.find(el => {
+            let obj = this.supplySubject.find(el => {
                 return el.subject == item.subject && el.subject_name == item.subject_name;
             });
             return obj ? obj.subject_unit : "";
@@ -98,28 +98,26 @@ export default {
                 return;
             }
             this.getProgress();
-            this.$store.dispatch("SaveOrgLastParams", this.newParams);
+            this.$store.dispatch("SaveSupplyLastParams", this.newParams);
         },
         getProgress() {
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                version: this.version
             };
             this.newParams.diff = params;
-            if (JSON.stringify(this.orglastParams.diff) == JSON.stringify(params)) {
+            if (JSON.stringify(this.supplyLastParams.diff) == JSON.stringify(params)) {
                 return;
             }
-            let subjectData = this.type != 2 ? this.orgSubject : this.orgBackSubject;
             this.loading = true;
-            const promises = _.map(subjectData, o => this.getTrend(o.subject));
+            const promises = _.map(this.supplySubject, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
-                    v.subject = subjectData[k].subject;
-                    v.subject_name = subjectData[k].subject_name;
+                    v.subject = this.supplySubject[k].subject;
+                    v.subject_name = this.supplySubject[k].subject_name;
                 });
-                this.$store.dispatch('SaveOrgTrendArr', resultList);
+                this.$store.dispatch('SaveSupplyTrendArr', resultList);
             }).finally(() => {
                 this.loading = false;
             });
@@ -129,12 +127,11 @@ export default {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                subject: subject,
-                version: this.version
+                subject: subject
             };
             this.newParams.diff = _.cloneDeep(params);
             delete this.newParams.diff.subject;
-            return API.GetOrgTrend(params);
+            return API.GetSupplyTrend(params);
         },
         getPt() {
             if (this.val.sDate && this.val.eDate) {
@@ -150,13 +147,11 @@ export default {
         },
         getPeriodByPt() {
             const {
-                // pt,
                 sDate,
                 eDate
             } = this.getDateObj();
             if (sDate && eDate) { // 计算时间周期
                 return {
-                    // pt: pt,
                     sDate: sDate,
                     eDate: eDate,
                 };
@@ -176,5 +171,5 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../../Product/style/overview.scss';
+@import '../../Product/style/overview.scss';
 </style>

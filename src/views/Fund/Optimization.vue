@@ -477,6 +477,6 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../Product/style/optimization.scss';
-    @import '../../style/tree.scss';
+@import '../Product/style/optimization.scss';
+@import '../../style/tree.scss';
 </style>
