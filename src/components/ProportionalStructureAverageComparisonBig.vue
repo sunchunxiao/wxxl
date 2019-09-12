@@ -120,9 +120,9 @@ export default {
                     axisPointer : { // 坐标轴指示器，坐标轴触发有效
                         type : 'none' // 默认为直线，可选为：'line' | 'shadow'
                     },
-                    formatter: function(params){
+                    formatter: function(params) {
                         let result = [];
-                        if (_.includes(SUBJECT, subject)){
+                        if (_.includes(SUBJECT, subject)) {
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + " : " + _this.formatNumber(item.value) + _this.unit + "</br>";
                             });

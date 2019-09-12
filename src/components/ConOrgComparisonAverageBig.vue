@@ -65,7 +65,7 @@ export default {
             const seriesClone = _.cloneDeep(series);
             let _this = this;
             for(let i = 0;i < seriesClone.length; i++) {
-                if (_.includes(SUBJECT,subject)){
+                if (_.includes(SUBJECT,subject)) {
                     _.forEach(seriesClone[i], (v,k) => {
                         seriesClone[i][k] = v;
                     });

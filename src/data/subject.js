@@ -178,16 +178,16 @@ const product = function () {
     return setData(arr);
 };
 
-//产品
+//供应链
 const supply = function () {
     let arr = [
-        ["S","销售额","元"],
-        ["P","毛利润额","元"],
-        ["C","产品成本额","元"],
-        ["SD","日销","元"],
-        ["ROI","产品投入产出比",""],
-        ["SA","库存额","元"],
-        ["ITO","库存周转率",""]
+        ["S","供应销售额","元"],
+        ["C","供应利润额","元"],
+        ["CP","供应产能", ""],
+        ["PSR","供应产供比",""],
+        ["CS","供应安全值",""],
+        ["DAR","交期达成率",""],
+        ["DR","残品率",""]
     ];
     return setData(arr);
 };
@@ -284,5 +284,5 @@ export {
     organization,
     orgBack,
     fund,
-    fundBack
+    fundBack,
 };
