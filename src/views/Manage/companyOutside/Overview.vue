@@ -8,11 +8,11 @@
         @click="handleCollpase">
         <img
           v-if="isCollapse"
-          src="../../assets/collapse1.png"
+          src="../../../assets/collapse1.png"
           alt="">
         <img
           v-else
-          src="../../assets/collapse.png"
+          src="../../../assets/collapse.png"
           alt="">
       </div>
       <search-bar
@@ -264,7 +264,7 @@ export default {
         },
         handleClick(id) {
             this.currView = id;
-            this.$router.push(`/sixBasicsEngine/product/overview/${id}`);
+            this.$router.push(`/applyScene/manage/companyInsideManage/overview/${id}`);
         },
         allRequest() {
             this.getTreePrograss();
@@ -435,6 +435,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import './style/overview.scss';
-@import '../../style/tree.scss';
+@import '../../Product/style/overview.scss';
+@import '../../../style/tree.scss';
 </style>

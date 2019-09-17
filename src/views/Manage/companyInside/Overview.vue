@@ -8,11 +8,11 @@
         @click="handleCollpase">
         <img
           v-if="isCollapse"
-          src="../../assets/collapse1.png"
+          src="../../../assets/collapse1.png"
           alt="">
         <img
           v-else
-          src="../../assets/collapse.png"
+          src="../../../assets/collapse.png"
           alt="">
       </div>
       <search-bar
@@ -116,9 +116,7 @@ import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
 import viewRadar from './OverviewMenu/Radar.vue';
-import Diff from './OverviewMenu/Diff.vue';
-import Trend from './OverviewMenu/Trend.vue';
-import Structure from './OverviewMenu/Structure.vue';
+import Sort from './OverviewMenu/Sort.vue';
 import Rank from './OverviewMenu/Rank.vue';
 
 //tree 百分比计算
@@ -126,20 +124,14 @@ import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderRe
 //vuex
 import { mapGetters } from 'vuex';
 const OVER_TABS = [{
-    id: 'reach',
-    value: '目标达成情况总览'
-},{
-    id: 'diff',
-    value: '目标-实际-差异趋势分析'
-},{
-    id: 'trend',
-    value: '同比环比趋势分析'
-},{
-    id: 'structure',
-    value: '比例结构与平均值对比分析'
-},{
     id: 'rank',
-    value: '智能评选和智能策略'
+    value: '整体绩效预警分析'
+},{
+    id: 'sort',
+    value: '整体绩效排序分析'
+},{
+    id: 'reach',
+    value: '绩效考核指标细化分析'
 }];
 const TREE_PROPS = {
     children: 'children',
@@ -149,9 +141,7 @@ const SUBJECT = 'P'; // S: 销售额 P: 利润额
 export default {
     components: {
         "reach": viewRadar,
-        "diff": Diff,
-        "trend": Trend,
-        "structure": Structure,
+        "sort": Sort,
         "rank": Rank,
         Card,
         SearchBar,
@@ -264,7 +254,7 @@ export default {
         },
         handleClick(id) {
             this.currView = id;
-            this.$router.push(`/sixBasicsEngine/product/overview/${id}`);
+            this.$router.push(`/applyScene/manage/companyInsideManage/overview/${id}`);
         },
         allRequest() {
             this.getTreePrograss();
@@ -435,6 +425,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import './style/overview.scss';
-@import '../../style/tree.scss';
+@import '../../Product/style/overview.scss';
+@import '../../../style/tree.scss';
 </style>

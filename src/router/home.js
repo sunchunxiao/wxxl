@@ -3,10 +3,10 @@ export default [
         path: '/home',
         name: 'homeIndex',
         component: () => import('views/Home/index.vue'),
-        redirect: '/home/sales',
+        redirect: '/home/external/sales',
         children: [
             {
-                path: '/home/sales',
+                path: '/home/external/sales',
                 name: 'homeSales',
                 meta: {
                     path: ['首页', '基本竞争力一一销售']
@@ -14,7 +14,7 @@ export default [
                 component: () => import('views/Home/Sales.vue')
             },
             {
-                path: '/home/profit',
+                path: '/home/external/profit',
                 name: 'profit',
                 meta: {
                     path: ['首页', '持续竞争力一一利润']
@@ -22,7 +22,7 @@ export default [
                 component: () => import('views/Home/Profit.vue')
             },
             {
-                path: '/home/equity',
+                path: '/home/external/equity',
                 name: 'equity',
                 meta: {
                     path: ['首页', '品牌价值']
@@ -30,7 +30,7 @@ export default [
                 component: () => import('views/Home/BrandEquity.vue')
             },
             {
-                path: '/home/profitSpace',
+                path: '/home/insideExternal/profitSpace',
                 name: 'profitSpace',
                 meta: {
                     path: ['首页', '盈利空间']
@@ -38,7 +38,7 @@ export default [
                 component: () => import('views/Home/ProfitSpace.vue')
             },
             {
-                path: '/home/profitability',
+                path: '/home/insideExternal/profitability',
                 name: 'profitability',
                 meta: {
                     path: ['首页', '营运水平/盈利能力']
@@ -46,7 +46,7 @@ export default [
                 component: () => import('views/Home/Profitability.vue')
             },
             {
-                path: '/home/pay',
+                path: '/home/insideExternal/pay',
                 name: 'pay',
                 meta: {
                     path: ['首页', '支付能力']
@@ -56,11 +56,11 @@ export default [
         ]
     },
     {
-        path: '/home/core',
-        redirect: '/home/core/product'
+        path: '/home/external/core',
+        redirect: '/home/external/core/product'
     },
     {
-        path: '/home/core/:name',
+        path: '/home/external/core/:name',
         name: 'homeCore',
         meta: {
             path: {
