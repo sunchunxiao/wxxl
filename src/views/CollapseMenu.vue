@@ -250,6 +250,7 @@ $scale: 1.8;
         height: $subtitle-height;
         line-height: $subtitle-height;
     }
+
     >.el-menu-item {
         border-left: 5px solid $bgcolor;
         color: $white;

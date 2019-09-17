@@ -5,7 +5,7 @@ import qs from 'qs';
 import { Message } from 'element-ui';
 // eslint-disable-next-line
 import { getToken, removeToken } from './auth';
-import router from '../router/index';
+// import router from '../router/index';
 // import qs from 'qs';
 // import store from 'store';
 axios.defaults.withCredentials = true;
@@ -56,9 +56,10 @@ error => {
         Message({ message: '请求超时', type: 'error', duration: MESSAGEDURATION });
     } else {
         Message({ message: _.get(error, 'response.data.api_info.message') || error.message, type: 'error', duration: MESSAGEDURATION });
-        if (error.response.data.api_info.error === AUTH_FAILED) { // token error
+        if (error.response.data.api_info.error == AUTH_FAILED) { // token error
             removeToken();
-            router.replace('/login');
+            this.$router.replace('/login');
+            // router.replace('/login');
         }
     }
     return Promise.reject(error);

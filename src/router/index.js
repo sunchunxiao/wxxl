@@ -1,12 +1,15 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import productRoute from './product';
-import organizationRoute from './organization';
-import customerRoute from './customer';
-import fundRoute from './fund';
-import channelRoute from './channel';
-import supplyChainRoute from './supplyChain';
+import productRoute from './sixBasicsEngine/product';
+import organizationRoute from './sixBasicsEngine/organization';
+import customerRoute from './sixBasicsEngine/customer';
+import fundRoute from './sixBasicsEngine/fund';
+import channelRoute from './sixBasicsEngine/channel';
+import supplyChainRoute from './sixBasicsEngine/supplyChain';
+import manageRoute from './applyScene/manage';
+import planRoute from './applyScene/plan';
+import budgetRoute from './applyScene/budget';
 import homeRoute from './home';
 
 Vue.use(Router);
@@ -28,6 +31,9 @@ export default new Router({
             ...fundRoute,
             ...channelRoute,
             ...supplyChainRoute,
+            ...manageRoute,
+            ...planRoute,
+            ...budgetRoute,
             ...homeRoute
         ]
     },

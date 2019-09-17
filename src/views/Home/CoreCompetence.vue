@@ -104,7 +104,7 @@ export default {
     methods: {
         handleClick(id) {
             this.currView = id;
-            this.$router.push(`/home/core/${id}`);
+            this.$router.push(`/home/external/core/${id}`);
         },
         handleSearch(val) {
             // 时间改变
