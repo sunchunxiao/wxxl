@@ -264,7 +264,7 @@ export default {
         },
         handleClick(id) {
             this.currView = id;
-            this.$router.push(`/supplyChain/overview/${id}`);
+            this.$router.push(`/sixBasicsEngine/supplyChain/overview/${id}`);
         },
         allRequest() {
             this.getTreePrograss();

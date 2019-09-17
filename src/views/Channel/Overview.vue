@@ -266,7 +266,7 @@ export default {
         },
         handleClick(id) {
             this.currView = id;
-            this.$router.push(`/channel/overview/${id}`);
+            this.$router.push(`/sixBasicsEngine/channel/overview/${id}`);
         },
         allRequest() {
             this.getTreePrograss();

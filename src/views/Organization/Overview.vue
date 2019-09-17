@@ -269,7 +269,7 @@ export default {
         },
         handleClick(id) {
             this.currView = id;
-            this.$router.push(`/organization/overview/${id}`);
+            this.$router.push(`/sixBasicsEngine/organization/overview/${id}`);
         },
         allRequest() {
             this.getTreePrograss();

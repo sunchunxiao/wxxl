@@ -87,19 +87,20 @@
         <el-col
           class="common-overflow"
           :span="19">
-          <div class="common-wrap">
+          外部合作绩效管理
+          <!-- <div class="common-wrap">
             <span
               class="span"
               :key="item.id"
               v-for="item in tabs"
               :class="{'bacground':currView==item.id}"
               @click="handleClick(item.id)"><span class="dot" />{{ item.value }}</span>
-          </div>
-          <component
+          </div> -->
+          <!-- <component
             @changeCid='handleChangeCid'
             :cid="cid"
             :val="val"
-            :is="currentTabComponent" />
+            :is="currentTabComponent" /> -->
         </el-col>
       </el-row>
       <el-row
@@ -264,7 +265,7 @@ export default {
         },
         handleClick(id) {
             this.currView = id;
-            this.$router.push(`/applyScene/manage/companyInsideManage/overview/${id}`);
+            this.$router.push(`/applyScene/manage/companyOutsideManage/overview/${id}`);
         },
         allRequest() {
             this.getTreePrograss();
