@@ -58,8 +58,8 @@ error => {
         Message({ message: _.get(error, 'response.data.api_info.message') || error.message, type: 'error', duration: MESSAGEDURATION });
         if (error.response.data.api_info.error == AUTH_FAILED) { // token error
             removeToken();
-            this.$router.replace('/login');
             // router.replace('/login');
+            this.$router.replace('/login');
         }
     }
     return Promise.reject(error);

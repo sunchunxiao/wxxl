@@ -80,7 +80,7 @@ export default {
                     API.Login(this.form).then(res => {
                         setToken(res.token);
                         setUsername(this.form.username);
-                        this.$router.replace('/home');
+                        this.$router.replace('/home/external/sales');
                     }).catch(e => {
                         this.form.password = '';
                         // eslint-disable-next-line

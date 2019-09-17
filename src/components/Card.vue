@@ -13,7 +13,7 @@ export default {
 <style lang="scss" scoped>
 .card {
     width: 100%;
-    background: #fff;
+    background: #ffffff;
     box-sizing: border-box;
     padding: 20px;
 }
