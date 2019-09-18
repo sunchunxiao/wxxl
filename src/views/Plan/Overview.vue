@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="plan">
     <el-row
       class="time_header">
       <SelectFilter
@@ -14,9 +14,9 @@
           id="now">
           <Card
             v-loading="loading"
-            class="min-height-400">
+            style="min-height:300px;">
             <div class="card_company_target">
-              <el-row class="margin-bottom-20 align">
+              <el-row class="align">
                 当前下单进度
               </el-row>
               <template>
@@ -43,9 +43,9 @@
           id="now">
           <Card
             v-loading="loading"
-            class="min-height-400">
+            style="min-height:300px;">
             <div class="card_company_target">
-              <el-row class="margin-bottom-20 align">
+              <el-row class="align">
                 首单下单进度
               </el-row>
               <template>
@@ -68,9 +68,9 @@
           id="now">
           <Card
             v-loading="loading"
-            class="min-height-400">
+            style="min-height:300px;">
             <div class="card_company_target">
-              <el-row class="margin-bottom-20 align">
+              <el-row class="align">
                 返单下单进度
               </el-row>
               <template>
@@ -95,9 +95,9 @@
           id="now">
           <Card
             v-loading="loading"
-            class="min-height-400">
+            style="min-height:450px;">
             <div class="card_company_target">
-              <el-row class="margin-bottom-20 align">
+              <el-row class="align">
                 各业务部门下单进度
               </el-row>
               <template>
@@ -122,9 +122,9 @@
           id="now">
           <Card
             v-loading="loading"
-            class="min-height-400">
+            style="min-height:450px;">
             <div class="card_company_target">
-              <el-row class="margin-bottom-20 align">
+              <el-row class="align">
                 各工厂下单进度
               </el-row>
               <template>
@@ -254,6 +254,7 @@ export default {
             yAxisReturn:["返单件数","返单款数"],
             yAxisDepartment:["五部","四部","三部","二部","一部","总"],
             yAxisSupplier:["供应商E","供应商D","供应商C","供应商B","供应商A","总"],
+            heightNow:"200px",
             loading: false,
             index: 0,
             total: 0,
@@ -346,6 +347,6 @@ export default {
 </style>
 <style lang="scss" scoped>
     .container .container_wrap .right > div[data-v-fae5bece]:first-child{
-        min-height:2080px;
+        min-height:1990px;
     }
 </style>

@@ -1,4 +1,4 @@
-import { FetchGet} from 'utils/fetch';
+import { FetchGet } from 'utils/fetch';
 // import store from 'store';
 
 export default {

@@ -16,6 +16,15 @@ export default {
             timerId: 0,
         };
     },
+    computed: {
+        height:function(){
+            if(this.id === 'overviewNow' || this.id === 'overviewFirst' || this.id === 'overviewReturn'){
+                return "250px";
+            }else if(this.id === 'overviewDepartment' || this.id === 'overviewSupplier'){
+                return "400px";
+            }
+        }
+    },
     mounted() {
         this.mycharts();
     },
@@ -25,16 +34,23 @@ export default {
                 this.mycharts();
             },
             deep: true
-        }
+        },
+        // height: {
+        //     handler() {
+        //         var _this = this;
+        //         _this.height="500px";
+        //     },
+        //     deep: true
+        // }
     },
     props: {
         id: String,
         yAxis:Array,
         data: Object,
-        height: {
-            type: String,
-            default: "260px"
-        },
+        // height: {
+        //     type: String,
+        //     default: "260px"
+        // },
     },
     methods: {
         handleResize() {
@@ -91,7 +107,6 @@ export default {
             }
             var bar_dv = this.$refs.chart;
             var charts = echarts.init(bar_dv, "shine");
-            var icon ='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABDCAMAAABjnP3jAAAAilBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEAAAAAAAAAAAAAAAAAAAAAAAAAAADT09MAAAAAAAAAAAAAAAD////8/Pz5+fnr6+v8/Pzr6+vZ2dn09PTFxcX+/v719fX6+vrf39+5ubnDw8MSEhIrKytRUVF2dnZAQEDi4uLi4uLk5OTk5OT///+tdFIzAAAALXRSTlMABQgNFBwDNS4mCxEYIyAamisoMS364t9b57qWj3b0s6mec28rJhMNDKemZ2YvJtR9AAACMUlEQVRo3u2ZaW/iMBBAaTDdxI7tOCeF0vvaY/7/39sZJ2BgKyUrxNBKfh+RyHtMJkhJZl+Ja+LqzHjJ53rvTs5OX/Gp/n350DZwZu66h+X7vwmoT5YtMNEuE0w48n/cAiO3H0NB+P2cfioYZhDmD8yEs0ABydsNMHPzllDA4Jd/gJ3fEguGADm/B3bu5xIDhgGoFthpFY2gD5iLBthpxHwbIFUOFyBX8osE4ApYuAAWl4ACaAUuE0BLMAQs4AIsYkAMiAExIAbEgBgQA2JADIgB+wF3wE5zENABO+1+gF0BOytLAdt7ww2ws6F7w93d8Sv/M6LXg9tz8wzMPJsQQFuoH4GVR007uA2gEbz8AkZ+vtAAKMAXSBpB+dQBE91TSQOQ5N+NAAvSzapr4Mw03WqToj8MoN8CX+DSqvoxjQKOKCZ+sapS5/20AeFZsaQCozPn6jodpcLO4tiPH6aj1LVzmTbkl1d9QCgQmGC0zsYpHc6qOPDj73JlNo7WBvVi5w8FiU/IrV2MY2hWabHnT11GRx7H2tzrk+APBZiglJhATqerTIvgL2msuZiAUqgP/lBACYnEiAlgJu1sXQz+mrZK4JEnINFO+utT3prJfmczKiB/1m+V/I+3Zie+N8QGJazJ3Bpg7TJjhUL7ae8Np+Mr+wJdrtel7v3+2DMWqIGuGkG7SNsnaKtZ7McFIrc2F+z+UKAUXVfM/lDg/zr8Rc3tDwUefn9I8PDrQ4Jn9q35C4Ev35B0ZZBdAAAAAElFTkSuQmCC';
             let option = {
                 backgroundColor: '#fff',
                 grid: {
@@ -135,6 +150,7 @@ export default {
                 series: [{
                     name: "目标",
                     type: "bar",
+                    barWidth:40,
                     barMaxWidth: 40,
                     z: 0,
                     itemStyle: {
@@ -155,6 +171,7 @@ export default {
                     name: "实际",
                     type: "bar",
                     silent: true,
+                    barWidth:30,
                     barMaxWidth: 30,
                     barGap: '-88%',
                     z: 1,
@@ -163,13 +180,10 @@ export default {
                             color: _this.id === 'overviewNow'?"#92D050":"#2AE09E",
                             label: {
                                 show: true,
-                                position: 'right',
-                                distance: 0,
-                                color: '#434e79',
+                                position: ['0%','0%'],
+                                distance: -100,
+                                color: '#fff',
                                 fontSize: 16,
-                                backgroundColor: {
-                                    image: icon,
-                                },
                                 padding: [10, 15, 20, 15],
                                 borderRadius: 100
                             }
