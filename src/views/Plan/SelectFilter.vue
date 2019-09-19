@@ -69,7 +69,7 @@ export default {
     data () {
         return {
             seasons: ['春季', '夏季', '秋季', '冬季'],//货品季节类型
-            properties: ['全部', '类目一', '类目'],//货品属性类型
+            properties: ['全部', '类目一', '类目二', '类目三'],//货品属性类型
             progresses:['样品', '下单', '到货'],//货品进度类型
             form: {
                 season:'',
@@ -86,14 +86,7 @@ export default {
         this.handleChange(this.form);
     },
     computed: {},
-    watch: {
-        form: {
-            handler: function () {
-                this.handleChange(this.form);
-            },
-            deep: true
-        },
-    },
+    watch: {},
     methods: {
         handleChange () {
             this.$emit('change',this.form);

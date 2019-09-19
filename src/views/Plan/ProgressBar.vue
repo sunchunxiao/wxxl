@@ -35,22 +35,11 @@ export default {
             },
             deep: true
         },
-        // height: {
-        //     handler() {
-        //         var _this = this;
-        //         _this.height="500px";
-        //     },
-        //     deep: true
-        // }
     },
     props: {
         id: String,
         yAxis:Array,
         data: Object,
-        // height: {
-        //     type: String,
-        //     default: "260px"
-        // },
     },
     methods: {
         handleResize() {
@@ -59,19 +48,19 @@ export default {
         },
         mycharts() {
             var _this = this;
-            var mubiaoData = [];
-            var wanchengData = [];
+            var targetData = [];
+            var actualData = [];
             if(_this.id === 'overviewNow' || _this.id === 'overviewFirst' || _this.id === 'overviewReturn'){
-                mubiaoData.push(
+                targetData.push(
                     parseInt(_this.data["target_order_num"]/1000),
                     _this.data["target_style_num"]
                 );
-                wanchengData.push(
+                actualData.push(
                     parseInt(_this.data["actual_order_num"]/1000),
                     _this.data["actual_style_num"]
                 );
             }else if(_this.id === 'overviewDepartment'){
-                mubiaoData.push(
+                targetData.push(
                     _this.data["target_p5"],
                     _this.data["target_p4"],
                     _this.data["target_p3"],
@@ -79,7 +68,7 @@ export default {
                     _this.data["target_p1"],
                     _this.data["target_total"]
                 );
-                wanchengData.push(
+                actualData.push(
                     _this.data["actual_p5"],
                     _this.data["actual_p4"],
                     _this.data["actual_p3"],
@@ -88,7 +77,7 @@ export default {
                     _this.data["actual_total"]
                 );
             }else if(_this.id === 'overviewSupplier'){
-                mubiaoData.push(
+                targetData.push(
                     _this.data["target_s5"],
                     _this.data["target_s4"],
                     _this.data["target_s3"],
@@ -96,7 +85,7 @@ export default {
                     _this.data["target_s1"],
                     _this.data["target_total"]
                 );
-                wanchengData.push(
+                actualData.push(
                     _this.data["actual_s5"],
                     _this.data["actual_s4"],
                     _this.data["actual_s3"],
@@ -105,8 +94,6 @@ export default {
                     _this.data["actual_total"],
                 );
             }
-            var bar_dv = this.$refs.chart;
-            var charts = echarts.init(bar_dv, "shine");
             let option = {
                 backgroundColor: '#fff',
                 grid: {
@@ -142,10 +129,16 @@ export default {
                 yAxis: [{
                     type: 'category',
                     data: this.yAxis,
+                    splitLine: {
+                        show: false
+                    }
                 }],
                 xAxis: [{
                     type: 'value',
-                    boundaryGap: [0, 0.01]
+                    boundaryGap: [0, 0.01],
+                    splitLine: {
+                        show: false
+                    }
                 }],
                 series: [{
                     name: "目标",
@@ -166,7 +159,26 @@ export default {
                             }
                         }
                     },
-                    data: mubiaoData
+                    markLine : _this.id === 'overviewDepartment'|| _this.id === 'overviewSupplier'?
+                    {
+                        symbol:"",
+                        precision:0,
+                        lineStyle:{
+                            color:"red",
+                            width:3
+                        },
+                        label:{
+                            show:true,
+                            formatter:'{b}: {c}'
+                        },
+                        data : [
+                            {
+                                name: '目标基准线',
+                                xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]:"暂无基准线"
+                            }
+                        ]
+                    }:{},
+                    data: targetData
                 }, {
                     name: "实际",
                     type: "bar",
@@ -177,7 +189,28 @@ export default {
                     z: 1,
                     itemStyle: {
                         normal: {
-                            color: _this.id === 'overviewNow'?"#92D050":"#2AE09E",
+                            // color: _this.id === 'overviewNow'?"#92D050":"#2AE09E",
+                            color:function(params){
+                                let actualBgColor = "";
+                                if(_this.id === 'overviewNow'){
+                                    actualBgColor = "#92D050";
+                                }else if(_this.id === 'overviewFirst'|| _this.id === 'overviewReturn'){
+                                    actualBgColor = "#2AE09E";
+                                }else if(_this.id === 'overviewDepartment'){
+                                    if(params.value<_this.data["actual_avg"]){
+                                        actualBgColor = "#92D050";
+                                    }else{
+                                        actualBgColor = "#2AE09E";
+                                    }
+                                }else if(_this.id === 'overviewSupplier'){
+                                    if(params.value<_this.data["actual_avg"]){
+                                        actualBgColor = "red";
+                                    }else{
+                                        actualBgColor = "#2AE09E";
+                                    }
+                                }
+                                return actualBgColor;
+                            },
                             label: {
                                 show: true,
                                 position: ['0%','0%'],
@@ -189,10 +222,12 @@ export default {
                             }
                         }
                     },
-                    data: wanchengData
+                    data: actualData
                 }]
 
             };
+            var bar_dv = this.$refs.chart;
+            var charts = echarts.init(bar_dv, "shine");
             //清空画布
             //charts.clear();
             charts.setOption(option);

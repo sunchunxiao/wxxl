@@ -146,22 +146,6 @@
         v-loading="loading"
         class="table_container">
         <div class="title">本季度产能使用</div>
-        <!--<el-table
-          :data="planData['capacity']"
-          stripe>
-          <el-table-column
-            prop="supplier"
-            label=""/>
-          <el-table-column
-            prop="month1"
-            label="9月"/>
-          <el-table-column
-            prop="month2"
-            label="10月"/>
-          <el-table-column
-            prop="month3"
-            label="11月"/>
-        </el-table>-->
         <div class="el-table el-table--fit el-table--striped el-table--enable-row-hover el-table--enable-row-transition">
           <div class="el-table__body-wrapper is-scrolling-none">
             <table
@@ -173,9 +157,9 @@
               <tbody>
                 <tr class="el-table__row">
                   <td><div class="cell" /></td>
-                  <td><div class="cell">9月</div></td>
-                  <td><div class="cell">10月</div></td>
-                  <td><div class="cell">11月</div></td>
+                  <td><div class="cell">{{seasonMonth[0]}}</div></td>
+                  <td><div class="cell">{{seasonMonth[1]}}</div></td>
+                  <td><div class="cell">{{seasonMonth[2]}}</div></td>
                 </tr>
                 <tr
                   class="el-table__row"
@@ -259,12 +243,11 @@ export default {
             index: 0,
             total: 0,
             currentPage: 1,
+            seasonMonth:[]
         };
     },
     computed: {},
-    mounted() {
-        this.getPlanData();
-    },
+    mounted() {},
     watch: {
         searchDate() {
             this.allRequest();
@@ -272,7 +255,7 @@ export default {
     },
     methods: {
         //获取货品计划数据
-        getPlanData() {
+        getPlanData(form) {
             this.loading = true;
             const params = {};
             API.GetPlan(params).then(res => {
@@ -281,7 +264,19 @@ export default {
                 this.planData["return_order_progress"] = res.data["return_order_progress"];
                 this.planData["department_order_progress"] = res.data["department_order_progress"];
                 this.planData["supplier_order_progress"] = res.data["supplier_order_progress"];
-                // this.planData["capacity"] = res.data["capacity"];
+                if(form.season === "春季"){
+                    this.seasonMonth.length = 0;
+                    this.seasonMonth.push("3月","4月","5月");
+                }else if(form.season === "夏季"){
+                    this.seasonMonth.length = 0;
+                    this.seasonMonth.push("6月","7月","8月");
+                }else if(form.season === "秋季"){
+                    this.seasonMonth.length = 0;
+                    this.seasonMonth.push("9月","10月","11月");
+                }else if(form.season === "冬季"){
+                    this.seasonMonth.length = 0;
+                    this.seasonMonth.push("12月","1月","2月");
+                }
                 let capacity = [
                     {
                         supplier:'全部',
@@ -333,10 +328,6 @@ export default {
         handleCurrentChange(val) {
             this.loading = true;
             this.currentPage = val;
-            // const params = {
-            //     page: this.currentPage,
-            //     per_page: 10,
-            // };
         }
     }
 };
