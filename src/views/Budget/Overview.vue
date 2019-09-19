@@ -1,45 +1,25 @@
 <template>
-  <div class="plan">
-    <el-row
-      class="time_header">
+  <div class="budget">
+    <el-row class="time_header">
       <SelectFilter
         ref="child"
         @change="handleChange" />
     </el-row>
     <el-row class="mgb10">
-      <el-col
-        :span="24"
-        class="home_overflow common">
-        <el-row
-          id="now">
-          <Card
-            v-loading="loading"
-            style="min-height:300px;">
-            <div class="card_company_target">
-              <el-row class="align">
-                当前下单进度
-              </el-row>
-              <template>
-                <el-col
-                  :key="index">
-                  <ProgressBar
-                    :id="`overviewNow`"
-                    :y-axis = "yAxisNow"
-                    :data="planData['now_order_progress']" />
-                </el-col>
-              </template>
-            </div>
-          </Card>
-        </el-row>
+      <el-col :span="24">
+        <Card v-loading="loading" style="min-height:300px;">
+            <span>当前下单进度</span>
+            <ProgressBar 
+                :id="`overviewNow`" 
+                :y-axis="yAxisNow" 
+                :data="planData['now_order_progress']" />
+        </Card>
       </el-col>
     </el-row>
     <div class="capacity mgb10">
-      <div
-        v-loading="loading"
-        class="table_container">
+      <div v-loading="loading" class="table_container">
         <div class="title">本季度预算使用</div>
-        <div class="el-table el-table--fit el-table--striped el-table--enable-row-hover el-table--enable-row-transition">
-          <div class="el-table__body-wrapper is-scrolling-none">
+        <div class="el-table">
             <table
               cellspacing="0"
               cellpadding="0"
@@ -53,8 +33,7 @@
                   <td><div class="cell">{{ seasonMonth[1] }}</div></td>
                   <td><div class="cell">{{ seasonMonth[2] }}</div></td>
                 </tr>
-                <tr
-                  class="el-table__row"
+                <tr class="el-table__row"
                   v-for="(c,idx) in planData['capacity']"
                   :key="idx">
                   <td><div class="cell">{{ c.supplier }}</div></td>
@@ -82,127 +61,49 @@
                 </tr>
               </tbody>
             </table>
-          </div>
-        </div>
-        <div
-          class="page_container"
-          v-if="total">
-          <el-pagination
-            background
-            @current-change="handleCurrentChange"
-            :current-page="currentPage"
-            :page-size="10"
-            layout="total, prev, pager, next, jumper"
-            :total="total" />
         </div>
       </div>
     </div>
-    <el-row
-      class="mgb10"
-      :gutter="10">
-      <el-col
-        :span="12"
-        class="home_overflow common">
-        <el-row
-          id="now">
-          <Card
-            v-loading="loading"
-            style="min-height:300px;">
-            <div class="card_company_target">
-              <el-row class="align">
-                首单预算使用
-              </el-row>
-              <template>
-                <el-col
-                  :key="index">
-                  <ProgressBar
-                    :id="`overviewFirst`"
-                    :y-axis = "yAxisFirst"
-                    :data="planData['first_order_progress']" />
-                </el-col>
-              </template>
-            </div>
-          </Card>
-        </el-row>
+    <el-row class="mgb10" :gutter="10">
+      <el-col :span="12">
+        <Card v-loading="loading" style="min-height:300px;">
+            <span>首单预算使用</span>
+            <ProgressBar 
+                :id="`overviewFirst`" 
+                :y-axis="yAxisFirst" 
+                :data="planData['first_order_progress']" />
+        </Card>
       </el-col>
-      <el-col
-        :span="12"
-        class="home_overflow common">
-        <el-row
-          id="now">
-          <Card
-            v-loading="loading"
-            style="min-height:300px;">
-            <div class="card_company_target">
-              <el-row class="align">
-                返单预算进度
-              </el-row>
-              <template>
-                <el-col
-                  :key="index">
-                  <ProgressBar
-                    :id="`overviewReturn`"
-                    :y-axis = "yAxisReturn"
-                    :data="planData['return_order_progress']" />
-                </el-col>
-              </template>
-            </div>
-          </Card>
-        </el-row>
+      <el-col :span="12">
+        <Card v-loading="loading" style="min-height:300px;">
+            <span>返单预算进度</span>
+            <ProgressBar 
+                :id="`overviewReturn`" 
+                :y-axis="yAxisReturn" 
+                :data="planData['return_order_progress']" />
+        </Card>
       </el-col>
     </el-row>
     <el-row class="mgb10">
-      <el-col
-        :span="24"
-        class="home_overflow common">
-        <el-row
-          id="now">
-          <Card
-            v-loading="loading"
-            style="min-height:450px;">
-            <div class="card_company_target">
-              <el-row class="align">
-                各业务部门下单进度
-              </el-row>
-              <template>
-                <el-col
-                  :key="index">
-                  <ProgressBar
-                    :id="`overviewDepartment`"
-                    :y-axis = "yAxisDepartment"
-                    :data="planData['department_order_progress']" />
-                </el-col>
-              </template>
-            </div>
-          </Card>
-        </el-row>
+      <el-col :span="24">
+        <Card v-loading="loading" style="min-height:450px;">
+            <span>各业务部门下单进度</span>
+            <ProgressBar 
+                :id="`overviewDepartment`" 
+                :y-axis="yAxisDepartment" 
+                :data="planData['department_order_progress']" />
+        </Card>
       </el-col>
     </el-row>
     <el-row class="mgb10">
-      <el-col
-        :span="24"
-        class="home_overflow common">
-        <el-row
-          id="now">
-          <Card
-            v-loading="loading"
-            style="min-height:450px;">
-            <div class="card_company_target">
-              <el-row class="align">
-                各工厂下单进度
-              </el-row>
-              <template>
-                <el-col
-                  :key="index">
-                  <ProgressBar
-                    :id="`overviewSupplier`"
-                    :y-axis = "yAxisSupplier"
-                    :data="planData['supplier_order_progress']" />
-                </el-col>
-              </template>
-            </div>
-          </Card>
-        </el-row>
+      <el-col :span="24">
+        <Card v-loading="loading" style="min-height:450px;">
+            <span>各工厂下单进度</span>
+            <ProgressBar 
+                :id="`overviewSupplier`" 
+                :y-axis="yAxisSupplier" 
+                :data="planData['supplier_order_progress']" />
+        </Card>
       </el-col>
     </el-row>
   </div>
@@ -210,8 +111,8 @@
 
 <script>
 import API from './api';
-import SelectFilter from './SelectFilter';
 import Card from 'components/Card';
+import SelectFilter from './SelectFilter';
 import ProgressBar from './ProgressBar';
 
 export default {
@@ -236,21 +137,13 @@ export default {
             yAxisReturn:["返单预算","返单款数"],
             yAxisDepartment:["五部","四部","三部","二部","一部","总"],
             yAxisSupplier:["供应商E","供应商D","供应商C","供应商B","供应商A","总"],
-            heightNow:"200px",
             loading: false,
-            index: 0,
-            total: 0,
-            currentPage: 1,
             seasonMonth:[],
         };
     },
     computed: {},
     mounted() {},
-    watch: {
-        searchDate() {
-            this.allRequest();
-        }
-    },
+    watch: {},
     methods: {
         //获取货品计划数据
         getPlanData(form) {
@@ -318,15 +211,10 @@ export default {
                 this.loading = false;
             });
         },
-        //筛选
+        //下拉筛选
         handleChange(form) {
             this.getPlanData(form);
         },
-        //翻页
-        handleCurrentChange(val) {
-            this.loading = true;
-            this.currentPage = val;
-        }
     }
 };
 </script>
@@ -337,5 +225,6 @@ export default {
 <style lang="scss" scoped>
     .container .container_wrap .right > div[data-v-fae5bece]:first-child{
         min-height:1990px;
+        overflow:hidden;
     }
 </style>

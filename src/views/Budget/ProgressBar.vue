@@ -250,12 +250,6 @@ export default {
             width: 100%;
             margin: 0 auto;
         }
-        .detail {
-            text-align: center;
-            color: #5e5e5e;
-            font-size: 15px;
-            padding: 20px;
-        }
     }
 </style>
 
