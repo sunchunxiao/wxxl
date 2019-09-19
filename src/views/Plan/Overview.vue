@@ -7,103 +7,117 @@
     </el-row>
     <el-row class="mgb10">
       <el-col :span="24">
-        <Card v-loading="loading" style="min-height:300px;">
-            <span>当前下单进度</span>
-            <ProgressBar
-                :id="`overviewNow`"
-                :y-axis="yAxisNow"
-                :data="planData['now_order_progress']" />
-          </Card>
+        <Card
+          v-loading="loading"
+          style="min-height:300px;">
+          <span>当前下单进度</span>
+          <ProgressBar
+            :id="`overviewNow`"
+            :y-axis="yAxisNow"
+            :data="planData['now_order_progress']" />
+        </Card>
       </el-col>
     </el-row>
-    <el-row class="mgb10" :gutter="10">
+    <el-row
+      class="mgb10"
+      :gutter="10">
       <el-col :span="12">
-        <Card v-loading="loading" style="min-height:300px;">
-            <span>首单下单进度</span>
-            <ProgressBar
-                :id="`overviewFirst`"
-                :y-axis="yAxisFirst"
-                :data="planData['first_order_progress']" />
+        <Card
+          v-loading="loading"
+          style="min-height:300px;">
+          <span>首单下单进度</span>
+          <ProgressBar
+            :id="`overviewFirst`"
+            :y-axis="yAxisFirst"
+            :data="planData['first_order_progress']" />
         </Card>
       </el-col>
       <el-col :span="12">
-        <Card v-loading="loading" style="min-height:300px;">
-            <span>返单下单进度</span>
-            <ProgressBar
-                :id="`overviewReturn`"
-                :y-axis="yAxisReturn"
-                :data="planData['return_order_progress']" />
+        <Card
+          v-loading="loading"
+          style="min-height:300px;">
+          <span>返单下单进度</span>
+          <ProgressBar
+            :id="`overviewReturn`"
+            :y-axis="yAxisReturn"
+            :data="planData['return_order_progress']" />
         </Card>
       </el-col>
     </el-row>
     <el-row class="mgb10">
       <el-col :span="24">
-        <Card v-loading="loading" style="min-height:450px;">
-            <span>各业务部门下单进度</span>
-            <ProgressBar
-                :id="`overviewDepartment`"
-                :y-axis="yAxisDepartment"
-                :data="planData['department_order_progress']" />
-          </Card>
+        <Card
+          v-loading="loading"
+          style="min-height:450px;">
+          <span>各业务部门下单进度</span>
+          <ProgressBar
+            :id="`overviewDepartment`"
+            :y-axis="yAxisDepartment"
+            :data="planData['department_order_progress']" />
+        </Card>
       </el-col>
     </el-row>
     <el-row class="mgb10">
       <el-col :span="24">
-          <Card v-loading="loading" style="min-height:450px;">
-            <span>各工厂下单进度</span>
-            <ProgressBar
-                :id="`overviewSupplier`"
-                :y-axis = "yAxisSupplier"
-                :data="planData['supplier_order_progress']" />
-          </Card>
+        <Card
+          v-loading="loading"
+          style="min-height:450px;">
+          <span>各工厂下单进度</span>
+          <ProgressBar
+            :id="`overviewSupplier`"
+            :y-axis = "yAxisSupplier"
+            :data="planData['supplier_order_progress']" />
+        </Card>
       </el-col>
     </el-row>
     <div class="capacity">
-      <div v-loading="loading" class="table_container">
+      <div
+        v-loading="loading"
+        class="table_container">
         <div class="title">本季度产能使用</div>
         <div class="el-table">
-            <table
-              cellspacing="0"
-              cellpadding="0"
-              border="0"
-              class="el-table__body"
-              style="width:100%;">
-              <tbody>
-                <tr class="el-table__row">
-                  <td width="10%"><div class="cell" /></td>
-                  <td><div class="cell">{{ seasonMonth[0] }}</div></td>
-                  <td><div class="cell">{{ seasonMonth[1] }}</div></td>
-                  <td><div class="cell">{{ seasonMonth[2] }}</div></td>
-                </tr>
-                <tr
-                  class="el-table__row"
-                  v-for="(c,idx) in planData['capacity']"
-                  :key="idx">
-                  <td><div class="cell">{{ c.supplier }}</div></td>
-                  <td>
-                    <div class="cell">
-                      <div :style="{background:'#2AE09E',color:'#fff',width:c.month1+'%'}">
-                        {{ c.month1 }}%
-                      </div>
+          <table
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            class="el-table__body"
+            style="width:100%;">
+            <tbody>
+              <tr class="el-table__row">
+                <td width="10%"><div class="cell" /></td>
+                <td><div class="cell">{{ seasonMonth[0] }}</div></td>
+                <td><div class="cell">{{ seasonMonth[1] }}</div></td>
+                <td><div class="cell">{{ seasonMonth[2] }}</div></td>
+              </tr>
+              <tr
+                class="el-table__row"
+                v-for="(c,idx) in planData['capacity']"
+                :key="idx">
+                <td><div class="cell">{{ c.supplier }}</div></td>
+                <td>
+                  <div class="cell">
+                    <div :style="{background:'#2AE09E',color:'#fff',width:c.month1+'%'}">
+                      {{ c.month1 }}%
                     </div>
-                  </td>
-                  <td>
-                    <div class="cell">
-                      <div :style="{background:'#2AE09E',color:'#fff',width:c.month2+'%'}">
-                        {{ c.month2 }}%
-                      </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell">
+                    <div :style="{background:'#2AE09E',color:'#fff',width:c.month2+'%'}">
+                      {{ c.month2 }}%
                     </div>
-                  </td>
-                  <td>
-                    <div class="cell">
-                      <div :style="{background:'#2AE09E',color:'#fff',width:c.month3+'%'}">
-                        {{ c.month3 }}%
-                      </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell">
+                    <div :style="{background:'#2AE09E',color:'#fff',width:c.month3+'%'}">
+                      {{ c.month3 }}%
                     </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
