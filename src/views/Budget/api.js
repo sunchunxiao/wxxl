@@ -1,7 +1,7 @@
 import { FetchGet } from 'utils/fetch';
 
 export default {
-    GetPlan(params) {
+    GetBudget(params) {
         return FetchGet('/scene/budget', params);
     }
 };

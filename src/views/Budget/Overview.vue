@@ -7,102 +7,117 @@
     </el-row>
     <el-row class="mgb10">
       <el-col :span="24">
-        <Card v-loading="loading" style="min-height:300px;">
-            <span>当前下单进度</span>
-            <ProgressBar 
-                :id="`overviewNow`" 
-                :y-axis="yAxisNow" 
-                :data="planData['now_order_progress']" />
+        <Card
+          v-loading="loading"
+          style="min-height:300px;">
+          <span>当前下单进度</span>
+          <ProgressBar
+            :id="`overviewNow`"
+            :y-axis="yAxisNow"
+            :data="budgetData['now_order_progress']" />
         </Card>
       </el-col>
     </el-row>
     <div class="capacity mgb10">
-      <div v-loading="loading" class="table_container">
+      <div
+        v-loading="loading"
+        class="table_container">
         <div class="title">本季度预算使用</div>
         <div class="el-table">
-            <table
-              cellspacing="0"
-              cellpadding="0"
-              border="0"
-              class="el-table__body"
-              style="width:100%;">
-              <tbody>
-                <tr class="el-table__row">
-                  <td width="10%"><div class="cell" /></td>
-                  <td><div class="cell">{{ seasonMonth[0] }}</div></td>
-                  <td><div class="cell">{{ seasonMonth[1] }}</div></td>
-                  <td><div class="cell">{{ seasonMonth[2] }}</div></td>
-                </tr>
-                <tr class="el-table__row"
-                  v-for="(c,idx) in planData['capacity']"
-                  :key="idx">
-                  <td><div class="cell">{{ c.supplier }}</div></td>
-                  <td>
-                    <div class="cell">
-                      <div :style="{background:'#FCD5B4',color:'#000',width:c.month1+'%'}">
-                        {{ c.month1 }}%
-                      </div>
+          <table
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            class="el-table__body"
+            style="width:100%;">
+            <tbody>
+              <tr class="el-table__row">
+                <td width="10%"><div class="cell" /></td>
+                <td><div class="cell">{{ seasonMonth[0] }}</div></td>
+                <td><div class="cell">{{ seasonMonth[1] }}</div></td>
+                <td><div class="cell">{{ seasonMonth[2] }}</div></td>
+              </tr>
+              <tr
+                class="el-table__row"
+                v-for="(c,idx) in budgetData['capacity']"
+                :key="idx">
+                <td><div class="cell">{{ c.supplier }}</div></td>
+                <td>
+                  <div class="cell">
+                    <div :style="{background:'#FCD5B4',color:'#000',width:c.month1+'%'}">
+                      {{ c.month1 }}%
                     </div>
-                  </td>
-                  <td>
-                    <div class="cell">
-                      <div :style="{background:'#FCD5B4',color:'#000',width:c.month2+'%'}">
-                        {{ c.month2 }}%
-                      </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell">
+                    <div :style="{background:'#FCD5B4',color:'#000',width:c.month2+'%'}">
+                      {{ c.month2 }}%
                     </div>
-                  </td>
-                  <td>
-                    <div class="cell">
-                      <div :style="{background:'#FCD5B4',color:'#000',width:c.month3+'%'}">
-                        {{ c.month3 }}%
-                      </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell">
+                    <div :style="{background:'#FCD5B4',color:'#000',width:c.month3+'%'}">
+                      {{ c.month3 }}%
                     </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
-    <el-row class="mgb10" :gutter="10">
+    <el-row
+      class="mgb10"
+      :gutter="10">
       <el-col :span="12">
-        <Card v-loading="loading" style="min-height:300px;">
-            <span>首单预算使用</span>
-            <ProgressBar 
-                :id="`overviewFirst`" 
-                :y-axis="yAxisFirst" 
-                :data="planData['first_order_progress']" />
+        <Card
+          v-loading="loading"
+          style="min-height:300px;">
+          <span>首单预算使用</span>
+          <ProgressBar
+            :id="`overviewFirst`"
+            :y-axis="yAxisFirst"
+            :data="budgetData['first_order_progress']" />
         </Card>
       </el-col>
       <el-col :span="12">
-        <Card v-loading="loading" style="min-height:300px;">
-            <span>返单预算进度</span>
-            <ProgressBar 
-                :id="`overviewReturn`" 
-                :y-axis="yAxisReturn" 
-                :data="planData['return_order_progress']" />
+        <Card
+          v-loading="loading"
+          style="min-height:300px;">
+          <span>返单预算进度</span>
+          <ProgressBar
+            :id="`overviewReturn`"
+            :y-axis="yAxisReturn"
+            :data="budgetData['return_order_progress']" />
         </Card>
       </el-col>
     </el-row>
     <el-row class="mgb10">
       <el-col :span="24">
-        <Card v-loading="loading" style="min-height:450px;">
-            <span>各业务部门下单进度</span>
-            <ProgressBar 
-                :id="`overviewDepartment`" 
-                :y-axis="yAxisDepartment" 
-                :data="planData['department_order_progress']" />
+        <Card
+          v-loading="loading"
+          style="min-height:450px;">
+          <span>各业务部门下单进度</span>
+          <ProgressBar
+            :id="`overviewDepartment`"
+            :y-axis="yAxisDepartment"
+            :data="budgetData['department_order_progress']" />
         </Card>
       </el-col>
     </el-row>
     <el-row class="mgb10">
       <el-col :span="24">
-        <Card v-loading="loading" style="min-height:450px;">
-            <span>各工厂下单进度</span>
-            <ProgressBar 
-                :id="`overviewSupplier`" 
-                :y-axis="yAxisSupplier" 
-                :data="planData['supplier_order_progress']" />
+        <Card
+          v-loading="loading"
+          style="min-height:450px;">
+          <span>各工厂下单进度</span>
+          <ProgressBar
+            :id="`overviewSupplier`"
+            :y-axis="yAxisSupplier"
+            :data="budgetData['supplier_order_progress']" />
         </Card>
       </el-col>
     </el-row>
@@ -123,8 +138,8 @@ export default {
     },
     data() {
         return {
-            //货品计划数据
-            planData:{
+            //货品预算数据
+            budgetData:{
                 now_order_progress:{},//当前下单进度
                 first_order_progress:{},//首单下单进度
                 return_order_progress:{},//返单下单进度
@@ -146,15 +161,15 @@ export default {
     watch: {},
     methods: {
         //获取货品计划数据
-        getPlanData(form) {
+        getBudgetData(form) {
             this.loading = true;
             const params = {};
-            API.GetPlan(params).then(res => {
-                this.planData["now_order_progress"] = res.data["now_order_progress"];
-                this.planData["first_order_progress"] = res.data["first_order_progress"];
-                this.planData["return_order_progress"] = res.data["return_order_progress"];
-                this.planData["department_order_progress"] = res.data["department_order_progress"];
-                this.planData["supplier_order_progress"] = res.data["supplier_order_progress"];
+            API.GetBudget(params).then(res => {
+                this.budgetData["now_order_progress"] = res.data["now_order_progress"];
+                this.budgetData["first_order_progress"] = res.data["first_order_progress"];
+                this.budgetData["return_order_progress"] = res.data["return_order_progress"];
+                this.budgetData["department_order_progress"] = res.data["department_order_progress"];
+                this.budgetData["supplier_order_progress"] = res.data["supplier_order_progress"];
                 if(form.season === "春季"){
                     this.seasonMonth.length = 0;
                     this.seasonMonth.push("3月","4月","5月");
@@ -206,14 +221,14 @@ export default {
                         month3:res.data["capacity"]["s1"][2]
                     }
                 ];
-                this.planData["capacity"] = capacity;
+                this.budgetData["capacity"] = capacity;
             }).finally(() => {
                 this.loading = false;
             });
         },
         //下拉筛选
         handleChange(form) {
-            this.getPlanData(form);
+            this.getBudgetData(form);
         },
     }
 };
