@@ -156,7 +156,7 @@
               style="width:100%;">
               <tbody>
                 <tr class="el-table__row">
-                  <td><div class="cell" /></td>
+                  <td width="10%"><div class="cell" /></td>
                   <td><div class="cell">{{ seasonMonth[0] }}</div></td>
                   <td><div class="cell">{{ seasonMonth[1] }}</div></td>
                   <td><div class="cell">{{ seasonMonth[2] }}</div></td>

@@ -193,20 +193,20 @@ export default {
                             color:function(params){
                                 let actualBgColor = "";
                                 if(_this.id === 'overviewNow'){
-                                    actualBgColor = "#92D050";
+                                    actualBgColor = "#984807";
                                 }else if(_this.id === 'overviewFirst'|| _this.id === 'overviewReturn'){
-                                    actualBgColor = "#2AE09E";
+                                    actualBgColor = "#FCD5B4";
                                 }else if(_this.id === 'overviewDepartment'){
                                     if(params.value<_this.data["actual_avg"]){
-                                        actualBgColor = "#92D050";
+                                        actualBgColor = "#ff0000";
                                     }else{
-                                        actualBgColor = "#2AE09E";
+                                        actualBgColor = "#FCD5B4";
                                     }
                                 }else if(_this.id === 'overviewSupplier'){
                                     if(params.value<_this.data["actual_avg"]){
                                         actualBgColor = "#ff0000";
                                     }else{
-                                        actualBgColor = "#2AE09E";
+                                        actualBgColor = "#FCD5B4";
                                     }
                                 }
                                 return actualBgColor;
