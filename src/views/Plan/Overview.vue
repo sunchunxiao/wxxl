@@ -157,9 +157,9 @@
               <tbody>
                 <tr class="el-table__row">
                   <td><div class="cell" /></td>
-                  <td><div class="cell">{{seasonMonth[0]}}</div></td>
-                  <td><div class="cell">{{seasonMonth[1]}}</div></td>
-                  <td><div class="cell">{{seasonMonth[2]}}</div></td>
+                  <td><div class="cell">{{ seasonMonth[0] }}</div></td>
+                  <td><div class="cell">{{ seasonMonth[1] }}</div></td>
+                  <td><div class="cell">{{ seasonMonth[2] }}</div></td>
                 </tr>
                 <tr
                   class="el-table__row"
@@ -168,21 +168,21 @@
                   <td><div class="cell">{{ c.supplier }}</div></td>
                   <td>
                     <div class="cell">
-                      <div :style="{background:'#A0DAB4',color:'#fff',width:c.month1+'%'}">
+                      <div :style="{background:'#2AE09E',color:'#fff',width:c.month1+'%'}">
                         {{ c.month1 }}%
                       </div>
                     </div>
                   </td>
                   <td>
                     <div class="cell">
-                      <div :style="{background:'#A0DAB4',color:'#fff',width:c.month2+'%'}">
+                      <div :style="{background:'#2AE09E',color:'#fff',width:c.month2+'%'}">
                         {{ c.month2 }}%
                       </div>
                     </div>
                   </td>
                   <td>
                     <div class="cell">
-                      <div :style="{background:'#A0DAB4',color:'#fff',width:c.month3+'%'}">
+                      <div :style="{background:'#2AE09E',color:'#fff',width:c.month3+'%'}">
                         {{ c.month3 }}%
                       </div>
                     </div>
@@ -213,8 +213,6 @@ import API from './api';
 import SelectFilter from './SelectFilter';
 import Card from 'components/Card';
 import ProgressBar from './ProgressBar';
-// import { mapGetters } from 'vuex';
-// import { sales } from 'data/subject.js';
 
 export default {
     components: {
@@ -243,7 +241,7 @@ export default {
             index: 0,
             total: 0,
             currentPage: 1,
-            seasonMonth:[]
+            seasonMonth:[],
         };
     },
     computed: {},

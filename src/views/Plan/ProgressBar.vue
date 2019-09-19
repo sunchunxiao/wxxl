@@ -160,24 +160,24 @@ export default {
                         }
                     },
                     markLine : _this.id === 'overviewDepartment'|| _this.id === 'overviewSupplier'?
-                    {
-                        symbol:"",
-                        precision:0,
-                        lineStyle:{
-                            color:"red",
-                            width:3
-                        },
-                        label:{
-                            show:true,
-                            formatter:'{b}: {c}'
-                        },
-                        data : [
-                            {
-                                name: '目标基准线',
-                                xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]:"暂无基准线"
-                            }
-                        ]
-                    }:{},
+                        {
+                            symbol:"",
+                            precision:0,
+                            lineStyle:{
+                                color:"red",
+                                width:3
+                            },
+                            label:{
+                                show:true,
+                                formatter:'{b}: {c}'
+                            },
+                            data : [
+                                {
+                                    name: '目标基准线',
+                                    xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]:"暂无基准线"
+                                }
+                            ]
+                        }:{},
                     data: targetData
                 }, {
                     name: "实际",
@@ -189,7 +189,6 @@ export default {
                     z: 1,
                     itemStyle: {
                         normal: {
-                            // color: _this.id === 'overviewNow'?"#92D050":"#2AE09E",
                             color:function(params){
                                 let actualBgColor = "";
                                 if(_this.id === 'overviewNow'){
@@ -228,8 +227,6 @@ export default {
             };
             var bar_dv = this.$refs.chart;
             var charts = echarts.init(bar_dv, "shine");
-            //清空画布
-            //charts.clear();
             charts.setOption(option);
             // 屏幕自适应
             this.timerId = setTimeout(function () {
@@ -248,16 +245,16 @@ export default {
 <style lang="scss" scoped>
     .bar-container {
         width: 100%;
-    .bar {
-        width: 100%;
-        margin: 0 auto;
-    }
-    .detail {
-        text-align: center;
-        color: #5e5e5e;
-        font-size: 15px;
-        padding: 20px;
-    }
+        .bar {
+            width: 100%;
+            margin: 0 auto;
+        }
+        .detail {
+            text-align: center;
+            color: #5e5e5e;
+            font-size: 15px;
+            padding: 20px;
+        }
     }
 </style>
 

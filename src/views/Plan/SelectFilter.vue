@@ -60,12 +60,8 @@
 </template>
 
 <script>
-import SeasonPicker from '../../components/SeasonPicker';
-
 export default {
-    components: {
-        SeasonPicker
-    },
+    components: {},
     data () {
         return {
             seasons: ['春季', '夏季', '秋季', '冬季'],//货品季节类型
@@ -78,7 +74,7 @@ export default {
             },
         };
     },
-    props: { },
+    props: {},
     created () {
         this.form.season = this.seasons[0];
         this.form.property = this.properties[0];
