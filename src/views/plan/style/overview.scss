@@ -3,53 +3,14 @@
     .time_header {
         background-color:#504b4b;
         height: 40px;
-        padding:5px 0;
         display: flex;
         align-items: center;
-        >div:not(.search_bar) {
-            flex-shrink: 0;
-        }
-        .contrast_btn {
-            padding: 4px 15px 0;
-            line-height: 30px;
-        }
-        .search_bar {
-            flex: 1;
-        }
     }
     .mgb10{
         margin-bottom: 10px;
     }
     .capacity {
         position: relative;
-        .shaow {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            right: 0;
-            left: 0;
-            opacity: 0.5;
-            z-index: 1;
-            background: white;
-        }
-        .data_container {
-            position: absolute;
-            z-index: 999;
-            top:50%;
-            left: 50%;
-            width: 70%;
-            box-sizing: border-box;
-            border: 1px solid #F2C811;
-            transform: translate(-50%,-50%);
-            .el-table {
-                .cell {
-                    text-align: center;
-                }
-                td, th.is-leaf {
-                    border-bottom: none;
-                }
-            }
-        }
         .table_container {
             background: #fff;
             padding: 20px;

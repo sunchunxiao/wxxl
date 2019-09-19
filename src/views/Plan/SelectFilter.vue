@@ -1,6 +1,6 @@
 <template>
   <el-form
-    class="search_bar"
+    class="filter"
     ref="form"
     :model="form"
     inline
@@ -92,7 +92,7 @@ export default {
 </script>
 
 <style lang="scss">
-    .search_bar {
+    .filter {
         display: flex;
     }
     .tip{
