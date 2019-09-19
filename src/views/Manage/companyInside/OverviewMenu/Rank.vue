@@ -1,7 +1,7 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="productTree"
+      v-if="organizationTree"
       class="nav-content-row">
       <div
         class="overflow">
@@ -9,41 +9,15 @@
           v-loading="loading"
           class="min-height-400">
           <Card>
-            <el-row class="margin-bottom-20 overview_title">智能评选和智能策略</el-row>
-            <el-row v-if="rankArr.length">
-              <el-col :span="14">
-                <IntelligentSelection
-                  id="rank"
-                  @changeTime="changeTime"
-                  @showStragety="showStragety"
-                  :data="rankArr" />
-              </el-col>
-              <el-col :span="10">
-                <div class="stragety">
-                  <div class="stragety-title">智能策略</div>
-                  <div
-                    class="stragety-box">
-                    <div class="margin-bottom-10">{{ stragetyTitle }}</div>
-                    <el-checkbox-group
-                      v-if="stragety.length"
-                      v-model="stragetyCheckList">
-                      <el-checkbox
-                        v-for="(item,index) in stragety"
-                        :key="index"
-                        :label="item.id"
-                        @change="change">{{ item.strategy }}</el-checkbox>
-                    </el-checkbox-group>
-                    <el-row
-                      class="stragety-box-data">
-                      {{ stragetyMessage }}
-                    </el-row>
-                    <el-button
-                      @click="submit"
-                      type="primary"
-                      class="center">确 认</el-button>
-                  </div>
-                </div>
-              </el-col>
+            <el-row class="margin-bottom-20 overview_title">整体绩效预警分析</el-row>
+            <el-row v-if="orgrankArr.length ">
+              <!-- <el-col :span="14"> -->
+              <WarningAnalysis
+                id="rank"
+                :pos="orgPosArr"
+                @changeTime="changeTime"
+                @showStragety="showStragety"
+                :data="orgrankArr" />
             </el-row>
             <el-row
               v-else
@@ -61,7 +35,7 @@
 import API from '../api';
 import Card from 'components/Card';
 // 智能评选和智能策略
-import IntelligentSelection from 'components/IntelligentSelection';
+import WarningAnalysis from 'components/WarningAnalysis';
 
 //vuex
 import { mapGetters } from 'vuex';
@@ -69,11 +43,12 @@ import { mapGetters } from 'vuex';
 export default {
     props: {
         cid: String,
+        is_parent:Array,
         val: Object
     },
     components: {
         Card,
-        IntelligentSelection,
+        WarningAnalysis,
     },
     data () {
         return {
@@ -82,6 +57,7 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
+            version: 0,
             //tree
             pt: '',
             loading: false,
@@ -94,15 +70,22 @@ export default {
             post: 1,
             changeDate: {},
             newParams: {},
+            aa:[]
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'rankArr','lastParams']),
+        ...mapGetters(['organizationTree','orgPosArr', 'orgrankArr','managelastParams']),
         hasTree () {
-            return !_.isEmpty(this.productTree);
+            return !_.isEmpty(this.organizationTree);
         },
     },
     watch: {
+        is_parent:{
+            handler () {
+                this.allRequest();
+            },
+            immediate: true
+        },
         cid: {
             handler () {
                 this.allRequest();
@@ -112,6 +95,9 @@ export default {
         val() {
             this.allRequest();
         }
+    },
+    mounted(){
+        // console.log(111,this.orgPosArr);
     },
     methods: {
         change() {
@@ -136,9 +122,9 @@ export default {
                         cid: data1.cid,
                         subject: data1.subject,
                         time_label: data1.time_label,
-                        strategies: this.idArr.join(',')
+                        strategies: this.idArr.join(','),
                     };
-                    API.PostProductSave(data).then(() => {
+                    API.PostOrgStrategyLog(data).then(() => {
                         this.$message({
                             showClose: true,
                             message: '保存成功'
@@ -160,7 +146,7 @@ export default {
                 return;
             }
             this.getRank();
-            this.$store.dispatch("SaveLastParams", this.newParams);
+            this.$store.dispatch("SaveManageLastParams", this.newParams);
         },
         getRank() {
             if (this.getPt() === '日') {
@@ -172,14 +158,17 @@ export default {
                 cid: this.cid,
                 pt: this.pt,
                 ...this.getPeriodByPt(),
+                version:this.version,
             };
             this.newParams.rank = params;
-            if (JSON.stringify(this.lastParams.rank) == JSON.stringify(params)) {
+            if (JSON.stringify(this.managelastParams.rank) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetProductRank(params).then(res => {
-                this.$store.dispatch('SaveRankArr', res.data);
+            API.GetOrgRank(params).then(res => {
+                // console.log(111,res.data[0].loc);
+                this.$store.dispatch('SaveOrgPosArr', res.data[0].loc);
+                this.$store.dispatch('SaveOrgRankArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -245,7 +234,7 @@ export default {
             this.subject = subject;
             this.stragety = [];
             this.stragetyMessage = '';
-            API.GetProductMatch(params).then(res => {
+            API.GetOrgStrategy(params).then(res => {
                 this.stragetyCheckList = [];
                 this.idArr = [];
                 this.stragety = res.data;

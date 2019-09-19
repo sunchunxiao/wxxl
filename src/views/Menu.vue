@@ -38,7 +38,6 @@
               <span slot="title">{{ ite.title }}</span>
             </template>
             <template
-              v-if='ite.children'
               v-for="itm in ite.children">
               <el-menu-item
                 :index="`${item.path}${ite.path}${itm.path}`"
@@ -400,7 +399,7 @@ $scale: 1.5;
             }
         }
     }
-    .el-submenu.is-active {
+    >.el-submenu.is-active {
         >.el-submenu__title {
             border-left: 5px solid $border-color-active;
             background: $bg-color-active;

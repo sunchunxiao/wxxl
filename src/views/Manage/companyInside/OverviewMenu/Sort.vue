@@ -1,7 +1,7 @@
 <template>
   <div class="nav-content">
     <el-row
-      v-if="productTree"
+      v-if="organizationTree"
       class="nav-content-row">
       <div
         class="overflow">
@@ -9,38 +9,40 @@
           v-loading="loading"
           class="min-height-400">
           <Card>
-            <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析</el-row>
+            <el-row class="margin-bottom-20 overview_title">整体绩效排序分析</el-row>
             <el-row
-              v-if="structureArr.length"
+              style="justify-content:space-around"
               type="flex">
-              <el-col :span="16">
-                <template v-for="(item, index) in structureArr">
-                  <el-col
-                    :key="index"
-                    :span="6"
-                    @click.native="clickIndex(3 ,index)">
-                    <ProportionalStructureAverageComparison
-                      :id="`${index}`"
-                      :unit="getUnit(item)"
-                      :data="sliceData(item)" />
-                  </el-col>
-                </template>
+              <el-col
+                :span="8"
+                class="">
+                <el-row
+                  style="text-align:center;font-size:14px"
+                  class="margin-bottom-20 overview_title">部门绩效排序</el-row>
+                <SortStructure
+                  v-if="orgsortArr.bro"
+                  @id="structureID"
+                  id="SortStructure1"
+                  :data="orgsortArr.bro" />
               </el-col>
               <el-col
                 :span="8"
-                class="border-left-2-gray">
-                <ProportionalStructureAverageComparisonBig
+                class="">
+                <el-row
+                  style="text-align:center;font-size:14px"
+                  class="margin-bottom-20 overview_title">小组绩效排序</el-row>
+                <SortStructure
+                  v-if="orgsortArr.son"
                   @id="structureID"
-                  :unit="getUnit(structureArr[index3])"
-                  id="ProportionalStructureAverageComparisonBig"
-                  :data="structureArr[index3]" />
+                  id="SortStructure"
+                  :data="orgsortArr.son" />
               </el-col>
             </el-row>
-            <el-row
-              v-if="!loading && !structureArr.length"
+            <!-- <el-row
+              v-if="!loading && !orgsortArr.length"
               class="overview_select">
               暂无数据
-            </el-row>
+            </el-row> -->
           </Card>
         </el-row>
       </div>
@@ -53,11 +55,10 @@ import API from '../api';
 import Card from 'components/Card';
 
 // 比例结构与平均值对比分析
-import ProportionalStructureAverageComparison from 'components/ProportionalStructureAverageComparison';
-import ProportionalStructureAverageComparisonBig from 'components/ProportionalStructureAverageComparisonBig';
+import SortStructure from 'components/SortStructure';
 //vuex
 import { mapGetters } from 'vuex';
-import { product } from 'data/subject';
+import { organization } from 'data/subject';
 
 export default {
     props: {
@@ -66,11 +67,11 @@ export default {
     },
     components: {
         Card,
-        ProportionalStructureAverageComparison,
-        ProportionalStructureAverageComparisonBig,
+        SortStructure,
     },
     data () {
         return {
+            version: 0,
             form: {
                 pt: '', // 周期类型
                 date: [], // date
@@ -82,11 +83,14 @@ export default {
             loading: false,
             changeDate: {},
             newParams: {},
-            productSubject: product()
+            organizationSubject: organization()
         };
     },
     computed: {
-        ...mapGetters(['productTree', 'structureArr','lastParams']),
+        ...mapGetters(['organizationTree','orgsortArr', 'orgstructureArr1', 'orgstructureArr2', 'managelastParams']),
+        hasStructure () {
+            return !_.isEmpty(this.orgsortArr);
+        },
     },
     watch: {
         cid: {
@@ -99,21 +103,9 @@ export default {
             this.allRequest();
         },
     },
+    mounted(){
+    },
     methods: {
-        getUnit(item) {
-            let obj = this.productSubject.find(el => {
-                return el.subject == item.subject && el.subject_name == item.subject_name;
-            });
-            return obj ? obj.subject_unit : "";
-        },
-        sliceData(item) {
-            let data = _.cloneDeep(item);
-            let num = (data["28nodes"].length - 10) < 0 ? 0 : (data["28nodes"].length - 10);
-            data["28nodes"] = data["28nodes"].slice(num);
-            data["nodes"] = data["nodes"].slice(num);
-            data["values"] = data["values"].slice(num);
-            return data;
-        },
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
         },
@@ -124,22 +116,25 @@ export default {
             if (!this.cid) {
                 return;
             }
-            this.getStructure();
-            this.$store.dispatch("SaveLastParams", this.newParams);
+            this.getSort();
+            this.$store.dispatch("SaveManageLastParams", this.newParams);
         },
-        getStructure() {
+        //前端
+        getSort() {
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
+                version: this.version,
+                rType: 1
             };
             this.newParams.structure = params;
-            if (JSON.stringify(this.lastParams.structure) == JSON.stringify(params)) {
+            if (JSON.stringify(this.managelastParams.structure) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetProductStructure(params).then(res => {
-                this.$store.dispatch('SaveStructureArr', res.data);
+            API.GetOrgStructure(params).then(res => {
+                this.$store.dispatch('SaveOrgSort', res.data);
             }).finally(() => {
                 this.loading = false;
             });
