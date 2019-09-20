@@ -118,8 +118,6 @@ export default {
             for(let i=0;i<y;i++) {
                 if ( i==0) {
                     arr.push("部门级");
-                }else if(i==1){
-                    arr.push("小组级");
                 }else{
                     arr.push("");
                 }

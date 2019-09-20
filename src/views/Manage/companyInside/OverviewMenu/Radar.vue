@@ -134,11 +134,11 @@ export default {
             // console.log(row, column, rowIndex, columnIndex );
             if(columnIndex == 2){
                 if(row.score>=85){
-                    return 'background-color:rgba(3,197,1,0.7)';
+                    return 'background-color:rgb(150,206,93)';
                 } else if(row.score<85&&row.score>=60){
-                    return 'background-color:rgba(255,255,3,0.6)';
-                }else if(row.score<60){
-                    return 'background-color:rgba(255,51,51,0.7)';
+                    return 'background-color:rgb(255,199,75)';
+                } else if(row.score<60) {
+                    return 'background-color:rgb(150,206,93)';
                 }
             }
             //某一行其中的一个变量applies值如果大于0，并且在第六列，即确定一个具体的单元格需要确定行和列
