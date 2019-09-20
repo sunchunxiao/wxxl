@@ -2,6 +2,7 @@
 const organization = {
     state: {
         orgscore:'',
+        detailrank:'',
         orgtree: {},
         orgprogressArr: [],
         orgprogressbackArr: [],
@@ -85,6 +86,9 @@ const organization = {
         SAVE_ORGSCORE: (state, score) => {
             state.orgscore = score;
         },
+        SAVE_DetailRank: (state, rank) => {
+            state.detailrank = rank;
+        },
     },
     actions: {
         SaveOrgTree({ commit }, orgtree) {
@@ -149,6 +153,9 @@ const organization = {
         },
         SaveOrgScore({ commit }, score) {
             commit('SAVE_ORGSCORE', score);
+        },
+        SaveDetailRank({ commit }, rank) {
+            commit('SAVE_DetailRank', rank);
         },
     }
 };

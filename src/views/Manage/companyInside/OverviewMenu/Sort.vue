@@ -18,7 +18,7 @@
                 class="">
                 <el-row
                   style="text-align:center;font-size:14px"
-                  class="margin-bottom-20 overview_title">部门绩效排序</el-row>
+                  class="margin-bottom-20 overview_title">{{ name }}绩效排序</el-row>
                 <SortStructure
                   v-if="orgsortArr.bro"
                   @id="structureID"
@@ -33,7 +33,7 @@
                 class="">
                 <el-row
                   style="text-align:center;font-size:14px"
-                  class="margin-bottom-20 overview_title">小组绩效排序</el-row>
+                  class="margin-bottom-20 overview_title">部门绩效排序</el-row>
                 <SortStructure
                   v-if="orgsortArr.son"
                   @id="structureID"
@@ -66,6 +66,7 @@ import { organization } from 'data/subject';
 export default {
     props: {
         cid: String,
+        name:String,
         val: Object
     },
     components: {
@@ -187,9 +188,8 @@ export default {
     align-items: center;
     // font-size: 50px;
     img{
-
+        width: 50%
     }
-
 }
 @import '../../../Product/style/overview.scss';
 </style>

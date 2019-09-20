@@ -15,6 +15,7 @@ import echarts from 'plugins/echarts';
 import { formatNumber, formatTimeLabel } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 GPM毛利率 QPR品质合格率 CTR资金周转率 FAO固定资产占用率 LA库龄 PS盈利空间 PA盈利能力 PO支付能力1 PT支付能力2 DAR交期达成率 PSR产供比 CP产能 CS产能安全值 DR残品率
 const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','CS','DR'];
+const REVERSE_TARGET = ['C', 'SA','DR']; // C成本 SA库存额 DR残品率是反向指标
 export default {
     props: {
         id: String,
@@ -84,12 +85,13 @@ export default {
             const good = [], goodBottom = [], bad = [], badBottom = [], transparentBottom = [];
             let realClone = _.cloneDeep(real);
             let targetClone = _.cloneDeep(target);
+            // let  targetClone= [-1222,-1222,-1222];
+            // let realClone = [-100,-100,-100];
             // 单位是百分号需要乘100
             if (this.unit == "%") {
                 realClone = realClone.map(el => el * 100);
                 targetClone = targetClone.map(el => el * 100);
             }
-            // console.log(realClone, targetClone);
             for (let i = 0;i < hasTarget.length;i++) {
                 // value值转换为元  SUBJECT显示原值
                 if (_.includes(SUBJECT,subject)) {
@@ -104,31 +106,66 @@ export default {
                         hasTarget: hasTarget[i]
                     });
                 }
+
                 realItem = realClone[i];
                 targetItem = arr[i].value;
+
                 if (realItem >=0 && targetItem >= 0) {
-                    if (realItem >= targetItem) {
+                    //反向指标 REVERSE_TARGET
+                    if (_.includes(REVERSE_TARGET, subject)) {
+                        if (realItem >= targetItem) {
+                            bad.push([timeLabels[i],realItem - targetItem]);
+                            transparentBottom.push([timeLabels[i],targetItem]);
+                        } else if (realItem < targetItem) {
+                            // timeLabels[i]为x轴的name,锁定位置
+                            good.push([timeLabels[i],targetItem - realItem ]);
+                            transparentBottom.push([timeLabels[i],realItem]);
+                        }
+                    } else {
+                        if (realItem >= targetItem) {
                         // timeLabels[i]为x轴的name,锁定位置
-                        good.push([timeLabels[i],realItem - targetItem]);
-                        transparentBottom.push([timeLabels[i],targetItem]);
-                    } else if (realItem < targetItem) {
-                        bad.push([timeLabels[i],targetItem - realItem]);
-                        transparentBottom.push([timeLabels[i],realItem]);
+                            good.push([timeLabels[i],realItem - targetItem]);
+                            transparentBottom.push([timeLabels[i],targetItem]);
+                        } else if (realItem < targetItem) {
+                            bad.push([timeLabels[i],targetItem - realItem]);
+                            transparentBottom.push([timeLabels[i],realItem]);
+                        }
                     }
                 } else if (realItem > 0 && targetItem < 0) {
-                    good.push([timeLabels[i], realItem]);
-                    goodBottom.push([timeLabels[i], targetItem]);
-                } else if (targetItem > 0 && realItem < 0) {
-                    bad.push([timeLabels[i], targetItem]);
-                    badBottom.push([timeLabels[i], realItem]);
-                } else if (realItem < 0 && targetItem < 0) {
-                    if (realItem >= targetItem) {
-                        transparentBottom.push([timeLabels[i],realItem]);
-                        good.push([timeLabels[i],targetItem - realItem]);
-                    } else {
-                        transparentBottom.push([timeLabels[i],targetItem]);
-                        bad.push([timeLabels[i],realItem - targetItem]);
+                    if (_.includes(REVERSE_TARGET, subject)) {
+                        bad.push([timeLabels[i], targetItem]);
+                        badBottom.push([timeLabels[i], realItem]);
+                    }else{
+                        good.push([timeLabels[i], realItem]);
+                        goodBottom.push([timeLabels[i], targetItem]);
                     }
+                } else if (targetItem > 0 && realItem < 0) {
+                    if (_.includes(REVERSE_TARGET, subject)) {
+                        good.push([timeLabels[i], realItem]);
+                        goodBottom.push([timeLabels[i], targetItem]);
+                    }else{
+                        bad.push([timeLabels[i], targetItem]);
+                        badBottom.push([timeLabels[i], realItem]);
+                    }
+                } else if (realItem < 0 && targetItem < 0) {
+                    if (_.includes(REVERSE_TARGET, subject)) {
+                        if (realItem >= targetItem) {
+                            transparentBottom.push([timeLabels[i],realItem]);
+                            bad.push([timeLabels[i],targetItem - realItem]);
+                        } else {
+                            transparentBottom.push([timeLabels[i],targetItem]);
+                            good.push([timeLabels[i],realItem- targetItem ]);
+                        }
+                    } else {
+                        if (realItem >= targetItem) {
+                            transparentBottom.push([timeLabels[i],realItem]);
+                            good.push([timeLabels[i],targetItem - realItem]);
+                        } else {
+                            transparentBottom.push([timeLabels[i],targetItem]);
+                            bad.push([timeLabels[i],realItem - targetItem]);
+                        }
+                    }
+
                 }
             }
             const options = {
