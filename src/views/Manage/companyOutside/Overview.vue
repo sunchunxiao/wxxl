@@ -60,7 +60,7 @@
             <el-table
               stripe
               width="100%"
-              height="300"
+              height="400"
               :data="dialogData">
               <el-table-column
                 prop="eff"
@@ -100,7 +100,7 @@
                 prop="strategy"
                 label="分项得分">
                 <el-table-column
-                  prop=""
+                  prop="production_capacity"
                   min-width="100"
                   label="产能"
                   sortable>
@@ -128,6 +128,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column
+                  prop="price"
                   label="性价"
                   sortable>
                   <template
@@ -140,7 +141,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop=""
+                  prop="delivery"
                   label="交付"
                   sortable>
                   <template
@@ -153,7 +154,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop=""
+                  prop="effectiveness"
                   label="效率"
                   sortable>
                   <template
@@ -166,8 +167,9 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop=""
-                  label="服务">
+                  prop="service"
+                  label="服务"
+                  sortable>
                   <template
                     slot-scope="scope">
                     <div
@@ -178,8 +180,9 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop=""
-                  label="资金">
+                  prop="funds"
+                  label="资金"
+                  sortable>
                   <template
                     slot-scope="scope">
                     <div
@@ -190,8 +193,9 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop=""
-                  label="开发">
+                  prop="development"
+                  label="开发"
+                  sortable>
                   <template
                     slot-scope="scope">
                     <div

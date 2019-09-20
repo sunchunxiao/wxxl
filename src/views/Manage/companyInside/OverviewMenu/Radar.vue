@@ -8,7 +8,7 @@
           v-loading="loading"
           class="min-height-400">
           <Card v-if="orgradarArr.length">
-            <el-row class="margin-bottom-20 overview_title">商品部各细项指标评分</el-row>
+            <el-row class="margin-bottom-20 overview_title">{{ name }}各细项指标评分</el-row>
             <ManageRadar
               v-if="orgradarArr.length"
               :id="'select'"
@@ -106,15 +106,16 @@ export default {
             // val: {},
             newParams: {},
             sliderKey: "",
+            rank:''
         };
     },
     computed: {
-        ...mapGetters(['organizationTree', 'orgprogressArr', 'orgradarArr','', 'managelastParams','orgscore']),
+        ...mapGetters(['organizationTree', 'orgprogressArr', 'orgradarArr','', 'managelastParams','orgscore','detailrank']),
         hasTree () {
             return !_.isEmpty(this.organizationTree);
         },
         title(){
-            return this.name+' '+this.orgscore+'分';
+            return this.name+' '+this.orgscore + '分 ' + ' NO.'+ this.detailrank;
         }
     },
     watch: {
@@ -192,6 +193,7 @@ export default {
             }
             this.loading = true;
             API.GetRadar(params).then(res => {
+                this.$store.dispatch('SaveDetailRank', res.data.rank);
                 this.$store.dispatch('SaveOrgScore', res.data.tatal_score);
                 this.$store.dispatch('SaveOrgRadarArr', res.data.list);
             }).finally(() => {
