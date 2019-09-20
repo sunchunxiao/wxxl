@@ -35,7 +35,6 @@
           <div class="title">绩效未合格数 :{{ noStandard }} </div>
           <div class="tree_content">
             <div
-              @click="click"
               v-if="organizationTree.children"
               class="company">
               <span

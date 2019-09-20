@@ -274,7 +274,6 @@ const dataRank = [
                 label: {
                     normal:{
                         color: 'grey'
-
                     }
                 }
             },

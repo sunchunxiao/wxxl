@@ -6,6 +6,7 @@ import customer from './customer';
 import supply from './supply';
 import date from './date';
 import home from './home';
+import goods from './goodsPlan';
 
 const getters = {
     ...product,
@@ -15,7 +16,8 @@ const getters = {
     ...customer,
     ...supply,
     ...date,
-    ...home
+    ...home,
+    ...goods
 };
 
 export default getters;

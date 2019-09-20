@@ -6,6 +6,7 @@ import customer from './customer';
 import supply from './supply';
 import date from './date';
 import home from './home';
+import goods from './goodsPlan';
 
 export default {
     product,
@@ -15,5 +16,6 @@ export default {
     customer,
     supply,
     date,
-    home
+    home,
+    goods
 };

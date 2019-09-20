@@ -167,7 +167,9 @@ export default {
             this.loading = true;
             API.GetOrgRank(params).then(res => {
                 // console.log(111,res.data[0].loc);
-                this.$store.dispatch('SaveOrgPosArr', res.data[0].loc);
+                if (res.data[0].loc.length) {
+                    this.$store.dispatch('SaveOrgPosArr', res.data[0].loc);
+                }
                 this.$store.dispatch('SaveOrgRankArr', res.data);
             }).finally(() => {
                 this.loading = false;

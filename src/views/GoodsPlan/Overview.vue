@@ -5,16 +5,24 @@
         ref="child"
         @change="handleChange" />
     </el-row>
-    <el-row class="mgb10">
+    <el-row
+      class="mgb10"
+      :gutter="10">
       <el-col :span="24">
         <Card
           v-loading="loading"
           style="min-height:300px;">
-          <span>当前下单进度</span>
-          <ProgressBar
-            :id="`overviewNow`"
-            :y-axis="yAxisNow"
-            :data="planData['now_order_progress']" />
+          <div>首单下单进度</div>
+          <template v-for="(item, index) in goodNowDataArr">
+            <el-col
+              :key="index"
+              style="width:198px">
+              <Bar
+                v-if="goodNowDataArr.length"
+                :id="`${index}`"
+                :data="item" />
+            </el-col>
+          </template>
         </Card>
       </el-col>
     </el-row>
@@ -25,22 +33,34 @@
         <Card
           v-loading="loading"
           style="min-height:300px;">
-          <span>首单下单进度</span>
-          <ProgressBar
-            :id="`overviewFirst`"
-            :y-axis="yAxisFirst"
-            :data="planData['first_order_progress']" />
+          <div>首单下单进度</div>
+          <template v-for="(item, index) in goodFirstDataArr">
+            <el-col
+              :key="index"
+              style="width:198px">
+              <Bar
+                v-if="goodNowDataArr.length"
+                :id="`aa${index}`"
+                :data="item" />
+            </el-col>
+          </template>
         </Card>
       </el-col>
       <el-col :span="12">
         <Card
           v-loading="loading"
           style="min-height:300px;">
-          <span>返单下单进度</span>
-          <ProgressBar
-            :id="`overviewReturn`"
-            :y-axis="yAxisReturn"
-            :data="planData['return_order_progress']" />
+          <div>返单下单进度</div>
+          <template v-for="(item, index) in goodreturnDataArr">
+            <el-col
+              :key="index"
+              style="width:198px">
+              <Bar
+                v-if="goodreturnDataArr.length"
+                :id="`bb${index}`"
+                :data="item" />
+            </el-col>
+          </template>
         </Card>
       </el-col>
     </el-row>
@@ -126,13 +146,18 @@
 
 <script>
 import API from './api';
+import Bar from './bar';
 import Card from 'components/Card';
 import SelectFilter from './SelectFilter';
 import ProgressBar from './ProgressBar';
-
+import Slider from 'components/Slider';
+//vuex
+import { mapGetters } from 'vuex';
 export default {
     components: {
         Card,
+        Bar,
+        Slider,
         SelectFilter,
         ProgressBar,
     },
@@ -156,9 +181,18 @@ export default {
             seasonMonth:[],
         };
     },
-    computed: {},
+    computed: {
+        ...mapGetters([ 'goodNowDataArr','goodFirstDataArr','goodreturnDataArr']),
+        planData1(){
+            return this.planData;
+        }
+    },
     mounted() {},
-    watch: {},
+    watch: {
+        // planData(){
+
+        // }
+    },
     methods: {
         //获取货品计划数据
         getPlanData(form) {
@@ -170,6 +204,64 @@ export default {
                 this.planData["return_order_progress"] = res.data["return_order_progress"];
                 this.planData["department_order_progress"] = res.data["department_order_progress"];
                 this.planData["supplier_order_progress"] = res.data["supplier_order_progress"];
+
+                //当前
+                let nowOrder = this.planData["now_order_progress"];
+                let obj = {},obj1 = {},nowArr=[];
+                obj.subject_name = '下单件数';
+
+                obj.real = nowOrder['actual_order_num'];
+                obj.target = nowOrder['target_order_num'];
+                obj.progress = obj.real / obj.target;
+                obj.subject = 'JS';
+
+                obj1.subject_name = '下单款数';
+                obj1.real = nowOrder['actual_style_num'];
+                obj1.target = nowOrder['target_style_num'];
+                obj1.progress = obj1.real / obj1.target;
+                obj1.subject = 'JS';
+                nowArr.push(obj,obj1);
+                this.$store.dispatch('SaveGoodNowData', nowArr);
+
+                //首单下单进度
+                let firstOrder = this.planData["first_order_progress"];
+                let firstobj = {},firstobj1 = {},firstArr=[];
+                firstobj.subject_name = '首单件数';
+
+                firstobj.real = firstOrder['actual_order_num'];
+                firstobj.target = firstOrder['target_order_num'];
+                firstobj.progress = firstobj.real / firstobj.target;
+                firstobj.subject = 'JS';
+
+                firstobj1.subject_name = '首单款数';
+                firstobj1.real = firstOrder['actual_style_num'];
+                firstobj1.target = firstOrder['target_style_num'];
+                firstobj1.progress = firstobj1.real / firstobj1.target;
+                firstobj1.subject = 'JS';
+
+                firstArr.push(firstobj,firstobj1);
+                this.$store.dispatch('SaveGoodFirstData', firstArr);
+
+                //反单下单进度
+                let returnOrder = this.planData["return_order_progress"];
+                let returnobj = {},returnobj1 = {},returnArr=[];
+                returnobj.subject_name = '首单件数';
+                returnobj.real = returnOrder['actual_order_num'];
+                returnobj.target = returnOrder['target_order_num'];
+                returnobj.progress = returnobj.real / returnobj.target;
+
+                returnobj1.subject_name = '首单款数';
+                returnobj1.real = returnOrder['actual_style_num'];
+                returnobj1.target = returnOrder['target_style_num'];
+                returnobj1.progress = returnobj1.real / returnobj1.target;
+
+                returnArr.push(returnobj,returnobj1);
+                this.$store.dispatch('SaveGoodreturnData', returnArr);
+                // console.log(11,returnArr);
+
+                // obj.target = aa.target_total;
+                // obj.real = aa.actual_order_num;
+                // obj.progress = 0.9;
                 if(form.season === "春季"){
                     this.seasonMonth.length = 0;
                     this.seasonMonth.push("3月","4月","5月");

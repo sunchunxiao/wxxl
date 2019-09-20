@@ -31,6 +31,7 @@ export default {
             color: [],
             formatNumber: formatNumber,
             debounce: null,
+            dataIndex:0,
         };
     },
     computed: {
