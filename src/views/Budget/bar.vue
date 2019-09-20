@@ -227,7 +227,7 @@ export default {
                         name: subject_name,
                         itemStyle: {
                             normal: {
-                                color: "#2ae09e",
+                                color: "#fac090",
                             }
                         },
                         label: {

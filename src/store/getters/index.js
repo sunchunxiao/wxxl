@@ -7,6 +7,7 @@ import supply from './supply';
 import date from './date';
 import home from './home';
 import goods from './goodsPlan';
+import budgets from './budgets';
 
 const getters = {
     ...product,
@@ -17,7 +18,8 @@ const getters = {
     ...supply,
     ...date,
     ...home,
-    ...goods
+    ...goods,
+    ...budgets
 };
 
 export default getters;

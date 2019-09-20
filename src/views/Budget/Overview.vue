@@ -5,16 +5,24 @@
         ref="child"
         @change="handleChange" />
     </el-row>
-    <el-row class="mgb10">
+    <el-row
+      class="mgb10"
+      :gutter="10">
       <el-col :span="24">
         <Card
           v-loading="loading"
           style="min-height:300px;">
-          <span>当前下单进度</span>
-          <ProgressBar
-            :id="`overviewNow`"
-            :y-axis="yAxisNow"
-            :data="budgetData['now_order_progress']" />
+          <div>当前下单进度</div>
+          <template v-for="(item, index) in budgetsNowDataArr">
+            <el-col
+              :key="index"
+              style="width:50%">
+              <Bar
+                v-if="budgetsNowDataArr.length"
+                :id="`${index}`"
+                :data="item" />
+            </el-col>
+          </template>
         </Card>
       </el-col>
     </el-row>
@@ -76,22 +84,34 @@
         <Card
           v-loading="loading"
           style="min-height:300px;">
-          <span>首单预算使用</span>
-          <ProgressBar
-            :id="`overviewFirst`"
-            :y-axis="yAxisFirst"
-            :data="budgetData['first_order_progress']" />
+          <div>首单预算使用</div>
+          <template v-for="(item, index) in budgetsFirstDataArr">
+            <el-col
+              :key="index"
+              style="width:50%">
+              <Bar
+                v-if="budgetsNowDataArr.length"
+                :id="`aa${index}`"
+                :data="item" />
+            </el-col>
+          </template>
         </Card>
       </el-col>
       <el-col :span="12">
         <Card
           v-loading="loading"
           style="min-height:300px;">
-          <span>返单预算进度</span>
-          <ProgressBar
-            :id="`overviewReturn`"
-            :y-axis="yAxisReturn"
-            :data="budgetData['return_order_progress']" />
+          <div>返单预算进度</div>
+          <template v-for="(item, index) in budgetsreturnDataArr">
+            <el-col
+              :key="index"
+              style="width:50%">
+              <Bar
+                v-if="budgetsreturnDataArr.length"
+                :id="`bb${index}`"
+                :data="item" />
+            </el-col>
+          </template>
         </Card>
       </el-col>
     </el-row>
@@ -126,13 +146,18 @@
 
 <script>
 import API from './api';
+import Bar from './bar';
 import Card from 'components/Card';
 import SelectFilter from './SelectFilter';
 import ProgressBar from './ProgressBar';
+import Slider from 'components/Slider';
+import { mapGetters } from 'vuex';
 
 export default {
     components: {
         Card,
+        Bar,
+        Slider,
         SelectFilter,
         ProgressBar,
     },
@@ -156,11 +181,13 @@ export default {
             seasonMonth:[],
         };
     },
-    computed: {},
+    computed: {
+        ...mapGetters([ 'budgetsNowDataArr','budgetsFirstDataArr','budgetsreturnDataArr']),
+    },
     mounted() {},
     watch: {},
     methods: {
-        //获取货品计划数据
+        //获取货品预算数据
         getBudgetData(form) {
             this.loading = true;
             const params = {};
@@ -170,6 +197,60 @@ export default {
                 this.budgetData["return_order_progress"] = res.data["return_order_progress"];
                 this.budgetData["department_order_progress"] = res.data["department_order_progress"];
                 this.budgetData["supplier_order_progress"] = res.data["supplier_order_progress"];
+
+                //当前
+                let nowOrder = this.budgetData["now_order_progress"];
+                let obj = {},obj1 = {},nowArr=[];
+                obj.subject_name = '预算使用';
+                obj.real = nowOrder['actual_order_num'];
+                obj.target = nowOrder['target_order_num'];
+                obj.progress = obj.real / obj.target;
+                obj.subject = 'JS';
+
+                obj1.subject_name = '下单款数';
+                obj1.real = nowOrder['actual_style_num'];
+                obj1.target = nowOrder['target_style_num'];
+                obj1.progress = obj1.real / obj1.target;
+                obj1.subject = 'JS';
+                nowArr.push(obj1,obj);
+                this.$store.dispatch('SaveBudgetsNowData', nowArr);
+
+                //首单下单进度
+                let firstOrder = this.budgetData["first_order_progress"];
+                let firstobj = {},firstobj1 = {},firstArr=[];
+                firstobj.subject_name = '首单预算';
+
+                firstobj.real = firstOrder['actual_order_num'];
+                firstobj.target = firstOrder['target_order_num'];
+                firstobj.progress = firstobj.real / firstobj.target;
+                firstobj.subject = 'JS';
+
+                firstobj1.subject_name = '首单款数';
+                firstobj1.real = firstOrder['actual_style_num'];
+                firstobj1.target = firstOrder['target_style_num'];
+                firstobj1.progress = firstobj1.real / firstobj1.target;
+                firstobj1.subject = 'JS';
+
+                firstArr.push(firstobj1,firstobj);
+                this.$store.dispatch('SaveBudgetsFirstData', firstArr);
+
+                //返单预算进度
+                let returnOrder = this.budgetData["return_order_progress"];
+                let returnobj = {},returnobj1 = {},returnArr=[];
+                returnobj.subject_name = '返单预算';
+                returnobj.real = returnOrder['actual_order_num'];
+                returnobj.target = returnOrder['target_order_num'];
+                returnobj.progress = returnobj.real / returnobj.target;
+
+                returnobj1.subject_name = '返单款数';
+                returnobj1.real = returnOrder['actual_style_num'];
+                returnobj1.target = returnOrder['target_style_num'];
+                returnobj1.progress = returnobj1.real / returnobj1.target;
+                returnobj1.subject = 'FD';
+
+                returnArr.push(returnobj1,returnobj);
+                this.$store.dispatch('SaveBudgetsreturnData', returnArr);
+
                 if(form.season === "春季"){
                     this.seasonMonth.length = 0;
                     this.seasonMonth.push("3月","4月","5月");
