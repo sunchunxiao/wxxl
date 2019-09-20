@@ -12,9 +12,12 @@
 import echarts from 'plugins/echarts';
 import { formatNumber } from 'utils/common';
 // const SUBJECT = ['ROI','POR','ITO','RY'];
+//vuex
+import { mapGetters } from 'vuex';
 export default {
     props: {
         id: String,
+        clickId:String,
         data: Array,
         height: {
             type: String,
@@ -35,6 +38,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters(['orgid']),
         heightValue() {
             if (!this.data) {
                 return this.height;
@@ -52,12 +56,7 @@ export default {
         this.renderChart(this.data);
         this.debounce = _.debounce(this.chart.resize, 1000);
         window.addEventListener('resize', this.debounce);
-        // let _this = this;
-        // this.chart.on('click', function(params) {
-        //     const select_id = params.seriesId.split(",");
-        //     const id = select_id[params.dataIndex];
-        //     _this.$emit('id', id);
-        // });
+
     },
     beforeDestroy () {
         window.removeEventListener('resize', this.debounce);
@@ -78,15 +77,49 @@ export default {
     },
     methods: {
         renderChart(data) {
+            // let aa = data.find(el => {
+            //     return el.org_id == this.orgid;
+            // });
+            // this.dataIndex = this.data.indexOf(aa);
+            // // }
+            // this.chart.dispatchAction({
+            //     type: 'highlight',
+            //     dataIndex: this.dataIndex,
+            // });
             let arrName = [],org_id = [],score = [];
             for(let i of data) {
                 arrName.push(i.name);
                 org_id.push(i.org_id);
-                score.push({ value:i.score });
+                if(this.orgid == i.org_id) {
+                    score.push(
+                        {
+                            value:i.score,
+                            label: {
+                                normal:{
+                                    color: 'rgba(255,255,188,0.9)',
+                                    fontWeight:'bold',
+                                    fontSize:15
+                                },
+                            },
+                        }
+                    );
+                }else{
+                    score.push(
+                        {
+                            value:i.score,
+                            // label: {
+                            //     normal:{
+                            //         color: 'rgba(0,0,0,0.9)',
+                            //         fontSize:14
+                            //     }
+                            // },
+                        }
+                    );
+                }
             }
-            score = _.sortBy(score, function(item) {
-                return item.value;
-            });
+            // score = _.sortBy(score, function(item) {
+            //     return item.value;
+            // });
             const options = {
                 tooltip : {
                     // trigger: 'axis',
@@ -122,6 +155,7 @@ export default {
                     },
                 },
                 yAxis: {
+                    inverse: true,
                     z: 3,
                     type: 'category',
                     axisTick: {
@@ -155,6 +189,10 @@ export default {
                     emphasis: {
                         itemStyle: {
                             // color: "rgba(6,255,2,1)"
+                            // color:function(params) {
+                            //     console.log(1111,params);
+                            //     return '#fff';
+                            // },
                         }
                     },
                     label: {

@@ -16,12 +16,8 @@
               <el-col
                 :span="10"
                 class="">
-                <!-- <el-row
-                  style="text-align:center;font-size:14px"
-                  class="margin-bottom-20 overview_title">{{ name }}绩效排序</el-row> -->
                 <SortStructure
                   v-if="orgsortArr.bro"
-                  @id="structureID"
                   id="SortStructure1"
                   :data="orgsortArr.bro" />
               </el-col>
@@ -31,13 +27,10 @@
               <el-col
                 :span="10"
                 class="">
-                <!-- <el-row
-                  style="text-align:center;font-size:14px"
-                  class="margin-bottom-20 overview_title">部门绩效排序</el-row> -->
                 <SortStructure
                   v-if="orgsortArr.son"
-                  @id="structureID"
                   id="SortStructure"
+                  :click-id='cid'
                   :data="orgsortArr.son" />
               </el-col>
             </el-row>
@@ -112,9 +105,6 @@ export default {
     methods: {
         clickIndex(i, idx) {
             this[`index${i}`] = idx;
-        },
-        structureID(data) {
-            this.$emit('changeCid', data);
         },
         allRequest() {
             if (!this.cid) {

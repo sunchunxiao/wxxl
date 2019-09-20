@@ -1,5 +1,6 @@
 const organization = {
     orgscore: state => state.organization.orgscore,
+    orgid: state => state.organization.orgid,
     detailrank: state => state.organization.detailrank,
     orggossipArr: state => state.organization.orggossipArr,
     organizationTree: state => state.organization.orgtree,

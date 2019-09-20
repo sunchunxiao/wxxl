@@ -41,6 +41,12 @@ export default {
             return score+'分';
         },
         renderChart(data) {
+            let yData = [];
+            if(this.id == 'selectTreeManage'){
+                yData = [];
+            }else{
+                yData = ['实际', '目标'];
+            }
             let transSubjects = [],radarValues = [],radarValuesTarget = [];
             if (this.id =='outRadar') {
                 transSubjects = data[0].names;
@@ -64,7 +70,7 @@ export default {
                     width:10,
                     height:10,
                     top: 60,
-                    data: ['实际', '目标'],
+                    data: yData,
                     right:'20%',
                     // textStyle: {
                     //     color:'rgb(255,255,255)',

@@ -262,6 +262,7 @@ export default {
             this.getTreePrograss();
         },
         click() {
+            this.$store.dispatch('SaveOrgId', this.organizationTree.cid);
             if (this.cid === this.organizationTree.cid) {
                 return;
             } else {
@@ -417,7 +418,8 @@ export default {
         },
         handleNodeClick(data) {
             this.name = data.name;
-
+            this.$store.dispatch('SaveOrgId', data.org_id);
+            // this.cid = data.org_id;
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {

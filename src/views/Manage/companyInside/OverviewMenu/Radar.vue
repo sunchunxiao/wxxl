@@ -11,7 +11,7 @@
             <el-row class="margin-bottom-20 overview_title">{{ name }}各细项指标评分</el-row>
             <ManageRadar
               v-if="orgradarArr.length"
-              :id="'select'"
+              :id="'selectTreeManage'"
               :data="orgradarArr" />
             <el-row :gutter="20">
               <div class="radarTabel">
