@@ -235,7 +235,7 @@ const MENUDATA = [
                 ]
             },
             {
-                title: "供应链效率",
+                title: "供应效率",
                 path: "/supplyChain",
                 icon: "7.png",
                 children: [

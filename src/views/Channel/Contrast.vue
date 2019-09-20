@@ -43,7 +43,7 @@
               class="select clean_select">取消全部</span>
           </div>
           <div class="title_target">
-            <span>渠道营业利润额目标未达标数: <span class="title">{{ noStandardNum }}</span></span>
+            <span>渠道营业利润额目标未达成数: <span class="title">{{ noStandardNum }}</span></span>
           </div>
           <div class="tree_content">
             <div class="company">

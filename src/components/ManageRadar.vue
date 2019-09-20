@@ -41,11 +41,11 @@ export default {
             return score+'分';
         },
         renderChart(data) {
-            let transSubjects = [],radarValues = [],radarValues1 = [];
-            if(this.id =='outRadar') {
+            let transSubjects = [],radarValues = [],radarValuesTarget = [];
+            if (this.id =='outRadar') {
                 transSubjects = data[0].names;
                 radarValues = data[0].scores;
-                radarValues1 = data[0].target;
+                radarValuesTarget = data[0].target;
             } else {
                 transSubjects = data.map(el => el.name);
                 radarValues = data.map(el => el.score);
@@ -60,11 +60,23 @@ export default {
                 });
             }
             const options = {
+                legend: {
+                    width:10,
+                    height:10,
+                    top: 60,
+                    data: ['实际', '目标'],
+                    right:'20%',
+                    // textStyle: {
+                    //     color:'rgb(255,255,255)',
+                    //     fontSize:16
+                    // }
+                },
                 tooltip: {
                     formatter: function(params) {
                         let result =[];
+                        result = params.seriesName +"</br>";
                         for (let i=0; i<params.name.length; i++) {
-                            result += params.name[i] + " : " + _this.getRank(params.value[i]) +"</br>";
+                            result +=params.marker+ params.name[i] + " : " + _this.getRank(params.value[i]) +"</br>";
                         }
                         return result;
                     },
@@ -98,7 +110,7 @@ export default {
                 },
                 series: [
                     {
-                        name: '',
+                        name: '实际',
                         type: 'radar',
                         data : [
                             {
@@ -106,7 +118,7 @@ export default {
                                 name: transSubjects,
                                 label: {
                                     normal: {
-                                        show: true,
+                                        show: false,
                                         formatter:function(params) {
                                             return params.value;
                                         },
@@ -115,6 +127,7 @@ export default {
                                 },
                                 areaStyle: {
                                     normal: {
+                                        show: true,
                                         color: 'rgba(0, 0, 0, 0)'
                                     }
                                 }
@@ -135,18 +148,18 @@ export default {
                             }
                         },
                     },{
-                        name: '',
+                        name: '目标',
                         type: 'radar',
                         data : [
                             {
-                                value : radarValues1,
+                                value : radarValuesTarget,
                                 name: transSubjects,
                                 label: {
                                     normal: {
-                                        show: true,
-                                        formatter:function(params) {
-                                            return params.value;
-                                        },
+                                        show: false,
+                                        // formatter:function(params) {
+                                        //     return params.value;
+                                        // },
                                         color:'#000',
                                     },
                                 },

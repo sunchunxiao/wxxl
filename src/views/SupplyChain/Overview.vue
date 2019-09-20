@@ -32,7 +32,7 @@
           :span="5"
           :class="{'tree_block_none':isCollapse}"
           class="tree_container">
-          <div class="title">供应产能目标未达标数 :{{ noStandard }} </div>
+          <div class="title">供应产能目标未达成数 :{{ noStandard }} </div>
           <div class="tree_content">
             <div
               @click="click"
