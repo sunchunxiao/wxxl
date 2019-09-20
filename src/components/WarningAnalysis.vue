@@ -53,6 +53,19 @@ export default {
     mounted() {
         this.chart = echarts.init(document.getElementById(`heatmap-${this.id}`));
         this.renderChart(this.data);
+        let _this = this;
+        this.chart.on('timelinechanged', function() {
+            for(let i in this.data){
+                let aa = i.data.find(el => {
+                    return el[0] == this.pos[0] && el[1] == this.pos[1];
+                });
+                _this.dataIndex = i.data.indexOf(aa);
+            }
+            _this.chart.dispatchAction({
+                type: 'highlight',
+                dataIndex: _this.dataIndex,
+            });
+        });
         this.debounce = _.debounce(this.chart.resize, 1000);
         window.addEventListener("resize",this.debounce);
     },

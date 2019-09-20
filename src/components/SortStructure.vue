@@ -143,7 +143,7 @@ export default {
                             if (params.value>=85) {
                                 return 'rgba(3,197,1,0.7)';
                             } else if (params.value>=60 && params.value<85) {
-                                return '#F2C811';
+                                return 'rgba(255,255,3,0.5)';
                             } else if (params.value <60 ) {
                                 return 'rgba(255,51,51,0.7)';
                             } else {
