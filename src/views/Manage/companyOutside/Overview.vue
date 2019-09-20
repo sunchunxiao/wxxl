@@ -2,112 +2,210 @@
   <div class="container">
     <el-row
       class="time_header">
-      <!-- 展开按钮 -->
-      <div
-        class="contrast_btn"
-        @click="handleCollpase">
-        <img
-          v-if="isCollapse"
-          src="../../../assets/collapse1.png"
-          alt="">
-        <img
-          v-else
-          src="../../../assets/collapse.png"
-          alt="">
-      </div>
       <search-bar
         ref="child"
         @search="handleSearch"
         url="/product/search"
         placeholder="产品编号/产品名称"
         v-model="searchBarValue"
-        :pt-options="['日', '周', '月', '季', '年']" />
+        :pt-options="[ '月', '季']" />
     </el-row>
-    <div class="overview">
-      <el-row
-        v-if="productTree"
-        type="flex"
-        class="content_row">
-        <el-col
-          :span="5"
-          :class="{'tree_block_none':isCollapse}"
-          class="tree_container">
-          <div class="title">毛利润额目标未达标数 :{{ noStandard }} </div>
-          <div class="tree_content">
-            <div
-              @click="click"
-              v-if="productTree.children"
-              class="company">
-              <span
-                :class="['left','label',
-                         {'is-active-zero':!(calculatePercent(treeClone.real_total, treeClone.target_total).percent) && activeCid == treeClone.cid}]">
-                {{ treeClone.name }}
-              </span>
-              <div
-                :class="{comprogress: true, 'is-active': activeCid == treeClone.cid,'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-                :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
-            </div>
-            <el-tree
-              ref="tree"
-              :data="treeClone.children"
-              empty-text="正在加载"
-              node-key="cid"
-              :expand-on-click-node="false"
-              :props="defaultProps"
-              :default-expanded-keys="nodeArr"
-              @node-expand="nodeExpand"
-              @node-click="handleNodeClick">
-              <span
-                class="custom-tree-node"
-                slot-scope="{ node, data }">
-                <el-tooltip
-                  class="item"
-                  effect="dark"
-                  placement="right">
-                  <div slot="content">
-                    <div class="margin-bottom-5 ">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
-                    <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
-                    <div
-                      v-if="data.children"
-                      class="margin-bottom-5">宽度 : {{ data.children.length }}</div>
-                  </div>
-                  <span class="label">
-                    <span
-                      :class="['label-left',
-                               {'is-active-zero':!(calculatePercent(data.real_total, data.target_total).percent) && activeCid == data.cid}]">{{ data.name }}</span>
-                  </span>
-                </el-tooltip>
-                <div
-                  :class="{progress: true, 'is-active': activeCid === data.cid, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
-                  :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
-              </span>
-            </el-tree>
+    <div class="overview outshaow">
+      <div
+        class="shaow"
+        @click="handleShaowClick"
+        v-show="showDialog" />
+      <Card>
+        <el-row class="margin-bottom-20 overview_title manage_title">
+          <div>
+            <template>
+              供应商等级
+              <el-select
+                v-model="valueRank"
+                @change="handleSelectChange('等级',valueRank)"
+                placeholder="请选择">
+                <el-option
+                  v-for="item in optionsRank"
+                  :key="item.type"
+                  :label="item.name"
+                  :value="item.type" />
+              </el-select>
+            </template>
           </div>
-        </el-col>
-        <el-col
-          class="common-overflow"
-          :span="19">
-          外部合作绩效管理
-          <!-- <div class="common-wrap">
-            <span
-              class="span"
-              :key="item.id"
-              v-for="item in tabs"
-              :class="{'bacground':currView==item.id}"
-              @click="handleClick(item.id)"><span class="dot" />{{ item.value }}</span>
-          </div> -->
-          <!-- <component
-            @changeCid='handleChangeCid'
-            :cid="cid"
-            :val="val"
-            :is="currentTabComponent" /> -->
-        </el-col>
-      </el-row>
-      <el-row
-        v-else
-        class="overview_select">
-        暂无数据
-      </el-row>
+          <div class="supply_left">
+            <template>
+              供应商名称
+              <el-select
+                v-model="valueName"
+                @change="handleSelectChange('名称',valueName)"
+                placeholder="请选择">
+                <el-option
+                  v-for="item in optionsName"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id" />
+              </el-select>
+            </template>
+          </div>
+        </el-row>
+        <ManageRadar
+          v-if="orggossipArr.length"
+          :id="'outRadar'"
+          :data="orggossipArr" />
+        <!-- 表格 -->
+        <div class="track">
+          <div
+            class="data_container"
+            v-show="showDialog">
+            <el-table
+              stripe
+              width="100%"
+              height="300"
+              :data="dialogData">
+              <el-table-column
+                prop="eff"
+                label="策略" />
+            </el-table>
+          </div>
+          <div
+            v-loading="loading"
+            class="table_container">
+            <!-- <div class="title">策略跟踪和策略应用</div> -->
+            <el-table
+              :cell-style="changeCellStyle"
+              :data="optionScore"
+              stripe>
+              <el-table-column
+                type="index"
+                width="50px"
+                label="序号" />
+              <el-table-column
+                prop="type_name"
+                label="供应商等级" />
+              <el-table-column
+                prop="name"
+                label="供应商名称" />
+              <el-table-column
+                label="综合得分">
+                <template
+                  slot-scope="scope">
+                  <div
+                    @click="handleCountUseClick($event, scope.row,'comprehensive')"
+                    class="name-wrapper cell_count count_use">
+                    {{ scope.row.comprehensive }}
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="strategy"
+                label="分项得分">
+                <el-table-column
+                  prop=""
+                  min-width="100"
+                  label="产能"
+                  sortable>
+                  <template
+                    slot-scope="scope">
+                    <div
+                      @click="handleCountUseClick($event, scope.row,'production_capacity')"
+                      class="name-wrapper cell_count count_use">
+                      {{ scope.row.production_capacity }}
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="quality"
+                  min-width="100"
+                  label="品质"
+                  sortable>
+                  <template
+                    slot-scope="scope">
+                    <div
+                      @click="handleCountUseClick($event, scope.row,'quality')"
+                      class="name-wrapper cell_count count_use">
+                      {{ scope.row.quality }}
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="性价"
+                  sortable>
+                  <template
+                    slot-scope="scope">
+                    <div
+                      @click="handleCountUseClick($event, scope.row,'price')"
+                      class="name-wrapper cell_count count_use">
+                      {{ scope.row.price }}
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop=""
+                  label="交付"
+                  sortable>
+                  <template
+                    slot-scope="scope">
+                    <div
+                      @click="handleCountUseClick($event, scope.row,'delivery')"
+                      class="name-wrapper cell_count count_use">
+                      {{ scope.row.delivery }}
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop=""
+                  label="效率"
+                  sortable>
+                  <template
+                    slot-scope="scope">
+                    <div
+                      @click="handleCountUseClick($event, scope.row,'effectiveness')"
+                      class="name-wrapper cell_count count_rate">
+                      {{ scope.row.effectiveness }}
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop=""
+                  label="服务">
+                  <template
+                    slot-scope="scope">
+                    <div
+                      @click="handleCountUseClick($event, scope.row,'service')"
+                      class="name-wrapper cell_count count_rate">
+                      {{ scope.row.service }}
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop=""
+                  label="资金">
+                  <template
+                    slot-scope="scope">
+                    <div
+                      @click="handleCountUseClick($event, scope.row,'funds')"
+                      class="name-wrapper cell_count count_rate">
+                      {{ scope.row.funds }}
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop=""
+                  label="开发">
+                  <template
+                    slot-scope="scope">
+                    <div
+                      @click="handleCountUseClick($event, scope.row,'development')"
+                      class="name-wrapper cell_count count_rate">
+                      {{ scope.row.development }}
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
+      </Card>
     </div>
   </div>
 </template>
@@ -116,120 +214,73 @@
 import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
-import viewRadar from './OverviewMenu/Radar.vue';
-import Diff from './OverviewMenu/Diff.vue';
-import Trend from './OverviewMenu/Trend.vue';
-import Structure from './OverviewMenu/Structure.vue';
-import Rank from './OverviewMenu/Rank.vue';
+import ManageRadar from 'components/ManageRadar';
 
-//tree 百分比计算
-import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
-const OVER_TABS = [{
-    id: 'reach',
-    value: '目标达成情况总览'
-},{
-    id: 'diff',
-    value: '目标-实际-差异趋势分析'
-},{
-    id: 'trend',
-    value: '同比环比趋势分析'
-},{
-    id: 'structure',
-    value: '比例结构与平均值对比分析'
-},{
-    id: 'rank',
-    value: '智能评选和智能策略'
-}];
-const TREE_PROPS = {
-    children: 'children',
-    label: 'name'
-};
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
+
 export default {
     components: {
-        "reach": viewRadar,
-        "diff": Diff,
-        "trend": Trend,
-        "structure": Structure,
-        "rank": Rank,
         Card,
         SearchBar,
+        ManageRadar
     },
     data () {
         return {
+            optionsRank:[],
+            optionsName:[],
+            optionScore:[],
+            optionScoreRadar:{},
             form: {
                 pt: '', // 周期类型
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
             //tree
-            cid: '',
             pt: '',
             //js
-            error: error,
-            find: find,
-            preOrder: preOrder,
-            addProperty: addProperty,
-            calculatePercent: calculatePercent,
-            defaultProps: TREE_PROPS,
             loading: false,
             // stragety
             val: {},
-            nodeArr: [],
             searchBarValue: {
                 pt: '',
                 sDate: '',
                 eDate: ''
             },
-            treeClone: {},
             changeDate: {},
-            findFatherId: '',
             //views
-            tabs: OVER_TABS,
             currView: '',
-            style: 0,
-            isCollapse: false,
-            treeProgressLoading: true
+            valueRank: 1,
+            valueName: '0',
+            filtersLevel: [],
+            filtersSubject: [],
+            filtersRank: [],
+            filtersInfo: [],
+            total: 0,
+            level: '',
+            inf_id: '',
+            rank: '',
+            subject: '',
+            sort: '',
+            // filterArr: [],
+            optionScoreAll: [],
+            dialogType: "",
+            showDialog: false,
         };
     },
     computed: {
-        ...mapGetters(['productTree']),
-        hasTree () {
-            return !_.isEmpty(this.productTree);
-        },
-        currentTabComponent: function() {
-            return this.currView;
-        },
-        activeCid() {
-            return this.cid;
-        },
-        noStandard() {
-            let numArr = [];
-            if (this.cid) {
-                //找节点
-                let obj = this.preOrder([this.treeClone], this.cid);
-                if (obj.children) {
-                    for (let i of obj.children) {
-                        if (i.real_total && i.target_total) {
-                            const bool = this.calculatePercent(i.real_total,i.target_total).largerThanOne;
-                            if (!bool) {
-                                numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
-                            }
-                        } else if (!this.treeProgressLoading) {
-                            numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
-                        } else {
-                            return;
-                        }
-                    }
-                }
-            }
-            return numArr.length;
+        ...mapGetters(['orgradarArr','orggossipArr']),
+        dialogData() {
+            let optionScore = this.optionScoreAll.map(el=>{
+                let obj = {};
+                obj.eff= el;
+                return obj;
+            });
+            return optionScore;
         }
     },
     watch: {
-        cid() {
+        val() {
             this.allRequest();
         }
     },
@@ -238,105 +289,79 @@ export default {
         this.currView = this.$route.params.name;
         //获取初始时间
         this.changeDate = this.searchBarValue;
-        if (!this.hasTree) {
-            this.$nextTick(() => {
-                this.getTree();
-            });
-        } else {
-            this.treeClone = _.cloneDeep(this.productTree);
-            this.cid = this.productTree.cid;
-            this.addProperty([this.treeClone]);
-        }
+        this.getRank();
+        // this.getOrgStrategy();
+        // this.getFliters();
     },
     methods: {
-        handleChangeCid(cid) {
-            this.cid = cid;
-            this.nodeArr = [];
-            this.nodeArr.push(this.cid);
-            this.$nextTick(() => {
-                this.$refs.tree.setCurrentKey(this.cid); // tree元素的ref 绑定的node-key
+        changeCellStyle({ row,columnIndex }) {
+            // console.log(row, column, rowIndex, columnIndex );
+            if(columnIndex == 3){
+                if(row.comprehensive>=85){
+                    return 'color:rgba(3,197,1,0.7)';
+                } else if(row.comprehensive<85&&row.comprehensive>=60){
+                    return 'color:rgba(0,0,0,1)';
+                }else if(row.comprehensive<60){
+                    return 'color:rgba(255,51,51,0.7)';
+                }
+            }
+        },
+        handleSelectChange(typeName,value) {
+            if (typeName=='等级') {
+                this.getName(value);
+            }
+            // } else {
+            this.getScore(this.valueRank,this.valueName);
+            this.getGossip(this.valueRank,this.valueName);
+            // }
+        },
+        getGossip(type,id) {
+            const params = {
+                type: type,
+                id: id,
+                pt: this.getPt(),
+                ...this.getPeriodByPt(),
+            };
+            API.GetSupplyGossip(params).then(res => {
+                this.$store.dispatch('SaveOrgGossipArr', [res.data]);
+            }).finally(() => {
+                this.loading = false;
             });
         },
-        handleCollpase () {
-            this.isCollapse = !this.isCollapse;
-            setTimeout(() =>{
-                echartAndSliderResize();
-            }, 300);
+        getScore(type,id) {
+            const params = {
+                type: type,
+                id: id,
+                pt: this.getPt(),
+                ...this.getPeriodByPt(),
+            };
+            API.GetSupplyScore(params).then(res => {
+                this.optionScore = res.data;
+            }).finally(() => {
+                this.loading = false;
+            });
         },
-        handleClick(id) {
-            this.currView = id;
-            this.$router.push(`/applyScene/manage/companyOutsideManage/overview/${id}`);
+        getName(type) {
+            const params = {
+                type:type
+            };
+            API.GetSupplyList(params).then(res => {
+                this.optionsName = res.data;
+            });
+        },
+        getRank() {
+            API.GetSupplyRank().then(res => {
+                this.optionsRank = res.data;
+                this.getName(1);
+                this.getScore(this.valueRank,this.valueName);
+                this.getGossip(this.valueRank,this.valueName);
+            }).finally(() => {
+                this.loading = false;
+            });
         },
         allRequest() {
-            this.getTreePrograss();
-        },
-        click() {
-            if (this.cid === this.productTree.cid) {
-                return;
-            } else {
-                //点击发送请求清除搜索框
-                this.$refs.child.clearKw();
-                this.cid = this.productTree.cid;
-            }
-        },
-        findParent(node,cid) {//找父节点id
-            let hasfatherCid = [];
-            this.find(cid, node, hasfatherCid);
-            for (let i of hasfatherCid) {
-                this.getTreePrograss(i);
-            }
-        },
-        //树结构
-        getTree() {
-            const params = {
-                subject: SUBJECT,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-            };
-            API.GetProductTree(params).then(res => {
-                //选择的日期没有数据,res.tree可能为null
-                if (res.tree) {
-                    if (!this.productTree || !this.productTree.cid) {
-                        this.cid = res.tree.cid;
-                    }
-                    this.treeClone = _.cloneDeep(res.tree);
-                    this.addProperty([this.treeClone]);
-                }
-                this.$store.dispatch('SaveProductTree', res.tree);
-            });
-        },
-        //获取百分比数据
-        getTreePrograss(cid) {
-            let id;
-            if (cid) {
-                id = cid;
-            } else {
-                id = this.cid;
-            }
-            const params = {
-                subject: SUBJECT,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-                nid: id
-            };
-            this.treeProgressLoading = true;
-            API.GetProductTreeProduct(params).then(res => {
-                let obj = this.preOrder([this.treeClone], id);
-                if (obj.cid === id) {
-                    obj.hasData = true;//插入数据的hasData为true
-                    obj.real_total = res.data[id].real;
-                    obj.target_total = res.data[id].target;
-                }
-                if (obj.children) {
-                    for (let i of obj.children) {
-                        if (_.has(res.data, i.cid)) {
-                            i.real_total = res.data[i.cid].real;
-                            i.target_total = res.data[i.cid].target;
-                        }
-                    }
-                }
-                this.treeProgressLoading = false;
-            });
+            this.getScore(this.valueRank,this.valueName);
+            this.getGossip(this.valueRank,this.valueName);
         },
         getPt() {
             const {
@@ -387,55 +412,163 @@ export default {
             }
         },
         handleSearch(val) {
-            this.findFatherId = val.cid;
-            this.nodeArr = [];
             this.val = val;
-            if (!val.cid) {
-                if (this.cid) {//数据tree不为null时
-                    if (this.cid !== this.productTree.cid) {
-                        this.cid = this.productTree.cid;
-                        this.treeClone = _.cloneDeep(this.productTree);
-                    } else {
-                        //公司根节点
-                        this.allRequest();
-                    }
+            //搜索相同的id,改变时间
+            if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
+                this.allRequest();
+                this.treeClone = _.cloneDeep(this.productTree);
+            }
+            this.changeDate = this.searchBarValue;
+        },
+        handleShaowClick() {
+            this.showDialog = false;
+            for (let i of this.trNodes) {
+                i.removeChild(i.childNodes[1]);
+            }
+        },
+        cloneTr($event) {
+            let targetClassName = $event.target.className;
+            $event.path[3].childNodes.forEach((tdNodes,index) => {
+                let cloneCellNodes = tdNodes.childNodes[0].cloneNode(true);
+                let className = cloneCellNodes.className += " clone-cell";
+                if (index == 0) {
+                    className += " border-left";
+                } else if (index == $event.path[3].childNodes.length - 1) {
+                    className += " border-right";
+                }
+                let targetDom = cloneCellNodes.getElementsByClassName(targetClassName)[0];
+                if (targetDom) {
+                    targetDom.className = targetClassName + " active";
+                }
+                cloneCellNodes.className = className;
+                tdNodes.appendChild(cloneCellNodes);
+            });
+            this.trNodes = $event.path[3].childNodes;
+        },
+        handleCountUseClick($event, row,type) {
+            this.cloneTr($event);
+            this.showDialog = true;
+            this.show(row,type);
+        },
+        // handleCountEff($event, row) {
+        //     this.cloneTr($event);
+        //     this.showDialog = true;
+        //     this.showEff(row);
+        // },
+        sortChange(val) {
+            this.optionScore = this.optionScore;
+            let order;
+            if (val.prop && val.order) {
+                if (val.order === "ascending") {
+                    order = 'asc';
                 } else {
-                    this.getTree();//数据tree为空时,没有id
+                    order = 'desc';
                 }
-            } else {//精确搜索
-                //搜索相同的id,改变时间
-                if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
-                    this.allRequest();
-                    this.treeClone = _.cloneDeep(this.productTree);
-                }
-                this.changeDate = this.searchBarValue;
-                this.cid = val.cid;
-                this.findParent([this.treeClone], this.findFatherId);
-                this.nodeArr.push(val.cid);
-                this.$nextTick(() => {
-                    this.$refs.tree.setCurrentKey(val.cid); // tree元素的ref 绑定的node-key
-                });
+                this.sort = val.prop + ':' + order;
             }
         },
-        nodeExpand(data) {
-            this.cid = data.cid;
+        show(val,type) {
+            this.optionScoreAll = [];
+            const params = {
+                item_type: type,
+                score: parseInt(val[type])
+            };
+            API.GetOrgStrategy(params).then(res => {
+                this.optionScoreAll = res.data;
+            });
         },
-        handleNodeClick(data) {
-            if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
-                this.$refs.child.clearKw();
-                if (this.cid === data.cid) {
-                    return;
-                }
-                this.cid = data.cid;
-            } else {
-                this.error('请选择日期');
-            }
+        // getFliters() {
+        //     API.GetOrgFilter().then(res => {
+        //         this.filtersLevel = res.level;
+        //         this.filtersSubject = res.subject;
+        //         this.filtersRank = res.rank;
+        //         this.filtersInfo = res.package;
+        //     });
+        // },
+        getOrgStrategy() {
+            this.loading = true;
+            const params = {
+                page: this.currentPage,
+                limit: 10,
+                level: this.level,
+                subject: this.subject,
+                rank: this.rank,
+                inf_id: this.inf_id,
+                sort: this.sort
+            };
+            API.GetOrgStrategiesTrack(params).then(res => {
+                this.optionScore = res.data;
+                this.total = res.total;
+            }).finally(() => {
+                this.loading = false;
+            });
         },
+        // handleCurrentChange(val) {
+        //     this.loading = true;
+        //     this.currentPage = val;
+        //     const params = {
+        //         page: this.currentPage,
+        //         limit: 10,
+        //         level: this.level,
+        //         subject: this.subject,
+        //         rank: this.rank,
+        //         inf_id: this.inf_id,
+        //         sort: this.sort
+        //     };
+        //     API.GetOrgStrategiesTrack(params).then(res => {
+        //         this.optionScore = res.data;
+        //     }).finally(() => {
+        //         this.loading = false;
+        //     });
+        // }
     }
 };
 </script>
 
 <style lang="scss">
+.outshaow{
+    position: relative;
+    .shaow {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        opacity: 0.5;
+        z-index: 1;
+        background: white;
+    }
+    .track .table_container .el-table .el-table__row .cell:not(.clone-cell) .cell_count{
+        text-decoration:none;
+    }
+    tbody > tr{
+            td {
+                border-top: 1px solid transparent;
+                border-bottom: 1px solid transparent;
+                &:first-child {
+                    border-left: 1px solid transparent;
+                }
+                &:last-child {
+                    border-right: 1px solid transparent;
+                }
+            }
+            &:hover {
+                td {
+                    border-color: #f5f7fa!important;
+                }
+            }
+        }
+}
+.manage_title {
+    display: flex;
+    justify-content: left;
+    .supply_left{
+        margin-left: 30px
+    }
+}
+.el-table--border{
+    border-bottom: 1px solid #ebeef5;
+}
 @import '../../Product/style/overview.scss';
-@import '../../../style/tree.scss';
+@import '../../Product/style/track.scss'
 </style>

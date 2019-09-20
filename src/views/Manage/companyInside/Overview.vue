@@ -18,25 +18,25 @@
       <search-bar
         ref="child"
         @search="handleSearch"
-        url="/product/search"
-        placeholder="产品编号/产品名称"
+        url="/org/search"
+        placeholder="组织编号/组织名称"
         v-model="searchBarValue"
-        :pt-options="['日', '周', '月', '季', '年']" />
+        :pt-options="['月', '季', '年']" />
     </el-row>
     <div class="overview">
       <el-row
-        v-if="productTree"
+        v-if="organizationTree"
         type="flex"
         class="content_row">
         <el-col
           :span="5"
           :class="{'tree_block_none':isCollapse}"
           class="tree_container">
-          <div class="title">毛利润额目标未达标数 :{{ noStandard }} </div>
+          <!-- <div class="title">毛利润额目标未达标数 :{{ noStandard }} </div> -->
           <div class="tree_content">
             <div
               @click="click"
-              v-if="productTree.children"
+              v-if="organizationTree.children"
               class="company">
               <span
                 :class="['left','label',
@@ -98,7 +98,9 @@
           <component
             @changeCid='handleChangeCid'
             :cid="cid"
+            :type="type"
             :val="val"
+            :name="name"
             :is="currentTabComponent" />
         </el-col>
       </el-row>
@@ -153,8 +155,10 @@ export default {
                 date: [], // date
                 search: '', // 暂时没有接口 先这样
             },
+            version: 0,
             //tree
             cid: '',
+            type: 0, // 前后端类型, 1,3属于前端,2:后端
             pt: '',
             //js
             error: error,
@@ -166,6 +170,7 @@ export default {
             loading: false,
             // stragety
             val: {},
+            name:'',
             nodeArr: [],
             searchBarValue: {
                 pt: '',
@@ -180,13 +185,13 @@ export default {
             currView: '',
             style: 0,
             isCollapse: false,
-            treeProgressLoading: true
+            treeProgressLoading: true,
         };
     },
     computed: {
-        ...mapGetters(['productTree']),
+        ...mapGetters(['organizationTree']),
         hasTree () {
-            return !_.isEmpty(this.productTree);
+            return !_.isEmpty(this.organizationTree);
         },
         currentTabComponent: function() {
             return this.currView;
@@ -232,8 +237,9 @@ export default {
                 this.getTree();
             });
         } else {
-            this.treeClone = _.cloneDeep(this.productTree);
-            this.cid = this.productTree.cid;
+            this.treeClone = _.cloneDeep(this.organizationTree);
+            this.cid = this.organizationTree.cid;
+            this.name = this.organizationTree.name;
             this.addProperty([this.treeClone]);
         }
     },
@@ -260,12 +266,13 @@ export default {
             this.getTreePrograss();
         },
         click() {
-            if (this.cid === this.productTree.cid) {
+            if (this.cid === this.organizationTree.cid) {
                 return;
             } else {
                 //点击发送请求清除搜索框
                 this.$refs.child.clearKw();
-                this.cid = this.productTree.cid;
+                this.cid = this.organizationTree.cid;
+                this.name = this.organizationTree.name;
             }
         },
         findParent(node,cid) {//找父节点id
@@ -281,17 +288,19 @@ export default {
                 subject: SUBJECT,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
+                version: this.version
             };
-            API.GetProductTree(params).then(res => {
+            API.GetOrgTree(params).then(res => {
                 //选择的日期没有数据,res.tree可能为null
                 if (res.tree) {
-                    if (!this.productTree || !this.productTree.cid) {
+                    if (!this.organizationTree || !this.organizationTree.cid) {
                         this.cid = res.tree.cid;
+                        this.name = res.tree.name;
                     }
                     this.treeClone = _.cloneDeep(res.tree);
                     this.addProperty([this.treeClone]);
                 }
-                this.$store.dispatch('SaveProductTree', res.tree);
+                this.$store.dispatch('SaveOrgTree', res.tree);
             });
         },
         //获取百分比数据
@@ -303,24 +312,25 @@ export default {
                 id = this.cid;
             }
             const params = {
-                subject: SUBJECT,
+                subject: 'PER',
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
-                nid: id
+                nid: id,
+                version: this.version
             };
             this.treeProgressLoading = true;
-            API.GetProductTreeProduct(params).then(res => {
+            API.GetOrgTreePrograss(params).then(res => {
                 let obj = this.preOrder([this.treeClone], id);
                 if (obj.cid === id) {
                     obj.hasData = true;//插入数据的hasData为true
                     obj.real_total = res.data[id].real;
-                    obj.target_total = res.data[id].target;
+                    obj.target_total = 100;
                 }
                 if (obj.children) {
                     for (let i of obj.children) {
                         if (_.has(res.data, i.cid)) {
                             i.real_total = res.data[i.cid].real;
-                            i.target_total = res.data[i.cid].target;
+                            i.target_total = 100;
                         }
                     }
                 }
@@ -381,9 +391,9 @@ export default {
             this.val = val;
             if (!val.cid) {
                 if (this.cid) {//数据tree不为null时
-                    if (this.cid !== this.productTree.cid) {
-                        this.cid = this.productTree.cid;
-                        this.treeClone = _.cloneDeep(this.productTree);
+                    if (this.cid !== this.organizationTree.cid) {
+                        this.cid = this.organizationTree.cid;
+                        this.treeClone = _.cloneDeep(this.organizationTree);
                     } else {
                         //公司根节点
                         this.allRequest();
@@ -395,7 +405,7 @@ export default {
                 //搜索相同的id,改变时间
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     this.allRequest();
-                    this.treeClone = _.cloneDeep(this.productTree);
+                    this.treeClone = _.cloneDeep(this.organizationTree);
                 }
                 this.changeDate = this.searchBarValue;
                 this.cid = val.cid;
@@ -410,6 +420,8 @@ export default {
             this.cid = data.cid;
         },
         handleNodeClick(data) {
+            this.name = data.name;
+
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {

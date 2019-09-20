@@ -1,47 +1,44 @@
+// Created by sunchunxiao on 2018/10/16.
+
 import { FetchGet, FetchPost } from 'utils/fetch';
+
 // import store from 'store';
 
 export default {
-    GetProductTree(params) {
-        return FetchGet('/product/tree', params);
+    GetSupplyRank(params) {
+        return FetchGet('/outer_performance/supplier/level', params);
     },
-    GetProductTreeProduct(params) {
-        return FetchGet('/product/tree/progress', params);
+    GetSupplyList(params) {
+        return FetchGet('/outer_performance/supplier/list', params);
     },
-    GetProductProgress(params) {
-        return FetchGet('/product/progress', params);
+    GetSupplyScore(params) {
+        return FetchGet('/outer_performance/supplier/score', params);
     },
-    GetProductTrend(params) {
-        return FetchGet('/product/trend', params);
+    GetSupplyGossip(params) {
+        return FetchGet('/outer_performance/supplier/gossip', params);
     },
-    GetProductStructure(params) {
-        return FetchGet('/product/structure', params);
+    GetOrgStrategy(params) {
+        return FetchGet('/outer_performance/supplier/strategy', params);
     },
-    GetProductRank(params) {
-        return FetchGet('/product/rank', params);
+    PostOrgStrategyLog(params) {
+        return FetchPost('/org/strategyLog', params);
     },
-    GetProductCompare(params) {
-        return FetchGet('/product/compare', params);
+    GetOrgCompare(params) {
+        return FetchGet('/org/compare', params);
     },
-    GetProductHistory(params) {
-        return FetchGet('/product/strategy/history', params);
+    GetOrgSubject(params) {
+        return FetchGet('/org/subject', params);
     },
-    GetProductStrategy(params) {
-        return FetchGet('/product/strategy', params);
+    GetOrgStrategiesOpt(params) {
+        return FetchGet('/org/strategiesOpt', params);
     },
-    GetProductMatch(params) {
-        return FetchGet('/product/strategy/match', params);
+    GetOrgStrategiesTrack(params) {
+        return FetchGet('/org/strategiesTrack', params);
     },
-    PostProductSave(params) {
-        return FetchPost('/product/strategy/save', params);
+    GetOrgApplog(params) {
+        return FetchGet('/org/strategy/app_log', params);
     },
-    GetProductSearch(params) {
-        return FetchGet('/product/search', params);
-    },
-    GetProductApplog(params) {
-        return FetchGet('/product/strategy/app_log', params);
-    },
-    GetProductFilter(params) {
-        return FetchGet('/product/strategy/filter', params);
+    GetOrgFilter(params) {
+        return FetchGet('/org/strategy/filter', params);
     },
 };

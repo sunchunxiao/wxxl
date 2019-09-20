@@ -1,13 +1,15 @@
 <template>
   <div :class="{header: true, header_collapse: isCollapse}">
     <div class="greet">
-      <img
+      <!-- <img
         class="greet_img"
         src="../assets/logo2.png"
-        alt="五">
-      <img
+        alt=""> -->
+      <!-- <img
         src="../assets/logo1.png"
-        alt="五项效率">
+        alt="六项效率"> -->
+      <span class="greet_six">6</span>
+      <span class="greet_title">六项效率</span>
       <template v-for="(item, index) in path">
         <span
           style="color: #fff"
@@ -82,6 +84,23 @@ export default {
         display: flex;
         align-items: center;
         height: 55px;
+        .greet_six {
+            width: 55px;
+            height: 55px;
+            text-align: center;
+            display: inline-block;
+            color: #fff;
+            font-size:50px;
+            font-weight:bolder;
+            background-color: rgb(240,192,19);
+        }
+        .greet_title {
+            color:rgb(240,192,19);
+            font-weight:bolder;
+            font-size:34px;
+            margin-left: 10px;
+            margin-right: 20px;
+        }
         .greet_icon{
             margin: -3px 5px 0 5px;
             color: #fff;
