@@ -154,6 +154,7 @@ export default {
                                 show: true,
                                 textStyle: {
                                     fontSize: 16,
+                                    color:"#000"
                                 },
                                 position: "right",
                                 distance: 10
