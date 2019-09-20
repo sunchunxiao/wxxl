@@ -16,6 +16,23 @@ export function calculatePercent(a, b) {
         };
     }
 }
+export function calculateSort(a, b) {
+    if (b > 0) {
+        const percent = (a / b * 100).toFixed(0) - 0; //将percent转化为number
+        const largerThanOne = percent >=60;
+        return {
+            percent,
+            largerThanOne
+        };
+    } else {
+        const percent = 0;
+        const largerThanOne = false;
+        return {
+            percent,
+            largerThanOne
+        };
+    }
+}
 
 export function error(msg) {
     this.$message({

@@ -16,9 +16,9 @@
               <el-col
                 :span="10"
                 class="">
-                <el-row
+                <!-- <el-row
                   style="text-align:center;font-size:14px"
-                  class="margin-bottom-20 overview_title">{{ name }}绩效排序</el-row>
+                  class="margin-bottom-20 overview_title">{{ name }}绩效排序</el-row> -->
                 <SortStructure
                   v-if="orgsortArr.bro"
                   @id="structureID"
@@ -31,9 +31,9 @@
               <el-col
                 :span="10"
                 class="">
-                <el-row
+                <!-- <el-row
                   style="text-align:center;font-size:14px"
-                  class="margin-bottom-20 overview_title">部门绩效排序</el-row>
+                  class="margin-bottom-20 overview_title">部门绩效排序</el-row> -->
                 <SortStructure
                   v-if="orgsortArr.son"
                   @id="structureID"

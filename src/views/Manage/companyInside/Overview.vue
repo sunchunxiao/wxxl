@@ -32,7 +32,7 @@
           :span="5"
           :class="{'tree_block_none':isCollapse}"
           class="tree_container">
-          <!-- <div class="title">毛利润额目标未达标数 :{{ noStandard }} </div> -->
+          <div class="title">绩效未合格数 :{{ noStandard }} </div>
           <div class="tree_content">
             <div
               @click="click"
@@ -45,7 +45,7 @@
               </span>
               <div
                 :class="{comprogress: true, 'is-active': activeCid == treeClone.cid,'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-                :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
+                :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}`}" />
             </div>
             <el-tree
               ref="tree"
@@ -65,11 +65,7 @@
                   effect="dark"
                   placement="right">
                   <div slot="content">
-                    <div class="margin-bottom-5 ">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
-                    <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
-                    <div
-                      v-if="data.children"
-                      class="margin-bottom-5">宽度 : {{ data.children.length }}</div>
+                    <div class="margin-bottom-5 ">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent }}分</div>
                   </div>
                   <span class="label">
                     <span
@@ -79,7 +75,7 @@
                 </el-tooltip>
                 <div
                   :class="{progress: true, 'is-active': activeCid === data.cid, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
-                  :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
+                  :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105' : `${calculatePercent(data.real_total, data.target_total).percent + 5}`}" />
               </span>
             </el-tree>
           </div>
@@ -122,7 +118,7 @@ import Sort from './OverviewMenu/Sort.vue';
 import Rank from './OverviewMenu/Rank.vue';
 
 //tree 百分比计算
-import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
+import { calculatePercent,calculateSort, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
 const OVER_TABS = [{
@@ -166,6 +162,7 @@ export default {
             preOrder: preOrder,
             addProperty: addProperty,
             calculatePercent: calculatePercent,
+            calculateSort: calculateSort,
             defaultProps: TREE_PROPS,
             loading: false,
             // stragety
@@ -207,12 +204,12 @@ export default {
                 if (obj.children) {
                     for (let i of obj.children) {
                         if (i.real_total && i.target_total) {
-                            const bool = this.calculatePercent(i.real_total,i.target_total).largerThanOne;
+                            const bool = this.calculateSort(i.real_total,i.target_total).largerThanOne;
                             if (!bool) {
-                                numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
+                                numArr.push(this.calculateSort(i.real_total,i.target_total).largerThanOne);
                             }
                         } else if (!this.treeProgressLoading) {
-                            numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
+                            numArr.push(this.calculateSort(i.real_total,i.target_total).largerThanOne);
                         } else {
                             return;
                         }

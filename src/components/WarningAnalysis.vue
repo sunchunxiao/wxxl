@@ -42,7 +42,7 @@ export default {
             }
             if (this.height.includes("px")) {
                 if (this.data[0].y <= categoryNamesLength) {
-                    return 480 +"px";
+                    return 570 +"px";
                 }
                 if ((this.data[0].y * 50) > parseInt(this.height)) {
                     return this.data[0].y * 70 + "px";
@@ -68,7 +68,6 @@ export default {
                 });
                 _this.dataIndex = i.data.indexOf(aa);
             }
-            // console.log('time',_this.dataIndex);
             _this.chart.dispatchAction({
                 type: 'highlight',
                 dataIndex: _this.dataIndex,
@@ -128,13 +127,45 @@ export default {
             for (let i = 0; i < data.length; i++) {
                 let item = data[i];
                 let seriesData = item.data;
+                let series = _.cloneDeep(seriesData);
+
                 let aa = seriesData.find(el => {
                     return el[0] == this.pos[0] && el[1] == this.pos[1];
                 });
+                let obj = {};
                 this.dataIndex = aa && seriesData.indexOf(aa);
-                // .map(function(v) {
-                //     return [v[0], v[1], v[2],v[3]];
-                // });
+                let a = series.map(function(v) {
+                    if(v[1]==0){
+                        obj = {
+                            value:v,
+                            label: {
+                                normal:{
+                                    color: 'rgba(255,255,255,0.9)',
+                                    fontWeight:'bold',
+                                    fontSize:14
+                                }
+                            },
+                            itemStyle:{
+                                borderWidth: 1,
+                                borderColor: 'rgba(197,197,197,0.5)',
+                                // shadowBlur: 1,
+                                shadowColor: 'rgba(120, 0, 0, 0.8)',
+                            }
+                        };
+                    }else{
+                        obj = {
+                            value:v,
+                            label: {
+                                normal:{
+                                    color: '#000',
+
+                                }
+                            }
+                        };
+                    }
+
+                    return obj;
+                });
                 let option = {
                     tooltip: {
                         formatter: function(params) {
@@ -193,11 +224,6 @@ export default {
                         y: '13%',
                         x: '15.5%'
                     },
-                    // custom: {
-                    //     categoryIds: item.categoryIds,
-                    //     // subjects: item.subjects,
-                    //     // categoryNames: item.categoryNames
-                    // },
                     xAxis: {
                         show:false,
                         type: 'category',
@@ -218,10 +244,10 @@ export default {
                         // }
                     },
                     yAxis: {
-                        // show:false,
+                        show:false,
                         inverse: true,
                         type: 'category',
-                        data: arr,
+                        // data: arr,
                         axisLine:{
                             show: false
                         },
@@ -238,26 +264,50 @@ export default {
                             // }
                         }
                     },
+
                     series: [{
                         name: '',
                         type: 'heatmap',
-                        data: seriesData,
+                        data: a,
                         label: {
                             normal: {
                                 show: true,
                                 formatter: function(params) {
                                     return labelNewline(5, params.value[3]) +"\n"+params.value[2]+'分';
                                 },
-                                color:'#000',
+                                // color:'#000',
+                                // color: function(params) {
+                            //     console.log(params);
+                            //     if (params.data[1] == 0) {
+                            //         console.log(11111);
+                            //         return '#fff';
+                            //     } else {
+                            //         console.log(2222);
+                            //         return '#000';
+                            //     }
+                            // },
                             },
+
                         },
                         itemStyle: {
+                            show:true,
                             emphasis: {
                                 borderWidth: 1,
                                 // borderColor: '#333',
                                 shadowBlur: 10,
                                 shadowColor: 'rgba(120, 0, 0, 0.8)',
                             },
+                            // color: 'pink',
+                            // color: function(params) {
+                            //     console.log(params);
+                            //     if (params.data[1] == 0) {
+                            //         console.log(11111);
+                            //         return '#fff';
+                            //     } else {
+                            //         console.log(2222);
+                            //         return '#000';
+                            //     }
+                            // },
                         }
                     },
                     ]

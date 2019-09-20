@@ -269,7 +269,16 @@ const dataRank = [
     {
         timeLabel: "2019-W33",
         data:[
-            [0, 0,-1, ''],
+            {
+                value:[0, 0, 1,'aa'],
+                label: {
+                    normal:{
+                        color: 'grey'
+
+                    }
+                }
+            },
+            [5, 6,-1, ''],
             [0, 1,80,'单件套组'],
             [0, 2,4,'芯枕毯类组'],
             [0, 3, 5,'IP/家居/夏令组'],
@@ -311,12 +320,7 @@ const dataRank = [
             [5, 4, 78,''],
             [5, 5, 78,''],
             [5, 6, null,'hhhhhhhhhh'],
-            // {
-            //     value:[5, 6, null,'hhhhhhhhhh'],
-            //     itemStyle: {
-            //         color: 'grey'
-            //     }
-            // },
+
             [6, 0, 1,'研发一组'],
             [6, 1, 78,'海外组'],
             [6, 2, 78,''],

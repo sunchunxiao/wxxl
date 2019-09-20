@@ -41,10 +41,11 @@ export default {
             return score+'分';
         },
         renderChart(data) {
-            let transSubjects = [],radarValues = [];
+            let transSubjects = [],radarValues = [],radarValues1 = [];
             if(this.id =='outRadar') {
                 transSubjects = data[0].names;
                 radarValues = data[0].scores;
+                radarValues1 = data[0].target;
             } else {
                 transSubjects = data.map(el => el.name);
                 radarValues = data.map(el => el.score);
@@ -95,44 +96,82 @@ export default {
                         }
                     }
                 },
-                series: [{
-                    name: '',
-                    type: 'radar',
-                    data : [
-                        {
-                            value : radarValues,
-                            name: transSubjects,
-                            label: {
-                                normal: {
-                                    show: true,
-                                    formatter:function(params) {
-                                        return params.value;
+                series: [
+                    {
+                        name: '',
+                        type: 'radar',
+                        data : [
+                            {
+                                value : radarValues,
+                                name: transSubjects,
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        formatter:function(params) {
+                                            return params.value;
+                                        },
+                                        color:'#000',
                                     },
-                                    color:'#000',
                                 },
+                                areaStyle: {
+                                    normal: {
+                                        color: 'rgba(0, 0, 0, 0)'
+                                    }
+                                }
                             },
-                            areaStyle: {
-                                normal: {
-                                    color: 'rgba(0, 0, 0, 0)'
+                        ],
+                        itemStyle : {
+                            normal : {
+                            //拐点线颜色
+                                lineStyle: {
+                                    color:'#FD625E',
+                                    width: 2
+                                }
+                            },
+                            emphasis: {
+                                lineStyle: {
+                                    width: 3
                                 }
                             }
                         },
-                    ],
-                    itemStyle : {
-                        normal : {
+                    },{
+                        name: '',
+                        type: 'radar',
+                        data : [
+                            {
+                                value : radarValues1,
+                                name: transSubjects,
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        formatter:function(params) {
+                                            return params.value;
+                                        },
+                                        color:'#000',
+                                    },
+                                },
+                                areaStyle: {
+                                    normal: {
+                                        color: 'rgba(0, 0, 0, 0)'
+                                    }
+                                }
+                            },
+                        ],
+                        itemStyle : {
+                            normal : {
                             //拐点线颜色
-                            lineStyle: {
-                                color:'#FD625E',
-                                width: 2
+                                lineStyle: {
+                                    color:'rgb(150,206,93)',
+                                    width: 2
+                                }
+                            },
+                            emphasis: {
+                                lineStyle: {
+                                    width: 3
+                                }
                             }
                         },
-                        emphasis: {
-                            lineStyle: {
-                                width: 3
-                            }
-                        }
-                    },
-                }]
+                    }]
             };
             this.chart.setOption(options,true);
         }
