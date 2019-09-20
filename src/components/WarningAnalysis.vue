@@ -136,7 +136,7 @@ export default {
                             }else{
                                 r='优';
                             }
-                            return ch+ '<br>'+ r + '<br>' + ' 分数:'+sc;
+                            return ch+ '<br>'+ r + '<br>' + ' 分数:'+sc+'分';
                         },
                     },
                     visualMap: {
@@ -153,12 +153,12 @@ export default {
                             lte: 84,
                             label:'预警 60-85',
                             // rgba(255,255,3,0.5) #F2C811
-                            color: 'rgba(255,255,3,0.5)'
+                            color: 'rgb(255,255,3)'
                         },{
                             gt: 84,
                             label:'优 >=85',
                             //浅色rgba(6, 255, 2) rgba(3,197,1,0.7)
-                            color:'rgba(3,197,1,0.7)',
+                            color:'rgb(3,197,1)',
                         },
                         ],
                         itemSymbol:'circle',
@@ -216,13 +216,15 @@ export default {
                         axisTick: {
                             show: false
                         },
-                        // axisLabel: {
-                        //     interval: 0,
-                        //     show: true,
-                        //     formatter: function(value) {
-                        //         return labelNewline(6, value);
-                        //     }
-                        // }
+                        axisLabel: {
+                            interval: 0,
+                            show: true,
+                            fontSize:14,
+                            fontWeight:'bold',
+                            // formatter: function(value) {
+                            //     return labelNewline(6, value);
+                            // }
+                        }
                     },
                     series: [{
                         name: '',
@@ -232,7 +234,7 @@ export default {
                             normal: {
                                 show: true,
                                 formatter: function(params) {
-                                    return labelNewline(4, params.value[3]) +"\n"+params.value[2]+'分';
+                                    return labelNewline(5, params.value[3]) +"\n"+params.value[2]+'分';
                                 },
                                 color:'#000',
                             },

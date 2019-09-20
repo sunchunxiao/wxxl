@@ -117,7 +117,7 @@ const MENUDATA = [
     {
         title: "六项基础引擎",
         path: "/sixBasicsEngine",
-        // icon: "4.png",
+        icon: "5.png",
         children:[
             {
                 title: "产品效率",
@@ -237,7 +237,7 @@ const MENUDATA = [
             {
                 title: "供应链效率",
                 path: "/supplyChain",
-                icon: "6.png",
+                icon: "7.png",
                 children: [
                     {
                         title: "全景分析",
@@ -262,7 +262,7 @@ const MENUDATA = [
     {
         title: "三大应用场景",
         path: "/applyScene",
-        // icon: "4.png",
+        icon: "6.png",
         children:[
             {
                 title: "绩效管理",
