@@ -14,7 +14,7 @@
               style="justify-content:space-around"
               type="flex">
               <el-col
-                :span="8"
+                :span="10"
                 class="">
                 <el-row
                   style="text-align:center;font-size:14px"
@@ -25,8 +25,11 @@
                   id="SortStructure1"
                   :data="orgsortArr.bro" />
               </el-col>
+              <span class="span_split"><img
+                src="../../../../assets/resizeApi.png"
+                alt=""></span>
               <el-col
-                :span="8"
+                :span="10"
                 class="">
                 <el-row
                   style="text-align:center;font-size:14px"
@@ -179,5 +182,14 @@ export default {
 </script>
 
 <style lang="scss">
+.span_split{
+    display: flex;
+    align-items: center;
+    // font-size: 50px;
+    img{
+
+    }
+
+}
 @import '../../../Product/style/overview.scss';
 </style>

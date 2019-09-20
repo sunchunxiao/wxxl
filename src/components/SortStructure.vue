@@ -18,7 +18,7 @@ export default {
         data: Array,
         height: {
             type: String,
-            default: "315px"
+            default: "415px"
         },
         unit: {
             type: String,
@@ -141,11 +141,11 @@ export default {
                     itemStyle: {
                         color: function(params) {
                             if (params.value>=85) {
-                                return 'rgba(3,197,1,0.7)';
+                                return 'rgb(150,206,93)';
                             } else if (params.value>=60 && params.value<85) {
-                                return 'rgba(255,255,3,0.5)';
+                                return 'rgb(255,199,75)';
                             } else if (params.value <60 ) {
-                                return 'rgba(255,51,51,0.7)';
+                                return 'rgb(234,75,75)';
                             } else {
                                 return '#b3b3b3';
                             }

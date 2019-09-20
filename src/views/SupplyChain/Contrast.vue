@@ -42,9 +42,9 @@
               @click="cleanChecked"
               class="select clean_select">取消全部</span>
           </div>
-          <!-- <div class="title_target">
-            <span>毛利目标未达标数: <span class="title">{{ noStandardNum }}</span></span>
-          </div> -->
+          <div class="title_target">
+            <span>供应产能目标未达标数: <span class="title">{{ noStandardNum }}</span></span>
+          </div>
           <div class="tree_content">
             <div class="company">
               <span class="left">{{ treeClone.name }}</span>
@@ -92,7 +92,7 @@
             v-loading="loading"
             class="min-height-400">
             <Card>
-              <el-row class="margin-bottom-20">产品对比分析和平均值分析</el-row>
+              <el-row class="margin-bottom-20">供应链对比分析和平均值分析</el-row>
               <el-row v-if="supplyCompareArr.length">
                 <slider
                   class="margin-bottom-20"

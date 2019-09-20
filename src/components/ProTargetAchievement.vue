@@ -28,7 +28,7 @@ import echarts from 'plugins/echarts';
 import { formatNumber, labelNewline } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 GPM毛利率 QPR品质合格率 CTR资金周转率 FAO固定资产占用率 LA库龄 PS盈利空间 PA盈利能力 PO支付能力1 PT支付能力2 DAR交期达成率 PSR产供比 CP产能 CS产能安全值 DR残品率
 const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','DAR','PSR','CP','CS','DR'];
-const REVERSE_TARGET = ['C', 'SA','DR']; // 成本 库存额 DR残品率是反向指标
+const REVERSE_TARGET = ['C', 'SA','DR']; // C成本 SA库存额 DR残品率是反向指标
 const DIVIDESUBJECT = ['RY', 'PA'];
 const MAIN_SUNBJECT = 1;
 const COLORMAP = { over: '#FD625E', below: '#01B8AA' }; // #FD625E粉红色

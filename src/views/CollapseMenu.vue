@@ -9,18 +9,36 @@
         :key="item.path">
         <template slot="title">
           <img
+            v-if="item.icon"
             class="menu_icon"
             :src="require(`../assets/${item.icon}`)"
             :alt="item.icon">
+          <span slot="title">{{ item.title }}</span>
         </template>
-        <template v-for="itm in item.children">
-          <el-menu-item
-            :index="`${item.path}${itm.path}`"
-            :key="`${item.path}${itm.path}`">
-            <span class="sub-text">
-              <span /> {{ itm.title }}
-            </span>
-          </el-menu-item>
+        <template v-for="ite in item.children">
+          <el-submenu
+            class="aaa"
+            :index="ite.path"
+            :key="ite.path">
+            <template slot="title">
+              <img
+                v-if="ite.icon"
+                class="menu_icon"
+                :src="require(`../assets/${ite.icon}`)"
+                :alt="ite.icon">
+              <span slot="title">{{ ite.title }}</span>
+            </template>
+            <template
+              v-for="itm in ite.children">
+              <el-menu-item
+                :index="`${item.path}${ite.path}${itm.path}`"
+                :key="`${item.path}${ite.path}${itm.path}`">
+                <span class="sub-text">
+                  <span class="dot" /> {{ itm.title }}
+                </span>
+              </el-menu-item>
+            </template>
+          </el-submenu>
         </template>
       </el-submenu>
     </template>
@@ -29,157 +47,246 @@
 
 <script>
 const MENUDATA = [
-    // {
-    //     title: "首页",
-    //     path: "/home",
-    //     icon: "3.png",
-    //     children: [
-    //         {
-    //             title: "基",
-    //             path: "/sales"
-    //         },
-    //         {
-    //             title: "持",
-    //             path: "/profit"
-    //         },
-    //         {
-    //             title: "核",
-    //             path: "/core"
-    //         },
-    //         {
-    //             title: "牌",
-    //             path: "/equity"
-    //         },
-    //         {
-    //             title: "间",
-    //             path: "/profitSpace"
-    //         },
-    //         {
-    //             title: "利",
-    //             path: "/profitability"
-    //         },
-    //         {
-    //             title: "付",
-    //             path: "/pay"
-    //         }
-    //     ]
-    // },
     {
-        title: "产品效率",
-        path: "/product",
-        icon: "4.png",
+        title: "首页",
+        path: "/home",
+        // icon: "3.png",
         children: [
             {
-                title: "全",
-                path: "/overview"
+                title: "外",
+                path: "/external",
+                icon: "4.png",
+                children:[
+                    {
+                        title: "基",
+                        path: "/sales"
+                    },
+                    {
+                        title: "持",
+                        path: "/profit"
+                    },
+                    {
+                        title: "核",
+                        path: "/core"
+                    },
+                    {
+                        title: "牌",
+                        path: "/equity"
+                    },
+                ]
             },
             {
-                title: "对",
-                path: "/contrast"
+                title: "内",
+                path: "/insideExternal",
+                icon: "5.png",
+                children:[
+                    {
+                        title: "盈",
+                        path: "/profitSpace"
+                    },
+                    {
+                        title: "利",
+                        path: "/profitability"
+                    },
+                    {
+                        title: "支",
+                        path: "/pay"
+                    }
+                ]
             },
-            {
-                title: "优",
-                path: "/optimization"
-            },
-            {
-                title: "略",
-                path: "/track"
-            }
         ]
     },
     {
-        title: "组织效率",
-        path: "/organization",
-        icon: "5.png",
-        children: [
+        title: "六项",
+        // icon: "5.png",
+        path: "/sixBasicsEngine",
+        children:[
             {
-                title: "全",
-                path: "/overview"
+                title: "产",
+                path: "/product",
+                icon: "4.png",
+                children: [
+                    {
+                        title: "全",
+                        path: "/overview"
+                    },
+                    {
+                        title: "对",
+                        path: "/contrast"
+                    },
+                    {
+                        title: "策",
+                        path: "/optimization"
+                    },
+                    {
+                        title: "略",
+                        path: "/track"
+                    }
+                ]
             },
             {
-                title: "对",
-                path: "/contrast"
+                title: "组",
+                path: "/organization",
+                icon: "5.png",
+                children: [
+                    {
+                        title: "全",
+                        path: "/overview"
+                    },
+                    {
+                        title: "组",
+                        path: "/contrast"
+                    },
+                    {
+                        title: "策",
+                        path: "/optimization"
+                    },
+                    {
+                        title: "略",
+                        path: "/track"
+                    }
+                ]
             },
             {
-                title: "优",
-                path: "/optimization"
+                title: "资",
+                path: "/fund",
+                icon: "7.png",
+                children: [
+                    {
+                        title: "全",
+                        path: "/overview"
+                    },
+                    {
+                        title: "资",
+                        path: "/contrast"
+                    },
+                    {
+                        title: "策",
+                        path: "/optimization"
+                    },
+                    {
+                        title: "策",
+                        path: "/track"
+                    }
+                ]
             },
             {
-                title: "略",
-                path: "/track"
-            }
+                title: "渠",
+                path: "/channel",
+                icon: "8.png",
+                children: [
+                    {
+                        title: "全",
+                        path: "/overview"
+                    },
+                    {
+                        title: "渠",
+                        path: "/contrast"
+                    },
+                    {
+                        title: "策",
+                        path: "/optimization"
+                    },
+                    {
+                        title: "策",
+                        path: "/track"
+                    }
+                ]
+            },
+            {
+                title: "客",
+                path: "/customer",
+                icon: "6.png",
+                children: [
+                    {
+                        title: "全",
+                        path: "/overview"
+                    },
+                    {
+                        title: "客",
+                        path: "/contrast"
+                    },
+                    {
+                        title: "策",
+                        path: "/optimization"
+                    },
+                    {
+                        title: "略",
+                        path: "/track"
+                    }
+                ]
+            },
+            {
+                title: "供",
+                path: "/supplyChain",
+                icon: "4.png",
+                children: [
+                    {
+                        title: "全",
+                        path: "/overview"
+                    },
+                    {
+                        title: "对",
+                        path: "/contrast"
+                    },
+                    {
+                        title: "策",
+                        path: "/optimization"
+                    },
+                    {
+                        title: "略",
+                        path: "/track"
+                    }
+                ]
+            },
         ]
     },
     {
-        title: "资金效率",
-        path: "/fund",
-        icon: "7.png",
-        children: [
+        title: "场景",
+        path: "/applyScene",
+        // icon: "4.png",
+        children:[
             {
-                title: "全",
-                path: "/overview"
+                title: "绩",
+                path: "/manage",
+                icon: "4.png",
+                children: [
+                    {
+                        title: "内",
+                        path: "/companyInsideManage/overview"
+                    },
+                    {
+                        title: "外",
+                        path: "/companyOutsideManage/overview"
+                    }
+                ]
             },
             {
-                title: "对",
-                path: "/contrast"
+                title: "计",
+                path: "/plan",
+                icon: "5.png",
+                children: [
+                    {
+                        title: "货品",
+                        path: "/overview"
+                    }
+                ]
             },
             {
-                title: "优",
-                path: "/optimization"
+                title: "预",
+                path: "/budget",
+                icon: "7.png",
+                children: [
+                    {
+                        title: "货品",
+                        path: "/overview"
+                    }
+                ]
             },
-            {
-                title: "略",
-                path: "/track"
-            }
-        ]
-    },
-    {
-        title: "渠道效率",
-        path: "/channel",
-        icon: "8.png",
-        children: [
-            {
-                title: "全",
-                path: "/overview"
-            },
-            {
-                title: "对",
-                path: "/contrast"
-            },
-            {
-                title: "优",
-                path: "/optimization"
-            },
-            {
-                title: "略",
-                path: "/track"
-            }
-        ]
-    },
-    {
-        title: "客户效率",
-        path: "/customer",
-        icon: "6.png",
-        children: [
-            {
-                title: "全",
-                path: "/overview"
-            },
-            {
-                title: "对",
-                path: "/contrast"
-            },
-            {
-                title: "优",
-                path: "/optimization"
-            },
-            {
-                title: "略",
-                path: "/track"
-            }
         ]
     },
 ];
+
 export default {
     data () {
         return {
@@ -222,7 +329,7 @@ $title-font-size: 18px;
 $subtitle-font-size: 16px;
 $scale: 1.8;
 #collapse-menu {
-    width: 55px;
+    width: 70px;
     overflow: hidden;
     background-color: $bgcolor;
     border-right: none;
@@ -250,7 +357,6 @@ $scale: 1.8;
         height: $subtitle-height;
         line-height: $subtitle-height;
     }
-
     >.el-menu-item {
         border-left: 5px solid $bgcolor;
         color: $white;
@@ -270,17 +376,22 @@ $scale: 1.8;
     .el-submenu {
         >.el-submenu__title {
             border-left: 5px solid $bgcolor;
+            padding-left: 10px!important;
+
             i {
                 margin-right: 15px;
             }
         }
     }
-    .el-submenu.is-active {
-        .el-submenu__title {
+    >.el-submenu.is-active {
+        >.el-submenu__title {
             border-left: 5px solid $border-color-active;
             background: $bg-color-active;
         }
     }
+    // .el-submenu__title{
+    //     padding-left: 10px;
+    // }
     .el-submenu .el-menu-item {
         height: $menu-item-height;
         line-height: $menu-item-height;

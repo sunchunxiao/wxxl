@@ -63,7 +63,7 @@ export default {
 <style lang="scss" scoped>
 $bgcolor:#333;
 $width: 200px;
-$width_collapse: 55px;
+$width_collapse: 65px;
 
 .container {
     height: 100%;
