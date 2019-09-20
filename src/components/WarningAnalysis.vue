@@ -31,7 +31,8 @@ export default {
             brand: '',
             debounce: null,
             // dataRank:dataRank,
-            dataIndex:0
+            dataIndex:0,
+            last: 0
         };
     },
     computed: {
@@ -53,14 +54,21 @@ export default {
     mounted() {
         this.chart = echarts.init(document.getElementById(`heatmap-${this.id}`));
         this.renderChart(this.data);
+        setTimeout(() => {
+            this.chart.dispatchAction({
+                type: 'highlight',
+                dataIndex: this.dataIndex,
+            });
+        }, 0);
         let _this = this;
         this.chart.on('timelinechanged', function() {
-            for(let i in this.data){
+            for (let i in this.data) {
                 let aa = i.data.find(el => {
                     return el[0] == this.pos[0] && el[1] == this.pos[1];
                 });
                 _this.dataIndex = i.data.indexOf(aa);
             }
+            // console.log('time',_this.dataIndex);
             _this.chart.dispatchAction({
                 type: 'highlight',
                 dataIndex: _this.dataIndex,
@@ -84,6 +92,12 @@ export default {
         data: {
             handler: function(val) {
                 this.renderChart(val);
+                setTimeout(() => {
+                    this.chart.dispatchAction({
+                        type: 'highlight',
+                        dataIndex: this.dataIndex,
+                    });
+                }, 0);
             },
             deep: true
         },
@@ -110,7 +124,7 @@ export default {
                     arr.push("");
                 }
             }
-            let _this = this;
+            // let _this = this;
             let options = [];
             let timeLineData = [];
             for (let i = 0; i < data.length; i++) {
@@ -119,7 +133,7 @@ export default {
                 let aa = seriesData.find(el => {
                     return el[0] == this.pos[0] && el[1] == this.pos[1];
                 });
-                this.dataIndex = seriesData.indexOf(aa);
+                this.dataIndex = aa && seriesData.indexOf(aa);
                 // .map(function(v) {
                 //     return [v[0], v[1], v[2],v[3]];
                 // });
@@ -147,18 +161,18 @@ export default {
                             gt: 0,
                             lte: 59,
                             label:'未达标 <60',
-                            color:'rgba(255,51,51,0.7)'
+                            color:'#FD625E'
                         },{
                             gt: 59,
                             lte: 84,
                             label:'预警 60-85',
                             // rgba(255,255,3,0.5) #F2C811
-                            color: 'rgb(255,255,3)'
+                            color: 'rgb(255,199,75)'
                         },{
                             gt: 84,
                             label:'优 >=85',
                             //浅色rgba(6, 255, 2) rgba(3,197,1,0.7)
-                            color:'rgb(3,197,1)',
+                            color:'rgb(150,206,93)',
                         },
                         ],
                         itemSymbol:'circle',
@@ -241,9 +255,10 @@ export default {
                         },
                         itemStyle: {
                             emphasis: {
-                                borderWidth: 2,
+                                borderWidth: 1,
+                                // borderColor: '#333',
                                 shadowBlur: 10,
-                                shadowColor: 'rgba(120, 0, 0, 0.5)',
+                                shadowColor: 'rgba(120, 0, 0, 0.8)',
                             },
                         }
                     },
@@ -291,10 +306,6 @@ export default {
                 options: options
             };
             this.chart.setOption(heatMapOption, true);
-            this.chart.dispatchAction({
-                type: 'highlight',
-                dataIndex: _this.dataIndex,
-            });
         }
     }
 };

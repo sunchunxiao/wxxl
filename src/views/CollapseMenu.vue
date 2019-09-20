@@ -98,7 +98,7 @@ const MENUDATA = [
     },
     {
         title: "六项",
-        // icon: "5.png",
+        // icon: "2.png",
         path: "/sixBasicsEngine",
         children:[
             {
