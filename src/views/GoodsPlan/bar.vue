@@ -25,7 +25,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
-import { formatNumber, labelNewline } from 'utils/common';
+import { formatNumber } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 GPM毛利率 QPR品质合格率 CTR资金周转率 FAO固定资产占用率 LA库龄 PS盈利空间 PA盈利能力 PO支付能力1 PT支付能力2 DAR交期达成率 PSR产供比 CP产能 CS产能安全值 DR残品率
 const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','DAR','PSR','CP','CS','DR','JS','FD'];
 const REVERSE_TARGET = ['C', 'SA','DR']; // C成本 SA库存额 DR残品率是反向指标
@@ -123,17 +123,17 @@ export default {
             return obj;
         },
         renderChart(data) {
-            let  _this = this;
+            // let  _this = this;
             const { subject, subject_name, progress, real, target, is_main } = data;
-            let valuePercent, realValue, toolTipValue, fontSize, valueOutside, valueLeft1;
+            let valuePercent, realValue, fontSize, valueOutside, valueLeft1;
             if (progress == null || progress < 0) {//目标未设定或者进度为负值
                 if (!target) {
                     realValue = this.calculateToShow(real).value.toString();
-                    if (_.includes(SUBJECT, subject)) { //tooltip显示每三位,分隔
-                        toolTipValue = real;
-                    } else {
-                        toolTipValue = (real / 100).toFixed(2);
-                    }
+                    // if (_.includes(SUBJECT, subject)) { //tooltip显示每三位,分隔
+                    //     toolTipValue = real;
+                    // } else {
+                    //     toolTipValue = (real / 100).toFixed(2);
+                    // }
                     if (realValue.length >= maxLength) {//无百分比显示实际值 超过圆环时 字体变小
                         fontSize = FONTSIZE3;
                     } else {
@@ -186,25 +186,25 @@ export default {
             };
             const options = {
                 backgroundColor: '#fff',
-                tooltip: {
-                    show:false,
-                    hideDelay: 0,
-                    trigger: 'item',
-                    formatter: function(params) {
-                        let result = [];
-                        let span = "<span style='width:20px;display:inline-block;'></span>";
-                        if (!progress) {
-                            result += params.marker + " " + labelNewline(9,params.name,"</br>" + span) + " : </br>" + span + _this.formatNumber(toolTipValue) + "</br>";
-                        } else {
-                            result += params.marker + " " + labelNewline(9,params.name,"</br>" + span) + " : </br>" + span + params.value + '%' + "</br>";
-                        }
-                        return result;
-                    },
-                    position: function (point, params, dom) {
-                        dom.style.transform = "translate(-50%, 0%)";
-                        return ["50%", "50%"];
-                    }
-                },
+                // tooltip: {
+                //     show:false,
+                //     hideDelay: 0,
+                //     trigger: 'item',
+                //     formatter: function(params) {
+                //         let result = [];
+                //         let span = "<span style='width:20px;display:inline-block;'></span>";
+                //         if (!progress) {
+                //             result += params.marker + " " + labelNewline(9,params.name,"</br>" + span) + " : </br>" + span + _this.formatNumber(toolTipValue) + "</br>";
+                //         } else {
+                //             result += params.marker + " " + labelNewline(9,params.name,"</br>" + span) + " : </br>" + span + params.value + '%' + "</br>";
+                //         }
+                //         return result;
+                //     },
+                //     position: function (point, params, dom) {
+                //         dom.style.transform = "translate(-50%, 0%)";
+                //         return ["50%", "50%"];
+                //     }
+                // },
                 grid: {
                     left: 0,
                     right: 0,
