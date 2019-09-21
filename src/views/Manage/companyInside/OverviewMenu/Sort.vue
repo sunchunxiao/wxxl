@@ -51,7 +51,7 @@ import API from '../api';
 import Card from 'components/Card';
 
 // 比例结构与平均值对比分析
-import SortStructure from 'components/SortStructure';
+import SortStructure from '../SortStructure';
 //vuex
 import { mapGetters } from 'vuex';
 import { organization } from 'data/subject';

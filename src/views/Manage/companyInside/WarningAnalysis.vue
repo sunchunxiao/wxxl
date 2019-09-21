@@ -54,7 +54,7 @@ export default {
     mounted() {
         this.chart = echarts.init(document.getElementById(`heatmap-${this.id}`));
         this.renderChart(this.data);
-        if(this.dataIndex){
+        if(this.pos.length){
             setTimeout(() => {
                 this.chart.dispatchAction({
                     type: 'highlight',
@@ -62,7 +62,6 @@ export default {
                 });
             }, 0);
         }
-
         let _this = this;
         this.chart.on('timelinechanged', function() {
             for (let i in this.data) {
@@ -94,12 +93,15 @@ export default {
         data: {
             handler: function(val) {
                 this.renderChart(val);
-                setTimeout(() => {
-                    this.chart.dispatchAction({
-                        type: 'highlight',
-                        dataIndex: this.dataIndex,
-                    });
-                }, 0);
+                if(this.pos.length){
+                    setTimeout(() => {
+                        this.chart.dispatchAction({
+                            type: 'highlight',
+                            dataIndex: this.dataIndex,
+                        });
+                    }, 0);
+                }
+
             },
             deep: true
         },
@@ -133,10 +135,9 @@ export default {
                 let series = _.cloneDeep(seriesData);
 
                 let aa = seriesData.find(el => {
-                    if(this.pos.length){
+                    if(this.pos.length) {
                         return el[0] == this.pos[0] && el[1] == this.pos[1];
                     }
-
                 });
                 let obj = {};
                 this.dataIndex = aa && seriesData.indexOf(aa);

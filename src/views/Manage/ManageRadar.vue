@@ -62,6 +62,7 @@ export default {
             for (let i of transSubjects) {
                 arr.push({
                     name: i,
+                    min:0,
                     max: 150
                 });
             }
@@ -82,11 +83,12 @@ export default {
                         let result =[];
                         result = params.seriesName +"</br>";
                         for (let i=0; i<params.name.length; i++) {
-                            result +=params.marker+ params.name[i] + " : " + _this.getRank(params.value[i]) +"</br>";
+                            result += params.name[i] + " : " + _this.getRank(params.value[i]) +"</br>";
                         }
                         return result;
                     },
                 },
+                scale: true,
                 radar: {
                     name: {
                         textStyle: {
@@ -96,6 +98,7 @@ export default {
                             padding: [3, 10],
                         }
                     },
+                    show:true,
                     // shape: 'circle',
                     indicator: arr,
                     radius: 110,
@@ -112,12 +115,54 @@ export default {
                         lineStyle: {
                             color: 'rgb(153, 153, 153)'
                         }
-                    }
+                    },
+
                 },
+                // polar: {},
+                // angleAxis: {
+                //     show:false,
+                //     // min: 0,
+                //     max: 100,
+                //     interval: 5,
+                //     clockwise: false,
+                //     axisTick: {
+                //         show: false
+                //     },
+                //     axisLabel: {
+                //         show: false
+                //     },
+                //     axisLine: {
+                //         show: false
+                //     },
+                //     splitLine: {
+                //         show: false
+                //     }
+                // },
+                // radiusAxis: {
+                //     min: 0,
+                //     max: 100,
+                //     interval: 10,
+                //     splitArea: {
+                //         show: false
+                //     },
+                //     splitLine: {
+                //         show: false
+                //     },
+                //     axisTick: {
+                //         show: false
+                //     },
+                //     // axisLabel: {
+                //     //     show: false
+                //     // },
+                //     axisLine: {
+                //         show: false
+                //     },
+                // },
                 series: [
                     {
                         name: '实际',
                         type: 'radar',
+                        color:'red',
                         data : [
                             {
                                 value : radarValues,
@@ -156,6 +201,7 @@ export default {
                     },{
                         name: '目标',
                         type: 'radar',
+                        color:'green',
                         data : [
                             {
                                 value : radarValuesTarget,

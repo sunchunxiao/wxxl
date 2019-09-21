@@ -35,7 +35,7 @@
 import API from '../api';
 import Card from 'components/Card';
 // 智能评选和智能策略
-import WarningAnalysis from 'components/WarningAnalysis';
+import WarningAnalysis from '../WarningAnalysis';
 
 //vuex
 import { mapGetters } from 'vuex';
@@ -169,6 +169,8 @@ export default {
                 // console.log(111,res.data[0].loc);
                 if (res.data[0].loc.length) {
                     this.$store.dispatch('SaveOrgPosArr', res.data[0].loc);
+                }else{
+                    this.$store.dispatch('SaveOrgPosArr', []);
                 }
                 this.$store.dispatch('SaveOrgRankArr', res.data);
             }).finally(() => {

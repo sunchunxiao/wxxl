@@ -77,15 +77,14 @@ export default {
     },
     methods: {
         renderChart(data) {
-            // let aa = data.find(el => {
-            //     return el.org_id == this.orgid;
-            // });
-            // this.dataIndex = this.data.indexOf(aa);
-            // // }
-            // this.chart.dispatchAction({
-            //     type: 'highlight',
-            //     dataIndex: this.dataIndex,
-            // });
+            //品牌级别
+            if(this.id == 'SortStructure1'){
+                let aa = data.find(el => {
+                    return el.org_id == this.orgid;
+                });
+                this.dataIndex = this.data.indexOf(aa);
+
+            }
             let arrName = [],org_id = [],score = [];
             for(let i of data) {
                 arrName.push(i.name);
@@ -96,25 +95,15 @@ export default {
                             value:i.score,
                             label: {
                                 normal:{
-                                    color: 'rgba(255,255,188,0.9)',
+                                    // color: 'rgba(255,255,188,0.9)',
                                     fontWeight:'bold',
                                     fontSize:15
                                 },
                             },
                         }
                     );
-                }else{
-                    score.push(
-                        {
-                            value:i.score,
-                            // label: {
-                            //     normal:{
-                            //         color: 'rgba(0,0,0,0.9)',
-                            //         fontSize:14
-                            //     }
-                            // },
-                        }
-                    );
+                } else {
+                    score.push({ value:i.score });
                 }
             }
             // score = _.sortBy(score, function(item) {
@@ -210,6 +199,10 @@ export default {
                 }]
             };
             this.chart.setOption(options, true);
+            this.chart.dispatchAction({
+                type: 'highlight',
+                dataIndex: this.dataIndex,
+            });
         }
     }
 };

@@ -35,6 +35,7 @@
           <div class="title">绩效未合格数 :{{ noStandard }} </div>
           <div class="tree_content">
             <div
+              @click="click"
               v-if="organizationTree.children"
               class="company">
               <span
@@ -198,7 +199,7 @@ export default {
         noStandard() {
             let numArr = [];
             if (this.cid) {
-                //找节点
+                //找节
                 let obj = this.preOrder([this.treeClone], this.cid);
                 if (obj.children) {
                     for (let i of obj.children) {
@@ -317,6 +318,7 @@ export default {
             };
             this.treeProgressLoading = true;
             API.GetOrgTreePrograss(params).then(res => {
+                this.$store.dispatch('SaveOrgId', id);
                 let obj = this.preOrder([this.treeClone], id);
                 if (obj.cid === id) {
                     obj.hasData = true;//插入数据的hasData为true

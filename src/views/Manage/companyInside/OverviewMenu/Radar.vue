@@ -74,7 +74,7 @@ import Card from 'components/Card';
 import Slider from 'components/Slider';
 // 目标达成情况总览
 import ProTargetAchievement from 'components/ProTargetAchievement';
-import ManageRadar from 'components/ManageRadar';
+import ManageRadar from '../../ManageRadar';
 
 //vuex
 import { mapGetters } from 'vuex';

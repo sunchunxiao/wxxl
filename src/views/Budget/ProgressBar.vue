@@ -161,25 +161,25 @@ export default {
                             }
                         }
                     },
-                    markLine : _this.id === 'overviewDepartment'|| _this.id === 'overviewSupplier'?
-                        {
-                            symbol:"",
-                            precision:0,
-                            lineStyle:{
-                                color:"#ff0000",
-                                width:3
-                            },
-                            label:{
-                                show:true,
-                                formatter:'{b}: {c}'
-                            },
-                            data : [
-                                {
-                                    name: '目标基准线',
-                                    xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]:"暂无基准线"
-                                }
-                            ]
-                        }:{},
+                    // markLine : _this.id === 'overviewDepartment'|| _this.id === 'overviewSupplier'?
+                    //     {
+                    //         symbol:"",
+                    //         precision:0,
+                    //         lineStyle:{
+                    //             color:"#ff0000",
+                    //             width:3
+                    //         },
+                    //         label:{
+                    //             show:true,
+                    //             formatter:'{b}: {c}'
+                    //         },
+                    //         data : [
+                    //             {
+                    //                 name: '目标基准线',
+                    //                 xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]:"暂无基准线"
+                    //             }
+                    //         ]
+                    //     }:{},
                     data: targetData
                 }, {
                     name: "实际",

@@ -218,7 +218,7 @@
 import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
-import ManageRadar from 'components/ManageRadar';
+import ManageRadar from '../ManageRadar';
 
 //vuex
 import { mapGetters } from 'vuex';
