@@ -6,67 +6,71 @@
         @change="handleChange" />
     </el-row>
     <el-row
-        class="mgb10 wrap"
-        v-loading="loading">
-        <div>当前下单进度</div>
-        <el-col
-            v-for="(planNow, index) in planNowDataArr"
-            :span="12"
-            :key="index">
-            <PlanBudgetPie
-                v-if="planNowDataArr.length"
-                :id="`overviewNow${index}`"
-                :data="planNow" />
-        </el-col>
+      class="mgb10 wrap"
+      v-loading="loading">
+      <div>当前下单进度</div>
+      <el-col
+        v-for="(planNow, index) in planNowDataArr"
+        :span="12"
+        :key="index">
+        <PlanBudgetPie
+          v-if="planNowDataArr.length"
+          :id="`overviewNow${index}`"
+          :data="planNow" />
+      </el-col>
     </el-row>
     <el-row
-        class="mgb10 wrap"
-        v-loading="loading"
-        :gutter="10">
-        <div class="title" style="left:20px;">首单下单进度</div>
-        <el-col
-            v-for="(planFirst, index) in planFirstDataArr"
-            :span="6"
-            :key="`overviewFirst${index}`">
-            <PlanBudgetPie
-                v-if="planFirstDataArr.length"
-                :id="`overviewFirst${index}`"
-                :data="planFirst" />
-        </el-col>
-        <div class="title" style="left:50%;">返单下单进度</div>
-        <el-col
-            v-for="(planReturn, index) in planReturnDataArr"
-            :span="6"
-            :key="`overviewReturn${index}`">
-            <PlanBudgetPie
-                v-if="planReturnDataArr.length"
-                :id="`overviewReturn${index}`"
-                :data="planReturn" />
-        </el-col>
+      class="mgb10 wrap"
+      v-loading="loading"
+      :gutter="10">
+      <div
+        class="title"
+        style="left:20px;">首单下单进度</div>
+      <el-col
+        v-for="(planFirst, index) in planFirstDataArr"
+        :span="6"
+        :key="`overviewFirst${index}`">
+        <PlanBudgetPie
+          v-if="planFirstDataArr.length"
+          :id="`overviewFirst${index}`"
+          :data="planFirst" />
+      </el-col>
+      <div
+        class="title"
+        style="left:50%;">返单下单进度</div>
+      <el-col
+        v-for="(planReturn, index) in planReturnDataArr"
+        :span="6"
+        :key="`overviewReturn${index}`">
+        <PlanBudgetPie
+          v-if="planReturnDataArr.length"
+          :id="`overviewReturn${index}`"
+          :data="planReturn" />
+      </el-col>
     </el-row>
-    <el-row 
-        class="mgb10 wrap"
-        v-loading="loading">
-        <div>各业务部门下单进度</div>
-        <el-col 
-            :span="24">
-            <ProgressBar
-                :id="`overviewDepartment`"
-                :y-axis="yAxisDepartment"
-                :data="planData['department_order_progress']" />
-        </el-col>
+    <el-row
+      class="mgb10 wrap"
+      v-loading="loading">
+      <div>各业务部门下单进度</div>
+      <el-col
+        :span="24">
+        <ProgressBar
+          :id="`overviewDepartment`"
+          :y-axis="yAxisDepartment"
+          :data="planData['department_order_progress']" />
+      </el-col>
     </el-row>
-    <el-row 
-        class="mgb10 wrap"
-        v-loading="loading">
-        <div>各工厂下单进度</div>
-        <el-col 
-            :span="24">
-            <ProgressBar
-                :id="`overviewSupplier`"
-                :y-axis = "yAxisSupplier"
-                :data="planData['supplier_order_progress']" />
-        </el-col>
+    <el-row
+      class="mgb10 wrap"
+      v-loading="loading">
+      <div>各工厂下单进度</div>
+      <el-col
+        :span="24">
+        <ProgressBar
+          :id="`overviewSupplier`"
+          :y-axis = "yAxisSupplier"
+          :data="planData['supplier_order_progress']" />
+      </el-col>
     </el-row>
     <div class="capacity">
       <div
