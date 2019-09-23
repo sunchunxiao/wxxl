@@ -9,6 +9,15 @@
     .mgb10{
         margin-bottom: 10px;
     }
+    .wrap{
+        min-height:300px;
+        background:#fff;
+        padding:20px;
+        .title{
+            position: absolute;
+            z-index: 10000;
+        }
+    }
     .capacity {
         position: relative;
         .table_container {
