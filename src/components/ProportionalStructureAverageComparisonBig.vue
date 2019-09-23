@@ -12,6 +12,7 @@
 import echarts from 'plugins/echarts';
 import { formatNumber, labelNewline, structureRadius } from 'utils/common';
 const SUBJECT = ['ROI','POR','ITO','RY'];
+const MAIN_SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','DAR','PSR','CP','CS','DR'];
 export default {
     props: {
         id: String,
@@ -76,25 +77,27 @@ export default {
         },
     },
     methods: {
+        //28法则结构
         calculateToShow(val) {
             const { subject } = this.data;
             //日销，投入产出比和库存周转率是显示原值
-            if (subject === 'SD') {//日销
-                let tenThousand = (val / 10000 / 100).toFixed(2);
-                if (tenThousand && tenThousand >= 1) {
-                    return tenThousand + 'w';
-                } else {
-                    return (val / 100).toFixed(2);
-                }
-            } else if (subject === 'ROI') {//投入产出比
+            if (_.includes(MAIN_SUBJECT, subject)) {
                 if (val && val >= 10000) {
                     return (val / 10000).toFixed(2) + 'w';
                 } else {
                     return val;
                 }
             } else {
-                return val;
+                let tenThousand = (val / 10000 / 100).toFixed(2);
+                if (tenThousand && tenThousand >= 1) {
+                    return tenThousand + 'w';
+                } else {
+                    return (val / 100).toFixed(2);
+                }
             }
+            // else {
+            //     return val;
+            // }
         },
         renderChart(nodes) {
             let _this = this;
@@ -199,7 +202,7 @@ export default {
                             if (!params.value || !nodes.display_rate) {
                                 return `${ _this.calculateToShow(params.value)}`;
                             } else {
-                                if (nodes.total === 0) {//总和为0
+                                if (nodes.total == 0) {//总和为0
                                     return `${params.value}`;
                                 } else {
                                     return `${(params.value / nodes.total * 100).toFixed(2)}%   ${_this.formatNumber(parseInt(params.value / 100))}`;
@@ -216,15 +219,15 @@ export default {
                             color: "#fd625e",
                             fontSize: 14,
                             formatter:function() {
-                                if ( nodes.display_rate == 0) {
-                                    return `平均值${_this.calculateToShow(average)}`;
+                                // if ( nodes.display_rate == 0) {
+                                //     return `平均值${_this.calculateToShow(average)}`;
+                                // } else {
+                                if (average == 0) {
+                                    return `平均值${average}`;
                                 } else {
-                                    if (average == 0) {
-                                        return `平均值${average}`;
-                                    } else {
-                                        return `平均值${(average / nodes.total*100).toFixed(2)}%`;
-                                    }
+                                    return `平均值${_this.calculateToShow(average)}`;
                                 }
+                                // }
                             }
                         },
                         data: [{
