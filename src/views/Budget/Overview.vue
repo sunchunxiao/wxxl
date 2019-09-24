@@ -1,32 +1,28 @@
 <template>
   <div class="budget">
     <el-row class="time_header">
-      <SelectFilter
+      <PlanBudgetSelectFilter
         ref="child"
+        :seasons="seasons"
+        :properties="properties"
+        :progresses="progresses"
         @change="handleChange" />
     </el-row>
     <el-row
-      class="mgb10"
-      :gutter="10">
-      <el-col :span="24">
-        <Card
-          v-loading="loading"
-          style="min-height:300px;">
-          <div>当前下单进度</div>
-          <template v-for="(item, index) in budgetsNowDataArr">
-            <el-col
-              :key="index"
-              style="width:50%">
-              <Bar
-                v-if="budgetsNowDataArr.length"
-                :id="`${index}`"
-                :data="item" />
-            </el-col>
-          </template>
-        </Card>
+      class="mgb10 wrap"
+      v-loading="loading">
+      <div>当前下单进度</div>
+      <el-col
+        v-for="(budgetNow, index) in budgetNowDataArr"
+        :span="12"
+        :key="index">
+        <PlanBudgetPie
+          v-if="budgetNowDataArr.length"
+          :id="`budgetNow${index}`"
+          :data="budgetNow" />
       </el-col>
     </el-row>
-    <div class="capacity mgb10">
+    <div class="mgb10 capacity">
       <div
         v-loading="loading"
         class="table_container">
@@ -47,27 +43,33 @@
               </tr>
               <tr
                 class="el-table__row"
-                v-for="(c,idx) in budgetData['capacity']"
+                v-for="(b,idx) in budgetData['capacity']"
                 :key="idx">
-                <td><div class="cell">{{ c.supplier }}</div></td>
+                <td><div class="cell">{{ b.supplier }}</div></td>
                 <td>
                   <div class="cell">
-                    <div :style="{background:'#FCD5B4',color:'#000',width:c.month1+'%'}">
-                      {{ c.month1 }}%
+                    <div
+                      class="progress"
+                      :style="{width:b.month1+'%'}">
+                      {{ b.month1 }}%
                     </div>
                   </div>
                 </td>
                 <td>
                   <div class="cell">
-                    <div :style="{background:'#FCD5B4',color:'#000',width:c.month2+'%'}">
-                      {{ c.month2 }}%
+                    <div
+                      class="progress"
+                      :style="{width:b.month2+'%'}">
+                      {{ b.month2 }}%
                     </div>
                   </div>
                 </td>
                 <td>
                   <div class="cell">
-                    <div :style="{background:'#FCD5B4',color:'#000',width:c.month3+'%'}">
-                      {{ c.month3 }}%
+                    <div
+                      class="progress"
+                      :style="{width:b.month3+'%'}">
+                      {{ b.month3 }}%
                     </div>
                   </div>
                 </td>
@@ -78,67 +80,56 @@
       </div>
     </div>
     <el-row
-      class="mgb10"
+      class="mgb10 wrap"
+      v-loading="loading"
       :gutter="10">
-      <el-col :span="12">
-        <Card
-          v-loading="loading"
-          style="min-height:300px;">
-          <div>首单预算使用</div>
-          <template v-for="(item, index) in budgetsFirstDataArr">
-            <el-col
-              :key="index"
-              style="width:50%">
-              <Bar
-                v-if="budgetsNowDataArr.length"
-                :id="`aa${index}`"
-                :data="item" />
-            </el-col>
-          </template>
-        </Card>
+      <div
+        class="title"
+        style="left:20px;">首单预算使用</div>
+      <el-col
+        v-for="(budgetFirst, index) in budgetFirstDataArr"
+        :span="6"
+        :key="`budgetFirst${index}`">
+        <PlanBudgetPie
+          v-if="budgetFirstDataArr.length"
+          :id="`budgetFirst${index}`"
+          :data="budgetFirst" />
       </el-col>
-      <el-col :span="12">
-        <Card
-          v-loading="loading"
-          style="min-height:300px;">
-          <div>返单预算进度</div>
-          <template v-for="(item, index) in budgetsreturnDataArr">
-            <el-col
-              :key="index"
-              style="width:50%">
-              <Bar
-                v-if="budgetsreturnDataArr.length"
-                :id="`bb${index}`"
-                :data="item" />
-            </el-col>
-          </template>
-        </Card>
+      <div
+        class="title"
+        style="left:50%;">返单预算进度</div>
+      <el-col
+        v-for="(budgetReturn, index) in budgetReturnDataArr"
+        :span="6"
+        :key="`budgetReturn${index}`">
+        <PlanBudgetPie
+          v-if="budgetReturnDataArr.length"
+          :id="`budgetReturn${index}`"
+          :data="budgetReturn" />
       </el-col>
     </el-row>
-    <el-row class="mgb10">
-      <el-col :span="24">
-        <Card
-          v-loading="loading"
-          style="min-height:450px;">
-          <span>各业务部门下单进度</span>
-          <ProgressBar
-            :id="`overviewDepartment`"
-            :y-axis="yAxisDepartment"
-            :data="budgetData['department_order_progress']" />
-        </Card>
+    <el-row
+      class="mgb10 wrap"
+      v-loading="loading">
+      <div>各业务部门下单进度</div>
+      <el-col
+        :span="24">
+        <PlanBudgetBar
+          :id="`budgetDepartment`"
+          :y-axis="yAxisDepartment"
+          :data="budgetData['department_order_progress']" />
       </el-col>
     </el-row>
-    <el-row class="mgb10">
-      <el-col :span="24">
-        <Card
-          v-loading="loading"
-          style="min-height:450px;">
-          <span>各工厂下单进度</span>
-          <ProgressBar
-            :id="`overviewSupplier`"
-            :y-axis="yAxisSupplier"
-            :data="budgetData['supplier_order_progress']" />
-        </Card>
+    <el-row
+      class="wrap"
+      v-loading="loading">
+      <div>各工厂下单进度</div>
+      <el-col
+        :span="24">
+        <PlanBudgetBar
+          :id="`budgetSupplier`"
+          :y-axis = "yAxisSupplier"
+          :data="budgetData['supplier_order_progress']" />
       </el-col>
     </el-row>
   </div>
@@ -146,23 +137,22 @@
 
 <script>
 import API from './api';
-import Bar from './bar';
-import Card from 'components/Card';
-import SelectFilter from './SelectFilter';
-import ProgressBar from './ProgressBar';
-import Slider from 'components/Slider';
+import PlanBudgetSelectFilter from 'components/PlanBudgetSelectFilter';
+import PlanBudgetPie from 'components/PlanBudgetPie';
+import PlanBudgetBar from 'components/PlanBudgetBar';
 import { mapGetters } from 'vuex';
 
 export default {
     components: {
-        Card,
-        Bar,
-        Slider,
-        SelectFilter,
-        ProgressBar,
+        PlanBudgetSelectFilter,
+        PlanBudgetPie,
+        PlanBudgetBar,
     },
     data() {
         return {
+            seasons: ['春季', '夏季', '秋季', '冬季'],//货品季节类型
+            properties: ['全部', '类目一', '类目二', '类目三'],//货品属性类型
+            progresses:['下单', '到货'],//货品进度类型
             //货品预算数据
             budgetData:{
                 now_order_progress:{},//当前下单进度
@@ -182,7 +172,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters([ 'budgetsNowDataArr','budgetsFirstDataArr','budgetsreturnDataArr']),
+        ...mapGetters([ 'budgetNowDataArr','budgetFirstDataArr','budgetReturnDataArr']),
     },
     mounted() {},
     watch: {},
@@ -197,116 +187,94 @@ export default {
                 this.budgetData["return_order_progress"] = res.data["return_order_progress"];
                 this.budgetData["department_order_progress"] = res.data["department_order_progress"];
                 this.budgetData["supplier_order_progress"] = res.data["supplier_order_progress"];
+                this.formatPie("now","下单款数","预算使用",this.budgetData,this.$store);//当前下单进度
+                this.formatPie("first","首单款数","首单预算",this.budgetData,this.$store);//首单预算使用
+                this.formatPie("return","返单款数","返单预算",this.budgetData,this.$store);//返单预算进度
+                this.budgetData["capacity"] = this.formatCapacityTableData(res.data["capacity"]);
 
-                //当前
-                let nowOrder = this.budgetData["now_order_progress"];
-                let obj = {},obj1 = {},nowArr=[];
-                obj.subject_name = '预算使用';
-                obj.real = nowOrder['actual_order_num'];
-                obj.target = nowOrder['target_order_num'];
-                obj.progress = obj.real / obj.target;
-                obj.subject = 'JS';
-
-                obj1.subject_name = '下单款数';
-                obj1.real = nowOrder['actual_style_num'];
-                obj1.target = nowOrder['target_style_num'];
-                obj1.progress = obj1.real / obj1.target;
-                obj1.subject = 'JS';
-                nowArr.push(obj1,obj);
-                this.$store.dispatch('SaveBudgetsNowData', nowArr);
-
-                //首单下单进度
-                let firstOrder = this.budgetData["first_order_progress"];
-                let firstobj = {},firstobj1 = {},firstArr=[];
-                firstobj.subject_name = '首单预算';
-
-                firstobj.real = firstOrder['actual_order_num'];
-                firstobj.target = firstOrder['target_order_num'];
-                firstobj.progress = firstobj.real / firstobj.target;
-                firstobj.subject = 'JS';
-
-                firstobj1.subject_name = '首单款数';
-                firstobj1.real = firstOrder['actual_style_num'];
-                firstobj1.target = firstOrder['target_style_num'];
-                firstobj1.progress = firstobj1.real / firstobj1.target;
-                firstobj1.subject = 'JS';
-
-                firstArr.push(firstobj1,firstobj);
-                this.$store.dispatch('SaveBudgetsFirstData', firstArr);
-
-                //返单预算进度
-                let returnOrder = this.budgetData["return_order_progress"];
-                let returnobj = {},returnobj1 = {},returnArr=[];
-                returnobj.subject_name = '返单预算';
-                returnobj.real = returnOrder['actual_order_num'];
-                returnobj.target = returnOrder['target_order_num'];
-                returnobj.progress = returnobj.real / returnobj.target;
-
-                returnobj1.subject_name = '返单款数';
-                returnobj1.real = returnOrder['actual_style_num'];
-                returnobj1.target = returnOrder['target_style_num'];
-                returnobj1.progress = returnobj1.real / returnobj1.target;
-                returnobj1.subject = 'FD';
-
-                returnArr.push(returnobj1,returnobj);
-                this.$store.dispatch('SaveBudgetsreturnData', returnArr);
-
-                if(form.season === "春季"){
-                    this.seasonMonth.length = 0;
-                    this.seasonMonth.push("3月","4月","5月");
-                }else if(form.season === "夏季"){
-                    this.seasonMonth.length = 0;
-                    this.seasonMonth.push("6月","7月","8月");
-                }else if(form.season === "秋季"){
-                    this.seasonMonth.length = 0;
-                    this.seasonMonth.push("9月","10月","11月");
-                }else if(form.season === "冬季"){
-                    this.seasonMonth.length = 0;
-                    this.seasonMonth.push("12月","1月","2月");
+                switch (form.season) {
+                    case "春季":
+                        this.seasonMonth.splice(0,3,"3月","4月","5月");
+                        break;
+                    case "夏季":
+                        this.seasonMonth.splice(0,3,"6月","7月","8月");
+                        break;
+                    case "秋季":
+                        this.seasonMonth.splice(0,3,"9月","10月","11月");
+                        break;
+                    case "冬季":
+                        this.seasonMonth.splice(0,3,"12月","1月","2月");
+                        break;
                 }
-                let capacity = [
-                    {
-                        supplier:'全部',
-                        month1:res.data["capacity"]["total"][0],
-                        month2:res.data["capacity"]["total"][1],
-                        month3:res.data["capacity"]["total"][2]
-                    },
-                    {
-                        supplier:'工厂A',
-                        month1:res.data["capacity"]["s5"][0],
-                        month2:res.data["capacity"]["s5"][1],
-                        month3:res.data["capacity"]["s5"][2]
-                    },
-                    {
-                        supplier:'工厂B',
-                        month1:res.data["capacity"]["s4"][0],
-                        month2:res.data["capacity"]["s4"][1],
-                        month3:res.data["capacity"]["s4"][2]
-                    },
-                    {
-                        supplier:'工厂C',
-                        month1:res.data["capacity"]["s3"][0],
-                        month2:res.data["capacity"]["s3"][1],
-                        month3:res.data["capacity"]["s3"][2]
-                    },
-                    {
-                        supplier:'工厂D',
-                        month1:res.data["capacity"]["s2"][0],
-                        month2:res.data["capacity"]["s2"][1],
-                        month3:res.data["capacity"]["s2"][2]
-                    },
-                    {
-                        supplier:'工厂E',
-                        month1:res.data["capacity"]["s1"][0],
-                        month2:res.data["capacity"]["s1"][1],
-                        month3:res.data["capacity"]["s1"][2]
-                    }
-                ];
-                this.budgetData["capacity"] = capacity;
             }).finally(() => {
                 this.loading = false;
             });
         },
+
+        //当前下单进度,首单,返单预算进度环形图转换
+        //subject_name 标题 real 实际 target 目标 progress 进度条 subject 展示对象
+        formatPie(type,sbjName1,sbjName2,data,store){
+            let styleNum = {}, orderNum = {}, arr=[];
+            styleNum.subject_name = sbjName1;
+            styleNum.real = data[`${type}_order_progress`]['actual_style_num'];
+            styleNum.target = data[`${type}_order_progress`]['target_style_num'];
+            styleNum.progress = styleNum.real / styleNum.target;
+            styleNum.subject = 'KS';
+            orderNum.subject_name = sbjName2;
+            orderNum.real = data[`${type}_order_progress`]['actual_order_num'];
+            orderNum.target = data[`${type}_order_progress`]['target_order_num'];
+            orderNum.progress = orderNum.real / orderNum.target;
+            orderNum.subject = 'KS';
+            arr.push(styleNum,orderNum);
+            store.dispatch(`SaveBudget${type.replace(type[0],type[0].toUpperCase())}Data`, arr);
+        },
+
+        //本季度预算使用表结构转换
+        formatCapacityTableData(data){
+            let capacity = [];
+            let keys = [];
+            for (let key of Object.keys(data)) {
+                keys.push(key);
+            }
+            for(let i = 0; i < keys.length; i++){
+                let row = {};
+                row.supplier = this.formatSupplierName(keys[i]);
+                row.month1 = data[keys[i]][0];
+                row.month2 = data[keys[i]][1];
+                row.month3 = data[keys[i]][2];
+                capacity.push(row);
+            }
+            //全部置顶
+            capacity.unshift(capacity.splice(capacity.length-1 , 1)[0]);
+            return capacity;
+        },
+
+        //工厂名称转换
+        formatSupplierName(name){
+            let cnName = "";
+            switch (name) {
+                case "s1":
+                    cnName = "工厂A";
+                    break;
+                case "s2":
+                    cnName = "工厂B";
+                    break;
+                case "s3":
+                    cnName = "工厂C";
+                    break;
+                case "s4":
+                    cnName = "工厂D";
+                    break;
+                case "s5":
+                    cnName = "工厂E";
+                    break;
+                case "total":
+                    cnName = "全部";
+                    break;
+            }
+            return cnName;
+        },
+
         //下拉筛选
         handleChange(form) {
             this.getBudgetData(form);
@@ -320,7 +288,7 @@ export default {
 </style>
 <style lang="scss" scoped>
     .container .container_wrap .right > div[data-v-fae5bece]:first-child{
-        min-height:1990px;
+        min-height:2000px;
         overflow:hidden;
     }
 </style>

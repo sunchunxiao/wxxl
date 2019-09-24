@@ -166,7 +166,7 @@ export default {
                         name: subject_name,
                         itemStyle: {
                             normal: {
-                                color: "#2ae09e",
+                                color:this.id.indexOf("plan") != -1?"#2AE09E":"#FCD5B4"
                             }
                         },
                         label: {

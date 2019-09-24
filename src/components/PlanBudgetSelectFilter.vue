@@ -64,9 +64,6 @@ export default {
     components: {},
     data () {
         return {
-            seasons: ['春季', '夏季', '秋季', '冬季'],//货品季节类型
-            properties: ['全部', '类目一', '类目二', '类目三'],//货品属性类型
-            progresses:['下单', '到货'],//货品进度类型
             form: {
                 season:'',
                 property:'',
@@ -74,7 +71,11 @@ export default {
             },
         };
     },
-    props: {},
+    props: {
+        seasons:Array,
+        properties:Array,
+        progresses:Array,
+    },
     created () {
         this.form.season = this.seasons[0];
         this.form.property = this.properties[0];

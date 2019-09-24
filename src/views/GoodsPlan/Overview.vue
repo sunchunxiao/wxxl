@@ -1,8 +1,11 @@
 <template>
   <div class="plan">
     <el-row class="time_header">
-      <SelectFilter
+      <PlanBudgetSelectFilter
         ref="child"
+        :seasons="seasons"
+        :properties="properties"
+        :progresses="progresses"
         @change="handleChange" />
     </el-row>
     <el-row
@@ -15,7 +18,7 @@
         :key="index">
         <PlanBudgetPie
           v-if="planNowDataArr.length"
-          :id="`overviewNow${index}`"
+          :id="`planNow${index}`"
           :data="planNow" />
       </el-col>
     </el-row>
@@ -29,10 +32,10 @@
       <el-col
         v-for="(planFirst, index) in planFirstDataArr"
         :span="6"
-        :key="`overviewFirst${index}`">
+        :key="`planFirst${index}`">
         <PlanBudgetPie
           v-if="planFirstDataArr.length"
-          :id="`overviewFirst${index}`"
+          :id="`planFirst${index}`"
           :data="planFirst" />
       </el-col>
       <div
@@ -41,10 +44,10 @@
       <el-col
         v-for="(planReturn, index) in planReturnDataArr"
         :span="6"
-        :key="`overviewReturn${index}`">
+        :key="`planReturn${index}`">
         <PlanBudgetPie
           v-if="planReturnDataArr.length"
-          :id="`overviewReturn${index}`"
+          :id="`planReturn${index}`"
           :data="planReturn" />
       </el-col>
     </el-row>
@@ -54,8 +57,8 @@
       <div>各业务部门下单进度</div>
       <el-col
         :span="24">
-        <ProgressBar
-          :id="`overviewDepartment`"
+        <PlanBudgetBar
+          :id="`planDepartment`"
           :y-axis="yAxisDepartment"
           :data="planData['department_order_progress']" />
       </el-col>
@@ -66,8 +69,8 @@
       <div>各工厂下单进度</div>
       <el-col
         :span="24">
-        <ProgressBar
-          :id="`overviewSupplier`"
+        <PlanBudgetBar
+          :id="`planSupplier`"
           :y-axis = "yAxisSupplier"
           :data="planData['supplier_order_progress']" />
       </el-col>
@@ -134,19 +137,22 @@
 
 <script>
 import API from './api';
-import SelectFilter from './SelectFilter';
+import PlanBudgetSelectFilter from 'components/PlanBudgetSelectFilter';
 import PlanBudgetPie from 'components/PlanBudgetPie';
-import ProgressBar from './ProgressBar';
+import PlanBudgetBar from 'components/PlanBudgetBar';
 import { mapGetters } from 'vuex';
 
 export default {
     components: {
+        PlanBudgetSelectFilter,
         PlanBudgetPie,
-        SelectFilter,
-        ProgressBar,
+        PlanBudgetBar,
     },
     data() {
         return {
+            seasons: ['春季', '夏季', '秋季', '冬季'],//货品季节类型
+            properties: ['全部', '类目一', '类目二', '类目三'],//货品属性类型
+            progresses:['样品','下单', '到货'],//货品进度类型
             //货品计划数据
             planData:{
                 now_order_progress:{},//当前下单进度

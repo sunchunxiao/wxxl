@@ -18,11 +18,7 @@ export default {
     },
     computed: {
         height:function(){
-            if(this.id === 'overviewNow' || this.id === 'overviewFirst' || this.id === 'overviewReturn'){
-                return "250px";
-            }else if(this.id === 'overviewDepartment' || this.id === 'overviewSupplier'){
-                return "400px";
-            }
+            return "400px";
         }
     },
     mounted() {
@@ -43,23 +39,13 @@ export default {
     },
     methods: {
         handleResize() {
-            var bar_dv = this.$refs.chart;
-            echarts.init(bar_dv).resize();
+            echarts.init(this.$refs.chart).resize();
         },
         mycharts() {
             var _this = this;
             var targetData = [];
             var actualData = [];
-            if(_this.id === 'overviewNow' || _this.id === 'overviewFirst' || _this.id === 'overviewReturn'){
-                targetData.push(
-                    parseInt(_this.data["target_order_num"]/1000),
-                    _this.data["target_style_num"]
-                );
-                actualData.push(
-                    parseInt(_this.data["actual_order_num"]/1000),
-                    _this.data["actual_style_num"]
-                );
-            }else if(_this.id === 'overviewDepartment'){
+            if(_this.id === 'planDepartment' || _this.id === 'budgetDepartment'){
                 targetData.push(
                     _this.data["target_p5"],
                     _this.data["target_p4"],
@@ -76,7 +62,7 @@ export default {
                     _this.data["actual_p1"],
                     _this.data["actual_total"]
                 );
-            }else if(_this.id === 'overviewSupplier'){
+            }else if(_this.id === 'planSupplier' || _this.id === 'budgetSupplier'){
                 targetData.push(
                     _this.data["target_s5"],
                     _this.data["target_s4"],
@@ -161,7 +147,11 @@ export default {
                             }
                         }
                     },
-                    // markLine : _this.id === 'overviewDepartment'|| _this.id === 'overviewSupplier'?
+                    // markLine : 
+                    // _this.id === 'planDepartment'|| 
+                    // _this.id === 'planSupplier' ||
+                    // _this.id === 'budgetDepartment' ||
+                    // _this.id === 'budgetSupplier'?
                     //     {
                     //         symbol:"",
                     //         precision:0,
@@ -193,17 +183,25 @@ export default {
                         normal: {
                             color:function(params){
                                 let actualBgColor = "";
-                                if(_this.id === 'overviewNow'){
-                                    actualBgColor = "#984807";
-                                }else if(_this.id === 'overviewFirst'|| _this.id === 'overviewReturn'){
-                                    actualBgColor = "#FCD5B4";
-                                }else if(_this.id === 'overviewDepartment'){
+                                if(_this.id === 'planDepartment'){
                                     if(params.value<_this.data["actual_avg"]){
-                                        actualBgColor = "#ff0000";
+                                        actualBgColor = "#92D050";
+                                    }else{
+                                        actualBgColor = "#2AE09E";
+                                    }
+                                }else if(_this.id === 'planSupplier'){
+                                    if(params.value<_this.data["actual_avg"]){
+                                        actualBgColor = "#FF0000";
+                                    }else{
+                                        actualBgColor = "#2AE09E";
+                                    }
+                                }else if(_this.id === 'budgetDepartment'){
+                                    if(params.value<_this.data["actual_avg"]){
+                                        actualBgColor = "#FF0000";
                                     }else{
                                         actualBgColor = "#FCD5B4";
                                     }
-                                }else if(_this.id === 'overviewSupplier'){
+                                }else if(_this.id === 'budgetSupplier'){
                                     if(params.value<_this.data["actual_avg"]){
                                         actualBgColor = "#ff0000";
                                     }else{
@@ -227,8 +225,7 @@ export default {
                 }]
 
             };
-            var bar_dv = this.$refs.chart;
-            var charts = echarts.init(bar_dv, "shine");
+            var charts = echarts.init(this.$refs.chart, "shine");
             charts.setOption(option);
             // 屏幕自适应
             this.timerId = setTimeout(function () {

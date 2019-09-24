@@ -7,7 +7,7 @@ import supply from './supply';
 import date from './date';
 import home from './home';
 import plan from './goodsPlan';
-import budgets from './budgets';
+import budget from './budget';
 
 export default {
     product,
@@ -19,5 +19,5 @@ export default {
     date,
     home,
     plan,
-    budgets
+    budget
 };
