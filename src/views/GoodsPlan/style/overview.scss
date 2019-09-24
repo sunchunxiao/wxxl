@@ -56,6 +56,10 @@
             .el-table__row {
                 .cell {
                     text-align: center;
+                    .progress {
+                        background:#2AE09E;
+                        color:#fff;
+                    }
                 }
                 .cell:not(.clone-cell) {
                     .cell_count {

@@ -18,9 +18,7 @@ export default {
     },
     computed: {
         height:function(){
-            if(this.id === 'overviewNow' || this.id === 'overviewFirst' || this.id === 'overviewReturn'){
-                return "250px";
-            }else if(this.id === 'overviewDepartment' || this.id === 'overviewSupplier'){
+            if(this.id === 'overviewDepartment' || this.id === 'overviewSupplier'){
                 return "400px";
             }
         }
@@ -43,23 +41,13 @@ export default {
     },
     methods: {
         handleResize() {
-            var bar_dv = this.$refs.chart;
-            echarts.init(bar_dv).resize();
+            echarts.init(this.$refs.chart).resize();
         },
         mycharts() {
             var _this = this;
             var targetData = [];
             var actualData = [];
-            if(_this.id === 'overviewNow' || _this.id === 'overviewFirst' || _this.id === 'overviewReturn'){
-                targetData.push(
-                    parseInt(_this.data["target_order_num"]/1000),
-                    _this.data["target_style_num"]
-                );
-                actualData.push(
-                    parseInt(_this.data["actual_order_num"]/1000),
-                    _this.data["actual_style_num"]
-                );
-            }else if(_this.id === 'overviewDepartment'){
+            if(_this.id === 'overviewDepartment'){
                 targetData.push(
                     _this.data["target_p5"],
                     _this.data["target_p4"],
@@ -193,11 +181,7 @@ export default {
                         normal: {
                             color:function(params){
                                 let actualBgColor = "";
-                                if(_this.id === 'overviewNow'){
-                                    actualBgColor = "#92D050";
-                                }else if(_this.id === 'overviewFirst'|| _this.id === 'overviewReturn'){
-                                    actualBgColor = "#2AE09E";
-                                }else if(_this.id === 'overviewDepartment'){
+                                if(_this.id === 'overviewDepartment'){
                                     if(params.value<_this.data["actual_avg"]){
                                         actualBgColor = "#92D050";
                                     }else{
@@ -227,8 +211,7 @@ export default {
                 }]
 
             };
-            var bar_dv = this.$refs.chart;
-            var charts = echarts.init(bar_dv, "shine");
+            var charts = echarts.init(this.$refs.chart, "shine");
             charts.setOption(option);
             // 屏幕自适应
             this.timerId = setTimeout(function () {

@@ -98,21 +98,27 @@
                 <td><div class="cell">{{ c.supplier }}</div></td>
                 <td>
                   <div class="cell">
-                    <div :style="{background:'#2AE09E',color:'#fff',width:c.month1+'%'}">
+                    <div
+                      class="progress"
+                      :style="{width:c.month1+'%'}">
                       {{ c.month1 }}%
                     </div>
                   </div>
                 </td>
                 <td>
                   <div class="cell">
-                    <div :style="{background:'#2AE09E',color:'#fff',width:c.month2+'%'}">
+                    <div
+                      class="progress"
+                      :style="{width:c.month2+'%'}">
                       {{ c.month2 }}%
                     </div>
                   </div>
                 </td>
                 <td>
                   <div class="cell">
-                    <div :style="{background:'#2AE09E',color:'#fff',width:c.month3+'%'}">
+                    <div
+                      class="progress"
+                      :style="{width:c.month3+'%'}">
                       {{ c.month3 }}%
                     </div>
                   </div>
@@ -175,89 +181,94 @@ export default {
                 this.planData["return_order_progress"] = res.data["return_order_progress"];
                 this.planData["department_order_progress"] = res.data["department_order_progress"];
                 this.planData["supplier_order_progress"] = res.data["supplier_order_progress"];
+                this.formatPie("now","下单款数","下单件数",this.planData,this.$store);//当前下单进度
+                this.formatPie("first","首单款数","首单件数",this.planData,this.$store);//首单下单进度
+                this.formatPie("return","返单款数","返单件数",this.planData,this.$store);//返单下单进度
+                this.planData["capacity"] = this.formatCapacityTableData(res.data["capacity"]);
 
-                /*
-                * PlanBudgetPie:
-                * subject_name 标题 real 实际 target 目标 progress 进度条 subject 展示对象
-                */
-                function formatPie(type,sbjName1,sbjName2,data,store){
-                    let styleNum = {}, orderNum = {}, arr=[];
-                    styleNum.subject_name = sbjName1;
-                    styleNum.real = data[`${type}_order_progress`]['actual_style_num'];
-                    styleNum.target = data[`${type}_order_progress`]['target_style_num'];
-                    styleNum.progress = styleNum.real / styleNum.target;
-                    styleNum.subject = 'KS';
-                    orderNum.subject_name = sbjName2;
-                    orderNum.real = data[`${type}_order_progress`]['actual_order_num'];
-                    orderNum.target = data[`${type}_order_progress`]['target_order_num'];
-                    orderNum.progress = orderNum.real / orderNum.target;
-                    orderNum.subject = 'KS';
-                    arr.push(styleNum,orderNum);
-                    store.dispatch(`SavePlan${type.replace(type[0],type[0].toUpperCase())}Data`, arr);
+                switch (form.season) {
+                    case "春季":
+                        this.seasonMonth.splice(0,3,"3月","4月","5月");
+                        break;
+                    case "夏季":
+                        this.seasonMonth.splice(0,3,"6月","7月","8月");
+                        break;
+                    case "秋季":
+                        this.seasonMonth.splice(0,3,"9月","10月","11月");
+                        break;
+                    case "冬季":
+                        this.seasonMonth.splice(0,3,"12月","1月","2月");
+                        break;
                 }
-                //当前下单进度
-                formatPie("now","下单款数","下单件数",this.planData,this.$store);
-                //首单下单进度
-                formatPie("first","首单款数","首单件数",this.planData,this.$store);
-                //返单下单进度
-                formatPie("return","返单款数","返单件数",this.planData,this.$store);
-
-                if(form.season === "春季"){
-                    this.seasonMonth.length = 0;
-                    this.seasonMonth.push("3月","4月","5月");
-                }else if(form.season === "夏季"){
-                    this.seasonMonth.length = 0;
-                    this.seasonMonth.push("6月","7月","8月");
-                }else if(form.season === "秋季"){
-                    this.seasonMonth.length = 0;
-                    this.seasonMonth.push("9月","10月","11月");
-                }else if(form.season === "冬季"){
-                    this.seasonMonth.length = 0;
-                    this.seasonMonth.push("12月","1月","2月");
-                }
-                let capacity = [
-                    {
-                        supplier:'全部',
-                        month1:res.data["capacity"]["total"][0],
-                        month2:res.data["capacity"]["total"][1],
-                        month3:res.data["capacity"]["total"][2]
-                    },
-                    {
-                        supplier:'供应商A',
-                        month1:res.data["capacity"]["s5"][0],
-                        month2:res.data["capacity"]["s5"][1],
-                        month3:res.data["capacity"]["s5"][2]
-                    },
-                    {
-                        supplier:'供应商B',
-                        month1:res.data["capacity"]["s4"][0],
-                        month2:res.data["capacity"]["s4"][1],
-                        month3:res.data["capacity"]["s4"][2]
-                    },
-                    {
-                        supplier:'供应商C',
-                        month1:res.data["capacity"]["s3"][0],
-                        month2:res.data["capacity"]["s3"][1],
-                        month3:res.data["capacity"]["s3"][2]
-                    },
-                    {
-                        supplier:'供应商D',
-                        month1:res.data["capacity"]["s2"][0],
-                        month2:res.data["capacity"]["s2"][1],
-                        month3:res.data["capacity"]["s2"][2]
-                    },
-                    {
-                        supplier:'供应商E',
-                        month1:res.data["capacity"]["s1"][0],
-                        month2:res.data["capacity"]["s1"][1],
-                        month3:res.data["capacity"]["s1"][2]
-                    }
-                ];
-                this.planData["capacity"] = capacity;
             }).finally(() => {
                 this.loading = false;
             });
         },
+
+        //当前,首单,返单下单进度环形图转换
+        //subject_name 标题 real 实际 target 目标 progress 进度条 subject 展示对象
+        formatPie(type,sbjName1,sbjName2,data,store){
+            let styleNum = {}, orderNum = {}, arr=[];
+            styleNum.subject_name = sbjName1;
+            styleNum.real = data[`${type}_order_progress`]['actual_style_num'];
+            styleNum.target = data[`${type}_order_progress`]['target_style_num'];
+            styleNum.progress = styleNum.real / styleNum.target;
+            styleNum.subject = 'KS';
+            orderNum.subject_name = sbjName2;
+            orderNum.real = data[`${type}_order_progress`]['actual_order_num'];
+            orderNum.target = data[`${type}_order_progress`]['target_order_num'];
+            orderNum.progress = orderNum.real / orderNum.target;
+            orderNum.subject = 'KS';
+            arr.push(styleNum,orderNum);
+            store.dispatch(`SavePlan${type.replace(type[0],type[0].toUpperCase())}Data`, arr);
+        },
+
+        //本季度产能使用表结构转换
+        formatCapacityTableData(data){
+            let capacity = [];
+            let keys = [];
+            for (let key of Object.keys(data)) {
+                keys.push(key);
+            }
+            for(let i = 0; i < keys.length; i++){
+                let row = {};
+                row.supplier = this.formatSupplierName(keys[i]);
+                row.month1 = data[keys[i]][0];
+                row.month2 = data[keys[i]][1];
+                row.month3 = data[keys[i]][2];
+                capacity.push(row);
+            }
+            //全部置顶
+            capacity.unshift(capacity.splice(capacity.length-1 , 1)[0]);
+            return capacity;
+        },
+
+        //供应商名称转换
+        formatSupplierName(name){
+            let cnName = "";
+            switch (name) {
+                case "s1":
+                    cnName = "供应商A";
+                    break;
+                case "s2":
+                    cnName = "供应商B";
+                    break;
+                case "s3":
+                    cnName = "供应商C";
+                    break;
+                case "s4":
+                    cnName = "供应商D";
+                    break;
+                case "s5":
+                    cnName = "供应商E";
+                    break;
+                case "total":
+                    cnName = "全部";
+                    break;
+            }
+            return cnName;
+        },
+
         //下拉筛选
         handleChange(form) {
             this.getPlanData(form);
