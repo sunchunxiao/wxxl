@@ -147,8 +147,8 @@ export default {
                             }
                         }
                     },
-                    // markLine : 
-                    // _this.id === 'planDepartment'|| 
+                    // markLine :
+                    // _this.id === 'planDepartment'||
                     // _this.id === 'planSupplier' ||
                     // _this.id === 'budgetDepartment' ||
                     // _this.id === 'budgetSupplier'?
