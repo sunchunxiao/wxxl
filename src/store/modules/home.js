@@ -26,7 +26,9 @@ const home = {
         abilityTrendArr: [],
         brandPrograssArr: [],
         brandTrendArr: [],
-        salesRadarObj:{},
+        salesRadarObj: {},
+        payRadarObj: {},
+        profitSpaceRadarObj: {},
     },
     mutations: {
         SAVE_OVERVIEW_ARR: (state, arr) => {
@@ -110,6 +112,12 @@ const home = {
         SAVE_SALESRADAR_OBJ: (state, obj) => {
             state.salesRadarObj = obj;
         },
+        SAVE_PAYRADAR_OBJ: (state, obj) => {
+            state.payRadarObj = obj;
+        },
+        SAVE_SPACERADAR_OBJ: (state, obj) => {
+            state.profitSpaceRadarObj = obj;
+        },
     },
     actions: {
         SaveOverviewProgressData({ commit }, arr) {
@@ -192,6 +200,14 @@ const home = {
         },
         SaveSalesRadarObj({ commit }, obj) {
             commit('SAVE_SALESRADAR_OBJ', obj);
+        },
+        // 支付
+        SavePayRadar({ commit }, obj) {
+            commit('SAVE_PAYRADAR_OBJ', obj);
+        },
+        // 盈利空间
+        SaveSpaceRadar({ commit }, obj) {
+            commit('SAVE_SPACERADAR_OBJ', obj);
         },
     }
 };

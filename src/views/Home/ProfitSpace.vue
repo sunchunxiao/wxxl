@@ -9,41 +9,53 @@
             v-loading="loading"
             id="profitSpace"
             class="min-height-400">
-            <slider
-              v-if="gainPrograssArr.length>0"
-              height="296px"
-              :min-move-num="50">
-              <template v-for="(item, index) in gainPrograssArr">
-                <el-col
+            <el-row>
+              <el-col :span="16">
+                <slider
                   v-if="gainPrograssArr.length>0"
-                  :key="index"
-                  style="width:198px">
-                  <ProTargetAchievement
-                    :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                    @click.native="clickIndex(index)"
-                    :id="`${index}`"
-                    :data="item" />
-                </el-col>
-              </template>
-            </slider>
-            <div class="card_company_target">
-              <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-                <span class="card_title">{{ hasSubjectName }} </span>
-                <span
-                  class="card_title"
-                  v-if="homeProfitSpace[index].subject_unit"> ( {{ homeProfitSpace[index].subject_unit }} )</span></el-row>
-              <template>
-                <el-col
-                  v-if="gainTrendArr.length>0"
-                  :key="index">
-                  <ProTargetActualDiffTrend
-                    :unit="homeProfitSpace[index].subject_unit"
-                    :show-detail="false"
-                    :id="`product${index}`"
-                    :data="gainTrendArr[index]" />
-                </el-col>
-              </template>
-            </div>
+                  height="296px"
+                  :min-move-num="50">
+                  <template v-for="(item, index) in gainPrograssArr">
+                    <el-col
+                      v-if="gainPrograssArr.length>0"
+                      :key="index"
+                      style="width:198px">
+                      <ProTargetAchievement
+                        :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                        @click.native="clickIndex(index)"
+                        :id="`${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </slider>
+              </el-col>
+              <el-col :span="8">
+                <radar
+                  v-if="profitSpaceRadarObj.name"
+                  :id="'profitSpaceRadar'"
+                  :data="profitSpaceRadarObj" />
+              </el-col>
+              <el-col :span="24">
+                <div class="card_company_target">
+                  <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
+                    <span class="card_title">{{ hasSubjectName }} </span>
+                    <span
+                      class="card_title"
+                      v-if="homeProfitSpace[index].subject_unit"> ( {{ homeProfitSpace[index].subject_unit }} )</span></el-row>
+                  <template>
+                    <el-col
+                      v-if="gainTrendArr.length>0"
+                      :key="index">
+                      <ProTargetActualDiffTrend
+                        :unit="homeProfitSpace[index].subject_unit"
+                        :show-detail="false"
+                        :id="`product${index}`"
+                        :data="gainTrendArr[index]" />
+                    </el-col>
+                  </template>
+                </div>
+              </el-col>
+            </el-row>
           </Card>
         </el-col>
       </el-row>
@@ -60,6 +72,7 @@ import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
+import radar from './radar';
 //vuex
 import { mapGetters } from 'vuex';
 //data
@@ -69,6 +82,7 @@ export default {
     components: {
         Card,
         Slider,
+        radar,
         SearchBar,
         ProTargetAchievement,
         ProTargetActualDiffTrend,
@@ -90,7 +104,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['gainPrograssArr', 'gainTrendArr', 'searchDate', 'homeLastParams']),
+        ...mapGetters(['gainPrograssArr', 'gainTrendArr', 'searchDate', 'homeLastParams','profitSpaceRadarObj']),
         hasSubjectName() {
             if (this.gainTrendArr.length) {
                 return this.homeProfitSpace[this.index].subject_name;
@@ -124,6 +138,10 @@ export default {
                 version: 0
             };
             API.GetGainProgress(params).then(res => {
+                let obj = {};
+                obj.name = res.data.map(el => el.subject_name);
+                obj.progress = res.data.map(el => el.progress);
+                this.$store.dispatch('SaveSpaceRadar', obj);
                 this.$store.dispatch('SaveGainProgressData', res.data);
             }).finally(() => {
                 this.loading = false;

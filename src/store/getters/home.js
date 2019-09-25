@@ -26,6 +26,8 @@ const home = {
     brandPrograssArr: state => state.home.brandPrograssArr,
     brandTrendArr: state => state.home.brandTrendArr,
     salesRadarObj: state => state.home.salesRadarObj,
+    payRadarObj: state => state.home.payRadarObj,
+    profitSpaceRadarObj: state => state.home.profitSpaceRadarObj,
 };
 
 export default home;
