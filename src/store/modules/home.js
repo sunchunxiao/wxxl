@@ -26,6 +26,7 @@ const home = {
         abilityTrendArr: [],
         brandPrograssArr: [],
         brandTrendArr: [],
+        salesRadarObj:{},
     },
     mutations: {
         SAVE_OVERVIEW_ARR: (state, arr) => {
@@ -106,6 +107,9 @@ const home = {
         SAVE_BRANDTREND_ARR: (state, arr) => {
             state.brandTrendArr = arr;
         },
+        SAVE_SALESRADAR_OBJ: (state, obj) => {
+            state.salesRadarObj = obj;
+        },
     },
     actions: {
         SaveOverviewProgressData({ commit }, arr) {
@@ -185,6 +189,9 @@ const home = {
         },
         SaveBrandTrendArr({ commit }, arr) {
             commit('SAVE_BRANDTREND_ARR', arr);
+        },
+        SaveSalesRadarObj({ commit }, obj) {
+            commit('SAVE_SALESRADAR_OBJ', obj);
         },
     }
 };

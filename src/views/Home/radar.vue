@@ -22,7 +22,7 @@ export default {
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`radar-${this.id}`));
-        if(this.data.name.length!==0 && this.data.real.length!==0 && this.data.target.length!==0){
+        if(this.data.name && this.data.real && this.data.target){
             this.renderChart();
         }
         this.debounce = _.debounce(this.chart.resize, 1000);
