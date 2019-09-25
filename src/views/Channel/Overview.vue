@@ -69,7 +69,7 @@
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"
-                      class="margin-bottom-5">宽度 : {{ data.children.length }}</div>
+                      class="margin-bottom-5">渠道个数 : {{ data.children.length }}</div>
                   </div>
                   <span class="label">
                     <span

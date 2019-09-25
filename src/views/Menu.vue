@@ -143,52 +143,6 @@ const MENUDATA = [
                 ]
             },
             {
-                title: "组织效率",
-                path: "/organization",
-                icon: "5.png",
-                children: [
-                    {
-                        title: "全景分析",
-                        path: "/overview"
-                    },
-                    {
-                        title: "组织对比",
-                        path: "/contrast"
-                    },
-                    {
-                        title: "策略优化",
-                        path: "/optimization"
-                    },
-                    {
-                        title: "策略跟踪",
-                        path: "/track"
-                    }
-                ]
-            },
-            {
-                title: "资金效率",
-                path: "/fund",
-                icon: "7.png",
-                children: [
-                    {
-                        title: "全景分析",
-                        path: "/overview"
-                    },
-                    {
-                        title: "资金对比",
-                        path: "/contrast"
-                    },
-                    {
-                        title: "策略优化",
-                        path: "/optimization"
-                    },
-                    {
-                        title: "策略跟踪",
-                        path: "/track"
-                    }
-                ]
-            },
-            {
                 title: "渠道效率",
                 path: "/channel",
                 icon: "8.png",
@@ -222,6 +176,52 @@ const MENUDATA = [
                     },
                     {
                         title: "客户对比",
+                        path: "/contrast"
+                    },
+                    {
+                        title: "策略优化",
+                        path: "/optimization"
+                    },
+                    {
+                        title: "策略跟踪",
+                        path: "/track"
+                    }
+                ]
+            },
+            {
+                title: "组织效率",
+                path: "/organization",
+                icon: "5.png",
+                children: [
+                    {
+                        title: "全景分析",
+                        path: "/overview"
+                    },
+                    {
+                        title: "组织对比",
+                        path: "/contrast"
+                    },
+                    {
+                        title: "策略优化",
+                        path: "/optimization"
+                    },
+                    {
+                        title: "策略跟踪",
+                        path: "/track"
+                    }
+                ]
+            },
+            {
+                title: "资金效率",
+                path: "/fund",
+                icon: "7.png",
+                children: [
+                    {
+                        title: "全景分析",
+                        path: "/overview"
+                    },
+                    {
+                        title: "资金对比",
                         path: "/contrast"
                     },
                     {
