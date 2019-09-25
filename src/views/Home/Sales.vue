@@ -29,9 +29,9 @@
             </el-col>
             <el-col :span="8">
               <radar
-                v-if="salesRadarData"
+                v-if="salesRadarObj"
                 :id="'salesRadar'"
-                :data="salesRadarData" />
+                :data="salesRadarObj" />
             </el-col>
             <el-col :span="24">
               <div class="card_company_target">
@@ -94,15 +94,10 @@ export default {
             style: undefined,
             opciatyBool: false,
             newParams: {},
-            salesRadarData:{
-                name: [],
-                real: [],
-                target: []
-            }
         };
     },
     computed: {
-        ...mapGetters(['salePrograssArr', 'saleTrendArr', 'searchDate', 'homeLastParams']),
+        ...mapGetters(['salePrograssArr', 'saleTrendArr', 'searchDate', 'homeLastParams','salesRadarObj']),
     },
     mounted() {
         if(Object.keys(this.searchDate).length) {
@@ -131,9 +126,11 @@ export default {
                 version:0
             };
             API.GetSaleProgress(params).then(res => {
-                this.salesRadarData.name = res.data.map(el => el.subject_name);
-                this.salesRadarData.real = res.data.map(el => el.real);
-                this.salesRadarData.target = res.data.map(el => el.target);
+                let salesRadarObj = {};
+                salesRadarObj.name = res.data.map(el => el.subject_name);
+                salesRadarObj.real = res.data.map(el => el.real);
+                salesRadarObj.target = res.data.map(el => el.target);
+                this.$store.dispatch('SaveSalesRadarObj', salesRadarObj);
                 this.$store.dispatch('SaveSaleProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
