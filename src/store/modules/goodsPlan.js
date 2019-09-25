@@ -1,33 +1,33 @@
-const goods = {
+const plan = {
     state: {
-        goodNowDataArr:[],
-        goodFirstDataArr:[],
-        goodreturnDataArr:[],
+        planNowDataArr:[],
+        planFirstDataArr:[],
+        planReturnDataArr:[],
     },
     mutations: {
-        SAVE_GOODSNOW_TREE: (state, arr) => {
-            state.goodNowDataArr = arr;
+        SAVE_PLANNOW_TREE: (state, arr) => {
+            state.planNowDataArr = arr;
         },
-        SAVE_GOODSFIRST_TREE: (state, arr) => {
-            state.goodFirstDataArr = arr;
+        SAVE_PLANFIRST_TREE: (state, arr) => {
+            state.planFirstDataArr = arr;
         },
-        SAVE_GOODSRETURN_TREE: (state, arr) => {
-            state.goodreturnDataArr = arr;
+        SAVE_PLANRETURN_TREE: (state, arr) => {
+            state.planReturnDataArr = arr;
         },
 
     },
     actions: {
-        SaveGoodNowData({ commit }, arr) {
-            commit('SAVE_GOODSNOW_TREE', arr);
+        SavePlanNowData({ commit }, arr) {
+            commit('SAVE_PLANNOW_TREE', arr);
         },
-        SaveGoodFirstData({ commit }, arr) {
-            commit('SAVE_GOODSFIRST_TREE', arr);
+        SavePlanFirstData({ commit }, arr) {
+            commit('SAVE_PLANFIRST_TREE', arr);
         },
-        SaveGoodreturnData({ commit }, arr) {
-            commit('SAVE_GOODSRETURN_TREE', arr);
+        SavePlanReturnData({ commit }, arr) {
+            commit('SAVE_PLANRETURN_TREE', arr);
         },
 
     }
 };
 
-export default goods;
+export default plan;

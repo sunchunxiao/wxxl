@@ -9,14 +9,17 @@
         <p class="text">实际 : </p>
       </div>
       <div>
-        <p :class="['value', {'no-set':targetObj.value =='未设定'}]">{{ targetObj.value }} <span class="unit">{{ targetObj.unit }}</span></p>
+        <p :class="['value', {'no-set':target.value =='未设定'}]">
+          {{ target.value }}
+          <span class="unit">{{ target.unit }}</span>
+        </p>
         <p
           class="value"
           :style="{color: color}">
-          <span>{{ realObj.value }} </span>
+          <span>{{ real.value }} </span>
           <span
             :style="{color: color}"
-            class="unit">{{ realObj.unit }}</span>
+            class="unit">{{ real.unit }}</span>
         </p>
       </div>
     </div>
@@ -26,18 +29,14 @@
 <script>
 import echarts from 'plugins/echarts';
 import { formatNumber } from 'utils/common';
-//ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 GPM毛利率 QPR品质合格率 CTR资金周转率 FAO固定资产占用率 LA库龄 PS盈利空间 PA盈利能力 PO支付能力1 PT支付能力2 DAR交期达成率 PSR产供比 CP产能 CS产能安全值 DR残品率
-const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','DAR','PSR','CP','CS','DR','JS','FD'];
-const REVERSE_TARGET = ['C', 'SA','DR']; // C成本 SA库存额 DR残品率是反向指标
-const DIVIDESUBJECT = ['RY', 'PA'];
-const MAIN_SUNBJECT = 1;
-const COLORMAP = { over: '#FD625E', below: '#01B8AA' }; // #FD625E粉红色
-const colorLeft = '#E0E3E9';
-const FONTSIZE1 = 28;
-const FONTSIZE3 = 22;
-const FONTSIZE2 = 15;
-const FONTWEIGHT = 600;
-const maxLength = 6;
+
+const SUBJECT = ['KS'];//款数
+const COLORMAP = { over: '#FD625E', below: '#01B8AA' };
+const COLORLEFT = '#E0E3E9';//未完成的圆环的颜色
+const FONTSIZE28 = 28;
+const FONTSIZE15 = 15;
+const FONTSIZE22 = 22;
+const MAXLENGTH = 6;
 
 export default {
     props: {
@@ -51,11 +50,11 @@ export default {
         };
     },
     computed: {
-        realObj() {
+        real() {
             const { real } = this.data;
             return this.calculateToShow(real);
         },
-        targetObj() {
+        target() {
             const { target } = this.data;
             return this.calculateToShow(target);
         }
@@ -73,7 +72,6 @@ export default {
         },
     },
     methods: {
-        //数据为金额统一换算
         divide(val) {
             let obj = {
                 value: "",
@@ -95,7 +93,6 @@ export default {
         },
         calculateToShow(val) {
             const { subject } = this.data;
-            //目标值为null,是未设定,为数值显示数值(0显示0)
             let obj = {
                 value: "",
                 unit: ""
@@ -104,16 +101,11 @@ export default {
                 obj.value = "未设定";
             } else {
                 if (_.includes(SUBJECT, subject)) {
-                    //首页六项效率各个冗余值单位不同
-                    if (this.data.divide && _.includes(DIVIDESUBJECT, subject)) {
-                        obj = this.divide(val);
+                    if ((val / 10000) >= 1) {
+                        obj.value = (val / 10000).toFixed(2);
+                        obj.unit = " 万";
                     } else {
-                        if ((val / 10000) >= 1) {
-                            obj.value = (val / 10000).toFixed(2);
-                            obj.unit = " 万";
-                        } else {
-                            obj.value = val;
-                        }
+                        obj.value = val;
                     }
                 } else {
                     obj = this.divide(val);
@@ -123,88 +115,34 @@ export default {
             return obj;
         },
         renderChart(data) {
-            // let  _this = this;
-            const { subject, subject_name, progress, real, target, is_main } = data;
+            const { subject_name, progress, real, target } = data;
             let valuePercent, realValue, fontSize, valueOutside, valueLeft1;
-            if (progress == null || progress < 0) {//目标未设定或者进度为负值
+            //目标未设定或者进度为负值
+            if (progress == null || progress < 0) {
                 if (!target) {
                     realValue = this.calculateToShow(real).value.toString();
-                    // if (_.includes(SUBJECT, subject)) { //tooltip显示每三位,分隔
-                    //     toolTipValue = real;
-                    // } else {
-                    //     toolTipValue = (real / 100).toFixed(2);
-                    // }
-                    if (realValue.length >= maxLength) {//无百分比显示实际值 超过圆环时 字体变小
-                        fontSize = FONTSIZE3;
+                    if (realValue.length >= MAXLENGTH) {
+                        fontSize = FONTSIZE22;
                     } else {
-                        fontSize = FONTSIZE1;
+                        fontSize = FONTSIZE28;
                     }
                 }
                 valuePercent = null;
-            } else {//目标设定
-                valuePercent = (progress * 100).toFixed(0);
-                fontSize = FONTSIZE1;//显示百分比的数据字体大小都为FONTSIZE1
-            }
-            let radiusInside, radiusOutside, center;
-            if (is_main == MAIN_SUNBJECT) {
-                radiusInside = ['67', '73']; //内环大小
-                radiusOutside = ['75', '81']; //外环大小
-                center = ['50%', '50%'];
             } else {
-                radiusInside = ['60', '80'];
-                radiusOutside = ['63', '68'];
-                center = ['50%', '56.5%'];
+                //目标设定
+                valuePercent = (progress * 100).toFixed(0);
+                fontSize = FONTSIZE28;
             }
-            let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
-
-            // 反向指标 颜色需要相反
-            if (_.includes(REVERSE_TARGET, subject)) {
-                color = valuePercent >= 100 ? COLORMAP.over : COLORMAP.below;
-            }
-            this.color = color;
+            this.color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
             //内环
             const valueLeft = valuePercent >= 100 ? 0 : 100 - valuePercent;
             //外环
             if (valuePercent > 100) {
                 valueOutside = valuePercent - 100;
                 valueLeft1 = valueOutside > 100 ? 0 : 100 - valueOutside;
-                // console.log(valueLeft, valueOutside, valueLeft1);
             }
-            let placeHolderStyle = {
-                normal: {
-                    color: colorLeft,//未完成的圆环的颜色
-                    label: {
-                        show: false
-                    },
-                    labelLine: {
-                        show: false
-                    }
-                },
-                emphasis: {
-                    color: colorLeft//未完成的圆环的颜色
-                }
-            };
             const options = {
                 backgroundColor: '#fff',
-                // tooltip: {
-                //     show:false,
-                //     hideDelay: 0,
-                //     trigger: 'item',
-                //     formatter: function(params) {
-                //         let result = [];
-                //         let span = "<span style='width:20px;display:inline-block;'></span>";
-                //         if (!progress) {
-                //             result += params.marker + " " + labelNewline(9,params.name,"</br>" + span) + " : </br>" + span + _this.formatNumber(toolTipValue) + "</br>";
-                //         } else {
-                //             result += params.marker + " " + labelNewline(9,params.name,"</br>" + span) + " : </br>" + span + params.value + '%' + "</br>";
-                //         }
-                //         return result;
-                //     },
-                //     position: function (point, params, dom) {
-                //         dom.style.transform = "translate(-50%, 0%)";
-                //         return ["50%", "50%"];
-                //     }
-                // },
                 grid: {
                     left: 0,
                     right: 0,
@@ -213,10 +151,10 @@ export default {
                     containLabel: true
                 },
                 series: [{
-                    type: 'pie',
                     name:'目标达成情况',
-                    radius: radiusInside,
-                    center: center,
+                    type: 'pie',
+                    radius: ['60', '80'],
+                    center: ['50%', '56.5%'],
                     hoverAnimation: false,
                     label: {
                         normal: {
@@ -228,7 +166,7 @@ export default {
                         name: subject_name,
                         itemStyle: {
                             normal: {
-                                color: "#fac090",
+                                color:this.id.indexOf("plan") != -1?"#2AE09E":"#FCD5B4"
                             }
                         },
                         label: {
@@ -243,8 +181,8 @@ export default {
                                         }
                                         let str = "";
                                         let valueStyle, percentStyle;
-                                        valueStyle = is_main == MAIN_SUNBJECT ? "valueSize" : "smallSize";
-                                        percentStyle = is_main == MAIN_SUNBJECT ? "percentSize" : "smallPercentSize";
+                                        valueStyle = "smallSize";
+                                        percentStyle = "smallPercentSize";
                                         for (let i of data.value.split("")) {
                                             str += `{${valueStyle}|${i}}`;
                                         }
@@ -273,7 +211,7 @@ export default {
                                 },
                                 textStyle: {
                                     fontSize: fontSize,
-                                    color: color,
+                                    color: this.color,
                                 }
                             },
                         }
@@ -281,34 +219,34 @@ export default {
                     {
                         value: valueLeft,
                         name: subject_name,
-                        // tooltip: {
-                        //     show: false
-                        // },
+                        tooltip: {
+                            show: false
+                        },
                         itemStyle: {
                             normal: {
-                                color: colorLeft,
+                                color: COLORLEFT,
                             }
                         },
                         label: {
                             normal: {
                                 formatter: function(data) {
-                                    let isMain = (is_main == MAIN_SUNBJECT );
-                                    if(data.name.length < 8){//显示字体过长换行显示
-                                        return !isMain ? `{smallSize|${data.name}}`: `{valueSize|${data.name}}`;
+                                    if(data.name.length < 8){
+                                        //显示字体过长换行显示
+                                        return `{valueSize|${data.name}}`;
                                     }else {
                                         let str = data.name.slice(0, 5);
                                         let str2 = data.name.slice(5, data.name.length);
-                                        return !isMain ? `{smallLine|${str}}\n{smallLine2|${str2}}` : `{line|${str}}\n{line2|${str2}}`;
+                                        return `{line|${str}}\n{line2|${str2}}`;
                                     }
                                 },
                                 rich: {
                                     line: {
-                                        fontSize: FONTSIZE2,
+                                        fontSize: FONTSIZE15,
                                         color: '#4d4d4d',
                                         padding:[-5,0,0,0]
                                     },
                                     line2: {
-                                        fontSize: FONTSIZE2,
+                                        fontSize: FONTSIZE15,
                                         color: '#4d4d4d',
                                         padding:[-40,0,0,0]
                                     },
@@ -329,12 +267,12 @@ export default {
                                     },
                                     valueSize: {
                                         color: '#4d4d4d',
-                                        fontSize: FONTSIZE2,
+                                        fontSize: FONTSIZE15,
                                         padding: [-15,0,0,0]
                                     }
                                 },
                                 textStyle: {
-                                    fontSize: FONTSIZE2,
+                                    fontSize: FONTSIZE15,
                                     color: '#4d4d4d'
                                 },
                                 position: 'center',
@@ -342,22 +280,23 @@ export default {
                             },
 
                         }
-                    }, {
+                    },
+                    {
                         value: 0,
                         name: '',
-                        // tooltip: {
-                        //     show: false
-                        // },
+                        tooltip: {
+                            show: false
+                        },
                         itemStyle: {
                             normal: {
-                                color: colorLeft,
+                                color: COLORLEFT,
                             }
                         },
                         label: {
                             normal: {
                                 textStyle: {
-                                    fontSize: FONTSIZE2,
-                                    fontWeight: FONTWEIGHT,
+                                    fontSize: FONTSIZE15,
+                                    fontWeight: 600,
                                     color: '#000',
                                 }
                             }
@@ -366,35 +305,46 @@ export default {
                     ]
                 },
                 {
-                    name: 'Line 2',
+                    name: '目标达成情况',
                     type: 'pie',
-                    center: center,
-                    radius: radiusOutside,
-                    // tooltip: {
-                    //     show: false
-                    // },
+                    center: ['50%', '56.5%'],
+                    radius: ['60', '80'],
+                    tooltip: {
+                        show: false
+                    },
                     label: {
                         normal: {
                             position: 'center'
                         }
                     },
-                    // itemStyle: dataStyle,
                     hoverAnimation: false,
                     data: [{
                         value: valueOutside,
                         itemStyle: {
                             emphasis: {
-                                color: color
+                                color: this.color
                             },
                             normal: {
-                                color: color
+                                color: this.color
                             }
                         }
                     }, {
                         value: valueLeft1,
-                        itemStyle: placeHolderStyle
-                    }
-                    ]
+                        itemStyle: {
+                            normal: {
+                                color: COLORLEFT,
+                                label: {
+                                    show: false
+                                },
+                                labelLine: {
+                                    show: false
+                                }
+                            },
+                            emphasis: {
+                                color: COLORLEFT
+                            }
+                        }
+                    }]
                 },
                 ]
             };

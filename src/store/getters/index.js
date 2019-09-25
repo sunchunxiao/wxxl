@@ -6,8 +6,8 @@ import customer from './customer';
 import supply from './supply';
 import date from './date';
 import home from './home';
-import goods from './goodsPlan';
-import budgets from './budgets';
+import plan from './goodsPlan';
+import budget from './budget';
 
 const getters = {
     ...product,
@@ -18,8 +18,8 @@ const getters = {
     ...supply,
     ...date,
     ...home,
-    ...goods,
-    ...budgets
+    ...plan,
+    ...budget
 };
 
 export default getters;

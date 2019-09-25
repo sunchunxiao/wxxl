@@ -1,7 +1,7 @@
-const goods = {
-    goodNowDataArr: state => state.goods.goodNowDataArr,
-    goodFirstDataArr: state => state.goods.goodFirstDataArr,
-    goodreturnDataArr: state => state.goods.goodreturnDataArr,
+const plan = {
+    planNowDataArr: state => state.plan.planNowDataArr,
+    planFirstDataArr: state => state.plan.planFirstDataArr,
+    planReturnDataArr: state => state.plan.planReturnDataArr,
 };
 
-export default goods;
+export default plan;
