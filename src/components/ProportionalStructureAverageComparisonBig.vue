@@ -185,7 +185,12 @@ export default {
                     barMaxWidth: 35,
                     itemStyle: {
                         color: function(params) {
-                            return _this.color[`${params.dataIndex}`] ? '#01b8aa' : '#b3b3b3';
+                            if (params.value > average) {
+                                return '#6696d8';
+                            } else {
+                                return _.includes(_this.color,params.dataIndex) ? '#01b8aa' : '#b3b3b3';
+                            }
+                            // return _this.color[`${params.dataIndex}`] ? '#01b8aa' : '#b3b3b3';
                         }
                     },
                     emphasis: {
