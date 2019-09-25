@@ -30,7 +30,8 @@ import { formatNumber, labelNewline } from 'utils/common';
 const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','DAR','PSR','CP','CS','DR'];
 const REVERSE_TARGET = ['C', 'SA','DR']; // C成本 SA库存额 DR残品率是反向指标
 const DIVIDESUBJECT = ['RY', 'PA'];
-const MAIN_SUNBJECT = 1;
+
+// const MAIN_SUNBJECT = 1;
 const COLORMAP = { over: '#FD625E', below: '#01B8AA' }; // #FD625E粉红色
 const colorLeft = '#E0E3E9';
 const FONTSIZE1 = 28;
@@ -124,7 +125,7 @@ export default {
         },
         renderChart(data) {
             let  _this = this;
-            const { subject, subject_name, progress, real, target, is_main } = data;
+            const { subject, subject_name, progress, real, target } = data;
             let valuePercent, realValue, toolTipValue, fontSize, valueOutside, valueLeft1;
             if (progress == null || progress < 0) {//目标未设定或者进度为负值
                 if (!target) {
@@ -146,15 +147,9 @@ export default {
                 fontSize = FONTSIZE1;//显示百分比的数据字体大小都为FONTSIZE1
             }
             let radiusInside, radiusOutside, center;
-            if (is_main == MAIN_SUNBJECT) {
-                radiusInside = ['67', '73']; //内环大小
-                radiusOutside = ['75', '81']; //外环大小
-                center = ['50%', '50%'];
-            } else {
-                radiusInside = ['55', '61'];
-                radiusOutside = ['63', '68'];
-                center = ['50%', '56.5%'];
-            }
+            radiusInside = ['67', '73']; //内环大小
+            radiusOutside = ['75', '81']; //外环大小
+            center = ['50%', '50%'];
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
 
             // 反向指标 颜色需要相反
@@ -168,8 +163,13 @@ export default {
             if (valuePercent > 100) {
                 valueOutside = valuePercent - 100;
                 valueLeft1 = valueOutside > 100 ? 0 : 100 - valueOutside;
-                // console.log(valueLeft, valueOutside, valueLeft1);
+            } else {
+                //小于100%均为双环，显示灰色
+                valueOutside = 0;
+                valueLeft1 = valueOutside > 100 ? 0 : 100 - valueOutside;
             }
+            // console.log(valueLeft, valueOutside, valueLeft1);
+
             let placeHolderStyle = {
                 normal: {
                     color: colorLeft,//未完成的圆环的颜色
@@ -242,8 +242,8 @@ export default {
                                         }
                                         let str = "";
                                         let valueStyle, percentStyle;
-                                        valueStyle = is_main == MAIN_SUNBJECT ? "valueSize" : "smallSize";
-                                        percentStyle = is_main == MAIN_SUNBJECT ? "percentSize" : "smallPercentSize";
+                                        valueStyle = "valueSize" ;
+                                        percentStyle = "percentSize";
                                         for (let i of data.value.split("")) {
                                             str += `{${valueStyle}|${i}}`;
                                         }
@@ -265,10 +265,10 @@ export default {
                                         padding: [-10,0,0,5],
                                         fontSize: 40
                                     },
-                                    smallSize: {
-                                        fontSize: 34,
-                                        padding: [-20,0,0,3]
-                                    }
+                                    // smallSize: {
+                                    //     fontSize: 34,
+                                    //     padding: [-20,0,0,3]
+                                    // }
                                 },
                                 textStyle: {
                                     fontSize: fontSize,
@@ -291,13 +291,13 @@ export default {
                         label: {
                             normal: {
                                 formatter: function(data) {
-                                    let isMain = (is_main == MAIN_SUNBJECT );
+                                    // let isMain = (is_main == MAIN_SUNBJECT );
                                     if(data.name.length < 8){//显示字体过长换行显示
-                                        return !isMain ? `{smallSize|${data.name}}`: `{valueSize|${data.name}}`;
-                                    }else {
+                                        return `{valueSize|${data.name}}`;
+                                    } else {
                                         let str = data.name.slice(0, 5);
                                         let str2 = data.name.slice(5, data.name.length);
-                                        return !isMain ? `{smallLine|${str}}\n{smallLine2|${str2}}` : `{line|${str}}\n{line2|${str2}}`;
+                                        return `{line|${str}}\n{line2|${str2}}`;
                                     }
                                 },
                                 rich: {
