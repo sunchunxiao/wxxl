@@ -4,49 +4,58 @@
       <el-col
         :span="24"
         class="home_overflow common">
-        <el-row
-          id="profit">
-          <Card
-            v-loading="loading"
-            class="min-height-400">
-            <slider
-              v-if="profitPrograssArr.length"
-              height="296px"
-              :min-move-num="50">
-              <template v-for="(item, index) in profitPrograssArr">
-                <el-col
-                  v-if="profitPrograssArr.length>0"
-                  :key="index"
-                  style="width:198px">
-                  <ProTargetAchievement
-                    :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                    @click.native="clickIndex(index)"
-                    :id="`${index}`"
-                    :data="item" />
-                </el-col>
-              </template>
-            </slider>
-            <div class="card_company_target">
-              <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-                <span class="card_title">{{ profit[index].subject_name }} </span>
-                <span
-                  class="card_title"
-                  v-if="profit[index].subject_unit"> ( {{ profit[index].subject_unit }} )</span>
-              </el-row>
-              <template>
-                <el-col
-                  v-if="profitTrendArr.length>0"
-                  :key="index">
-                  <ProTargetActualDiffTrend
-                    :unit="profit[index].subject_unit"
-                    :show-detail="false"
-                    :id="`overview${index}`"
-                    :data="profitTrendArr[index]" />
-                </el-col>
-              </template>
-            </div>
-          </Card>
-        </el-row>
+        <Card
+          v-loading="loading"
+          class="min-height-400">
+          <el-row>
+            <el-col :span="16">
+              <slider
+                v-if="profitPrograssArr.length"
+                height="295px"
+                :min-move-num="50">
+                <template v-for="(item, index) in profitPrograssArr">
+                  <el-col
+                    v-if="profitPrograssArr.length>0"
+                    :key="index"
+                    style="width:198px">
+                    <ProTargetAchievement
+                      :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                      @click.native="clickIndex(index)"
+                      :id="`${index}`"
+                      :data="item" />
+                  </el-col>
+                </template>
+              </slider>
+            </el-col>
+            <el-col :span="8">
+              <radar
+                v-if="profitRadarObj"
+                :id="'profitRadar'"
+                :data="profitRadarObj" />
+            </el-col>
+            <el-col :span="24">
+              <div class="card_company_target">
+                <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
+                  <span class="card_title">{{ profit[index].subject_name }} </span>
+                  <span
+                    class="card_title"
+                    v-if="profit[index].subject_unit"> ( {{ profit[index].subject_unit }} )</span>
+                </el-row>
+                <template>
+                  <el-col
+                    v-if="profitTrendArr.length>0"
+                    :key="index">
+                    <ProTargetActualDiffTrend
+                      :unit="profit[index].subject_unit"
+                      :show-detail="false"
+                      :id="`overview${index}`"
+                      :data="profitTrendArr[index]" />
+                  </el-col>
+                </template>
+              </div>
+            </el-col>
+          </el-row>
+        </Card>
       </el-col>
     </el-row>
   </div>
@@ -57,13 +66,10 @@ import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
 import Slider from 'components/Slider';
-// 目标达成情况总览
-import ProTargetAchievement from 'components/ProTargetAchievement';
-// 目标-实际-差异趋势分析
-import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-//vuex
+import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
+import radar from './radar';
+import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';// 目标-实际-差异趋势分析
 import { mapGetters } from 'vuex';
-//data
 import { profit } from 'data/subject.js';
 
 export default {
@@ -72,6 +78,7 @@ export default {
         Slider,
         SearchBar,
         ProTargetAchievement,
+        radar,
         ProTargetActualDiffTrend,
     },
     data() {
@@ -79,7 +86,7 @@ export default {
             profit: profit(),
             form: {
                 pt: '', // 周期类型
-                search: '', // 暂时没有接口 先这样
+                search: '',
             },
             cid: '',
             loading: false,
@@ -91,7 +98,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['profitPrograssArr','profitTrendArr', 'searchDate', 'homeLastParams']),
+        ...mapGetters(['profitPrograssArr','profitTrendArr', 'searchDate', 'homeLastParams','profitRadarObj']),
     },
     mounted() {
         if(Object.keys(this.searchDate).length){
@@ -120,6 +127,11 @@ export default {
                 version:0
             };
             API.GetProfitProgress(params).then(res => {
+                let profitRadarObj = {};
+                profitRadarObj.name = res.data.map(el => el.subject_name);
+                profitRadarObj.real = res.data.map(el => el.real);
+                profitRadarObj.target = res.data.map(el => el.target);
+                this.$store.dispatch('SaveProfitRadarObj', profitRadarObj);
                 this.$store.dispatch('SaveProfitProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
@@ -178,9 +190,6 @@ export default {
                     pt: '月',
                     sDate: '2018-01-01',
                     eDate: '2018-06-01',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
                 };
             }
         },

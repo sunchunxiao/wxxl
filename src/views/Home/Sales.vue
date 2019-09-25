@@ -68,10 +68,9 @@ import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
 import radar from './radar';
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';// 目标-实际-差异趋势分析
-
 import { mapGetters } from 'vuex';
-//data
 import { sales } from 'data/subject.js';
+
 export default {
     components: {
         Card,
