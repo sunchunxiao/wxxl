@@ -12,12 +12,12 @@ html, body {
 }
 
 /* margin */
-@each $px in 10 50 {
+@each $px in 5 10 20 30 40 50 {
     .margin-top-#{$px} {
         margin-top: 1px * $px;
     }
 }
-@each $px in 5 10 20 {
+@each $px in 5 10 20 30 40 50{
     .margin-bottom-#{$px} {
         margin-bottom: 1px * $px;
     }
