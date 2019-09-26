@@ -9,43 +9,57 @@
             v-loading="loading"
             id="pay"
             class="min-height-400">
-            <slider
-              v-if="payPrograssArr.length>0"
-              height="296px"
-              :min-move-num="50">
-              <template v-for="(item, index) in payPrograssArr">
-                <el-col
+            <el-row>
+              <el-col :span="16">
+                <slider
                   v-if="payPrograssArr.length>0"
-                  :key="index"
-                  style="width:198px">
-                  <ProTargetAchievement
-                    :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                    @click.native="clickIndex(index)"
-                    :id="`${index}`"
-                    :data="item" />
-                </el-col>
-              </template>
-            </slider>
-            <div class="card_company_target">
-              <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-                <span class="card_title">{{ hasSubjectName }}</span>
-                <!-- 单位 -->
-                <span
-                  class="card_title"
-                  v-if="homePay[index].subject_unit"> ( {{ homePay[index].subject_unit }} )</span>
-              </el-row>
-              <template>
-                <el-col
-                  v-if="payTrendArr.length>0"
-                  :key="index">
-                  <ProTargetActualDiffTrend
-                    :unit="homePay[index].subject_unit"
-                    :show-detail="false"
-                    :id="`product${index}`"
-                    :data="payTrendArr[index]" />
-                </el-col>
-              </template>
-            </div>
+                  height="296px"
+                  :min-move-num="50">
+                  <template v-for="(item, index) in payPrograssArr">
+                    <el-col
+                      v-if="payPrograssArr.length>0"
+                      :key="index"
+                      style="width:198px">
+                      <ProTargetAchievement
+                        :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                        @click.native="clickIndex(index)"
+                        :id="`${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </slider>
+              </el-col>
+              <el-col
+                :gutter="10"
+                :span="8">
+                <radar
+                  v-if="payRadarObj.name"
+                  :id="'payRadar'"
+                  :data="payRadarObj" />
+              </el-col>
+              <el-col :span="24">
+                <div class="card_company_target">
+                  <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
+                    <span class="card_title">{{ hasSubjectName }}</span>
+                    <!-- 单位 -->
+                    <span
+                      class="card_title"
+                      v-if="homePay[index].subject_unit"> ( {{ homePay[index].subject_unit }} )</span>
+                  </el-row>
+                  <template>
+                    <el-col
+                      v-if="payTrendArr.length>0"
+                      :key="index">
+                      <ProTargetActualDiffTrend
+                        :unit="homePay[index].subject_unit"
+                        :show-detail="false"
+                        :id="`product${index}`"
+                        :data="payTrendArr[index]" />
+                    </el-col>
+                  </template>
+                </div>
+              </el-col>
+            </el-row>
           </Card>
         </el-col>
       </el-row>
@@ -62,6 +76,7 @@ import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
+import radar from './radar';
 //vuex
 import { mapGetters } from 'vuex';
 //data
@@ -71,6 +86,7 @@ export default {
     components: {
         Card,
         Slider,
+        radar,
         SearchBar,
         ProTargetAchievement,
         ProTargetActualDiffTrend,
@@ -92,7 +108,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['payPrograssArr', 'payTrendArr', 'searchDate', 'homeLastParams']),
+        ...mapGetters(['payPrograssArr', 'payTrendArr', 'searchDate', 'homeLastParams','payRadarObj']),
         hasSubjectName() {
             return this.homePay[this.index].subject_name;
         }
@@ -125,6 +141,11 @@ export default {
             };
             API.GetPayProgress(params).then(res => {
                 res.data.map(i=>{i.divide=1;});
+                let obj = {};
+                obj.name = res.data.map(el=>el.subject_name);
+                obj.progress = res.data.map(el=>el.progress);
+                // obj.target = res.data.map(el=>el.target);
+                this.$store.dispatch('SavePayRadar', obj);
                 this.$store.dispatch('SavePayProgressData', res.data);
             }).finally(() => {
                 this.loading = false;

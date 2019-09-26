@@ -22,9 +22,7 @@ export default {
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`radar-${this.id}`));
-        if(this.data.name && this.data.real && this.data.target){
-            this.renderChart();
-        }
+        this.renderChart(this.data);
         this.debounce = _.debounce(this.chart.resize, 1000);
         window.addEventListener('resize', this.debounce);
     },
@@ -37,32 +35,27 @@ export default {
         },
     },
     methods: {
-        renderChart() {
+        renderChart(data) {
             let arr = [];
-            for (let i of this.data.name) {
+            for (let i of data.name) {
                 arr.push({
                     name: i,
                     min:0,
-                    max: 150
+                    max: 2
                 });
             }
             const options = {
-                legend: {
-                    width:10,
-                    height:10,
-                    top: 60,
-                    data: ['实际', '目标'],
-                    right:'20%',
-                },
                 tooltip: {
                     formatter: function(params) {
                         let result =[];
-                        result = params.seriesName +"</br>";
                         for (let i=0; i<params.name.length; i++) {
                             result += params.name[i] + " : " + params.value[i] +"</br>";
                         }
                         return result;
                     },
+                    position: function (point) {
+                        return ["50%", point[1] + 25];
+                    }
                 },
                 scale: true,
                 radar: {
@@ -95,13 +88,13 @@ export default {
                 },
                 series: [
                     {
-                        name: '实际',
+                        // name: '实际',
                         type: 'radar',
                         color:'red',
                         data : [
                             {
-                                value : this.data.real,
-                                name: this.data.name,
+                                value : data.progress,
+                                name: data.name,
                                 label: {
                                     normal: {
                                         show: false,
@@ -124,40 +117,6 @@ export default {
                                 //拐点线颜色
                                 lineStyle: {
                                     color:'#FD625E',
-                                    width: 2
-                                }
-                            },
-                            emphasis: {
-                                lineStyle: {
-                                    width: 3
-                                }
-                            }
-                        },
-                    },{
-                        name: '目标',
-                        type: 'radar',
-                        color:'green',
-                        data : [
-                            {
-                                value : this.data.target,
-                                name: this.data.name,
-                                label: {
-                                    normal: {
-                                        show: false,
-                                        color:'#000',
-                                    },
-                                },
-                                areaStyle: {
-                                    normal: {
-                                        color: 'rgba(0, 0, 0, 0)'
-                                    }
-                                }
-                            },
-                        ],
-                        itemStyle : {
-                            normal : {
-                                lineStyle: {
-                                    color:'rgb(150,206,93)',
                                     width: 2
                                 }
                             },

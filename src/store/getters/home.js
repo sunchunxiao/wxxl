@@ -27,6 +27,8 @@ const home = {
     brandTrendArr: state => state.home.brandTrendArr,
     salesRadarObj: state => state.home.salesRadarObj,
     profitRadarObj: state => state.home.profitRadarObj,
+    payRadarObj: state => state.home.payRadarObj,
+    profitSpaceRadarObj: state => state.home.profitSpaceRadarObj,
 };
 
 export default home;
