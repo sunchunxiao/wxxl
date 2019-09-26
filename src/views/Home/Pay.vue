@@ -30,10 +30,10 @@
                 </slider>
               </el-col>
               <el-col
-                :gutter="10"
+                style="padding:10px"
                 :span="8">
                 <radar
-                  v-if="payRadarObj.name"
+                  v-if="payRadarObj"
                   :id="'payRadar'"
                   :data="payRadarObj" />
               </el-col>
@@ -144,7 +144,6 @@ export default {
                 let obj = {};
                 obj.name = res.data.map(el=>el.subject_name);
                 obj.progress = res.data.map(el=>el.progress);
-                // obj.target = res.data.map(el=>el.target);
                 this.$store.dispatch('SavePayRadar', obj);
                 this.$store.dispatch('SavePayProgressData', res.data);
             }).finally(() => {

@@ -31,7 +31,7 @@
               </el-col>
               <el-col :span="8">
                 <radar
-                  v-if="profitSpaceRadarObj.name"
+                  v-if="profitSpaceRadarObj"
                   :id="'profitSpaceRadar'"
                   :data="profitSpaceRadarObj" />
               </el-col>
