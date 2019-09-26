@@ -57,9 +57,9 @@ export default {
                         for (let i=0; i<params.name.length; i++) {
                             //达成率为null时
                             if (params.value[i] == null) {
-                                result += params.name[i] + " : " + '暂无' +"</br>";
-                            } else {
-                                result += params.name[i] + " : " + params.value[i] +"</br>";
+                                result += params.name[i]+'达成率' + " : " + '暂无' +"</br>";
+                            }else {
+                                result += params.name[i]+'达成率' + " : " + (params.value[i]*100).toFixed(0)+'%' +"</br>";
                             }
                         }
                         return result;
