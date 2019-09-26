@@ -9,50 +9,50 @@
           class="min-height-400">
           <el-row>
             <el-col :span="16">
-                <slider
+              <slider
+                v-if="channelArr.length>0"
+                height="295px"
+                :min-move-num="50">
+                <template v-for="(item, index) in channelArr">
+                  <el-col
                     v-if="channelArr.length>0"
-                    height="295px"
-                    :min-move-num="50">
-                    <template v-for="(item, index) in channelArr">
-                    <el-col
-                        v-if="channelArr.length>0"
-                        :key="index"
-                        style="width:198px">
-                        <ProTargetAchievement
-                            :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                            @click.native="clickIndex(index)"
-                            :id="`${index}`"
-                            :data="item" />
-                    </el-col>
-                    </template>
-                </slider>
+                    :key="index"
+                    style="width:198px">
+                    <ProTargetAchievement
+                      :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                      @click.native="clickIndex(index)"
+                      :id="`${index}`"
+                      :data="item" />
+                  </el-col>
+                </template>
+              </slider>
             </el-col>
             <el-col :span="8">
-                <radar
-                    v-if="channelRadarObj"
-                    :id="'channelRadar'"
-                    :data="channelRadarObj" />
+              <radar
+                v-if="channelRadarObj"
+                :id="'channelRadar'"
+                :data="channelRadarObj" />
             </el-col>
             <el-col :span="24">
-                <div class="card_company_target">
-                    <el-row class="margin-top-20 margin-bottom-20 align">目标-实际-差异趋势分析:
-                    <span class="card_title">{{ hasSubjectName }}</span>
-                    <span
-                        class="card_title"
-                        v-if="homeChannel[index].subject_unit"> ( {{ homeChannel[index].subject_unit }} )</span>
-                    </el-row>
-                    <template>
-                    <el-col
-                        v-if="channelTrendArr.length>0"
-                        :key="index">
-                        <ProTargetActualDiffTrend
-                        :unit="homeChannel[index].subject_unit"
-                        :show-detail="false"
-                        :id="`channel${index}`"
-                        :data="channelTrendArr[index]" />
-                    </el-col>
-                    </template>
-                </div>
+              <div class="card_company_target">
+                <el-row class="margin-top-20 margin-bottom-20 align">目标-实际-差异趋势分析:
+                  <span class="card_title">{{ hasSubjectName }}</span>
+                  <span
+                    class="card_title"
+                    v-if="homeChannel[index].subject_unit"> ( {{ homeChannel[index].subject_unit }} )</span>
+                </el-row>
+                <template>
+                  <el-col
+                    v-if="channelTrendArr.length>0"
+                    :key="index">
+                    <ProTargetActualDiffTrend
+                      :unit="homeChannel[index].subject_unit"
+                      :show-detail="false"
+                      :id="`channel${index}`"
+                      :data="channelTrendArr[index]" />
+                  </el-col>
+                </template>
+              </div>
             </el-col>
           </el-row>
         </Card>
@@ -87,7 +87,7 @@ export default {
             homeChannel: homeChannel(),
             form: {
                 pt: '', // 周期类型
-                search: '', 
+                search: '',
             },
             cid: '',
             dataSales: dataSales(),// mock
