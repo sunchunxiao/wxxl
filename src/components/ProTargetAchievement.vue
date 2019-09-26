@@ -147,8 +147,8 @@ export default {
                 fontSize = FONTSIZE1;//显示百分比的数据字体大小都为FONTSIZE1
             }
             let radiusInside, radiusOutside, center;
-            radiusInside = ['67', '73']; //内环大小
-            radiusOutside = ['75', '81']; //外环大小
+            radiusInside = ['62', '68']; //内环大小
+            radiusOutside = ['70', '76']; //外环大小
             center = ['50%', '50%'];
             let color = valuePercent >= 100 ? COLORMAP.below : COLORMAP.over;
 
@@ -408,7 +408,7 @@ export default {
     width: 100%;
     .pie {
         width: 100%;
-        height: 198px;
+        height: 180px;
         >div{
             margin: 0 auto !important;
         }
