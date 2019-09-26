@@ -28,6 +28,12 @@ const home = {
         brandTrendArr: [],
         salesRadarObj: {},
         profitRadarObj: {},
+        productRadarObj: {},
+        channelRadarObj: {},
+        customerRadarObj: {},
+        organizationRadarObj: {},
+        fundRadarObj: {},
+        equityRadarObj: {},
         payRadarObj: {},
         profitSpaceRadarObj: {},
     },
@@ -115,6 +121,24 @@ const home = {
         },
         SAVE_PROFITRADAR_OBJ: (state, obj) => {
             state.profitRadarObj = obj;
+        },
+        SAVE_PRODUCTRADAR_OBJ: (state, obj) => {
+            state.productRadarObj = obj;
+        },
+        SAVE_CHANNELRADAR_OBJ: (state, obj) => {
+            state.channelRadarObj = obj;
+        },
+        SAVE_CUSTOMERRADAR_OBJ: (state, obj) => {
+            state.customerRadarObj = obj;
+        },
+        SAVE_ORGANIZATIONRADAR_OBJ: (state, obj) => {
+            state.organizationRadarObj = obj;
+        },
+        SAVE_FUNDRADAR_OBJ: (state, obj) => {
+            state.fundRadarObj = obj;
+        },
+        SAVE_EQUITYRADAR_OBJ: (state, obj) => {
+            state.equityRadarObj = obj;
         },
         SAVE_PAYRADAR_OBJ: (state, obj) => {
             state.payRadarObj = obj;
@@ -209,6 +233,30 @@ const home = {
         //持续竞争力
         SaveProfitRadarObj({ commit }, obj) {
             commit('SAVE_PROFITRADAR_OBJ', obj);
+        },
+        //核心竞争力_产品效率
+        SaveProductRadarObj({ commit }, obj) {
+            commit('SAVE_PRODUCTRADAR_OBJ', obj);
+        },
+        //核心竞争力_渠道效率
+        SaveChannelRadarObj({ commit }, obj) {
+            commit('SAVE_CHANNELRADAR_OBJ', obj);
+        },
+        //核心竞争力_客户效率
+        SaveCustomerRadarObj({ commit }, obj) {
+            commit('SAVE_CUSTOMERRADAR_OBJ', obj);
+        },
+        //核心竞争力_组织效率
+        SaveOrganizationRadarObj({ commit }, obj) {
+            commit('SAVE_ORGANIZATIONRADAR_OBJ', obj);
+        },
+        //核心竞争力_资金效率
+        SaveFundRadarObj({ commit }, obj) {
+            commit('SAVE_FUNDRADAR_OBJ', obj);
+        },
+        //品牌价值
+        SaveEquityRadarObj({ commit }, obj) {
+            commit('SAVE_EQUITYRADAR_OBJ', obj);
         },
         // 支付
         SavePayRadar({ commit }, obj) {

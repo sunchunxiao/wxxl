@@ -88,7 +88,6 @@ export default {
             },
             cid: '',
             loading: false,
-            //index
             index: 0,
             style: undefined,
             opciatyBool: false,

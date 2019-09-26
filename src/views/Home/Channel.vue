@@ -6,44 +6,55 @@
         class="home_overflow common">
         <Card
           v-loading="loading"
-          id="channel"
           class="min-height-400">
-          <slider
-            v-if="channelArr.length>0"
-            height="296px"
-            :min-move-num="50">
-            <template v-for="(item, index) in channelArr">
-              <el-col
-                v-if="channelArr.length>0"
-                :key="index"
-                style="width:198px">
-                <ProTargetAchievement
-                  :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                  @click.native="clickIndex(index)"
-                  :id="`${index}`"
-                  :data="item" />
-              </el-col>
-            </template>
-          </slider>
-          <div class="card_company_target">
-            <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-              <span class="card_title">{{ hasSubjectName }}</span>
-              <span
-                class="card_title"
-                v-if="homeChannel[index].subject_unit"> ( {{ homeChannel[index].subject_unit }} )</span>
-            </el-row>
-            <template>
-              <el-col
-                v-if="channelTrendArr.length>0"
-                :key="index">
-                <ProTargetActualDiffTrend
-                  :unit="homeChannel[index].subject_unit"
-                  :show-detail="false"
-                  :id="`channel${index}`"
-                  :data="channelTrendArr[index]" />
-              </el-col>
-            </template>
-          </div>
+          <el-row>
+            <el-col :span="16">
+                <slider
+                    v-if="channelArr.length>0"
+                    height="295px"
+                    :min-move-num="50">
+                    <template v-for="(item, index) in channelArr">
+                    <el-col
+                        v-if="channelArr.length>0"
+                        :key="index"
+                        style="width:198px">
+                        <ProTargetAchievement
+                            :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                            @click.native="clickIndex(index)"
+                            :id="`${index}`"
+                            :data="item" />
+                    </el-col>
+                    </template>
+                </slider>
+            </el-col>
+            <el-col :span="8">
+                <radar
+                    v-if="channelRadarObj"
+                    :id="'channelRadar'"
+                    :data="channelRadarObj" />
+            </el-col>
+            <el-col :span="24">
+                <div class="card_company_target">
+                    <el-row class="margin-top-20 margin-bottom-20 align">目标-实际-差异趋势分析:
+                    <span class="card_title">{{ hasSubjectName }}</span>
+                    <span
+                        class="card_title"
+                        v-if="homeChannel[index].subject_unit"> ( {{ homeChannel[index].subject_unit }} )</span>
+                    </el-row>
+                    <template>
+                    <el-col
+                        v-if="channelTrendArr.length>0"
+                        :key="index">
+                        <ProTargetActualDiffTrend
+                        :unit="homeChannel[index].subject_unit"
+                        :show-detail="false"
+                        :id="`channel${index}`"
+                        :data="channelTrendArr[index]" />
+                    </el-col>
+                    </template>
+                </div>
+            </el-col>
+          </el-row>
         </Card>
       </el-col>
     </el-row>
@@ -55,14 +66,11 @@ import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
 import Slider from 'components/Slider';
-// 目标达成情况总览
-import ProTargetAchievement from 'components/ProTargetAchievement';
-// 目标-实际-差异趋势分析
-import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-//mock
+import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
+import radar from './radar';
+import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';// 目标-实际-差异趋势分析
 import { dataSales } from './mock/trendData';
 import { mapGetters } from 'vuex';
-//data
 import { homeChannel } from 'data/subject.js';
 
 export default {
@@ -71,6 +79,7 @@ export default {
         Slider,
         SearchBar,
         ProTargetAchievement,
+        radar,
         ProTargetActualDiffTrend,
     },
     data() {
@@ -78,13 +87,11 @@ export default {
             homeChannel: homeChannel(),
             form: {
                 pt: '', // 周期类型
-                search: '', // 暂时没有接口 先这样
+                search: '', 
             },
             cid: '',
-            // mock
-            dataSales: dataSales(),
+            dataSales: dataSales(),// mock
             loading: false,
-            //index
             index: 0,
             post: 1,
             style: undefined,
@@ -93,7 +100,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['channelArr', 'channelTrendArr', 'searchDate','homeLastParams']),
+        ...mapGetters(['channelArr', 'channelTrendArr', 'searchDate','homeLastParams','channelRadarObj']),
         hasSubjectName() {
             if (this.channelTrendArr.length) {
                 return this.channelTrendArr[this.index].subject_name;
@@ -127,6 +134,10 @@ export default {
             this.loading = true;
             API.GetChannelProgress(params).then(res => {
                 res.data.map(i=>{i.divide=1;});
+                let channelRadarObj = {};
+                channelRadarObj.name = res.data.map(el => el.subject_name);
+                channelRadarObj.progress = res.data.map(el => el.progress);
+                this.$store.dispatch('SaveChannelRadarObj', channelRadarObj);
                 this.$store.dispatch('SaveChannelProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
@@ -184,9 +195,6 @@ export default {
                     pt: '月',
                     sDate: '2018-01-01',
                     eDate: '2018-06-01',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
                 };
             }
         },

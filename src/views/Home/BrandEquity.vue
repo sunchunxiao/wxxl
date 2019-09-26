@@ -7,44 +7,55 @@
           class="home_overflow common">
           <Card
             v-loading="loading"
-            id="brand"
             class="min-height-400">
-            <slider
-              v-if="brandPrograssArr.length>0"
-              height="296px"
-              :min-move-num="50">
-              <template v-for="(item, index) in brandPrograssArr">
-                <el-col
-                  v-if="brandPrograssArr.length>0"
-                  :key="index"
-                  style="width:198px">
-                  <ProTargetAchievement
-                    :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                    @click.native="clickIndex(index)"
-                    :id="`${index}`"
-                    :data="item" />
+            <el-row>
+                <el-col :span="16">
+                    <slider
+                        v-if="brandPrograssArr.length>0"
+                        height="295px"
+                        :min-move-num="50">
+                        <template v-for="(item, index) in brandPrograssArr">
+                            <el-col
+                            v-if="brandPrograssArr.length>0"
+                            :key="index"
+                            style="width:198px">
+                            <ProTargetAchievement
+                                :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                                @click.native="clickIndex(index)"
+                                :id="`${index}`"
+                                :data="item" />
+                            </el-col>
+                        </template>
+                    </slider>
                 </el-col>
-              </template>
-            </slider>
-            <div class="card_company_target">
-              <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-                <span class="card_title">{{ hasSubjectName }} </span>
-                <span
-                  class="card_title"
-                  v-if="homeEquity[index].subject_unit"> ( {{ homeEquity[index].subject_unit }} )</span>
-              </el-row>
-              <template>
-                <el-col
-                  v-if="brandTrendArr.length>0"
-                  :key="index">
-                  <ProTargetActualDiffTrend
-                    :unit="homeEquity[index].subject_unit"
-                    :show-detail="false"
-                    :id="`product${index}`"
-                    :data="brandTrendArr[index]" />
+                <el-col :span="8">
+                    <radar
+                        v-if="equityRadarObj"
+                        :id="'equityRadar'"
+                        :data="equityRadarObj" />
                 </el-col>
-              </template>
-            </div>
+                <el-col :span="24">
+                    <div class="card_company_target">
+                        <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
+                            <span class="card_title">{{ hasSubjectName }} </span>
+                            <span
+                            class="card_title"
+                            v-if="homeEquity[index].subject_unit"> ( {{ homeEquity[index].subject_unit }} )</span>
+                        </el-row>
+                        <template>
+                            <el-col
+                            v-if="brandTrendArr.length>0"
+                            :key="index">
+                            <ProTargetActualDiffTrend
+                                :unit="homeEquity[index].subject_unit"
+                                :show-detail="false"
+                                :id="`product${index}`"
+                                :data="brandTrendArr[index]" />
+                            </el-col>
+                        </template>
+                    </div>
+                </el-col>
+            </el-row>
           </Card>
         </el-col>
       </el-row>
@@ -57,13 +68,10 @@ import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
 import Slider from 'components/Slider';
-// 目标达成情况总览
-import ProTargetAchievement from 'components/ProTargetAchievement';
-// 目标-实际-差异趋势分析
-import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
-//vuex
+import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
+import radar from './radar';
+import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';// 目标-实际-差异趋势分析
 import { mapGetters } from 'vuex';
-//data
 import { homeEquity } from 'data/subject.js';
 
 export default {
@@ -72,6 +80,7 @@ export default {
         Slider,
         SearchBar,
         ProTargetAchievement,
+        radar,
         ProTargetActualDiffTrend,
     },
     data() {
@@ -79,11 +88,10 @@ export default {
             homeEquity: homeEquity(),
             form: {
                 pt: '', // 周期类型
-                search: '', // 暂时没有接口 先这样
+                search: '',
             },
             cid: '',
             loading: false,
-            //index
             index: 0,
             style: undefined,
             opciatyBool: false,
@@ -91,7 +99,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['brandPrograssArr', 'brandTrendArr', 'searchDate','homeLastParams']),
+        ...mapGetters(['brandPrograssArr', 'brandTrendArr', 'searchDate','homeLastParams','equityRadarObj']),
         hasSubjectName() {
             return this.homeEquity[this.index].subject_name;
         }
@@ -130,6 +138,10 @@ export default {
                 version: 0
             };
             API.GetBrandProgress(params).then(res => {
+                let equityRadarObj = {};
+                equityRadarObj.name = res.data.map(el => el.subject_name);
+                equityRadarObj.progress = res.data.map(el => el.progress);
+                this.$store.dispatch('SaveEquityRadarObj', equityRadarObj);
                 this.$store.dispatch('SaveBrandProgressData', res.data);
             }).finally(() => {
                 this.loading = false;

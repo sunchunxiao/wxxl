@@ -27,6 +27,12 @@ const home = {
     brandTrendArr: state => state.home.brandTrendArr,
     salesRadarObj: state => state.home.salesRadarObj,
     profitRadarObj: state => state.home.profitRadarObj,
+    productRadarObj: state => state.home.productRadarObj,
+    channelRadarObj: state => state.home.channelRadarObj,
+    customerRadarObj: state => state.home.customerRadarObj,
+    organizationRadarObj: state => state.home.organizationRadarObj,
+    fundRadarObj: state => state.home.fundRadarObj,
+    equityRadarObj: state => state.home.equityRadarObj,
     payRadarObj: state => state.home.payRadarObj,
     profitSpaceRadarObj: state => state.home.profitSpaceRadarObj,
 };

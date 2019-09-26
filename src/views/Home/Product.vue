@@ -6,44 +6,55 @@
         class="home_overflow common">
         <Card
           v-loading="loading"
-          id="produce"
           class="min-height-400">
-          <slider
-            v-if="productArr.length>0"
-            height="296px"
-            :min-move-num="50">
-            <template v-for="(item, index) in productArr">
-              <el-col
-                v-if="productArr.length>0"
-                :key="index"
-                style="width:198px">
-                <ProTargetAchievement
-                  :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                  @click.native="clickIndex(index)"
-                  :id="`${index}`"
-                  :data="item" />
-              </el-col>
-            </template>
-          </slider>
-          <div class="card_company_target">
-            <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-              <span class="card_title">{{ hasSubjectName }}</span>
-              <span
-                class="card_title"
-                v-if="homeProduct[index].subject_unit"> ( {{ homeProduct[index].subject_unit }} )</span>
-            </el-row>
-            <template>
-              <el-col
-                v-if="productTrendArr.length>0"
-                :key="index">
-                <ProTargetActualDiffTrend
-                  :unit="homeProduct[index].subject_unit"
-                  :show-detail="false"
-                  :id="`product${index}`"
-                  :data="productTrendArr[index]" />
-              </el-col>
-            </template>
-          </div>
+          <el-row>
+            <el-col :span="16">
+                <slider
+                    v-if="productArr.length>0"
+                    height="295px"
+                    :min-move-num="50">
+                    <template v-for="(item, index) in productArr">
+                    <el-col
+                        v-if="productArr.length>0"
+                        :key="index"
+                        style="width:198px">
+                        <ProTargetAchievement
+                        :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                        @click.native="clickIndex(index)"
+                        :id="`${index}`"
+                        :data="item" />
+                    </el-col>
+                    </template>
+                </slider>
+            </el-col>
+            <el-col :span="8">
+                <radar
+                    v-if="productRadarObj"
+                    :id="'productRadar'"
+                    :data="productRadarObj" />
+            </el-col>
+            <el-col :span="24">
+                <div class="card_company_target">
+                    <el-row class="margin-top-20 margin-bottom-20 align">目标-实际-差异趋势分析:
+                    <span class="card_title">{{ hasSubjectName }}</span>
+                    <span
+                        class="card_title"
+                        v-if="homeProduct[index].subject_unit"> ( {{ homeProduct[index].subject_unit }} )</span>
+                    </el-row>
+                    <template>
+                    <el-col
+                        v-if="productTrendArr.length>0"
+                        :key="index">
+                        <ProTargetActualDiffTrend
+                        :unit="homeProduct[index].subject_unit"
+                        :show-detail="false"
+                        :id="`product${index}`"
+                        :data="productTrendArr[index]" />
+                    </el-col>
+                    </template>
+                </div>
+            </el-col>
+          </el-row>
         </Card>
       </el-col>
     </el-row>
@@ -55,33 +66,30 @@ import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
 import Slider from 'components/Slider';
-// 目标达成情况总览
-import ProTargetAchievement from 'components/ProTargetAchievement';
-// 目标-实际-差异趋势分析
-import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
+import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
+import radar from './radar';
+import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';// 目标-实际-差异趋势分析
 import { mapGetters } from 'vuex';
-//data
 import { homeProduct } from 'data/subject.js';
 
 export default {
     components: {
         Card,
+        Slider,
         SearchBar,
         ProTargetAchievement,
+        radar,
         ProTargetActualDiffTrend,
-        Slider
     },
     data() {
         return {
-            //data
             homeProduct: homeProduct(),
             form: {
                 pt: '', // 周期类型
-                search: '', // 暂时没有接口 先这样
+                search: '',
             },
             cid: '',
             loading: false,
-            //index
             index: 0,
             post: 1,
             style: undefined,
@@ -90,7 +98,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['productArr', 'productTrendArr', 'searchDate', 'homeLastParams']),
+        ...mapGetters(['productArr', 'productTrendArr', 'searchDate', 'homeLastParams','productRadarObj']),
         hasSubjectName() {
             if (this.productTrendArr.length) {
                 return this.productTrendArr[this.index].subject_name;
@@ -123,6 +131,10 @@ export default {
             };
             this.loading = true;
             API.GetProductProgress(params).then(res => {
+                let productRadarObj = {};
+                productRadarObj.name = res.data.map(el => el.subject_name);
+                productRadarObj.progress = res.data.map(el => el.progress);
+                this.$store.dispatch('SaveProductRadarObj', productRadarObj);
                 this.$store.dispatch('SaveProductProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
@@ -180,9 +192,6 @@ export default {
                     pt: '月',
                     sDate: '2018-01-01',
                     eDate: '2018-06-01',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
                 };
             }
         },

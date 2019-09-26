@@ -47,6 +47,10 @@ export default {
                 });
             }
             const options = {
+                legend: {
+                    data: ['各指标达成率'],
+                    right:'10%',
+                },
                 tooltip: {
                     formatter: function(params) {
                         let result =[];
@@ -90,7 +94,7 @@ export default {
                 },
                 series: [
                     {
-                        // name: '实际',
+                        name: '各指标达成率',
                         type: 'radar',
                         color:'red',
                         data : [
