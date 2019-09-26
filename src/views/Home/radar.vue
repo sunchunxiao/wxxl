@@ -47,15 +47,20 @@ export default {
                 });
             }
             const options = {
-                legend: {
-                    data: ['各指标达成率'],
-                    right:'10%',
-                },
+                // legend: {
+                //     data: ['各指标达成率'],
+                //     right:'10%',
+                // },
                 tooltip: {
                     formatter: function(params) {
                         let result =[];
                         for (let i=0; i<params.name.length; i++) {
-                            result += params.name[i] + " : " + params.value[i] +"</br>";
+                            //达成率为null时
+                            if (params.value[i] == null) {
+                                result += params.name[i] + " : " + '暂无' +"</br>";
+                            } else {
+                                result += params.name[i] + " : " + params.value[i] +"</br>";
+                            }
                         }
                         return result;
                     },
@@ -70,7 +75,7 @@ export default {
                             color: '#5F5D5D',
                             fontSize: 14,
                             borderRadius: 3,
-                            padding: [3, 10],
+                            padding: [3, -1],
                         }
                     },
                     show:true,

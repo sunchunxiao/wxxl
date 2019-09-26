@@ -36,6 +36,7 @@ const home = {
         equityRadarObj: {},
         payRadarObj: {},
         profitSpaceRadarObj: {},
+        abilityRadarObj: {},
     },
     mutations: {
         SAVE_OVERVIEW_ARR: (state, arr) => {
@@ -145,6 +146,9 @@ const home = {
         },
         SAVE_SPACERADAR_OBJ: (state, obj) => {
             state.profitSpaceRadarObj = obj;
+        },
+        SAVE_ABILITYRADAR_OBJ: (state, obj) => {
+            state.abilityRadarObj = obj;
         },
     },
     actions: {
@@ -265,6 +269,10 @@ const home = {
         // 盈利空间
         SaveSpaceRadar({ commit }, obj) {
             commit('SAVE_SPACERADAR_OBJ', obj);
+        },
+        // 盈利能力
+        SaveAbilityRadar({ commit }, obj) {
+            commit('SAVE_ABILITYRADAR_OBJ', obj);
         },
     }
 };

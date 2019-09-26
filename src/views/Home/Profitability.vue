@@ -9,41 +9,53 @@
             v-loading="loading"
             id="profitability"
             class="min-height-400">
-            <slider
-              v-if="abilityPrograssArr.length>0"
-              height="296px"
-              :min-move-num="50">
-              <template v-for="(item, index) in abilityPrograssArr">
-                <el-col
+            <el-row>
+              <el-col :span="16">
+                <slider
                   v-if="abilityPrograssArr.length>0"
-                  :key="index"
-                  style="width:198px">
-                  <ProTargetAchievement
-                    :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                    @click.native="clickIndex(index)"
-                    :id="`${index}`"
-                    :data="item" />
-                </el-col>
-              </template>
-            </slider>
-            <div class="card_company_target">
-              <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
-                <span class="card_title">{{ hasSubjectName }} </span>
-                <span
-                  class="card_title"
-                  v-if="homeProfitAbility[index].subject_unit"> ( {{ homeProfitAbility[index].subject_unit }} )</span></el-row>
-              <template>
-                <el-col
-                  v-if="abilityTrendArr.length>0"
-                  :key="index">
-                  <ProTargetActualDiffTrend
-                    :unit="homeProfitAbility[index].subject_unit"
-                    :show-detail="false"
-                    :id="`product${index}`"
-                    :data="abilityTrendArr[index]" />
-                </el-col>
-              </template>
-            </div>
+                  height="296px"
+                  :min-move-num="50">
+                  <template v-for="(item, index) in abilityPrograssArr">
+                    <el-col
+                      v-if="abilityPrograssArr.length>0"
+                      :key="index"
+                      style="width:198px">
+                      <ProTargetAchievement
+                        :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                        @click.native="clickIndex(index)"
+                        :id="`${index}`"
+                        :data="item" />
+                    </el-col>
+                  </template>
+                </slider>
+              </el-col>
+              <el-col :span="8">
+                <radar
+                  v-if="abilityRadarObj"
+                  :id="'abilityRadar'"
+                  :data="abilityRadarObj" />
+              </el-col>
+              <el-col :span="24">
+                <div class="card_company_target">
+                  <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
+                    <span class="card_title">{{ hasSubjectName }} </span>
+                    <span
+                      class="card_title"
+                      v-if="homeProfitAbility[index].subject_unit"> ( {{ homeProfitAbility[index].subject_unit }} )</span></el-row>
+                  <template>
+                    <el-col
+                      v-if="abilityTrendArr.length>0"
+                      :key="index">
+                      <ProTargetActualDiffTrend
+                        :unit="homeProfitAbility[index].subject_unit"
+                        :show-detail="false"
+                        :id="`product${index}`"
+                        :data="abilityTrendArr[index]" />
+                    </el-col>
+                  </template>
+                </div>
+              </el-col>
+            </el-row>
           </Card>
         </el-col>
       </el-row>
@@ -60,6 +72,7 @@ import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';
 // 目标-实际-差异趋势分析
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';
+import radar from './radar';
 //mock
 import { profitAbility } from './mock/pieData';
 import { dataAbility } from './mock/trendData';
@@ -71,6 +84,7 @@ export default {
     components: {
         Card,
         Slider,
+        radar,
         SearchBar,
         ProTargetAchievement,
         ProTargetActualDiffTrend,
@@ -95,7 +109,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['abilityPrograssArr','abilityTrendArr','searchDate', 'homeLastParams']),
+        ...mapGetters(['abilityPrograssArr','abilityTrendArr','searchDate', 'homeLastParams','abilityRadarObj']),
         hasSubjectName() {
             return this.homeProfitAbility[this.index].subject_name;
         }
@@ -127,6 +141,10 @@ export default {
                 version: 0
             };
             API.GetAbilityProgress(params).then(res => {
+                let obj = {};
+                obj.name = res.data.map(el => el.subject_name);
+                obj.progress = res.data.map(el => el.progress);
+                this.$store.dispatch('SaveAbilityRadar', obj);
                 this.$store.dispatch('SaveAbilityProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
