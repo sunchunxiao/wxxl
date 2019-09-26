@@ -35,6 +35,7 @@ const home = {
     equityRadarObj: state => state.home.equityRadarObj,
     payRadarObj: state => state.home.payRadarObj,
     profitSpaceRadarObj: state => state.home.profitSpaceRadarObj,
+    abilityRadarObj: state => state.home.abilityRadarObj,
 };
 
 export default home;
