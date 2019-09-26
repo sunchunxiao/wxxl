@@ -127,8 +127,7 @@ export default {
             API.GetSaleProgress(params).then(res => {
                 let salesRadarObj = {};
                 salesRadarObj.name = res.data.map(el => el.subject_name);
-                salesRadarObj.real = res.data.map(el => el.real);
-                salesRadarObj.target = res.data.map(el => el.target);
+                salesRadarObj.progress = res.data.map(el => el.progress);
                 this.$store.dispatch('SaveSalesRadarObj', salesRadarObj);
                 this.$store.dispatch('SaveSaleProgressData', res.data);
             }).finally(() => {

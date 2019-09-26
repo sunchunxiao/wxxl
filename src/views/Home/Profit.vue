@@ -129,8 +129,7 @@ export default {
             API.GetProfitProgress(params).then(res => {
                 let profitRadarObj = {};
                 profitRadarObj.name = res.data.map(el => el.subject_name);
-                profitRadarObj.real = res.data.map(el => el.real);
-                profitRadarObj.target = res.data.map(el => el.target);
+                profitRadarObj.progress = res.data.map(el => el.progress);
                 this.$store.dispatch('SaveProfitRadarObj', profitRadarObj);
                 this.$store.dispatch('SaveProfitProgressData', res.data);
             }).finally(() => {
