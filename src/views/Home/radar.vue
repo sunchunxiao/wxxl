@@ -22,7 +22,9 @@ export default {
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`radar-${this.id}`));
-        this.renderChart(this.data);
+        if(this.data.progress){
+            this.renderChart();
+        }
         this.debounce = _.debounce(this.chart.resize, 1000);
         window.addEventListener('resize', this.debounce);
     },
@@ -35,9 +37,9 @@ export default {
         },
     },
     methods: {
-        renderChart(data) {
+        renderChart() {
             let arr = [];
-            for (let i of data.name) {
+            for (let i of this.data.name) {
                 arr.push({
                     name: i,
                     min:0,
@@ -93,8 +95,8 @@ export default {
                         color:'red',
                         data : [
                             {
-                                value : data.progress,
-                                name: data.name,
+                                value : this.data.progress,
+                                name: this.data.name,
                                 label: {
                                     normal: {
                                         show: false,
