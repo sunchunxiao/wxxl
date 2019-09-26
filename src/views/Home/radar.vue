@@ -65,7 +65,7 @@ export default {
                         return result;
                     },
                     position: function (point) {
-                        return ["50%", point[1] + 25];
+                        return ["35%", point[1] + 20];
                     }
                 },
                 scale: true,
