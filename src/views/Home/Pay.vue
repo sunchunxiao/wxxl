@@ -10,21 +10,21 @@
             id="pay"
             class="min-height-400">
             <el-row>
-              <el-col 
+              <el-col
                 :span="24"
                 v-if="payPrograssArr.length>0">
-                  <template v-for="(item, index) in payPrograssArr">
-                    <el-col
-                      v-if="payPrograssArr.length>0"
-                      :key="index"
-                      style="width:180px">
-                      <ProTargetAchievement
-                        :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                        @click.native="clickIndex(index)"
-                        :id="`${index}`"
-                        :data="item" />
-                    </el-col>
-                  </template>
+                <template v-for="(item, index) in payPrograssArr">
+                  <el-col
+                    v-if="payPrograssArr.length>0"
+                    :key="index"
+                    style="width:180px">
+                    <ProTargetAchievement
+                      :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                      @click.native="clickIndex(index)"
+                      :id="`${index}`"
+                      :data="item" />
+                  </el-col>
+                </template>
               </el-col>
               <el-col :span="16">
                 <div class="card_company_target">
