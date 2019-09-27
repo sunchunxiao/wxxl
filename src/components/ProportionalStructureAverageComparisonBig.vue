@@ -185,17 +185,20 @@ export default {
                     barMaxWidth: 35,
                     itemStyle: {
                         color: function(params) {
-                            if (params.value > average) {
-                                return '#6696d8';
-                            } else {
-                                return _.includes(_this.color,params.dataIndex) ? '#01b8aa' : '#b3b3b3';
+                            // #01b8aa 绿色 #F2C811黄色 #FD625E红色
+                            if (params.value >= average) {
+                                return '#01b8aa';
+                            } else if(params.value < average && params.value >= (average /2)) {
+                                return '#F2C811';
+                            } else if(params.value < (average / 2)){
+                                return '#FD625E';
                             }
-                            // return _this.color[`${params.dataIndex}`] ? '#01b8aa' : '#b3b3b3';
+                            // return _.includes(_this.color,params.dataIndex) ? '#01b8aa' : '#b3b3b3';
                         }
                     },
                     emphasis: {
                         itemStyle: {
-                            color: "#F2C811"
+                            // color: "#F2C811"
                         }
                     },
                     label: {
