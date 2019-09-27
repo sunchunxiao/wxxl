@@ -10,6 +10,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
+import { labelNewline } from 'utils/common';
 export default {
     data() {
         return {
@@ -40,6 +41,13 @@ export default {
     methods: {
         handleResize() {
             echarts.init(this.$refs.chart).resize();
+        },
+        calculateToShow(val) {
+            if (val && val >= 10000) {
+                return (val / 10000).toFixed(2) + 'w';
+            } else {
+                return val;
+            }
         },
         mycharts() {
             var _this = this;
@@ -112,20 +120,37 @@ export default {
                         }
                     }
                 },
-                yAxis: [{
+                yAxis: {
+                    z: 3,
                     type: 'category',
+                    axisTick: {
+                        show: false
+                    },
                     data: this.yAxis,
-                    splitLine: {
-                        show: false
+                    axisLabel: {
+                        show: true,
+                        fontSize: 14,
+                        formatter: function(value) {
+                            return labelNewline(6, value);
+                        }
                     }
-                }],
-                xAxis: [{
+                },
+                xAxis: {
+                    inverse: false,
                     type: 'value',
-                    boundaryGap: [0, 0.01],
+                    axisLabel: {
+                        show: false
+                    },
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    },
                     splitLine: {
                         show: false
-                    }
-                }],
+                    },
+                },
                 series: [{
                     name: "目标",
                     type: "bar",
@@ -135,15 +160,18 @@ export default {
                     itemStyle: {
                         normal: {
                             color: "#E0E3E9",
-                            barBorderRadius:[0, 5, 5, 0],
+                            barBorderRadius:[0, 20, 20, 0],
                             label: {
                                 show: true,
                                 textStyle: {
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     color:"#000"
                                 },
                                 position: "right",
-                                distance: 10
+                                distance: 10,
+                                formatter: function(params) {
+                                    return `${ _this.calculateToShow(params.value)}`;
+                                },
                             }
                         }
                     },
@@ -153,20 +181,22 @@ export default {
                     _this.id === 'budgetDepartment' ||
                     _this.id === 'budgetSupplier'?
                         {
-                            symbol:"",
-                            precision:0,
-                            lineStyle:{
-                                color:"#ff0000",
-                                width:3
-                            },
+                            symbol:"none",
+                            name:"目标基准线",
                             label:{
                                 show:true,
-                                formatter:'{b}: {c}'
+                                color: "#fd625e",
+                                formatter: function(params) {
+                                    return `${ _this.calculateToShow(params.value)}`;
+                                },
                             },
                             data : [
                                 {
                                     name: '目标基准线',
-                                    xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]:"暂无基准线"
+                                    xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]:"暂无基准线",
+                                    itemStyle: {
+                                        color: '#b12725'
+                                    }
                                 }
                             ]
                         }:{},
@@ -183,41 +213,27 @@ export default {
                         normal: {
                             color:function(params){
                                 let actualBgColor = "";
-                                if(_this.id === 'planDepartment'){
-                                    if(params.value<_this.data["actual_avg"]){
-                                        actualBgColor = "#FF0000";
-                                    }else{
-                                        actualBgColor = "#01B8AA";
-                                    }
-                                }else if(_this.id === 'planSupplier'){
-                                    if(params.value<_this.data["actual_avg"]){
-                                        actualBgColor = "#FF0000";
-                                    }else{
-                                        actualBgColor = "#01B8AA";
-                                    }
-                                }else if(_this.id === 'budgetDepartment'){
-                                    if(params.value<_this.data["actual_avg"]){
-                                        actualBgColor = "#FF0000";
-                                    }else{
-                                        actualBgColor = "#01B8AA";
-                                    }
-                                }else if(_this.id === 'budgetSupplier'){
-                                    if(params.value<_this.data["actual_avg"]){
-                                        actualBgColor = "#ff0000";
-                                    }else{
-                                        actualBgColor = "#01B8AA";
-                                    }
+                                if (params.value >= _this.data["actual_avg"]) {
+                                    actualBgColor = '#01b8aa';
+                                } else if(params.value < _this.data["actual_avg"] && params.value >= (_this.data["actual_avg"] /2)) {
+                                    actualBgColor = '#F2C811';
+                                } else if(params.value < (_this.data["actual_avg"] / 2)){
+                                    actualBgColor = '#FD625E';
                                 }
                                 return actualBgColor;
                             },
+                            // barBorderRadius:[0, 20, 20, 0],
                             label: {
                                 show: true,
                                 position: ['0%','0%'],
                                 distance: -100,
-                                color: '#fff',
-                                fontSize: 16,
+                                color: '#000',
+                                fontSize: 14,
                                 padding: [10, 15, 20, 15],
-                                borderRadius: 100
+                                borderRadius: 100,
+                                formatter: function(params) {
+                                    return `${ _this.calculateToShow(params.value)}`;
+                                },
                             }
                         }
                     },
