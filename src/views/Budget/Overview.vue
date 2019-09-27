@@ -12,15 +12,16 @@
       class="mgb10 wrap"
       v-loading="loading">
       <div>当前下单进度</div>
-      <el-col
-        v-for="(budgetNow, index) in budgetNowDataArr"
-        :span="12"
-        :key="index">
-        <PlanBudgetPie
+      <template v-for="(budgetNow, index) in budgetNowDataArr">
+        <el-col
           v-if="budgetNowDataArr.length"
-          :id="`budgetNow${index}`"
-          :data="budgetNow" />
-      </el-col>
+          :span="12"
+          :key="index">
+          <ProTargetAchievement
+            :id="`budgetNow${index}`"
+            :data="budgetNow" />
+        </el-col>
+      </template>
     </el-row>
     <div class="mgb10 capacity">
       <div
@@ -81,32 +82,37 @@
     </div>
     <el-row
       class="mgb10 wrap"
-      v-loading="loading"
-      :gutter="10">
+      v-loading="loading">
       <div
         class="title"
-        style="left:20px;">首单预算使用</div>
-      <el-col
-        v-for="(budgetFirst, index) in budgetFirstDataArr"
-        :span="6"
-        :key="`budgetFirst${index}`">
-        <PlanBudgetPie
+        style="left:20px;">
+        首单预算使用
+      </div>
+      <template v-for="(budgetFirst, index) in budgetFirstDataArr">
+        <el-col
           v-if="budgetFirstDataArr.length"
-          :id="`budgetFirst${index}`"
-          :data="budgetFirst" />
-      </el-col>
+          :span="6"
+          :key="`budgetFirst${index}`">
+          <ProTargetAchievement
+            :id="`budgetFirst${index}`"
+            :data="budgetFirst" />
+        </el-col>
+      </template>
       <div
         class="title"
-        style="left:50%;">返单预算进度</div>
-      <el-col
-        v-for="(budgetReturn, index) in budgetReturnDataArr"
-        :span="6"
-        :key="`budgetReturn${index}`">
-        <PlanBudgetPie
+        style="left:50%;">
+        返单预算进度
+      </div>
+      <template v-for="(budgetReturn, index) in budgetReturnDataArr">
+        <el-col
           v-if="budgetReturnDataArr.length"
-          :id="`budgetReturn${index}`"
-          :data="budgetReturn" />
-      </el-col>
+          :span="6"
+          :key="`budgetReturn${index}`">
+          <ProTargetAchievement
+            :id="`budgetReturn${index}`"
+            :data="budgetReturn" />
+        </el-col>
+      </template>
     </el-row>
     <el-row
       class="mgb10 wrap"
@@ -138,14 +144,14 @@
 <script>
 import API from './api';
 import PlanBudgetSelectFilter from 'components/PlanBudgetSelectFilter';
-import PlanBudgetPie from 'components/PlanBudgetPie';
+import ProTargetAchievement from 'components/ProTargetAchievement';
 import PlanBudgetBar from 'components/PlanBudgetBar';
 import { mapGetters } from 'vuex';
 
 export default {
     components: {
         PlanBudgetSelectFilter,
-        PlanBudgetPie,
+        ProTargetAchievement,
         PlanBudgetBar,
     },
     data() {
