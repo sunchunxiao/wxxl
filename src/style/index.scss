@@ -66,4 +66,28 @@ html, body {
     background-color: rgba(0, 0, 0, 0);
     border-left: 1px solid rgba(0, 0, 0, 0);
 }
+.colorSpan {
+    width: 20px;
+    height: 14px;
+    display: inline-block;
+    border-radius: 2px;
+    box-shadow:0 3px 5px 0 rgba(204, 204, 204, 0.8);
+    margin-right: 5px;
+}
+.greenSpan {
+    background-color: #01b8aa;
+}
+.yellowSpan {
+    display: inline-block;
+    background-color: #F2C811
+}
+.redSpan{
+    display: inline-block;
+    background-color: #FD625E
+}
+.avg{
+    color: #333;
+    font-size: 12px;
+    margin-right: 10px
+}
 

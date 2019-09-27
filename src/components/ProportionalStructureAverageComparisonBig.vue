@@ -190,7 +190,7 @@ export default {
                                 return '#01b8aa';
                             } else if(params.value < average && params.value >= (average /2)) {
                                 return '#F2C811';
-                            } else if(params.value < (average / 2)){
+                            } else if(params.value < (average / 2)) {
                                 return '#FD625E';
                             }
                             // return _.includes(_this.color,params.dataIndex) ? '#01b8aa' : '#b3b3b3';

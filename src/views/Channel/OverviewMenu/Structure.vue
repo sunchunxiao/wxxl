@@ -9,7 +9,17 @@
           v-loading="loading"
           class="min-height-400">
           <Card>
-            <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析</el-row>
+            <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析
+              <div style="display:flex;align-items:center;margin-top:20px">
+                <span class="colorSpan greenSpan" /><span class="avg"> 大于平均值</span>
+                <span class="colorSpan yellowSpan" /><span
+                  span
+                  class="avg">小于平均值且大于等于平均值的二分之一</span>
+                <span class="colorSpan redSpan" /><span
+                  span
+                  class="avg">小于平均值的二分之一</span>
+              </div>
+            </el-row>
             <el-row
               v-if="channelStructureArr.length"
               type="flex">
