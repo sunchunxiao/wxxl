@@ -120,7 +120,7 @@ $width_collapse: 65px;
             overflow: auto;
             >div:first-child {
                 flex: 1;
-                min-width: 1000px;
+                min-width: 1140px;
             }
         }
         #collapse-menu {

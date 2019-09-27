@@ -10,29 +10,35 @@
           class="min-height-400">
           <Card v-if="supplyRankArr.length || supplyProgressArr.length">
             <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
-            <div
+            <!-- <div
               class="margin-bottom-20"
-              style="height:250px;">
-              <slider
+              style="height:250px;"> -->
+            <!-- <slider
                 v-if="supplyProgressArr.length"
                 height="250px"
-                :min-move-num="50">
-                <template v-for="(item, index) in supplyProgressArr">
-                  <el-col
-                    :key="index"
-                    style="width:198px">
-                    <ProTargetAchievement
-                      :id="`${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
-              </slider>
-            </div>
-            <el-row class="margin-bottom-20 overview_title">综合评估</el-row>
-            <Radar
-              v-if="supplyRankArr.length"
-              :id="'select'"
-              :data="supplyRankArr[supplyRankArr.length-1]" />
+                :min-move-num="50"> -->
+            <el-col :span="16">
+              <template v-for="(item, index) in supplyProgressArr">
+                <el-col
+                  :key="index"
+                  style="width:198px">
+                  <ProTargetAchievement
+                    :id="`${index}`"
+                    :data="item" />
+                </el-col>
+              </template>
+            </el-col>
+            <!-- </slider> -->
+            <!-- </div> -->
+            <!-- <el-row class="margin-bottom-20 overview_title">综合评估</el-row> -->
+            <el-col
+              :span="8">
+              综合评估
+              <Radar
+                v-if="supplyRankArr.length"
+                :id="'select'"
+                :data="supplyRankArr[supplyRankArr.length-1]" />
+            </el-col>
             <el-row
               v-if="!loading && !supplyRankArr.length"
               class="overview_select">

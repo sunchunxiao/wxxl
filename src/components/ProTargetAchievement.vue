@@ -408,7 +408,7 @@ export default {
     width: 100%;
     .pie {
         width: 100%;
-        height: 180px;
+        height: 170px;
         >div{
             margin: 0 auto !important;
         }
