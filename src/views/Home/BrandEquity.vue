@@ -9,16 +9,14 @@
             v-loading="loading"
             class="min-height-400">
             <el-row>
-              <el-col :span="16">
-                <slider
-                  v-if="brandPrograssArr.length>0"
-                  height="295px"
-                  :min-move-num="50">
+              <el-col 
+                :span="24"
+                v-if="brandPrograssArr.length>0">
                   <template v-for="(item, index) in brandPrograssArr">
                     <el-col
                       v-if="brandPrograssArr.length>0"
                       :key="index"
-                      style="width:198px">
+                      style="width:180px">
                       <ProTargetAchievement
                         :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
                         @click.native="clickIndex(index)"
@@ -26,17 +24,10 @@
                         :data="item" />
                     </el-col>
                   </template>
-                </slider>
               </el-col>
-              <el-col :span="8">
-                <radar
-                  v-if="equityRadarObj"
-                  :id="'equityRadar'"
-                  :data="equityRadarObj" />
-              </el-col>
-              <el-col :span="24">
+              <el-col :span="14">
                 <div class="card_company_target">
-                  <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
+                  <el-row class="margin-top-20 margin-bottom-20 align">目标-实际-差异趋势分析:
                     <span class="card_title">{{ hasSubjectName }} </span>
                     <span
                       class="card_title"
@@ -55,6 +46,14 @@
                   </template>
                 </div>
               </el-col>
+              <el-col 
+                class="margin-top-30"
+                :span="10">
+                <radar
+                  v-if="equityRadarObj"
+                  :id="'equityRadar'"
+                  :data="equityRadarObj" />
+              </el-col>
             </el-row>
           </Card>
         </el-col>
@@ -67,7 +66,6 @@
 import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
-import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
 import radar from './radar';
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';// 目标-实际-差异趋势分析
@@ -77,7 +75,6 @@ import { homeEquity } from 'data/subject.js';
 export default {
     components: {
         Card,
-        Slider,
         SearchBar,
         ProTargetAchievement,
         radar,
@@ -200,9 +197,6 @@ export default {
                     pt: '月',
                     sDate: '2018-01-01',
                     eDate: '2018-06-01',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
                 };
             }
         },

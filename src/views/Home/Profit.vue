@@ -8,16 +8,14 @@
           v-loading="loading"
           class="min-height-400">
           <el-row>
-            <el-col :span="16">
-              <slider
-                v-if="profitPrograssArr.length"
-                height="295px"
-                :min-move-num="50">
+            <el-col 
+                :span="24"
+                v-if="profitPrograssArr.length">
                 <template v-for="(item, index) in profitPrograssArr">
                   <el-col
                     v-if="profitPrograssArr.length>0"
                     :key="index"
-                    style="width:198px">
+                    style="width:180px">
                     <ProTargetAchievement
                       :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
                       @click.native="clickIndex(index)"
@@ -25,17 +23,10 @@
                       :data="item" />
                   </el-col>
                 </template>
-              </slider>
             </el-col>
-            <el-col :span="8">
-              <radar
-                v-if="profitRadarObj"
-                :id="'profitRadar'"
-                :data="profitRadarObj" />
-            </el-col>
-            <el-col :span="24">
+            <el-col :span="14">
               <div class="card_company_target">
-                <el-row class="margin-bottom-20 align">目标-实际-差异趋势分析:
+                <el-row class="margin-top-50 align">目标-实际-差异趋势分析:
                   <span class="card_title">{{ profit[index].subject_name }} </span>
                   <span
                     class="card_title"
@@ -54,6 +45,14 @@
                 </template>
               </div>
             </el-col>
+            <el-col 
+                class="margin-top-70"
+                :span="10">
+              <radar
+                v-if="profitRadarObj"
+                :id="'profitRadar'"
+                :data="profitRadarObj" />
+            </el-col>
           </el-row>
         </Card>
       </el-col>
@@ -65,7 +64,6 @@
 import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
-import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
 import radar from './radar';
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';// 目标-实际-差异趋势分析
@@ -75,7 +73,6 @@ import { profit } from 'data/subject.js';
 export default {
     components: {
         Card,
-        Slider,
         SearchBar,
         ProTargetAchievement,
         radar,

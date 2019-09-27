@@ -26,7 +26,7 @@
                   </el-col>
                 </template>
               </el-col>
-              <el-col :span="16">
+              <el-col :span="14">
                 <div class="card_company_target">
                   <el-row class="margin-top-20 margin-bottom-20 align">目标-实际-差异趋势分析:
                     <span class="card_title">{{ hasSubjectName }}</span>
@@ -49,8 +49,8 @@
                 </div>
               </el-col>
               <el-col
-                style="padding:10px"
-                :span="8">
+                class="margin-top-30"
+                :span="10">
                 <radar
                   v-if="payRadarObj"
                   :id="'payRadar'"
@@ -91,7 +91,6 @@ export default {
             },
             cid: '',
             loading: false,
-            //index
             index: 0,
             style: undefined,
             opciatyBool: false,

@@ -9,16 +9,14 @@
             v-loading="loading"
             class="min-height-400">
             <el-row>
-              <el-col :span="16">
-                <slider
-                  v-if="orgHomeArr.length>0"
-                  height="295px"
-                  :min-move-num="50">
+              <el-col 
+                :span="24"
+                v-if="orgHomeArr.length>0">
                   <template v-for="(item, index) in orgHomeArr">
                     <el-col
                       v-if="orgHomeArr.length>0"
                       :key="index"
-                      style="width:198px">
+                      style="width:180px">
                       <ProTargetAchievement
                         :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
                         @click.native="clickIndex(index)"
@@ -26,15 +24,8 @@
                         :data="item" />
                     </el-col>
                   </template>
-                </slider>
               </el-col>
-              <el-col :span="8">
-                <radar
-                  v-if="organizationRadarObj"
-                  :id="'organizationRadar'"
-                  :data="organizationRadarObj" />
-              </el-col>
-              <el-col :span="24">
+              <el-col :span="14">
                 <div class="card_company_target">
                   <el-row class="margin-top-20 margin-bottom-20 align">目标-实际-差异趋势分析:
                     <span class="card_title">{{ hasSubjectName }} </span>
@@ -55,6 +46,14 @@
                   </template>
                 </div>
               </el-col>
+              <el-col 
+                class="margin-top-30"
+                :span="10">
+                <radar
+                  v-if="organizationRadarObj"
+                  :id="'organizationRadar'"
+                  :data="organizationRadarObj" />
+              </el-col>
             </el-row>
           </Card>
         </el-col>
@@ -67,7 +66,6 @@
 import API from './api';
 import Card from 'components/Card';
 import SearchBar from 'components/SearchBar';
-import Slider from 'components/Slider';
 import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
 import radar from './radar';
 import ProTargetActualDiffTrend from 'components/ProTargetActualDiffTrend';// 目标-实际-差异趋势分析
@@ -78,7 +76,6 @@ import { homeOrganization } from 'data/subject.js';
 export default {
     components: {
         Card,
-        Slider,
         SearchBar,
         ProTargetAchievement,
         radar,
