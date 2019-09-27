@@ -21,6 +21,7 @@ const sales = function () {
     let arr = [
         ["S","销售额","元"],
         ["GM","销售增长额","元"],
+        ["IN","销售增长率",""],
     ];
     return setData(arr);
 };
@@ -31,7 +32,7 @@ const profit = function () {
         ["P","净利润额","元"],
         ["GM","净利润增长额","元"],
         ["NIR","净利率","%"],
-        // ["GR","净利润增长率","元"]
+        ["IN","增长率","元"]
     ];
     return setData(arr);
 };

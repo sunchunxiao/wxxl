@@ -64,9 +64,9 @@ export default {
                         }
                         return result;
                     },
-                    position: function (point) {
-                        return ["35%", point[1] + 20];
-                    }
+                    // position: function (point) {
+                    //     return ["35%", point[1] + 20];
+                    // }
                 },
                 scale: true,
                 radar: {

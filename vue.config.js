@@ -56,15 +56,15 @@ module.exports = {
         host:'',
         open:true,
         historyApiFallback: true,
-        // proxy: {
-        //     '/api': {
-        //         target: 'http://wxxldev.gyxr.cn/eff/v1/',
-        //         changeOrigin: true,
-        //         ws: true,
-        //         pathRewrite: {
-        //             '^/api': ''
-        //         }
-        //     }
-        // }
+        proxy: {
+            '/eff/v1': {
+                target: 'http://wxxldev.gyxr.cn',
+                changeOrigin: true,
+                ws: true,
+                pathRewrite: {
+                    '^/eff/v1': '/v1'
+                }
+            }
+        }
     }
 };
