@@ -134,7 +134,7 @@ export default {
                     z: 0,
                     itemStyle: {
                         normal: {
-                            color: "#7F7F7F",
+                            color: "#E0E3E9",
                             barBorderRadius:[0, 5, 5, 0],
                             label: {
                                 show: true,
@@ -147,29 +147,29 @@ export default {
                             }
                         }
                     },
-                    // markLine :
-                    // _this.id === 'planDepartment'||
-                    // _this.id === 'planSupplier' ||
-                    // _this.id === 'budgetDepartment' ||
-                    // _this.id === 'budgetSupplier'?
-                    //     {
-                    //         symbol:"",
-                    //         precision:0,
-                    //         lineStyle:{
-                    //             color:"#ff0000",
-                    //             width:3
-                    //         },
-                    //         label:{
-                    //             show:true,
-                    //             formatter:'{b}: {c}'
-                    //         },
-                    //         data : [
-                    //             {
-                    //                 name: '目标基准线',
-                    //                 xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]:"暂无基准线"
-                    //             }
-                    //         ]
-                    //     }:{},
+                    markLine :
+                    _this.id === 'planDepartment'||
+                    _this.id === 'planSupplier' ||
+                    _this.id === 'budgetDepartment' ||
+                    _this.id === 'budgetSupplier'?
+                        {
+                            symbol:"",
+                            precision:0,
+                            lineStyle:{
+                                color:"#ff0000",
+                                width:3
+                            },
+                            label:{
+                                show:true,
+                                formatter:'{b}: {c}'
+                            },
+                            data : [
+                                {
+                                    name: '目标基准线',
+                                    xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]:"暂无基准线"
+                                }
+                            ]
+                        }:{},
                     data: targetData
                 }, {
                     name: "实际",
@@ -185,27 +185,27 @@ export default {
                                 let actualBgColor = "";
                                 if(_this.id === 'planDepartment'){
                                     if(params.value<_this.data["actual_avg"]){
-                                        actualBgColor = "#92D050";
+                                        actualBgColor = "#FF0000";
                                     }else{
-                                        actualBgColor = "#2AE09E";
+                                        actualBgColor = "#01B8AA";
                                     }
                                 }else if(_this.id === 'planSupplier'){
                                     if(params.value<_this.data["actual_avg"]){
                                         actualBgColor = "#FF0000";
                                     }else{
-                                        actualBgColor = "#2AE09E";
+                                        actualBgColor = "#01B8AA";
                                     }
                                 }else if(_this.id === 'budgetDepartment'){
                                     if(params.value<_this.data["actual_avg"]){
                                         actualBgColor = "#FF0000";
                                     }else{
-                                        actualBgColor = "#FCD5B4";
+                                        actualBgColor = "#01B8AA";
                                     }
                                 }else if(_this.id === 'budgetSupplier'){
                                     if(params.value<_this.data["actual_avg"]){
                                         actualBgColor = "#ff0000";
                                     }else{
-                                        actualBgColor = "#FCD5B4";
+                                        actualBgColor = "#01B8AA";
                                     }
                                 }
                                 return actualBgColor;
