@@ -8,21 +8,21 @@
           v-loading="loading"
           class="min-height-400">
           <el-row>
-            <el-col 
-                :span="24"
-                v-if="salePrograssArr.length">
-                <template v-for="(item, index) in salePrograssArr">
-                  <el-col
-                    v-if="salePrograssArr.length>0"
-                    :key="index"
-                    style="width:180px">
-                    <ProTargetAchievement
-                      :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
-                      @click.native="clickIndex(index)"
-                      :id="`${index}`"
-                      :data="item" />
-                  </el-col>
-                </template>
+            <el-col
+              :span="24"
+              v-if="salePrograssArr.length">
+              <template v-for="(item, index) in salePrograssArr">
+                <el-col
+                  v-if="salePrograssArr.length>0"
+                  :key="index"
+                  style="width:180px">
+                  <ProTargetAchievement
+                    :class="{'menu_list_opciaty':style==index, 'menu_list_opciatyAll':opciatyBool}"
+                    @click.native="clickIndex(index)"
+                    :id="`${index}`"
+                    :data="item" />
+                </el-col>
+              </template>
             </el-col>
             <el-col :span="14">
               <div class="card_company_target">
@@ -44,9 +44,9 @@
                 </template>
               </div>
             </el-col>
-            <el-col 
-                class="margin-top-50"
-                :span="10">
+            <el-col
+              class="margin-top-50"
+              :span="10">
               <radar
                 v-if="salesRadarObj"
                 :id="'salesRadar'"
