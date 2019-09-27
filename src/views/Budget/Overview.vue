@@ -14,12 +14,12 @@
       <div>当前下单进度</div>
       <template v-for="(budgetNow, index) in budgetNowDataArr">
         <el-col
-            v-if="budgetNowDataArr.length"
-            :span="12"
-            :key="index">
-            <ProTargetAchievement
-                :id="`budgetNow${index}`"
-                :data="budgetNow" />
+          v-if="budgetNowDataArr.length"
+          :span="12"
+          :key="index">
+          <ProTargetAchievement
+            :id="`budgetNow${index}`"
+            :data="budgetNow" />
         </el-col>
       </template>
     </el-row>
@@ -90,12 +90,12 @@
       </div>
       <template v-for="(budgetFirst, index) in budgetFirstDataArr">
         <el-col
-            v-if="budgetFirstDataArr.length"
-            :span="6"
-            :key="`budgetFirst${index}`">
-            <ProTargetAchievement
-                :id="`budgetFirst${index}`"
-                :data="budgetFirst" />
+          v-if="budgetFirstDataArr.length"
+          :span="6"
+          :key="`budgetFirst${index}`">
+          <ProTargetAchievement
+            :id="`budgetFirst${index}`"
+            :data="budgetFirst" />
         </el-col>
       </template>
       <div
@@ -105,12 +105,12 @@
       </div>
       <template v-for="(budgetReturn, index) in budgetReturnDataArr">
         <el-col
-            v-if="budgetReturnDataArr.length"
-            :span="6"
-            :key="`budgetReturn${index}`">
-            <ProTargetAchievement
-                :id="`budgetReturn${index}`"
-                :data="budgetReturn" />
+          v-if="budgetReturnDataArr.length"
+          :span="6"
+          :key="`budgetReturn${index}`">
+          <ProTargetAchievement
+            :id="`budgetReturn${index}`"
+            :data="budgetReturn" />
         </el-col>
       </template>
     </el-row>

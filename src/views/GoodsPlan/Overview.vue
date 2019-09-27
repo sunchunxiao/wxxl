@@ -13,13 +13,13 @@
       v-loading="loading">
       <div>当前下单进度</div>
       <template v-for="(planNow, index) in planNowDataArr">
-        <el-col 
-            v-if="planNowDataArr.length"
-            :span="12"
-            :key="index">
-            <ProTargetAchievement
-                :id="`planNow${index}`"
-                :data="planNow" />
+        <el-col
+          v-if="planNowDataArr.length"
+          :span="12"
+          :key="index">
+          <ProTargetAchievement
+            :id="`planNow${index}`"
+            :data="planNow" />
         </el-col>
       </template>
     </el-row>
@@ -33,12 +33,12 @@
       </div>
       <template v-for="(planFirst, index) in planFirstDataArr">
         <el-col
-            v-if="planFirstDataArr.length"
-            :span="6"
-            :key="`planFirst${index}`">
-            <ProTargetAchievement
-                :id="`planFirst${index}`"
-                :data="planFirst" />
+          v-if="planFirstDataArr.length"
+          :span="6"
+          :key="`planFirst${index}`">
+          <ProTargetAchievement
+            :id="`planFirst${index}`"
+            :data="planFirst" />
         </el-col>
       </template>
       <div
@@ -48,12 +48,12 @@
       </div>
       <template v-for="(planReturn, index) in planReturnDataArr">
         <el-col
-            v-if="planReturnDataArr.length"
-            :span="6"
-            :key="`planReturn${index}`">
-            <ProTargetAchievement
-                :id="`planReturn${index}`"
-                :data="planReturn" />
+          v-if="planReturnDataArr.length"
+          :span="6"
+          :key="`planReturn${index}`">
+          <ProTargetAchievement
+            :id="`planReturn${index}`"
+            :data="planReturn" />
         </el-col>
       </template>
     </el-row>
