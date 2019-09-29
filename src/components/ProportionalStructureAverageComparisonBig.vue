@@ -95,9 +95,6 @@ export default {
                     return (val / 100).toFixed(2);
                 }
             }
-            // else {
-            //     return val;
-            // }
         },
         renderChart(nodes) {
             let _this = this;
@@ -107,7 +104,7 @@ export default {
                 nodes: pData
             } = nodes;
             const percentArr = [];
-            this.color = nodes["28nodes"];
+            _this.color = nodes["28nodes"];
             const average = nodes.avg;
             for(let i in pData) {
                 percentArr.push({
@@ -186,20 +183,32 @@ export default {
                     itemStyle: {
                         color: function(params) {
                             // #01b8aa 绿色 #F2C811黄色 #FD625E红色
+                            let bgColor = "";
                             if (params.value >= average) {
-                                return '#01b8aa';
+                                if(_.includes(_this.color,params.dataIndex)){
+                                    bgColor = '#01F4E1';
+                                }else{
+                                    bgColor = '#01B8AA';
+                                }
                             } else if(params.value < average && params.value >= (average /2)) {
-                                return '#F2C811';
+                                if(_.includes(_this.color,params.dataIndex)){
+                                    bgColor = '#FFFF14';
+                                }else{
+                                    bgColor = '#F2C811';
+                                }
                             } else if(params.value < (average / 2)) {
-                                return '#FD625E';
+                                if(_.includes(_this.color,params.dataIndex)){
+                                    bgColor = '#FF9A95';
+                                }else{
+                                    bgColor = '#FD625E';
+                                }
                             }
-                            // return _.includes(_this.color,params.dataIndex) ? '#01b8aa' : '#b3b3b3';
+                            return bgColor;
+
                         }
                     },
                     emphasis: {
-                        itemStyle: {
-                            // color: "#F2C811"
-                        }
+                        itemStyle: { }
                     },
                     label: {
                         fontSize: 14,
@@ -227,15 +236,11 @@ export default {
                             color: "#fd625e",
                             fontSize: 14,
                             formatter:function() {
-                                // if ( nodes.display_rate == 0) {
-                                //     return `平均值${_this.calculateToShow(average)}`;
-                                // } else {
                                 if (average == 0) {
                                     return `平均值${average}`;
                                 } else {
                                     return `平均值${_this.calculateToShow(average)}`;
                                 }
-                                // }
                             }
                         },
                         data: [{

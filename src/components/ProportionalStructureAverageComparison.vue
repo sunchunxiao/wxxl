@@ -12,7 +12,6 @@
 import echarts from 'plugins/echarts';
 import { formatNumber, labelNewline, structureRadius } from 'utils/common';
 const SUBJECT = ['ROI','POR','ITO','RY'];
-//main_subject
 const MAIN_SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','DAR','PSR','CP','CS','DR'];
 export default {
     props: {
@@ -90,9 +89,6 @@ export default {
                     return (val / 100).toFixed(2);
                 }
             }
-            // else {
-            //     return val;
-            // }
         },
         renderChart(nodes) {
             let _this = this;
@@ -180,20 +176,31 @@ export default {
                     itemStyle: {
                         color: function(params) {
                             // #01b8aa 绿色 #F2C811黄色 #FD625E红色
+                            let bgColor = "";
                             if (params.value >= average) {
-                                return '#01b8aa';
+                                if(_.includes(_this.color,params.dataIndex)){
+                                    bgColor = '#01F4E1';
+                                }else{
+                                    bgColor = '#01B8AA';
+                                }
                             } else if(params.value < average && params.value >= (average /2)) {
-                                return '#F2C811';
-                            } else if(params.value < (average / 2)){
-                                return '#FD625E';
+                                if(_.includes(_this.color,params.dataIndex)){
+                                    bgColor = '#FFFF14';
+                                }else{
+                                    bgColor = '#F2C811';
+                                }
+                            } else if(params.value < (average / 2)) {
+                                if(_.includes(_this.color,params.dataIndex)){
+                                    bgColor = '#FF9A95';
+                                }else{
+                                    bgColor = '#FD625E';
+                                }
                             }
-                            // return _.includes(_this.color,params.dataIndex) ? '#01b8aa' : '#b3b3b3';
+                            return bgColor;
                         }
                     },
                     emphasis: {
-                        itemStyle: {
-                            // color: "#F2C811"
-                        }
+                        itemStyle: { }
                     },
                     label: {
                         show: true,
@@ -218,15 +225,11 @@ export default {
                         label: {
                             color: "#fd625e",
                             formatter:function() {
-                                // if ( nodes.display_rate == 0) {
-                                //     return `平均值${_this.calculateToShow(average)}`;
-                                // } else {
                                 if (average == 0) {
                                     return `平均值${average}`;
                                 } else {
                                     return `平均值${_this.calculateToShow(average)}`;
                                 }
-                                // }
                             }
                         },
                         data: [{
