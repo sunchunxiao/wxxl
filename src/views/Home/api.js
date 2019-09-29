@@ -79,4 +79,11 @@ export default {
     GetBrandTrend(params) {
         return FetchGet('/brand/trend', params);
     },
+    //供应效率
+    GetSupplyProgress(params) {
+        return FetchGet('/supply/avg/progress', params);
+    },
+    GetSupplyTrend(params) {
+        return FetchGet('/supply/avg/trend', params);
+    },
 };

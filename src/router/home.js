@@ -67,6 +67,7 @@ export default [
                 product: ['核心竞争力', '产品效率'],
                 channel: ['核心竞争力', '渠道效率'],
                 customer: ['核心竞争力', '客户效率'],
+                supply: ['核心竞争力', '供应效率'],
                 organization: ['核心竞争力', '组织效率'],
                 fund: ['核心竞争力', '资金效率']
             }

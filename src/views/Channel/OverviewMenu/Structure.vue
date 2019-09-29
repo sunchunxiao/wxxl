@@ -18,6 +18,10 @@
                 <span class="colorSpan redSpan" /><span
                   span
                   class="avg">小于平均值的二分之一</span>
+                <span
+                  span
+                  class="avg"
+                  style="font-weight:600">(28结构颜色高亮,字体加粗)</span>
               </div>
             </el-row>
             <el-row

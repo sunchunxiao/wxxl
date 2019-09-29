@@ -40,8 +40,8 @@
             flex-direction: column;
             overflow: auto;
             height: 100%;
-            .common-wrap{
-                .bacground{
+            .common-wrap {
+                .bacground {
                     background-color: #1a1a1a!important;
                 }
                 .span {
@@ -72,6 +72,7 @@
                 @media screen and (max-width: 1550px){
                     .span {
                         width: 25%;
+                        float: left;
                         &:last-child {
                             border-left: none;
                         }

@@ -59,8 +59,6 @@ error => {
         if (error.response.data.api_info.error == AUTH_FAILED) { // token error
             removeToken();
             router.replace('/login');
-            // window.location.href = '/login';
-            // this.router.replace('/login');
         }
     }
     return Promise.reject(error);

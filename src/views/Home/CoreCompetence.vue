@@ -33,6 +33,7 @@ import Channel from './Channel.vue';
 import Customer from './Customer.vue';
 import Organization from './Organization.vue';
 import Fund from './Fund.vue';
+import Supply from './Supply.vue';
 const OVER_TABS = [{
     id: 'product',
     value: '产品效率'
@@ -42,6 +43,9 @@ const OVER_TABS = [{
 },{
     id: 'customer',
     value: '客户效率'
+},{
+    id: 'supply',
+    value: '供应效率'
 },{
     id: 'organization',
     value: '组织效率'
@@ -57,6 +61,7 @@ export default {
         "customer": Customer,
         "organization": Organization,
         "fund": Fund,
+        "supply":Supply,
         Card,
         SearchBar,
     },

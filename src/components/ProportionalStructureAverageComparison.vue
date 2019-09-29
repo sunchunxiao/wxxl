@@ -97,6 +97,7 @@ export default {
                 nodes: pData
             } = nodes;
             const percentArr = [];
+            const yAxis = [];
             const average = nodes.avg;
 
             this.color = nodes["28nodes"];
@@ -107,6 +108,23 @@ export default {
                         barBorderRadius: structureRadius(nodes.values[i])
                     }
                 });
+                //28结构字体加粗
+                let dataIndex = i && pData.indexOf(pData[i]);
+                if (_.includes(_this.color,dataIndex)) {
+                    yAxis.push({
+                        value:pData[i],
+                        textStyle: {
+                            fontWeight:'bold'
+                        }
+                    });
+                } else {
+                    yAxis.push({
+                        value:pData[i],
+                        textStyle: {
+                            fontWeight:'normal'
+                        }
+                    });
+                }
             }
             const options = {
                 tooltip : {
@@ -162,7 +180,7 @@ export default {
                     axisTick: {
                         show: false
                     },
-                    data: pData,
+                    data: yAxis,
                     axisLabel: {
                         show: true,
                         formatter: function(value) {

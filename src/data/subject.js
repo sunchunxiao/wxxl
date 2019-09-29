@@ -80,6 +80,20 @@ const homeCustomer = function () {
     return setData(arr);
 };
 
+// 首页-供应效率
+const homeSupply = function () {
+    let arr = [
+        ["FN","工厂数量","个"],
+        ["S","工厂平均销售额","元"],
+        ["P","工厂平均毛利额","元"],
+        ["C","工厂平均产能",""],
+        ["PSR","工厂平均产供比",""],
+        ["DR","工厂平均残品率",""],
+        ["DAR","工厂平均交期达成率",""]
+    ];
+    return setData(arr);
+};
+
 // 首页-组织效率
 const homeOrganization = function () {
     let arr = [
@@ -393,6 +407,7 @@ export {
     profit,
     sales,
     homeProduct,
+    homeSupply,
     homeChannel,
     homeCustomer,
     homeOrganization,
