@@ -187,7 +187,7 @@ export default {
                                 show:true,
                                 color: "#fd625e",
                                 formatter: function(params) {
-                                    return `${ _this.calculateToShow(params.value)}`;
+                                    return `目标基准线：${ _this.calculateToShow(params.value)}`;
                                 },
                             },
                             data : [
