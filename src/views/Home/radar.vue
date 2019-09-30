@@ -81,12 +81,6 @@ export default {
                 nameList.push(originList[i].name);
                 progressList.push(originList[i].progress);
             }
-            // console.log(this.data);
-            // console.log(originList);
-            // console.log(list);
-            // console.log(reverseList);
-            // console.log(nameList);
-            // console.log(progressList);
         },
         renderChart() {
             this.originDataFormat();

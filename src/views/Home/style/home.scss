@@ -186,7 +186,33 @@ ul.el-menu{
 .container {
     height:100%;
     flex: 1;
-        overflow: auto;
+    overflow: auto;
+    .tip{
+        display: flex; 
+        justify-content:center;
+        align-items: center; 
+        margin:20px 0;
+        .colorSpan {
+            width: 20px;
+            height: 14px;
+            display: inline-block;
+            border-radius: 2px;
+            box-shadow: 0 3px 5px 0 rgba(204, 204, 204, 0.8);
+            margin-right: 5px;
+        }
+        .content {
+            color: #333;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        .positive {
+            background-color: #01CABB;
+        }
+        .negative {
+            display: inline-block;
+            background-color: #FF6B67;
+        }
+    }
     .time_header {
         background-color:#504b4b;
         height: 40px;
