@@ -135,6 +135,7 @@ export default {
                 let organizationRadarObj = {};
                 organizationRadarObj.name = res.data.map(el => el.subject_name);
                 organizationRadarObj.progress = res.data.map(el => el.progress);
+                organizationRadarObj.subject = res.data.map(el => el.subject);
                 this.$store.dispatch('SaveOrganizationRadarObj', organizationRadarObj);
                 this.$store.dispatch('SaveOrgHomeProgress', res.data);
             }).finally(() => {

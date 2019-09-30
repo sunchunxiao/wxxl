@@ -135,6 +135,7 @@ export default {
                 let fundRadarObj = {};
                 fundRadarObj.name = res.data.map(el => el.subject_name);
                 fundRadarObj.progress = res.data.map(el => el.progress);
+                fundRadarObj.subject = res.data.map(el => el.subject);
                 this.$store.dispatch('SaveFundRadarObj', fundRadarObj);
                 this.$store.dispatch('SaveFundHomeProgress', res.data);
             }).finally(() => {

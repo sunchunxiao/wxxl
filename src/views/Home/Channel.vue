@@ -134,6 +134,7 @@ export default {
                 let channelRadarObj = {};
                 channelRadarObj.name = res.data.map(el => el.subject_name);
                 channelRadarObj.progress = res.data.map(el => el.progress);
+                channelRadarObj.subject = res.data.map(el => el.subject);
                 this.$store.dispatch('SaveChannelRadarObj', channelRadarObj);
                 this.$store.dispatch('SaveChannelProgressData', res.data);
             }).finally(() => {

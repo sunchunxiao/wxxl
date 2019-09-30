@@ -8,6 +8,13 @@
 
 <script>
 import echarts from 'plugins/echarts';
+const REVERSE_TARGET = ['C', 'SA','DR']; // C成本 SA库存额 DR残品率是反向指标
+
+let originList = [];//原始数组
+let list = [];//正向指标数组
+let reverseList = [];//反向指标数组
+let nameList = [];//指标名称数组
+let progressList = [];//达成率数组
 
 export default {
     props: {
@@ -22,7 +29,7 @@ export default {
     },
     mounted() {
         this.chart = echarts.init(document.getElementById(`radar-${this.id}`));
-        if(this.data.progress){
+        if(this.data.progress && this.data.subject && this.data.name){
             this.renderChart();
         }
         this.debounce = _.debounce(this.chart.resize, 1000);
@@ -37,25 +44,62 @@ export default {
         },
     },
     methods: {
-        renderChart() {
-            let arr = [];
-            for (let i of this.data.name) {
-                arr.push({
-                    name: i,
-                    min:0,
-                    max: 2
-                });
+        //正反向指标数据格式化
+        originDataFormat(){
+            originList.length = 0;
+            list.length = 0;
+            reverseList.length = 0;
+            nameList.length = 0;
+            progressList.length = 0;
+            for(let i = 0; i < this.data.name.length; i++){
+                let obj = {};
+                obj.name = this.data.name[i];
+                obj.progress = this.data.progress[i];
+                obj.subject = this.data.subject[i];
+                obj.min = 0;
+                obj.max = 2;
+                originList.push(obj);
             }
+            for(let i in originList){
+                for(let j in REVERSE_TARGET){
+                    if(originList[i].subject===REVERSE_TARGET[j]){
+                        originList[i].name = '反向指标：' + originList[i].name;
+                        originList[i].progress = 2-originList[i].progress;
+                        originList[i].color = '#FF6B67';
+                        reverseList.push(originList[i]);
+                    }
+                }
+            }
+            list = originList.concat(reverseList).filter(function(value, index, array) {
+                return array.indexOf(value) === array.lastIndexOf(value);
+            });
+            for(let i in list){
+                list[i].name = '正向指标：' + list[i].name;
+                list[i].color = '#01CABB';
+            }
+            for(let i = 0; i < originList.length; i++){
+                nameList.push(originList[i].name);
+                progressList.push(originList[i].progress);
+            }
+            // console.log(this.data);
+            // console.log(originList);
+            // console.log(list);
+            // console.log(reverseList);
+            // console.log(nameList);
+            // console.log(progressList);
+        },
+        renderChart() {
+            this.originDataFormat();
             const options = {
                 // legend: {
-                //     data: ['各指标达成率'],
-                //     right:'10%',
+                //     data: ['正反向指标达成率'],
+                //     right:'5%',
+                //     top:'10%'
                 // },
                 tooltip: {
                     formatter: function(params) {
                         let result =[];
                         for (let i=0; i<params.name.length; i++) {
-                            //达成率为null时
                             if (params.value[i] == null) {
                                 result += params.name[i]+'达成率' + " : " + '暂无' +"</br>";
                             }else {
@@ -64,9 +108,6 @@ export default {
                         }
                         return result;
                     },
-                    // position: function (point) {
-                    //     return ["35%", point[1] + 20];
-                    // }
                 },
                 scale: true,
                 radar: {
@@ -79,9 +120,10 @@ export default {
                         }
                     },
                     show:true,
-                    indicator: arr,
+                    indicator: originList,
                     radius: 110,
                     center: ['47%','50%'],
+                    shape: 'circle',
                     splitArea: {
                         areaStyle: {
                             color: ['#fff'],
@@ -89,28 +131,26 @@ export default {
                             shadowBlur: 10
                         }
                     },
-                    // 网线颜色
                     splitLine: {
                         lineStyle: {
                             color: 'rgb(153, 153, 153)'
                         }
                     },
-
                 },
                 series: [
                     {
-                        name: '各指标达成率',
+                        name: '正反向指标达成率',
                         type: 'radar',
                         color:'red',
                         data : [
                             {
-                                value : this.data.progress,
-                                name: this.data.name,
+                                value : progressList,
+                                name: nameList,
                                 label: {
                                     normal: {
-                                        show: false,
+                                        show: true,
                                         formatter:function(params) {
-                                            return params.value;
+                                            return params.value?params.value.toFixed(2):'';
                                         },
                                         color:'#000',
                                     },
@@ -125,7 +165,6 @@ export default {
                         ],
                         itemStyle : {
                             normal : {
-                                //拐点线颜色
                                 lineStyle: {
                                     color:'#FD625E',
                                     width: 2

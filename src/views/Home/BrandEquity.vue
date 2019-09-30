@@ -138,6 +138,7 @@ export default {
                 let equityRadarObj = {};
                 equityRadarObj.name = res.data.map(el => el.subject_name);
                 equityRadarObj.progress = res.data.map(el => el.progress);
+                equityRadarObj.subject = res.data.map(el => el.subject);
                 this.$store.dispatch('SaveEquityRadarObj', equityRadarObj);
                 this.$store.dispatch('SaveBrandProgressData', res.data);
             }).finally(() => {

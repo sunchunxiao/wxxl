@@ -131,6 +131,7 @@ export default {
                 let productRadarObj = {};
                 productRadarObj.name = res.data.map(el => el.subject_name);
                 productRadarObj.progress = res.data.map(el => el.progress);
+                productRadarObj.subject = res.data.map(el => el.subject);
                 this.$store.dispatch('SaveProductRadarObj', productRadarObj);
                 this.$store.dispatch('SaveProductProgressData', res.data);
             }).finally(() => {

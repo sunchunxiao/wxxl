@@ -134,6 +134,7 @@ export default {
                 let obj = {};
                 obj.name = res.data.map(el=>el.subject_name);
                 obj.progress = res.data.map(el=>el.progress);
+                obj.subject = res.data.map(el => el.subject);
                 this.$store.dispatch('SavePayRadar', obj);
                 this.$store.dispatch('SavePayProgressData', res.data);
             }).finally(() => {

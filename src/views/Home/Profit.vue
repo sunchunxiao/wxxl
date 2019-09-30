@@ -127,6 +127,7 @@ export default {
                 let profitRadarObj = {};
                 profitRadarObj.name = res.data.map(el => el.subject_name);
                 profitRadarObj.progress = res.data.map(el => el.progress);
+                profitRadarObj.subject = res.data.map(el => el.subject);
                 this.$store.dispatch('SaveProfitRadarObj', profitRadarObj);
                 this.$store.dispatch('SaveProfitProgressData', res.data);
             }).finally(() => {
