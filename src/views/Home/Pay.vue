@@ -52,10 +52,10 @@
                 class="margin-top-10"
                 :span="10">
                 <div class="tip">
-                    <span class="colorSpan positive"></span>
-                    <span class="content"> 正向指标达成率(x)</span>
-                    <span class="colorSpan negative"></span>
-                    <span class="content"> 反向指标达成率(2-x)</span>
+                  <span class="colorSpan positive" />
+                  <span class="content"> 正向指标达成率(x)</span>
+                  <span class="colorSpan negative" />
+                  <span class="content"> 反向指标达成率(2-x)</span>
                 </div>
                 <radar
                   v-if="payRadarObj"
