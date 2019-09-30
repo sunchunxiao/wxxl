@@ -44,7 +44,7 @@
               class="select clean_select">取消全部</span>
           </div>
           <div class="title_target">
-            <span>组织投入产出比目标未达成数: <span class="title">{{ noStandardNum }}</span></span>
+            <span>组织投入产出比目标未达成数: <span class="title">{{ orgAchievement }}</span></span>
           </div>
           <div class="tree_content">
             <div class="company">
@@ -247,7 +247,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['organizationTree', 'orgcompareArr', 'orgcompareArrback', 'orgLastcidObjArr', 'orgLastcidObjArrBack']),
+        ...mapGetters(['organizationTree', 'orgcompareArr', 'orgcompareArrback', 'orgLastcidObjArr', 'orgLastcidObjArrBack','orgAchievement']),
         hasConstarst () {
             return !_.isEmpty(this.orgcompareArr);
         },
@@ -294,6 +294,7 @@ export default {
     mounted () {
         //获取初始时间
         this.changeDate = this.searchBarValue;
+        this.getAchievement();
         if (this.orgcompareArr.length) {
             this.cid = this.organizationTree.cid;
             this.treeClone = _.cloneDeep(this.organizationTree);
@@ -319,7 +320,7 @@ export default {
                 }
                 this.isFirstCheck = false;
                 Promise.all(promiseArr).then(() => {
-                    this.getNoStandardNum();
+                    // this.getNoStandardNum();
                 });
             });
             this.debounce();
@@ -332,13 +333,26 @@ export default {
         this.$store.dispatch('SaveOrgCompareArrback', []);
     },
     methods: {
-        getNoStandardNum() {
-            let num = 0;
-            for (let i in this.noStandardObj) {
-                num += this.noStandardObj[i];
-            }
-            this.noStandardNum = num;
+        //目标未达成数
+        getAchievement() {
+            const params = {
+                subject: 'ROI',
+                cid: 'ORG1',
+                ...this.getPeriodByPt(),
+                version: this.form.version,
+                type:1
+            };
+            API.GetOrgAchievement(params).then(res => {
+                this.$store.dispatch('SaveOrgAchievement', res.data);
+            });
         },
+        // getNoStandardNum() {
+        //     let num = 0;
+        //     for (let i in this.noStandardObj) {
+        //         num += this.noStandardObj[i];
+        //     }
+        //     this.noStandardNum = num;
+        // },
         getUnit(item, sujectData) {
             let obj = sujectData.find(el => {
                 return el.subject == item.subject && el.subject_name == item.subject_name;
@@ -374,7 +388,7 @@ export default {
                     }
                     Promise.all(promiseArr).then(() => {
                         this.isFirstCheck = false;
-                        this.getNoStandardNum();
+                        // this.getNoStandardNum();
                     });
                 });
                 this.debounce();
@@ -396,7 +410,7 @@ export default {
                     promiseArr.push(this.getTreePrograss(i.cid, false));
                 }
                 Promise.all(promiseArr).then(() => {
-                    this.getNoStandardNum();
+                    // this.getNoStandardNum();
                 });
                 this.debounce();
                 this.debounceBack();
@@ -444,8 +458,8 @@ export default {
             };
             return API.GetOrgTree(params);
         },
-        //获取百分比数据
-        getTreePrograss(cid, isGetNoStandardNum = true) {
+        //获取百分比数据 isGetNoStandardNum = true
+        getTreePrograss(cid) {
             let id;
             if (cid) {
                 id = cid;
@@ -482,9 +496,9 @@ export default {
                                 if (_.includes(arr, obj.cid)) {
                                     if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
                                         this.noStandardObj[obj.cid] ++;
-                                        if (isGetNoStandardNum) {
-                                            this.getNoStandardNum();
-                                        }
+                                        // if (isGetNoStandardNum) {
+                                        // this.getNoStandardNum();
+                                        // }
                                     }
                                 }
                             }
@@ -615,6 +629,7 @@ export default {
             this.findFatherId = val.cid;
             this.nodeArr = [];
             this.val = val;
+            this.getAchievement();
             if (!val.cid) {
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     let promiseArr = [];
@@ -623,7 +638,7 @@ export default {
                         promiseArr.push(this.getTreePrograss(i.cid, false));
                     }
                     Promise.all(promiseArr).then(() => {
-                        this.getNoStandardNum();
+                        // this.getNoStandardNum();
                     });
                     this.allRequest();
                 }
@@ -649,7 +664,7 @@ export default {
             const type = 2;//1是前端,2是后端
             if (!checked) {
                 delete this.noStandardObj[data.cid];
-                this.getNoStandardNum();
+                // this.getNoStandardNum();
             }
             // 取消选择多于 4 个的后面的值 这个是为了在 setCheckedKeys 时, 第四个以后的都会取消选择
             // 组件第二次加载的时候, tree.setCheckedKeys 后会调用 handleCheckChange 应该是 tree 的一个bug 所以我们暂时用一个标志来防止它进入后面的流程
@@ -713,7 +728,7 @@ export default {
                         for (let i of data.children) {
                             if (!this.calculatePercent(i.real_total,i.target_total).largerThanOne) {
                                 this.noStandardObj[data.cid] ++;
-                                this.getNoStandardNum();
+                                // this.getNoStandardNum();
                             }
                         }
                     }

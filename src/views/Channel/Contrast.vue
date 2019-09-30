@@ -43,7 +43,7 @@
               class="select clean_select">取消全部</span>
           </div>
           <div class="title_target">
-            <span>渠道营业利润额目标未达成数: <span class="title">{{ noStandardNum }}</span></span>
+            <span>渠道营业利润额目标未达成数: <span class="title">{{ channelAchievement }}</span></span>
           </div>
           <div class="tree_content">
             <div class="company">
@@ -208,7 +208,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['channelTree','channelCompareArr', 'channelLastcidObjArr']),
+        ...mapGetters(['channelTree','channelCompareArr', 'channelLastcidObjArr','channelAchievement']),
         hasTree() {
             return !_.isEmpty(this.channelTree);
         },
@@ -241,6 +241,7 @@ export default {
     mounted() {
         //获取初始时间
         this.changeDate = this.searchBarValue;
+        this.getAchievement();
         if (this.channelCompareArr.length) {
             this.cid = this.channelTree.nid;
             this.treeClone = _.cloneDeep(this.channelTree);
@@ -268,6 +269,17 @@ export default {
         }
     },
     methods: {
+        //目标未达成数
+        getAchievement() {
+            const params = {
+                subject: SUBJECT,
+                cid: 1,
+                ...this.getPeriodByPt(),
+            };
+            API.GetChannelAchievement(params).then(res => {
+                this.$store.dispatch('SaveChannelAchievement', res.data);
+            });
+        },
         getNoStandardNum() {
             let num = 0;
             for (let i in this.noStandardObj) {
@@ -494,6 +506,7 @@ export default {
             this.findFatherId = val.cid;
             this.nodeArr = [];
             this.val = val;
+            this.getAchievement();
             if (!val.cid) {
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     let promiseArr = [];

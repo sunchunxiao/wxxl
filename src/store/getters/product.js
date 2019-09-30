@@ -11,6 +11,8 @@ const product = {
     productDateArr: state => state.product.productDateArr,
     lastParams: state => state.product.lastParams,
     lastcidObjArr: state => state.product.lastcidObjArr,
+    productAchievement: state => state.product.productAchievement,
+    productAchievementOpt: state => state.product.productAchievementOpt,
 };
 
 export default product;

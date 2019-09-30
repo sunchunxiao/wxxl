@@ -4,6 +4,10 @@ import { FetchGet, FetchPost } from 'utils/fetch';
 // import store from 'store';
 
 export default {
+    //未达成数
+    GetCusAchievement(params) {
+        return FetchGet('/cus/subject/achievement', params);
+    },
     //查询组织结构
     GetCusTree(params) {
         return FetchGet('/cus/tree', params);

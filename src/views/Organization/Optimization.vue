@@ -32,7 +32,7 @@
           :class="{'tree_block_none':isCollapse}"
           :span="5"
           class="tree_container">
-          <div class="title">组织投入产出比环比增长率 :{{ noStandard }}% </div>
+          <div class="title">组织投入产出比环比增长率 :{{ noStandard }} </div>
           <div class="tree_content">
             <div
               @click="click"
@@ -198,35 +198,42 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['organizationTree','orghistoryArr']),
+        ...mapGetters(['organizationTree','orghistoryArr','orgAchievementOpt']),
         hasTree() {
             return !_.isEmpty(this.organizationTree);
         },
         activeCid() {
             return this.cid;
         },
-        noStandard() {
-            let numArr = [];
-            if (this.cid) {
-                //找节点
-                let obj = this.preOrder([this.treeClone], this.cid);
-                if (obj.children) {
-                    for (let i of obj.children) {
-                        if (i.real_total && i.target_total) {
-                            const bool = this.calculatePercent(i.real_total,i.target_total).largerThanOne;
-                            if (!bool) {
-                                numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
-                            }
-                        } else if(!this.treeProgressLoading) {
-                            numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
-                        } else {
-                            return;
-                        }
-                    }
-                }
+        noStandard(){
+            if (this.orgAchievementOpt != null) {
+                return (this.orgAchievementOpt * 100).toFixed(0) +'%'  ;
+            } else {
+                return '暂无';
             }
-            return numArr.length;
         }
+        // noStandard() {
+        //     let numArr = [];
+        //     if (this.cid) {
+        //         //找节点
+        //         let obj = this.preOrder([this.treeClone], this.cid);
+        //         if (obj.children) {
+        //             for (let i of obj.children) {
+        //                 if (i.real_total && i.target_total) {
+        //                     const bool = this.calculatePercent(i.real_total,i.target_total).largerThanOne;
+        //                     if (!bool) {
+        //                         numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
+        //                     }
+        //                 } else if(!this.treeProgressLoading) {
+        //                     numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
+        //                 } else {
+        //                     return;
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     return numArr.length;
+        // }
     },
     watch: {
         cid: function() {
@@ -238,6 +245,7 @@ export default {
     mounted() {
         //获取初始时间
         this.changeDate = this.searchBarValue;
+        this.getAchievement();
         if (!this.hasTree) {
             this.getTree();
         } else {
@@ -247,6 +255,19 @@ export default {
         }
     },
     methods: {
+        //目标未达成数
+        getAchievement() {
+            const params = {
+                subject: 'ROI',
+                cid: 'ORG1',
+                ...this.getPeriodByPt(),
+                version: this.form.version,
+                type:2 //1为目标为达成数，2为率
+            };
+            API.GetOrgAchievement(params).then(res => {
+                this.$store.dispatch('SaveOrgAchievementOpt', res.data);
+            });
+        },
         getColSpan(item,index) {
             if (item.strategies && item.strategies.length) {
                 return 24;
@@ -428,6 +449,7 @@ export default {
             this.findFatherId = val.cid;
             this.nodeArr = [];
             this.val = val;
+            this.getAchievement();
             if (!val.cid) {
                 if (this.cid !== this.organizationTree.cid) {
                     this.cid = this.organizationTree.cid;

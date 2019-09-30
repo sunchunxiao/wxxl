@@ -2,6 +2,10 @@ import { FetchGet, FetchPost } from 'utils/fetch';
 // import store from 'store';
 
 export default {
+    //未达成数
+    GetProductAchievement(params) {
+        return FetchGet('/product/subject/achievement', params);
+    },
     GetProductTree(params) {
         return FetchGet('/product/tree', params);
     },

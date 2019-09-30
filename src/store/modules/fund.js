@@ -12,7 +12,9 @@ const fund = {
         fundhistoryArr: [],
         fundlastParams: {},
         fundLastcidObjArr: {},
-        fundLastcidObjArrBack: {}
+        fundLastcidObjArrBack: {},
+        fundAchievement: '',
+        fundAchievementOpt: '',
     },
     mutations: {
         SAVE_FUND_TREE: (state, tree) => {
@@ -60,6 +62,12 @@ const fund = {
         SAVE_FUNDLAST_CIDOBJBACK: (state, lastParams) => {
             state.fundLastcidObjArrBack = lastParams;
         },
+        SAVE_FUNDACH_PARAMS: (state, params) => {
+            state.fundAchievement = params;
+        },
+        SAVE_FUNDACHOPT_PARAMS: (state, params) => {
+            state.fundAchievementOpt = params;
+        },
     },
     actions: {
         SaveFundTree({ commit }, tree) {
@@ -106,6 +114,12 @@ const fund = {
         },
         SaveFundCidObjBack({ commit }, lastParams) {
             commit('SAVE_FUNDLAST_CIDOBJBACK', lastParams);
+        },
+        SaveFundAchievement({ commit }, params) {
+            commit('SAVE_FUNDACH_PARAMS', params);
+        },
+        SaveFundAchievementOpt({ commit }, params) {
+            commit('SAVE_FUNDACHOPT_PARAMS', params);
         },
     }
 };

@@ -8,7 +8,9 @@ const customer = {
         cuscompareArr: [],
         cushistoryArr:[],
         cusLastParams: {},
-        cusLastcidObjArr: {}
+        cusLastcidObjArr: {},
+        cusAchievement: '',
+        cusAchievementOpt: ''
     },
     mutations: {
         SAVE_CUESTOMER_TREE: (state, tree) => {
@@ -41,6 +43,13 @@ const customer = {
         SAVE_CUSLAST_CIDOBJ: (state, cusLastcidObjArr) => {
             state.cusLastcidObjArr = cusLastcidObjArr;
         },
+        SAVE_CUSACH_PARAMS: (state, params) => {
+            state.cusAchievement = params;
+        },
+        SAVE_CUSACHOPT_PARAMS: (state, params) => {
+            state.cusAchievementOpt = params;
+        },
+
     },
     actions: {
         SaveCusTree({ commit }, tree) {
@@ -73,6 +82,13 @@ const customer = {
         SaveCusCidObj({ commit }, cusLastcidObjArr) {
             commit('SAVE_CUSLAST_CIDOBJ', cusLastcidObjArr);
         },
+        SaveCusAchievement({ commit }, params) {
+            commit('SAVE_CUSACH_PARAMS', params);
+        },
+        SaveCusAchievementOpt({ commit }, params) {
+            commit('SAVE_CUSACHOPT_PARAMS', params);
+        },
+
     }
 };
 

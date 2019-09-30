@@ -8,6 +8,8 @@ const channel = {
     channelHistoryArr: state => state.channel.channelHistoryArr,
     channelLastParams: state => state.channel.channelLastParams,
     channelLastcidObjArr: state => state.channel.channelLastcidObjArr,
+    channelAchievement: state => state.channel.channelAchievement,
+    channelAchievementOpt: state => state.channel.channelAchievementOpt,
 };
 
 export default channel;

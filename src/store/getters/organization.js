@@ -20,6 +20,8 @@ const organization = {
     managelastParams: state => state.organization.managelastParams,
     orgLastcidObjArr: state => state.organization.orgLastcidObjArr,
     orgLastcidObjArrBack: state => state.organization.orgLastcidObjArrBack,
+    orgAchievement: state => state.organization.orgAchievement,
+    orgAchievementOpt: state => state.organization.orgAchievementOpt,
 };
 
 export default organization;

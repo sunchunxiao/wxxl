@@ -44,7 +44,7 @@
               class="select clean_select">取消全部</span>
           </div>
           <div class="title_target">
-            <span>投资回报率目标未达成数: <span class="title">{{ noStandardNum }}</span></span>
+            <span>投资回报率目标未达成数: <span class="title">{{ fundAchievement }}</span></span>
           </div>
           <div class="tree_content">
             <div class="company">
@@ -246,7 +246,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['fundTree', 'fundcompareArr', 'fundcompareArrback', 'fundLastcidObjArr', 'fundLastcidObjArrBack']),
+        ...mapGetters(['fundTree', 'fundcompareArr', 'fundcompareArrback', 'fundLastcidObjArr', 'fundLastcidObjArrBack','fundAchievement']),
         hasConstarst () {
             return !_.isEmpty(this.fundcompareArr);
         },
@@ -294,6 +294,7 @@ export default {
     mounted() {
         //获取初始时间
         this.changeDate = this.searchBarValue;
+        this.getAchievement();
         if (this.fundcompareArr.length) {
             this.cid = this.fundTree.cid;
             this.treeClone = _.cloneDeep(this.fundTree);
@@ -332,6 +333,19 @@ export default {
         this.$store.dispatch('SaveFundCompareArrback', []);
     },
     methods: {
+        //目标未达成数
+        getAchievement() {
+            const params = {
+                subject: 'ROI',
+                // pt: this.getPt(),
+                cid: 'ORG1',
+                ...this.getPeriodByPt(),
+                version: this.form.version
+            };
+            API.GetFundAchievement(params).then(res => {
+                this.$store.dispatch('SaveFundAchievement', res.data);
+            });
+        },
         getNoStandardNum() {
             let num = 0;
             for (let i in this.noStandardObj) {
@@ -615,6 +629,7 @@ export default {
             this.findFatherId = val.cid;
             this.nodeArr = [];
             this.val = val;
+            this.getAchievement();
             const allCidArr = [...this.cidObjArr, ...this.cidObjBackArr];
             if (!val.cid) {
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {

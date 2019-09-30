@@ -5,6 +5,10 @@ import { FetchGet, FetchPost } from 'utils/fetch';
 // import store from 'store';
 
 export default {
+    //未达成数
+    GetOrgAchievement(params) {
+        return FetchGet('/org/subject/achievement', params);
+    },
     //查询组织结构
     GetOrgTree(params) {
         return FetchGet('/org/tree', params);

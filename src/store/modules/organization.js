@@ -21,7 +21,9 @@ const organization = {
         orglastParams: {},
         managelastParams:{},
         orgLastcidObjArr: {},
-        orgLastcidObjArrBack: {}
+        orgLastcidObjArrBack: {},
+        orgAchievement: '',
+        orgAchievementOpt: ''
     },
     mutations: {
         SAVE_ORGANIZATION_TREE: (state, orgtree) => {
@@ -93,6 +95,13 @@ const organization = {
         SAVE_DetailRank: (state, rank) => {
             state.detailrank = rank;
         },
+        SAVE_ACH_PARAMS: (state, params) => {
+            state.orgAchievement = params;
+        },
+        SAVE_ACHOPT_PARAMS: (state, params) => {
+            state.orgAchievementOpt = params;
+        },
+
     },
     actions: {
         SaveOrgTree({ commit }, orgtree) {
@@ -163,6 +172,12 @@ const organization = {
         },
         SaveDetailRank({ commit }, rank) {
             commit('SAVE_DetailRank', rank);
+        },
+        SaveOrgAchievement({ commit }, params) {
+            commit('SAVE_ACH_PARAMS', params);
+        },
+        SaveOrgAchievementOpt({ commit }, params) {
+            commit('SAVE_ACHOPT_PARAMS', params);
         },
     }
 };

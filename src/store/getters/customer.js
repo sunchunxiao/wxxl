@@ -8,6 +8,8 @@ const customer = {
     cushistoryArr: state => state.customer.cushistoryArr,
     cusLastParams: state => state.customer.cusLastParams,
     cusLastcidObjArr: state => state.customer.cusLastcidObjArr,
+    cusAchievement: state => state.customer.cusAchievement,
+    cusAchievementOpt: state => state.customer.cusAchievementOpt,
 };
 
 export default customer;

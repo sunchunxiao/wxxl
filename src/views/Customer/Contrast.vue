@@ -43,7 +43,7 @@
               class="select clean_select">取消全部</span>
           </div>
           <div class="title_target">
-            <span>客户利润额目标未达成数: <span class="title">{{ noStandardNum }}</span></span>
+            <span>客户利润额目标未达成数: <span class="title">{{ cusAchievement }}</span></span>
           </div>
           <div class="tree_content">
             <div class="company">
@@ -207,7 +207,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['customerTree', 'cuscompareArr', 'cusLastcidObjArr']),
+        ...mapGetters(['customerTree', 'cuscompareArr', 'cusLastcidObjArr','cusAchievement']),
         hasTree() {
             return !_.isEmpty(this.customerTree);
         },
@@ -240,6 +240,7 @@ export default {
     mounted() {
         //获取初始时间
         this.changeDate = this.searchBarValue;
+        this.getAchievement();
         if (this.cuscompareArr.length) {
             this.cid = this.customerTree.cid;
             this.treeClone = _.cloneDeep(this.customerTree);
@@ -253,7 +254,7 @@ export default {
             this.$store.dispatch('SaveCusTree', this.customerTree).then(() => {
                 this.$refs.tree.setCheckedKeys(checkKeys);
                 let promiseArr = [];
-                for (let i of checkKeys){
+                for (let i of checkKeys) {
                     promiseArr.push(this.getTreePrograss(i, false));
                 }
                 this.isFirstCheck = false;
@@ -267,6 +268,18 @@ export default {
         }
     },
     methods: {
+        //目标未达成数
+        getAchievement() {
+            const params = {
+                subject: SUBJECT,
+                // pt: this.getPt(),
+                cid: 1,
+                ...this.getPeriodByPt(),
+            };
+            API.GetCusAchievement(params).then(res => {
+                this.$store.dispatch('SaveCusAchievement', res.data);
+            });
+        },
         getNoStandardNum() {
             let num = 0;
             for (let i in this.noStandardObj) {
@@ -493,6 +506,7 @@ export default {
             this.findFatherId = val.cid;
             this.nodeArr = [];
             this.val = val;
+            this.getAchievement();
             if (!val.cid) {
                 if (this.changeDate.sDate !== val.sDate || this.changeDate.eDate !== val.eDate) {
                     let promiseArr = [];

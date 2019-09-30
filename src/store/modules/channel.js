@@ -8,7 +8,9 @@ const channel = {
         channelCompareArr:[],
         channelHistoryArr:[],
         channelLastParams: {},
-        channelLastcidObjArr: {}
+        channelLastcidObjArr: {},
+        channelAchievement: '',
+        channelAchievementOpt:''
     },
     mutations: {
         SAVE_CHANNEL_TREE: (state, tree) => {
@@ -41,6 +43,13 @@ const channel = {
         SAVE_CHANLAST_CIDOBJ: (state, channelLastcidObjArr) => {
             state.channelLastcidObjArr = channelLastcidObjArr;
         },
+        SAVE_ACHIEVE_PARAMS: (state, params) => {
+            state.channelAchievement = params;
+        },
+        SAVE_ACHIEVEOPT_PARAMS: (state, params) => {
+            state.channelAchievementOpt = params;
+        },
+
     },
     actions: {
         SaveChannelTree({ commit }, tree) {
@@ -73,6 +82,13 @@ const channel = {
         SaveChannelCidObj({ commit }, channelLastcidObjArr) {
             commit('SAVE_CHANLAST_CIDOBJ', channelLastcidObjArr);
         },
+        SaveChannelAchievement({ commit }, params) {
+            commit('SAVE_ACHIEVE_PARAMS', params);
+        },
+        SaveChannelAchievementOpt({ commit }, params) {
+            commit('SAVE_ACHIEVEOPT_PARAMS', params);
+        },
+
     }
 };
 

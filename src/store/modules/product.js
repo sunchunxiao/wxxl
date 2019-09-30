@@ -12,7 +12,9 @@ const product = {
         strategyArr: [],
         productDateArr: {},
         lastParams: {},
-        lastcidObjArr: {}
+        lastcidObjArr: {},
+        productAchievement: '',
+        productAchievementOpt: ''
     },
     mutations: {
         SAVE_PRODUCT_TREE: (state, tree) => {
@@ -57,6 +59,13 @@ const product = {
         SAVE_LAST_CIDOBJ: (state, lastcidObjArr) => {
             state.lastcidObjArr = lastcidObjArr;
         },
+        SAVE_ACHIEVE_PARAMS: (state, params) => {
+            state.productAchievement = params;
+        },
+        SAVE_ACHIEVEOPT_PARAMS: (state, params) => {
+            state.productAchievementOpt = params;
+        },
+
     },
     actions: {
         SaveProductTree({ commit }, tree) {
@@ -100,6 +109,12 @@ const product = {
         },
         SavecidObjArr({ commit }, lastcidObjArr) {
             commit('SAVE_LAST_CIDOBJ', lastcidObjArr);
+        },
+        SaveProAchievement({ commit }, params) {
+            commit('SAVE_ACHIEVE_PARAMS', params);
+        },
+        SaveProAchievementOpt({ commit }, params) {
+            commit('SAVE_ACHIEVEOPT_PARAMS', params);
         },
     }
 };

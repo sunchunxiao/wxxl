@@ -4,6 +4,10 @@ import { FetchGet, FetchPost } from 'utils/fetch';
 // import store from 'store';
 
 export default {
+    //未达成数
+    GetChannelAchievement(params) {
+        return FetchGet('/channel/subject/achievement', params);
+    },
     //查询组织结构
     GetChannelTree(params) {
         return FetchGet('/channel/tree', params);
