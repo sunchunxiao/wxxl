@@ -82,6 +82,16 @@ export default {
                 progressList.push(originList[i].progress);
             }
         },
+        //100%标注线
+        markLine(){
+            let arr = [];
+            let count = 0;
+            while(count < this.data.name.length){
+                arr.push(1);
+                count++;
+            }
+            return arr;
+        },
         renderChart() {
             this.originDataFormat();
             const options = {
@@ -92,15 +102,19 @@ export default {
                 // },
                 tooltip: {
                     formatter: function(params) {
-                        let result =[];
-                        for (let i=0; i<params.name.length; i++) {
-                            if (params.value[i] == null) {
-                                result += params.name[i]+'达成率' + " : " + '暂无' +"</br>";
-                            }else {
-                                result += params.name[i]+'达成率' + " : " + (params.value[i]*100).toFixed(0)+'%' +"</br>";
+                        if(params.seriesName==='100%'){
+                            return "100%";
+                        }else{
+                            let result =[];
+                            for (let i=0; i<params.name.length; i++) {
+                                if (params.value[i] == null) {
+                                    result += params.name[i]+'达成率' + " : " + '暂无' +"</br>";
+                                }else {
+                                    result += params.name[i]+'达成率' + " : " + (params.value[i]*100).toFixed(0)+'%' +"</br>";
+                                }
                             }
+                            return result;
                         }
-                        return result;
                     },
                 },
                 scale: true,
@@ -127,15 +141,39 @@ export default {
                     },
                     splitLine: {
                         lineStyle: {
-                            color: 'rgb(153, 153, 153)'
+                            width : 1,
+                            color:"rgb(153, 153, 153)"
                         }
-                    },
+                    }
                 },
                 series: [
+                    // {
+                    //     name: '100%',
+                    //     type: 'radar',
+                    //     lineStyle: {
+                    //         normal: {
+                    //             color: '#FF6B67',
+                    //             width: 2,
+                    //         }
+                    //     },
+                    //     data: [
+                    //         {
+                    //             value: this.markLine(),
+                    //             label: {
+                    //                 normal: {
+                    //                     show: false,
+                    //                     formatter:function(params) {
+                    //                         return params.value?(params.value*100).toFixed(0)+"%":'';
+                    //                     },
+                    //                     color:'#FF6B67',
+                    //                 },
+                    //             },
+                    //         }
+                    //     ]
+                    // },
                     {
                         name: '正反向指标达成率',
                         type: 'radar',
-                        color:'red',
                         data : [
                             {
                                 value : progressList,
@@ -144,7 +182,7 @@ export default {
                                     normal: {
                                         show: true,
                                         formatter:function(params) {
-                                            return params.value?params.value.toFixed(2):'';
+                                            return params.value?(params.value*100).toFixed(0)+"%":'';
                                         },
                                         color:'#000',
                                     },
@@ -160,7 +198,7 @@ export default {
                         itemStyle : {
                             normal : {
                                 lineStyle: {
-                                    color:'#FD625E',
+                                    color:'#01CABB',
                                     width: 2
                                 }
                             },
