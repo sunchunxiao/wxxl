@@ -45,9 +45,9 @@
               </div>
             </el-col>
             <el-col
-              class="margin-top-10"
+              class="margin-top-50"
               :span="10">
-              <div class="tip">
+              <div class="tip" v-show="false">
                 <span class="colorSpan positive" />
                 <span class="content"> 正向指标达成率(x)</span>
                 <span class="colorSpan negative" />

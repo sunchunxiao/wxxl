@@ -63,9 +63,9 @@ export default {
             for(let i in originList){
                 for(let j in REVERSE_TARGET){
                     if(originList[i].subject===REVERSE_TARGET[j]){
-                        originList[i].name = originList[i].name;
+                        originList[i].name = originList[i].name + '\n' + '(2-目标达成率)';
                         originList[i].progress = 2-originList[i].progress;
-                        originList[i].color = '#FF6B67';
+                        originList[i].color = '#5F5D5D';
                         reverseList.push(originList[i]);
                     }
                 }
@@ -75,7 +75,7 @@ export default {
             });
             for(let i in list){
                 list[i].name = list[i].name;
-                list[i].color = '#01CABB';
+                list[i].color = '#5F5D5D';
             }
             for(let i = 0; i < originList.length; i++){
                 nameList.push(originList[i].name);
@@ -127,9 +127,16 @@ export default {
                             let result = '';
                             for (let i=0; i<params.name.length; i++) {
                                 if (params.value[i] == null) {
-                                    result += params.name[i]+'达成率' + " : " + '暂无' +"</br>";
-                                }else {
-                                    result += params.name[i]+'达成率' + " : " + (params.value[i]*100).toFixed(0)+'%' +"</br>";
+                                    result += params.name[i] + " : " + '暂无' +"</br>";
+                                }else if(params.name[i].indexOf('(') !== -1){
+                                    result += params.name[i].split('(')[0] + 
+                                    '</br>' + '(' + 
+                                    params.name[i].split('(')[1] + 
+                                    " : " + 
+                                    (params.value[i]*100).toFixed(0)+'%' +
+                                    '</br>';
+                                }else{
+                                    result += params.name[i] + " : " + (params.value[i]*100).toFixed(0)+'%' +"</br>";
                                 }
                             }
                             return result;
@@ -148,7 +155,7 @@ export default {
                     },
                     show:true,
                     indicator: originList,
-                    radius: 100,
+                    radius: 110,
                     shape: 'circle',
                     splitArea: {
                         areaStyle: {
@@ -184,18 +191,18 @@ export default {
                                         formatter:function(params) {
                                             return params.value?(params.value*100).toFixed(0)+"%":'';
                                         },
-                                        color:'#000',
+                                        color:'#5F5D5D',
                                     },
                                 },
                                 itemStyle:{
                                     normal: {
-                                        color:'#000'
+                                        color:'#5F5D5D'
                                     },
                                 },
                                 areaStyle: {
                                     normal: {
                                         show: true,
-                                        color: 'rgba(0, 0, 0, 0)'
+                                        color: 'rgba(1, 184, 170, 0.8)'
                                     }
                                 },
                             },
@@ -211,12 +218,12 @@ export default {
                     }]
             };
             options.series.push(
-                this.markPie('100%',50,51),
-                this.markPie('80%',40,41),
-                this.markPie('60%',30,31),
-                this.markPie('40%',20,21),
-                this.markPie('20%',10,11),
-                this.markPie('0%',0,1)
+                this.markPie('100%',55,56),
+                this.markPie('80%',45,46),
+                this.markPie('60%',35,36),
+                this.markPie('40%',25,26),
+                this.markPie('20%',15,16),
+                this.markPie('0%',5,6)
             );
             this.chart.setOption(options,true);
         }
@@ -229,7 +236,7 @@ export default {
     .radar {
         min-width: 350px;
         width: 100%;
-        height: 295px;
+        height: 310px;
         margin: 0 auto;
     }
     .detail {
