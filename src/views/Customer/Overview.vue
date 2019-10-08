@@ -313,20 +313,22 @@ export default {
             this.treeProgressLoading = true;
             API.GetCusTreePrograss(params).then(res => {
                 let obj = this.preOrder([this.treeClone], id);
-                if (obj.cid === id) {
-                    obj.hasData = true;//插入数据的hasData为true
-                    obj.real_total = res.data[id].real;
-                    obj.target_total = res.data[id].target;
-                }
-                if (obj.children) {
-                    for (let i of obj.children) {
-                        if (_.has(res.data, i.cid)) {
-                            i.real_total = res.data[i.cid].real;
-                            i.target_total = res.data[i.cid].target;
+                if (obj) {
+                    if (obj.cid === id) {
+                        obj.hasData = true;//插入数据的hasData为true
+                        obj.real_total = res.data[id].real;
+                        obj.target_total = res.data[id].target;
+                    }
+                    if (obj.children) {
+                        for (let i of obj.children) {
+                            if (_.has(res.data, i.cid)) {
+                                i.real_total = res.data[i.cid].real;
+                                i.target_total = res.data[i.cid].target;
+                            }
                         }
                     }
+                    this.treeProgressLoading = false;
                 }
-                this.treeProgressLoading = false;
             });
         },
 

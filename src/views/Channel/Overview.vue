@@ -334,20 +334,22 @@ export default {
             this.treeProgressLoading = true;
             API.GetChannelTreePrograss(params).then(res => {
                 let obj = this.preOrder([this.treeClone], id);
-                if (obj.nid === id) {
-                    obj.hasData = true;//插入数据的hasData为true
-                    obj.real_total = res.data[id].real;
-                    obj.target_total = res.data[id].target;
-                }
-                if (obj.children) {
-                    for (let i of obj.children) {
-                        if (_.has(res.data, i.nid)) {
-                            i.real_total = res.data[i.nid].real;
-                            i.target_total = res.data[i.nid].target;
+                if (obj) {
+                    if (obj.nid === id) {
+                        obj.hasData = true;//插入数据的hasData为true
+                        obj.real_total = res.data[id].real;
+                        obj.target_total = res.data[id].target;
+                    }
+                    if (obj.children) {
+                        for (let i of obj.children) {
+                            if (_.has(res.data, i.nid)) {
+                                i.real_total = res.data[i.nid].real;
+                                i.target_total = res.data[i.nid].target;
+                            }
                         }
                     }
+                    this.treeProgressLoading = false;
                 }
-                this.treeProgressLoading = false;
             });
         },
         getPt() {
