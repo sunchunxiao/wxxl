@@ -46,8 +46,14 @@
               </div>
             </el-col>
             <el-col
-              class="margin-top-30"
+              class="margin-top-10"
               :span="10">
+              <div class="tip">
+                <span class="colorSpan positive" />
+                <span class="content"> 正向指标达成率(x)</span>
+                <span class="colorSpan negative" />
+                <span class="content"> 反向指标达成率(2-x)</span>
+              </div>
               <radar
                 v-if="productRadarObj"
                 :id="'productRadar'"
@@ -131,6 +137,7 @@ export default {
                 let productRadarObj = {};
                 productRadarObj.name = res.data.map(el => el.subject_name);
                 productRadarObj.progress = res.data.map(el => el.progress);
+                productRadarObj.subject = res.data.map(el => el.subject);
                 this.$store.dispatch('SaveProductRadarObj', productRadarObj);
                 this.$store.dispatch('SaveProductProgressData', res.data);
             }).finally(() => {
