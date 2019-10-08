@@ -51,7 +51,7 @@
         </el-select>
       </el-form-item>
     </div>
-    <div class="tip">
+    <div class="tips">
       <el-form-item
         label="实时更新(数据截止到 2019.9.20 18:00)"
         label-width="350px" />
@@ -96,7 +96,7 @@ export default {
     .filter {
         display: flex;
     }
-    .tip{
+    .tips{
         position:absolute;
         right:0;
     }

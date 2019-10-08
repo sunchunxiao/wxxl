@@ -63,7 +63,7 @@ export default {
             for(let i in originList){
                 for(let j in REVERSE_TARGET){
                     if(originList[i].subject===REVERSE_TARGET[j]){
-                        originList[i].name = '反向指标：' + originList[i].name;
+                        originList[i].name = originList[i].name;//'反向指标：' + 
                         originList[i].progress = 2-originList[i].progress;
                         originList[i].color = '#FF6B67';
                         reverseList.push(originList[i]);
@@ -74,7 +74,7 @@ export default {
                 return array.indexOf(value) === array.lastIndexOf(value);
             });
             for(let i in list){
-                list[i].name = '正向指标：' + list[i].name;
+                list[i].name = list[i].name;//'正向指标：' + 
                 list[i].color = '#01CABB';
             }
             for(let i = 0; i < originList.length; i++){
@@ -83,14 +83,38 @@ export default {
             }
         },
         //100%标注线
-        markLine(){
-            let arr = [];
-            let count = 0;
-            while(count < this.data.name.length){
-                arr.push(1);
-                count++;
-            }
-            return arr;
+        // markLine(value){
+        //     let arr = [];
+        //     let count = 0;
+        //     while(count < this.data.name.length){
+        //         arr.push(value);
+        //         count++;
+        //     }
+        //     return arr;
+        // },
+        //标注线
+        markPie(name,radius1,radius2){
+            let pie = {
+                name: name,
+                type: 'pie',
+                hoverAnimation:false,
+                startAngle: 0,
+                radius: [radius1,radius2],
+                itemStyle: {
+                    normal: {
+                        color: ['rgb(153, 153, 153)'],
+                        label: {
+                            show: false
+                        }
+                    }
+                },
+                label:{
+                    show:true,
+                    color:'#000',
+                },
+                data: [1],
+            };
+            return pie
         },
         renderChart() {
             this.originDataFormat();
@@ -104,8 +128,18 @@ export default {
                     formatter: function(params) {
                         if(params.seriesName==='100%'){
                             return "100%";
+                        }else if(params.seriesName==='80%'){
+                            return "80%";
+                        }else if(params.seriesName==='60%'){
+                            return "60%";
+                        }else if(params.seriesName==='40%'){
+                            return "40%";
+                        }else if(params.seriesName==='20%'){
+                            return "20%";
+                        }else if(params.seriesName==='0%'){
+                            return "0%";
                         }else{
-                            let result =[];
+                            let result = '';
                             for (let i=0; i<params.name.length; i++) {
                                 if (params.value[i] == null) {
                                     result += params.name[i]+'达成率' + " : " + '暂无' +"</br>";
@@ -129,20 +163,26 @@ export default {
                     },
                     show:true,
                     indicator: originList,
-                    radius: 110,
-                    center: ['47%','50%'],
+                    radius: 100,
+                    // center: ['47%','50%'],
                     shape: 'circle',
                     splitArea: {
                         areaStyle: {
                             color: ['#fff'],
-                            shadowColor: 'rgba(0, 0, 0, 0.3)',
+                            shadowColor: 'rgba(0, 0, 0, 0.1)',
                             shadowBlur: 10
                         }
                     },
                     splitLine: {
                         lineStyle: {
                             width : 1,
-                            color:"rgb(153, 153, 153)"
+                            color:"rgb(153, 153, 153, 0.1)"
+                        }
+                    },
+                    axisLine:{
+                        show:true,
+                        lineStyle:{
+                            color:"rgb(153, 153, 153, 0.1)"
                         }
                     }
                 },
@@ -158,6 +198,7 @@ export default {
                     //     },
                     //     data: [
                     //         {
+                    //             symbol:'none',
                     //             value: this.markLine(),
                     //             label: {
                     //                 normal: {
@@ -166,8 +207,31 @@ export default {
                     //                         return params.value?(params.value*100).toFixed(0)+"%":'';
                     //                     },
                     //                     color:'#FF6B67',
+                    //                     borderWidth:5,
                     //                 },
                     //             },
+                    //             lineStyle:{
+                    //                 color: {
+                    //                     type: 'radial',
+                    //                     x: 0.5,
+                    //                     y: 0.5,
+                    //                     r: 0.5,
+                    //                     colorStops: [{
+                    //                         offset: 0, color: 'rgb(153, 153, 153)'
+                    //                     }, {
+                    //                         offset: 1, color: 'rgb(153, 153, 153)'
+                    //                     }],
+                    //                     global: false
+                    //                 },
+                    //                 type:'dotted',
+                    //                 width:2,
+                    //             },
+                    //             areaStyle: {
+                    //                 normal: {
+                    //                     show: true,
+                    //                     color: 'rgb(153, 153, 153,0.5)'
+                    //                 }
+                    //             }
                     //         }
                     //     ]
                     // },
@@ -187,12 +251,17 @@ export default {
                                         color:'#000',
                                     },
                                 },
+                                itemStyle:{
+                                    normal: {
+                                        color:'#000'
+                                    },
+                                },
                                 areaStyle: {
                                     normal: {
                                         show: true,
                                         color: 'rgba(0, 0, 0, 0)'
                                     }
-                                }
+                                },
                             },
                         ],
                         itemStyle : {
@@ -202,14 +271,17 @@ export default {
                                     width: 2
                                 }
                             },
-                            emphasis: {
-                                lineStyle: {
-                                    width: 3
-                                }
-                            }
                         },
                     }]
             };
+            options.series.push(
+                this.markPie('100%',50,51),
+                this.markPie('80%',40,41),
+                this.markPie('60%',30,31),
+                this.markPie('40%',20,21),
+                this.markPie('20%',10,11),
+                this.markPie('0%',0,1)
+            );
             this.chart.setOption(options,true);
         }
     }
