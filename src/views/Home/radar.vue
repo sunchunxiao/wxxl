@@ -63,7 +63,7 @@ export default {
             for(let i in originList){
                 for(let j in REVERSE_TARGET){
                     if(originList[i].subject===REVERSE_TARGET[j]){
-                        originList[i].name = originList[i].name;//'反向指标：' + 
+                        originList[i].name = originList[i].name;//'反向指标：' +
                         originList[i].progress = 2-originList[i].progress;
                         originList[i].color = '#FF6B67';
                         reverseList.push(originList[i]);
@@ -74,7 +74,7 @@ export default {
                 return array.indexOf(value) === array.lastIndexOf(value);
             });
             for(let i in list){
-                list[i].name = list[i].name;//'正向指标：' + 
+                list[i].name = list[i].name;//'正向指标：' +
                 list[i].color = '#01CABB';
             }
             for(let i = 0; i < originList.length; i++){
@@ -114,7 +114,7 @@ export default {
                 },
                 data: [1],
             };
-            return pie
+            return pie;
         },
         renderChart() {
             this.originDataFormat();
