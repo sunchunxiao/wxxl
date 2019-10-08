@@ -107,10 +107,10 @@ export default {
             let subjectData = this.type != 2 ? this.orgSubject : this.orgBackSubject;
             const promises = _.map(subjectData, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
-                _.forEach(resultList, (v, k) => {
-                    v.subject = subjectData[k].subject;
-                    v.subject_name = subjectData[k].subject_name;
-                });
+                // _.forEach(resultList, (v, k) => {
+                // v.subject = subjectData[k].subject;
+                // v.subject_name = subjectData[k].subject_name;
+                // });
                 this.$store.dispatch('SaveOrgTrendArr', resultList);
             }).finally(() => {
                 this.loading = false;

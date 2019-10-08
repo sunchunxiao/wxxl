@@ -13,6 +13,7 @@ import echarts from 'plugins/echarts';
 import { formatNumber, labelNewline, structureRadius } from 'utils/common';
 const SUBJECT = ['ROI','POR','ITO','RY'];
 const MAIN_SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','DAR','PSR','CP','CS','DR'];
+const REVERSE_TARGET = ['C', 'SA','DR']; // C成本 SA库存额 DR残品率是反向指标
 export default {
     props: {
         id: String,
@@ -102,19 +103,31 @@ export default {
 
             this.color = nodes["28nodes"];
             for (let i in pData) {
-                percentArr.push({
-                    value:nodes.values[i],
-                    itemStyle: {
-                        barBorderRadius: structureRadius(nodes.values[i])
-                    }
-                });
+                // percentArr.push({
+                //     value:nodes.values[i],
+                //     itemStyle: {
+                //         barBorderRadius: structureRadius(nodes.values[i]),
+                //         shadowBlur: 5,
+                //         shadowColor: 'rgba(0, 0, 0, 0.8)',
+                //     }
+                // });
                 //28结构字体加粗
                 let dataIndex = i && pData.indexOf(pData[i]);
                 if (_.includes(_this.color,dataIndex)) {
                     yAxis.push({
                         value:pData[i],
                         textStyle: {
-                            fontWeight:'bold'
+                            fontWeight:'bold',
+                        },
+                    });
+                    percentArr.push({
+                        value:nodes.values[i],
+                        itemStyle: {
+                            barBorderRadius: structureRadius(nodes.values[i]),
+                            borderWidth: 1,
+                            borderColor: 'rgba(197,197,197,0.5)',
+                            shadowBlur: 5,
+                            shadowColor: 'rgba(120, 0, 0, 0.8)',
                         }
                     });
                 } else {
@@ -122,6 +135,12 @@ export default {
                         value:pData[i],
                         textStyle: {
                             fontWeight:'normal'
+                        }
+                    });
+                    percentArr.push({
+                        value:nodes.values[i],
+                        itemStyle: {
+                            barBorderRadius: structureRadius(nodes.values[i]),
                         }
                     });
                 }
@@ -196,26 +215,42 @@ export default {
                             // #01b8aa 绿色 #F2C811黄色 #FD625E红色
                             let bgColor = "";
                             if (params.value >= average) {
-                                if(_.includes(_this.color,params.dataIndex)){
-                                    bgColor = '#01F4E1';
-                                }else{
-                                    bgColor = '#01B8AA';
+                                if (_.includes(REVERSE_TARGET, subject)) {
+                                    if(_.includes(_this.color,params.dataIndex)){
+                                        bgColor = '#FF9A95';
+                                    }else{
+                                        bgColor = '#FD625E';
+                                    }
+                                } else {
+                                    if (_.includes(_this.color,params.dataIndex)) {
+                                        bgColor = '#01F4E1';
+                                    } else {
+                                        bgColor = '#01B8AA';
+                                    }
                                 }
                             } else if(params.value < average && params.value >= (average /2)) {
-                                if(_.includes(_this.color,params.dataIndex)){
+                                if (_.includes(_this.color,params.dataIndex)) {
                                     bgColor = '#FFFF14';
-                                }else{
+                                } else {
                                     bgColor = '#F2C811';
                                 }
                             } else if(params.value < (average / 2)) {
-                                if(_.includes(_this.color,params.dataIndex)){
-                                    bgColor = '#FF9A95';
-                                }else{
-                                    bgColor = '#FD625E';
+                                if (_.includes(REVERSE_TARGET, subject)) {
+                                    if(_.includes(_this.color,params.dataIndex)){
+                                        bgColor = '#01F4E1';
+                                    } else {
+                                        bgColor = '#01B8AA';
+                                    }
+                                } else {
+                                    if(_.includes(_this.color,params.dataIndex)){
+                                        bgColor = '#FF9A95';
+                                    }else{
+                                        bgColor = '#FD625E';
+                                    }
                                 }
                             }
                             return bgColor;
-                        }
+                        },
                     },
                     emphasis: {
                         itemStyle: { }
