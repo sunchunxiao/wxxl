@@ -63,7 +63,7 @@ export default {
             for(let i in originList){
                 for(let j in REVERSE_TARGET){
                     if(originList[i].subject===REVERSE_TARGET[j]){
-                        originList[i].name = originList[i].name;//'反向指标：' +
+                        originList[i].name = originList[i].name;
                         originList[i].progress = 2-originList[i].progress;
                         originList[i].color = '#FF6B67';
                         reverseList.push(originList[i]);
@@ -74,7 +74,7 @@ export default {
                 return array.indexOf(value) === array.lastIndexOf(value);
             });
             for(let i in list){
-                list[i].name = list[i].name;//'正向指标：' +
+                list[i].name = list[i].name;
                 list[i].color = '#01CABB';
             }
             for(let i = 0; i < originList.length; i++){
@@ -82,16 +82,6 @@ export default {
                 progressList.push(originList[i].progress);
             }
         },
-        //100%标注线
-        // markLine(value){
-        //     let arr = [];
-        //     let count = 0;
-        //     while(count < this.data.name.length){
-        //         arr.push(value);
-        //         count++;
-        //     }
-        //     return arr;
-        // },
         //标注线
         markPie(name,radius1,radius2){
             let pie = {
@@ -102,7 +92,7 @@ export default {
                 radius: [radius1,radius2],
                 itemStyle: {
                     normal: {
-                        color: ['rgb(153, 153, 153)'],
+                        color: ['#ccc'],
                         label: {
                             show: false
                         }
@@ -119,11 +109,6 @@ export default {
         renderChart() {
             this.originDataFormat();
             const options = {
-                // legend: {
-                //     data: ['正反向指标达成率'],
-                //     right:'5%',
-                //     top:'10%'
-                // },
                 tooltip: {
                     formatter: function(params) {
                         if(params.seriesName==='100%'){
@@ -164,12 +149,11 @@ export default {
                     show:true,
                     indicator: originList,
                     radius: 100,
-                    // center: ['47%','50%'],
                     shape: 'circle',
                     splitArea: {
                         areaStyle: {
                             color: ['#fff'],
-                            shadowColor: 'rgba(0, 0, 0, 0.1)',
+                            shadowColor: 'rgba(0, 0, 0, 0.2)',
                             shadowBlur: 10
                         }
                     },
@@ -187,54 +171,6 @@ export default {
                     }
                 },
                 series: [
-                    // {
-                    //     name: '100%',
-                    //     type: 'radar',
-                    //     lineStyle: {
-                    //         normal: {
-                    //             color: '#FF6B67',
-                    //             width: 2,
-                    //         }
-                    //     },
-                    //     data: [
-                    //         {
-                    //             symbol:'none',
-                    //             value: this.markLine(),
-                    //             label: {
-                    //                 normal: {
-                    //                     show: false,
-                    //                     formatter:function(params) {
-                    //                         return params.value?(params.value*100).toFixed(0)+"%":'';
-                    //                     },
-                    //                     color:'#FF6B67',
-                    //                     borderWidth:5,
-                    //                 },
-                    //             },
-                    //             lineStyle:{
-                    //                 color: {
-                    //                     type: 'radial',
-                    //                     x: 0.5,
-                    //                     y: 0.5,
-                    //                     r: 0.5,
-                    //                     colorStops: [{
-                    //                         offset: 0, color: 'rgb(153, 153, 153)'
-                    //                     }, {
-                    //                         offset: 1, color: 'rgb(153, 153, 153)'
-                    //                     }],
-                    //                     global: false
-                    //                 },
-                    //                 type:'dotted',
-                    //                 width:2,
-                    //             },
-                    //             areaStyle: {
-                    //                 normal: {
-                    //                     show: true,
-                    //                     color: 'rgb(153, 153, 153,0.5)'
-                    //                 }
-                    //             }
-                    //         }
-                    //     ]
-                    // },
                     {
                         name: '正反向指标达成率',
                         type: 'radar',
@@ -267,8 +203,8 @@ export default {
                         itemStyle : {
                             normal : {
                                 lineStyle: {
-                                    color:'#01CABB',
-                                    width: 2
+                                    color:'rgb(153, 153, 153)',
+                                    width: 1
                                 }
                             },
                         },
