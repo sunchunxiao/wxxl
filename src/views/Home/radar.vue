@@ -129,10 +129,10 @@ export default {
                                 if (params.value[i] == null) {
                                     result += params.name[i] + " : " + '暂无' +"</br>";
                                 }else if(params.name[i].indexOf('(') !== -1){
-                                    result += params.name[i].split('(')[0] + 
-                                    '</br>' + '(' + 
-                                    params.name[i].split('(')[1] + 
-                                    " : " + 
+                                    result += params.name[i].split('(')[0] +
+                                    '</br>' + '(' +
+                                    params.name[i].split('(')[1] +
+                                    " : " +
                                     (params.value[i]*100).toFixed(0)+'%' +
                                     '</br>';
                                 }else{
