@@ -131,9 +131,9 @@ export default {
                         itemStyle: {
                             barBorderRadius: structureRadius(nodes.values[i]),
                             borderWidth: 1,
-                            borderColor: 'rgba(197,197,197,0.5)',
+                            borderColor: 'rgba(197,197,197,0.6)',
                             shadowBlur: 5,
-                            shadowColor: 'rgba(120, 0, 0, 0.8)',
+                            shadowColor: 'rgba(120, 0, 0, 0.9)',
                         }
                     });
                 } else {
@@ -150,7 +150,6 @@ export default {
                         }
                     });
                 }
-
             }
             const options = {
                 tooltip : {
@@ -224,40 +223,18 @@ export default {
                             let bgColor = "";
                             if (params.value >= average) {
                                 if (_.includes(REVERSE_TARGET, subject)) {
-                                    if(_.includes(_this.color,params.dataIndex)){
-                                        bgColor = '#FF9A95';
-                                    }else{
-                                        bgColor = '#FD625E';
-                                    }
+                                    bgColor = '#FD625E';
                                 } else {
-                                    if (_.includes(_this.color,params.dataIndex)) {
-                                        bgColor = '#01F4E1';
-                                    } else {
-                                        bgColor = '#01B8AA';
-                                    }
+                                    bgColor = '#01b8aa';
                                 }
-
                             } else if(params.value < average && params.value >= (average /2)) {
-                                if (_.includes(_this.color,params.dataIndex)) {
-                                    bgColor = '#FFFF14';
-                                } else {
-                                    bgColor = '#F2C811';
-                                }
+                                bgColor = '#F2C811';
                             } else if(params.value < (average / 2)) {
                                 if (_.includes(REVERSE_TARGET, subject)) {
-                                    if(_.includes(_this.color,params.dataIndex)){
-                                        bgColor = '#01F4E1';
-                                    } else {
-                                        bgColor = '#01B8AA';
-                                    }
+                                    bgColor = '#01b8aa';
                                 } else {
-                                    if(_.includes(_this.color,params.dataIndex)){
-                                        bgColor = '#FF9A95';
-                                    }else{
-                                        bgColor = '#FD625E';
-                                    }
+                                    bgColor = '#FD625E';
                                 }
-
                             }
                             return bgColor;
                         }
@@ -277,7 +254,11 @@ export default {
                                 if (nodes.total == 0) {//总和为0
                                     return `${params.value}`;
                                 } else {
-                                    return `${(params.value / nodes.total * 100).toFixed(2)}%   ${_this.formatNumber(parseInt(params.value / 100))}`;
+                                    if (_.includes(MAIN_SUBJECT, subject)) {
+                                        return `${(params.value / nodes.total * 100).toFixed(2)}%   ${_this.formatNumber(Math.round(params.value))}`;
+                                    } else {
+                                        return `${(params.value / nodes.total * 100).toFixed(2)}%   ${_this.formatNumber(Math.round(params.value / 100))}`;
+                                    }
                                 }
                             }
                         },

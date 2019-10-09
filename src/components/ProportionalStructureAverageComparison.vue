@@ -216,37 +216,17 @@ export default {
                             let bgColor = "";
                             if (params.value >= average) {
                                 if (_.includes(REVERSE_TARGET, subject)) {
-                                    if(_.includes(_this.color,params.dataIndex)){
-                                        bgColor = '#FF9A95';
-                                    }else{
-                                        bgColor = '#FD625E';
-                                    }
+                                    bgColor = '#FD625E';
                                 } else {
-                                    if (_.includes(_this.color,params.dataIndex)) {
-                                        bgColor = '#01F4E1';
-                                    } else {
-                                        bgColor = '#01B8AA';
-                                    }
+                                    bgColor = '#01b8aa';
                                 }
                             } else if(params.value < average && params.value >= (average /2)) {
-                                if (_.includes(_this.color,params.dataIndex)) {
-                                    bgColor = '#FFFF14';
-                                } else {
-                                    bgColor = '#F2C811';
-                                }
+                                bgColor = '#F2C811';
                             } else if(params.value < (average / 2)) {
                                 if (_.includes(REVERSE_TARGET, subject)) {
-                                    if(_.includes(_this.color,params.dataIndex)){
-                                        bgColor = '#01F4E1';
-                                    } else {
-                                        bgColor = '#01B8AA';
-                                    }
+                                    bgColor = '#01b8aa';
                                 } else {
-                                    if(_.includes(_this.color,params.dataIndex)){
-                                        bgColor = '#FF9A95';
-                                    }else{
-                                        bgColor = '#FD625E';
-                                    }
+                                    bgColor = '#FD625E';
                                 }
                             }
                             return bgColor;
