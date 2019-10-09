@@ -82,25 +82,31 @@ export default {
                 progressList.push(originList[i].progress);
             }
         },
-        //标注线
-        markPie(name,radius1,radius2){
+        //圆环标注线
+        markPie(name,radius1,radius2,mark,bool,circleColor,markColor){
             let pie = {
                 name: name,
                 type: 'pie',
                 hoverAnimation:false,
-                startAngle: 0,
+                startAngle: 270,
                 radius: [radius1,radius2],
                 itemStyle: {
                     normal: {
-                        color: ['#ccc'],
+                        color: [circleColor],
                         label: {
                             show: false
                         }
                     }
                 },
-                label:{
-                    show:true,
-                    color:'#000',
+                label: {
+                    normal: {
+                        show: bool,
+                        formatter: mark,
+                        position: 'inside',
+                        color:markColor,
+                        fontSize:14,
+                        fontWeight:'bold',
+                    },
                 },
                 data: [1],
             };
@@ -111,36 +117,22 @@ export default {
             const options = {
                 tooltip: {
                     formatter: function(params) {
-                        if(params.seriesName==='100%'){
-                            return "100%";
-                        }else if(params.seriesName==='80%'){
-                            return "80%";
-                        }else if(params.seriesName==='60%'){
-                            return "60%";
-                        }else if(params.seriesName==='40%'){
-                            return "40%";
-                        }else if(params.seriesName==='20%'){
-                            return "20%";
-                        }else if(params.seriesName==='0%'){
-                            return "0%";
-                        }else{
-                            let result = '';
-                            for (let i=0; i<params.name.length; i++) {
-                                if (params.value[i] == null) {
-                                    result += params.name[i] + " : " + '暂无' +"</br>";
-                                }else if(params.name[i].indexOf('(') !== -1){
-                                    result += params.name[i].split('(')[0] +
-                                    '</br>' + '(' +
-                                    params.name[i].split('(')[1] +
-                                    " : " +
-                                    (params.value[i]*100).toFixed(0)+'%' +
-                                    '</br>';
-                                }else{
-                                    result += params.name[i] + " : " + (params.value[i]*100).toFixed(0)+'%' +"</br>";
-                                }
+                        let result = '';
+                        for (let i=0; i<params.name.length; i++) {
+                            if (params.value[i] == null) {
+                                result += params.name[i] + " : " + '暂无' +"</br>";
+                            }else if(params.name[i].indexOf('(') !== -1){
+                                result += params.name[i].split('(')[0] +
+                                '</br>' + '(' +
+                                params.name[i].split('(')[1] +
+                                " : " +
+                                (params.value[i]*100).toFixed(0)+'%' +
+                                '</br>';
+                            }else{
+                                result += params.name[i] + " : " + (params.value[i]*100).toFixed(0)+'%' +"</br>";
                             }
-                            return result;
                         }
+                        return result;
                     },
                 },
                 scale: true,
@@ -160,22 +152,20 @@ export default {
                     splitArea: {
                         areaStyle: {
                             color: ['#fff'],
-                            shadowColor: 'rgba(0, 0, 0, 0.2)',
-                            shadowBlur: 10
                         }
                     },
                     splitLine: {
                         lineStyle: {
                             width : 1,
-                            color:"rgb(153, 153, 153, 0.1)"
+                            color:"rgb(153, 153, 153, 0.0)"
                         }
                     },
                     axisLine:{
                         show:true,
                         lineStyle:{
-                            color:"rgb(153, 153, 153, 0.1)"
+                            color:"rgb(153, 153, 153, 0.2)"
                         }
-                    }
+                    },
                 },
                 series: [
                     {
@@ -196,7 +186,8 @@ export default {
                                 },
                                 itemStyle:{
                                     normal: {
-                                        color:'#5F5D5D'
+                                        show: true,
+                                        color:'#FD625E'
                                     },
                                 },
                                 areaStyle: {
@@ -210,20 +201,27 @@ export default {
                         itemStyle : {
                             normal : {
                                 lineStyle: {
-                                    color:'rgb(153, 153, 153)',
-                                    width: 1
+                                    color:'#FD625E',
+                                    width: 2
                                 }
                             },
+                            emphasis: {
+                                lineStyle: {
+                                    width: 3
+                                }
+                            }
                         },
                     }]
             };
             options.series.push(
-                this.markPie('100%',55,56),
-                this.markPie('80%',45,46),
-                this.markPie('60%',35,36),
-                this.markPie('40%',25,26),
-                this.markPie('20%',15,16),
-                this.markPie('0%',5,6)
+                this.markPie('200%',110,111,"200%",true,'RGB(204,204,204,0.3)','RGB(253,98,94,0.3)'),
+                this.markPie('150%',82.5,83.5,"150%",true,'RGB(204,204,204,0.3)','RGB(253,98,94,0.3)'),
+                this.markPie('100%',55,56,"100%",true,'RGB(204,204,204)','RGB(253,98,94)'),
+                this.markPie('80%',45,46,'',false,'RGB(204,204,204)'),
+                this.markPie('60%',35,36,'',false,'RGB(204,204,204)'),
+                this.markPie('40%',25,26,'',false,'RGB(204,204,204)'),
+                this.markPie('20%',15,16,'',false,'RGB(204,204,204)'),
+                this.markPie('0%',5,6,'',false,'RGB(204,204,204)')
             );
             this.chart.setOption(options,true);
         }
