@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import API from './api';
 import { getUsername, removeToken } from 'utils/auth';
 
 export default {
@@ -65,8 +66,15 @@ export default {
     },
     methods: {
         logout() {
-            removeToken();
-            this.$router.replace('/login');
+            // let params =
+            API.Logout().then(() => {
+                removeToken();
+                this.$router.replace('/login');
+            }).catch(e => {
+                //eslint-disable-next-line
+                console.log('catch err', e);
+            });
+            // this.$router.replace('/login');
         }
     }
 };

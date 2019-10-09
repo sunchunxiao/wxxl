@@ -11,7 +11,7 @@
 <script>
 import echarts from 'plugins/echarts';
 import { formatNumber, labelNewline, structureRadius } from 'utils/common';
-const SUBJECT = ['ROI','POR','ITO','RY'];
+// const SUBJECT = ['ROI','POR','ITO','RY'];
 const MAIN_SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','DAR','PSR','CP','CS','DR'];
 const REVERSE_TARGET = ['C', 'SA','DR']; // C成本 SA库存额 DR残品率是反向指标
 export default {
@@ -153,7 +153,7 @@ export default {
                     },
                     formatter: function(params) {
                         let result = [];
-                        if (_.includes(SUBJECT, subject)) {
+                        if (_.includes(MAIN_SUBJECT, subject)) {
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + " : " + _this.formatNumber(item.value) + _this.unit + "</br>";
                             });
@@ -161,7 +161,7 @@ export default {
                             params.forEach(function (item) {
                                 result += item.marker + " " + item.name + "</br>" +
                                 `占比 : ${nodes.total?(item.value / nodes.total * 100).toFixed(2):0}%` + "</br>" +
-                                `&nbsp;&nbsp;&nbsp;额 : ${_this.formatNumber(parseInt(item.value / 100)) + _this.unit}`;
+                                `&nbsp;&nbsp;&nbsp;额 : ${_this.formatNumber(Math.round((item.value / 100))) + _this.unit}`;
                             });
                         }
                         return result;
