@@ -5,25 +5,38 @@
       class="nav-content-row">
       <div
         class="overflow">
+        <el-row style="margin-left:10px">
+          <div style="display:flex;align-items:center;margin-top:20px">
+            <span class="avg">正向指标</span>
+            <span class="colorSpan greenSpan" /><span class="avg"> 大于平均值</span>
+            <span class="colorSpan yellowSpan" /><span
+              span
+              class="avg">小于平均值且大于等于平均值的二分之一</span>
+            <span class="colorSpan redSpan" /><span
+              span
+              class="avg">小于平均值的二分之一</span>
+            <span
+              span
+              class="avg"
+              style="font-weight:600">(28结构字体加粗)</span>
+          </div>
+          <div style="display:flex;align-items:center;margin-top:20px">
+            <span class="avg">反向指标</span>
+            <span class="colorSpan redSpan " /><span class="avg"> 大于平均值</span>
+            <span class="colorSpan yellowSpan" /><span
+              span
+              class="avg">小于平均值且大于等于平均值的二分之一</span>
+            <span class="colorSpan greenSpan" /><span
+              span
+              class="avg">小于平均值的二分之一</span>
+          </div>
+        </el-row>
         <el-row
           v-loading="loading"
           v-if="hasStructure"
           class="min-height-400">
           <Card>
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析前端
-              <div style="display:flex;align-items:center;margin-top:20px">
-                <span class="colorSpan greenSpan" /><span class="avg"> 大于平均值</span>
-                <span class="colorSpan yellowSpan" /><span
-                  span
-                  class="avg">小于平均值且大于等于平均值的二分之一</span>
-                <span class="colorSpan redSpan" /><span
-                  span
-                  class="avg">小于平均值的二分之一</span>
-                <span
-                  span
-                  class="avg"
-                  style="font-weight:600">(28结构颜色高亮,字体加粗)</span>
-              </div>
             </el-row>
             <el-row type="flex">
               <el-col :span="16">
@@ -58,19 +71,6 @@
           class="min-height-400">
           <Card>
             <el-row class="margin-bottom-20 overview_title">比例结构与平均值对比分析后端
-              <div style="display:flex;align-items:center;margin-top:20px">
-                <span class="colorSpan greenSpan" /><span class="avg"> 大于平均值</span>
-                <span class="colorSpan yellowSpan" /><span
-                  span
-                  class="avg">小于平均值且大于等于平均值的二分之一</span>
-                <span class="colorSpan redSpan" /><span
-                  span
-                  class="avg">小于平均值的二分之一</span>
-                <span
-                  span
-                  class="avg"
-                  style="font-weight:600">(28结构颜色高亮,字体加粗)</span>
-              </div>
             </el-row>
             <el-row type="flex">
               <el-col :span="16">
