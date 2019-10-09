@@ -112,8 +112,8 @@ export default {
                 //     }
                 // });
                 //28结构字体加粗
-                let dataIndex = i && pData.indexOf(pData[i]);
-                if (_.includes(_this.color,dataIndex)) {
+                // let dataIndex = i && pData.indexOf(pData[i]);
+                if (_.includes(_this.color,Number(i))) {
                     yAxis.push({
                         value:pData[i],
                         textStyle: {

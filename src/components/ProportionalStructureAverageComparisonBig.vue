@@ -110,15 +110,11 @@ export default {
             _this.color = nodes["28nodes"];
             const average = nodes.avg;
             for(let i in pData) {
-                // percentArr.push({
-                //     value:nodes.values[i],
-                //     itemStyle: {
-                //         barBorderRadius:structureRadius(nodes.values[i])
-                //     }
-                // });
                 //28结构字体加粗
-                let dataIndex = i && pData.indexOf(pData[i]);
-                if (_.includes(_this.color,dataIndex)) {
+                // let dataIndex = i && pData.indexOf(pData[i]);
+                // console.log(111,i,_this.color);
+
+                if (_.includes(_this.color,Number(i))) {
                     yAxis.push({
                         value:pData[i],
                         textStyle: {
