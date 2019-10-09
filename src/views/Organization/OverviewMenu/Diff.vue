@@ -115,10 +115,9 @@ export default {
             this.loading = true;
             const promises = _.map(subjectData, o => this.getTrend(o.subject));
             Promise.all(promises).then(resultList => {
-                // _.forEach(resultList, (v, k) => {
-                // v.subject = subjectData[k].subject;
-                // v.subject_name = subjectData[k].subject_name;
-                // });
+                _.forEach(resultList, (v, k) => {
+                    v.subject = subjectData[k].subject;
+                });
                 this.$store.dispatch('SaveOrgTrendArr', resultList);
             }).finally(() => {
                 this.loading = false;
