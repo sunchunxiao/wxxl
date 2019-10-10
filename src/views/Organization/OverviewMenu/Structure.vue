@@ -7,7 +7,7 @@
         class="overflow">
         <el-row style="margin-left:10px">
           <div style="display:flex;align-items:center;margin-top:20px">
-            <span class="avg">正向指标</span>
+            <span class="avg">正向指标：</span>
             <span class="colorSpan greenSpan" /><span class="avg"> 大于平均值</span>
             <span class="colorSpan yellowSpan" /><span
               span
@@ -21,7 +21,7 @@
               style="font-weight:600">(28结构字体加粗)</span>
           </div>
           <div style="display:flex;align-items:center;margin-top:20px">
-            <span class="avg">反向指标</span>
+            <span class="avg">反向指标：</span>
             <span class="colorSpan redSpan " /><span class="avg"> 大于平均值</span>
             <span class="colorSpan yellowSpan" /><span
               span
