@@ -83,16 +83,15 @@ export default {
             }
         },
         //圆环标注线
-        markPie(name,radius1,radius2,mark,bool,circleColor,markColor){
+        markPie(radius1,radius2,mark,bool){
             let pie = {
-                name: name,
                 type: 'pie',
                 hoverAnimation:false,
                 startAngle: 270,
                 radius: [radius1,radius2],
                 itemStyle: {
                     normal: {
-                        color: [circleColor],
+                        color: ['#C0C0C0'],
                         label: {
                             show: false
                         }
@@ -103,9 +102,8 @@ export default {
                         show: bool,
                         formatter: mark,
                         position: 'inside',
-                        color:markColor,
-                        fontSize:14,
-                        fontWeight:'bold',
+                        color:'#5F5D5D',
+                        fontSize:12,
                     },
                 },
                 data: [1],
@@ -163,7 +161,7 @@ export default {
                     axisLine:{
                         show:true,
                         lineStyle:{
-                            color:"rgb(153, 153, 153, 0.2)"
+                            color:"#C0C0C0"
                         }
                     },
                 },
@@ -214,14 +212,11 @@ export default {
                     }]
             };
             options.series.push(
-                this.markPie('200%',110,111,"200%",true,'RGB(204,204,204,0.3)','RGB(253,98,94,0.3)'),
-                this.markPie('150%',82.5,83.5,"150%",true,'RGB(204,204,204,0.3)','RGB(253,98,94,0.3)'),
-                this.markPie('100%',55,56,"100%",true,'RGB(204,204,204)','RGB(253,98,94)'),
-                this.markPie('80%',45,46,'',false,'RGB(204,204,204)'),
-                this.markPie('60%',35,36,'',false,'RGB(204,204,204)'),
-                this.markPie('40%',25,26,'',false,'RGB(204,204,204)'),
-                this.markPie('20%',15,16,'',false,'RGB(204,204,204)'),
-                this.markPie('0%',5,6,'',false,'RGB(204,204,204)')
+                this.markPie(110,111,"200%",true),
+                this.markPie(82.5,83.5,"150%",true),
+                this.markPie(55,57.5,"100%",true),
+                this.markPie(27.5,28.5,"50%",false),
+                this.markPie(0,1,'0%',false)
             );
             this.chart.setOption(options,true);
         }
