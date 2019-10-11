@@ -24,10 +24,10 @@
             <el-col
               :span="10">
               综合评估
-                <radar
-                    v-if="productReachRadarObj"
-                    :id="'productReachRadar'"
-                    :data="productReachRadarObj" />
+              <radar
+                v-if="productReachRadarObj"
+                :id="'productReachRadar'"
+                :data="productReachRadarObj" />
             </el-col>
           </Card>
         </el-row>
