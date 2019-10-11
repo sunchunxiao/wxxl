@@ -19,7 +19,7 @@
         ref="child"
         @search="handleSearch"
         url="/supply/search"
-        placeholder="产品编号/产品名称"
+        placeholder="供应商编号/供应商名称"
         v-model="searchBarValue"
         :pt-options="['日', '周', '月', '季', '年']" />
     </el-row>
@@ -65,7 +65,7 @@
                   effect="dark"
                   placement="right">
                   <div slot="content">
-                    <div class="margin-bottom-5 ">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                    <div class="margin-bottom-5 ">{{ data.name }} (供应产能目标达成率) : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"

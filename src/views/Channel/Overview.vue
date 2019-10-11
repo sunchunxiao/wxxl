@@ -65,7 +65,7 @@
                   effect="dark"
                   placement="right">
                   <div slot="content">
-                    <div class="margin-bottom-5">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                    <div class="margin-bottom-5">{{ data.name }} (营业利润额目标达成率) : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"

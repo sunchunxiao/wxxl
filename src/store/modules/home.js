@@ -12,6 +12,8 @@ const home = {
         fundHomeTrendArr: [],
         cusHomeArr: [],
         cusHomeTrendArr: [],
+        supplyHomeArr: [],
+        supplyHomeTrendArr: [],
         searchDate: {},
         homeLastParams: {},
         salePrograssArr: [],
@@ -37,6 +39,7 @@ const home = {
         payRadarObj: {},
         profitSpaceRadarObj: {},
         abilityRadarObj: {},
+        supplyRadarObj: {},
     },
     mutations: {
         SAVE_OVERVIEW_ARR: (state, arr) => {
@@ -50,6 +53,13 @@ const home = {
         },
         SAVE_PRODUCTTREND_ARR: (state, arr) => {
             state.productTrendArr = arr;
+        },
+        //供应
+        SAVE_HOMESUPPLY_ARR: (state, arr) => {
+            state.supplyHomeArr = arr;
+        },
+        SAVE_SUPPLYTREND_ARR: (state, arr) => {
+            state.supplyHomeTrendArr = arr;
         },
         SAVE_CHANNELPROGRASS_ARR: (state, arr) => {
             state.channelArr = arr;
@@ -150,6 +160,9 @@ const home = {
         SAVE_ABILITYRADAR_OBJ: (state, obj) => {
             state.abilityRadarObj = obj;
         },
+        SAVE_SUPPLYRADAR_OBJ: (state, obj) => {
+            state.supplyRadarObj = obj;
+        },
     },
     actions: {
         SaveOverviewProgressData({ commit }, arr) {
@@ -163,6 +176,13 @@ const home = {
         },
         SaveProductTrendArr({ commit }, arr) {
             commit('SAVE_PRODUCTTREND_ARR', arr);
+        },
+        //
+        SaveSupplyProgressData({ commit }, arr) {
+            commit('SAVE_HOMESUPPLY_ARR', arr);
+        },
+        SaveSupplyTrendArr({ commit }, arr) {
+            commit('SAVE_SUPPLYTREND_ARR', arr);
         },
         SaveChannelProgressData({ commit }, arr) {
             commit('SAVE_CHANNELPROGRASS_ARR', arr);
@@ -273,6 +293,10 @@ const home = {
         // 盈利能力
         SaveAbilityRadar({ commit }, obj) {
             commit('SAVE_ABILITYRADAR_OBJ', obj);
+        },
+        // 盈利能力
+        SaveSupplyRadarObj({ commit }, obj) {
+            commit('SAVE_SUPPLYRADAR_OBJ', obj);
         },
     }
 };

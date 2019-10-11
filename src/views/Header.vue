@@ -69,6 +69,7 @@ export default {
             // let params =
             API.Logout().then(() => {
                 removeToken();
+                window.location.reload();
                 this.$router.replace('/login');
             }).catch(e => {
                 //eslint-disable-next-line

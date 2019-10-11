@@ -33,7 +33,7 @@
           :class="{'tree_block_none':isCollapse}"
           :span="5"
           class="tree_container">
-          <div class="title">产品结构日销环比增长率 : {{ noStandard }}</div>
+          <div class="title">产品结构日销环比增长率(策略有效性)</div>
           <div class="tree_content">
             <div
               @click="click"
@@ -65,7 +65,7 @@
                   effect="dark"
                   placement="right">
                   <div slot="content">
-                    <div class="margin-bottom-5">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                    <div class="margin-bottom-5">{{ data.name }} (日销环比增长率) : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"
@@ -220,34 +220,12 @@ export default {
         activeCid() {
             return this.cid;
         },
-        noStandard(){
-            if (this.productAchievementOpt != null) {
-                return (this.productAchievementOpt * 100).toFixed(0) +'%'  ;
-            } else {
-                return '暂无';
-            }
-        }
-        // noStandard() {
-        //     let numArr = [];
-        //     if (this.cid) {
-        //         //找节点
-        //         let obj = this.preOrder([this.treeClone], this.cid);
-        //         if (obj.children) {
-        //             for (let i of obj.children) {
-        //                 if (i.real_total && i.target_total) {
-        //                     const bool = this.calculatePercent(i.real_total,i.target_total).largerThanOne;
-        //                     if (!bool) {
-        //                         numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
-        //                     }
-        //                 } else if (!this.treeProgressLoading) {
-        //                     numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
-        //                 } else {
-        //                     return;
-        //                 }
-        //             }
-        //         }
+        // noStandard(){
+        //     if (this.productAchievementOpt != null) {
+        //         return (this.productAchievementOpt * 100).toFixed(0) +'%'  ;
+        //     } else {
+        //         return '暂无';
         //     }
-        //     return numArr.length;
         // }
     },
     watch: {

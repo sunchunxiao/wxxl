@@ -45,7 +45,8 @@
             left: -5%;
             top: 0;
             border-radius: 15px;
-            background: #dbdbdb;
+            //#dbdbdb
+            background: #d0d0d2;
             z-index: -1;
             &.is-active {
                 background: #F2C811;
@@ -95,7 +96,8 @@
                 left: -5%;
                 top: 0;
                 border-radius: 15px;
-                background: #dbdbdb;
+                //#ccc8c8
+                background: #d0d0d2;
                 z-index: -1;
                 &.border-radius-0{
                     border-radius: 0;

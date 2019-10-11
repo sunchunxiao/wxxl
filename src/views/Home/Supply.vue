@@ -10,10 +10,10 @@
           <el-row>
             <el-col
               :span="24"
-              v-if="productArr.length>0">
-              <template v-for="(item, index) in productArr">
+              v-if="supplyHomeArr.length>0">
+              <template v-for="(item, index) in supplyHomeArr">
                 <el-col
-                  v-if="productArr.length>0"
+                  v-if="supplyHomeArr.length>0"
                   :key="index"
                   style="width:180px">
                   <ProTargetAchievement
@@ -34,24 +34,32 @@
                 </el-row>
                 <template>
                   <el-col
-                    v-if="productTrendArr.length>0"
+                    v-if="supplyHomeTrendArr.length>0"
                     :key="index">
                     <ProTargetActualDiffTrend
                       :unit="homeSupply[index].subject_unit"
                       :show-detail="false"
-                      :id="`product${index}`"
-                      :data="productTrendArr[index]" />
+                      :id="`supply${index}`"
+                      :data="supplyHomeTrendArr[index]" />
                   </el-col>
                 </template>
               </div>
             </el-col>
             <el-col
-              class="margin-top-30"
+              class="margin-top-50"
               :span="10">
+              <div
+                class="tip"
+                v-show="false">
+                <span class="colorSpan positive" />
+                <span class="content"> 正向指标达成率(x)</span>
+                <span class="colorSpan negative" />
+                <span class="content"> 反向指标达成率(2-x)</span>
+              </div>
               <radar
-                v-if="productRadarObj"
-                :id="'productRadar'"
-                :data="productRadarObj" />
+                v-if="supplyRadarObj"
+                :id="'supplyRadar'"
+                :data="supplyRadarObj" />
             </el-col>
           </el-row>
         </Card>
@@ -95,10 +103,10 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['productArr', 'productTrendArr', 'searchDate', 'homeLastParams','productRadarObj']),
+        ...mapGetters(['supplyHomeArr', 'supplyHomeTrendArr', 'searchDate', 'homeLastParams','supplyRadarObj']),
         hasSubjectName() {
-            if (this.productTrendArr.length) {
-                return this.productTrendArr[this.index].subject_name;
+            if (this.supplyHomeTrendArr.length) {
+                return this.supplyHomeTrendArr[this.index].subject_name;
             }
         }
     },
@@ -122,17 +130,18 @@ export default {
             this.style = index;
         },
         //产品
-        getProductProgress() {
+        getSupplyProgress() {
             const params = {
                 ...this.getPeriodByPt(),
             };
             this.loading = true;
             API.GetSupplyProgress(params).then(res => {
-                let productRadarObj = {};
-                productRadarObj.name = res.data.map(el => el.subject_name);
-                productRadarObj.progress = res.data.map(el => el.progress);
-                this.$store.dispatch('SaveProductRadarObj', productRadarObj);
-                this.$store.dispatch('SaveProductProgressData', res.data);
+                let supplyRadarObj = {};
+                supplyRadarObj.name = res.data.map(el => el.subject_name);
+                supplyRadarObj.progress = res.data.map(el => el.progress);
+                supplyRadarObj.subject = res.data.map(el => el.subject);
+                this.$store.dispatch('SaveSupplyRadarObj', supplyRadarObj);
+                this.$store.dispatch('SaveSupplyProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -146,17 +155,17 @@ export default {
             }
             this.newParams.homeSupply = params;
             this.$store.dispatch("SaveHomeLastParams", this.newParams);
-            this.getProductProgress();
-            const promises = _.map(this.homeSupply, o => this.getProductTrend(o.subject));
+            this.getSupplyProgress();
+            const promises = _.map(this.homeSupply, o => this.getSupplyTrend(o.subject));
             Promise.all(promises).then(resultList => {
                 _.forEach(resultList, (v, k) => {
                     v.subject = this.homeSupply[k].subject;
                     v.subject_name = this.homeSupply[k].subject_name;
                 });
-                this.$store.dispatch('SaveProductTrendArr', resultList);
+                this.$store.dispatch('SaveSupplyTrendArr', resultList);
             });
         },
-        getProductTrend(subject) {
+        getSupplyTrend(subject) {
             const params = {
                 ...this.getPeriodByPt(),
                 subject: subject

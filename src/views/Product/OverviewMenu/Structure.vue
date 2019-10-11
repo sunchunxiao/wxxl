@@ -12,28 +12,17 @@
             <el-row class="margin-bottom-20 overview_title">
               比例结构与平均值对比分析
               <div style="display:flex;align-items:center;margin-top:20px">
-                <span class="avg">正向指标：</span>
-                <span class="colorSpan greenSpan" /><span class="avg"> 大于平均值</span>
+                <span class="colorSpan greenSpan" /><span class="avg">： 优于平均值</span>
                 <span class="colorSpan yellowSpan" /><span
                   span
-                  class="avg">小于平均值且大于等于平均值的二分之一</span>
+                  class="avg">：介于1/2平均值和平均值之间</span>
                 <span class="colorSpan redSpan" /><span
                   span
-                  class="avg">小于平均值的二分之一</span>
+                  class="avg">：达不到1/2平均值</span>
                 <span
                   span
                   class="avg"
-                  style="font-weight:600">(28结构字体加粗)</span>
-              </div>
-              <div style="display:flex;align-items:center;margin-top:20px">
-                <span class="avg">反向指标：</span>
-                <span class="colorSpan redSpan " /><span class="avg"> 大于平均值</span>
-                <span class="colorSpan yellowSpan" /><span
-                  span
-                  class="avg">小于平均值且大于等于平均值的二分之一</span>
-                <span class="colorSpan greenSpan" /><span
-                  span
-                  class="avg">小于平均值的二分之一</span>
+                  style="font-weight:600">粗体:</span><span class="avg">贡献80%占比的结构</span>
               </div>
             </el-row>
             <el-row

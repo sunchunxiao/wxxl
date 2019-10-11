@@ -86,6 +86,8 @@
                 prop="name"
                 label="供应商名称" />
               <el-table-column
+                prop="comprehensive"
+                sortable
                 label="综合得分">
                 <template
                   slot-scope="scope">
@@ -270,6 +272,8 @@ export default {
             optionScoreAll: [],
             dialogType: "",
             showDialog: false,
+            comprehensive:'',
+            production_capacity:''
         };
     },
     computed: {
@@ -299,13 +303,40 @@ export default {
     },
     methods: {
         changeCellStyle({ row,columnIndex }) {
-            // console.log(row, column, rowIndex, columnIndex );
-            if(columnIndex == 3){
-                if(row.comprehensive>=85){
-                    return 'color:rgba(3,197,1,0.7)';
-                } else if(row.comprehensive<85&&row.comprehensive>=60){
-                    return 'color:rgba(0,0,0,1)';
-                }else if(row.comprehensive<60){
+            if (columnIndex == 3) {
+                if(row.comprehensive == this.comprehensive) {
+                    return 'color:rgba(255,51,51,0.7)';
+                }
+            } else if (columnIndex == 4) {
+                if(row.production_capacity == this.production_capacity) {
+                    return 'color:rgba(255,51,51,0.7)';
+                }
+            }else if (columnIndex == 5) {
+                if(row.quality == this.quality) {
+                    return 'color:rgba(255,51,51,0.7)';
+                }
+            }else if (columnIndex == 6) {
+                if(row.price == this.price) {
+                    return 'color:rgba(255,51,51,0.7)';
+                }
+            }else if (columnIndex == 7) {
+                if(row.delivery == this.delivery) {
+                    return 'color:rgba(255,51,51,0.7)';
+                }
+            }else if (columnIndex == 8) {
+                if(row.effectiveness == this.effectiveness) {
+                    return 'color:rgba(255,51,51,0.7)';
+                }
+            }else if (columnIndex == 9) {
+                if(row.service == this.service) {
+                    return 'color:rgba(255,51,51,0.7)';
+                }
+            }else if (columnIndex == 10) {
+                if(row.funds == this.funds) {
+                    return 'color:rgba(255,51,51,0.7)';
+                }
+            }else if (columnIndex == 11) {
+                if(row.development == this.development) {
                     return 'color:rgba(255,51,51,0.7)';
                 }
             }
@@ -314,10 +345,8 @@ export default {
             if (typeName=='等级') {
                 this.getName(value);
             }
-            // } else {
             this.getScore(this.valueRank,this.valueName);
             this.getGossip(this.valueRank,this.valueName);
-            // }
         },
         getGossip(type,id) {
             const params = {
@@ -340,10 +369,21 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetSupplyScore(params).then(res => {
+                let Name = Object.keys(res.data[0]);
+                this.minMath(res.data, Name);
                 this.optionScore = res.data;
             }).finally(() => {
                 this.loading = false;
             });
+        },
+        //最小值标红
+        minMath(data,strArr){
+            for(let i of strArr){
+                let strMin = data.map((el)=>{
+                    return el[i];
+                });
+                this[i] = Math.min.apply(Math,strMin);
+            }
         },
         getName(type) {
             const params = {

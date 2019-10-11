@@ -32,7 +32,7 @@
           :class="{'tree_block_none':isCollapse}"
           :span="5"
           class="tree_container">
-          <div class="title">客户结构日销环比增长率 :{{ noStandard }}</div>
+          <div class="title">客户结构日销环比增长率(策略有效性)</div>
           <div class="tree_content">
             <div
               @click="click"
@@ -64,7 +64,7 @@
                   effect="dark"
                   placement="right">
                   <div slot="content">
-                    <div class="margin-bottom-5">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                    <div class="margin-bottom-5">{{ data.name }} (日销环比增长率) : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"

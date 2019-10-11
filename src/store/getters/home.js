@@ -3,6 +3,8 @@ const home = {
     overviewTrendArr: state => state.home.overviewTrendArr,
     productArr: state => state.home.productArr,
     productTrendArr: state => state.home.productTrendArr,
+    supplyHomeArr: state => state.home.supplyHomeArr,
+    supplyHomeTrendArr: state => state.home.supplyHomeTrendArr,
     channelArr: state => state.home.channelArr,
     channelTrendArr: state => state.home.channelTrendArr,
     orgHomeArr: state => state.home.orgHomeArr,
@@ -36,6 +38,7 @@ const home = {
     payRadarObj: state => state.home.payRadarObj,
     profitSpaceRadarObj: state => state.home.profitSpaceRadarObj,
     abilityRadarObj: state => state.home.abilityRadarObj,
+    supplyRadarObj: state => state.home.supplyRadarObj,
 };
 
 export default home;

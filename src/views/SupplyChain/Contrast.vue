@@ -68,7 +68,7 @@
                   effect="dark"
                   placement="right">
                   <div slot="content">
-                    <div class="margin-bottom-5 bold">{{ data.name }} : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
+                    <div class="margin-bottom-5 bold">{{ data.name }} (供应产能目标达成率) : {{ calculatePercent(data.real_total, data.target_total).percent + '%' }}</div>
                     <div class="margin-bottom-5">在架时间 : {{ `${getPeriodByPt().sDate}至${getPeriodByPt().eDate}` }}</div>
                     <div
                       v-if="data.children"
