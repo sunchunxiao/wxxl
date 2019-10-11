@@ -10,6 +10,7 @@ const channel = {
     channelLastcidObjArr: state => state.channel.channelLastcidObjArr,
     channelAchievement: state => state.channel.channelAchievement,
     channelAchievementOpt: state => state.channel.channelAchievementOpt,
+    channelReachRadarObj: state => state.channel.channelReachRadarObj,
 };
 
 export default channel;

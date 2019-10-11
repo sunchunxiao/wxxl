@@ -14,7 +14,8 @@ const product = {
         lastParams: {},
         lastcidObjArr: {},
         productAchievement: '',
-        productAchievementOpt: ''
+        productAchievementOpt: '',
+        productReachRadarObj:{},
     },
     mutations: {
         SAVE_PRODUCT_TREE: (state, tree) => {
@@ -65,7 +66,9 @@ const product = {
         SAVE_ACHIEVEOPT_PARAMS: (state, params) => {
             state.productAchievementOpt = params;
         },
-
+        SAVE_PRODUCTREACHRADAR_OBJ: (state, obj) => {
+            state.productReachRadarObj = obj;
+        },
     },
     actions: {
         SaveProductTree({ commit }, tree) {
@@ -115,6 +118,10 @@ const product = {
         },
         SaveProAchievementOpt({ commit }, params) {
             commit('SAVE_ACHIEVEOPT_PARAMS', params);
+        },
+        //产品效率综合评估
+        SaveProductReachRadar({ commit }, obj) {
+            commit('SAVE_PRODUCTREACHRADAR_OBJ', obj);
         },
     }
 };
