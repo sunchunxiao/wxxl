@@ -11,7 +11,7 @@
     <el-row
       class="mgb10 wrap"
       v-loading="loading">
-      <div>当前{{progress}}进度</div>
+      <div>当前{{ progress }}进度</div>
       <template v-for="(budgetNow, index) in budgetNowDataArr">
         <el-col
           v-if="budgetNowDataArr.length"
@@ -117,7 +117,7 @@
     <el-row
       class="mgb10 wrap"
       v-loading="loading">
-      <div>各业务部门{{progress}}进度</div>
+      <div>各业务部门{{ progress }}进度</div>
       <el-col
         :span="24">
         <PlanBudgetBar
@@ -129,7 +129,7 @@
     <el-row
       class="wrap"
       v-loading="loading">
-      <div>各工厂{{progress}}进度</div>
+      <div>各工厂{{ progress }}进度</div>
       <el-col
         :span="24">
         <PlanBudgetBar
