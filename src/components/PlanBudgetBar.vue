@@ -72,7 +72,7 @@ export default {
                 );
             }else if(_this.id === 'planSupplier' || _this.id === 'budgetSupplier'){
                 targetData.push(
-                    _this.data["target_s5"],
+                    // _this.data["target_s5"],
                     _this.data["target_s4"],
                     _this.data["target_s3"],
                     _this.data["target_s2"],
@@ -80,7 +80,7 @@ export default {
                     _this.data["target_total"]
                 );
                 actualData.push(
-                    _this.data["actual_s5"],
+                    // _this.data["actual_s5"],
                     _this.data["actual_s4"],
                     _this.data["actual_s3"],
                     _this.data["actual_s2"],
@@ -131,7 +131,7 @@ export default {
                         show: true,
                         fontSize: 14,
                         formatter: function(value) {
-                            return labelNewline(6, value);
+                            return labelNewline(8, value);
                         }
                     }
                 },
@@ -175,31 +175,31 @@ export default {
                             }
                         }
                     },
-                    markLine :
-                    _this.id === 'planDepartment'||
-                    _this.id === 'planSupplier' ||
-                    _this.id === 'budgetDepartment' ||
-                    _this.id === 'budgetSupplier'?
-                        {
-                            symbol:"none",
-                            name:"目标基准线",
-                            label:{
-                                show:true,
-                                color: "#fd625e",
-                                formatter: function(params) {
-                                    return `目标基准线：${ _this.calculateToShow(params.value)}`;
-                                },
-                            },
-                            data : [
-                                {
-                                    name: '目标基准线',
-                                    xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]:"暂无基准线",
-                                    itemStyle: {
-                                        color: '#b12725'
-                                    }
-                                }
-                            ]
-                        }:{},
+                    // markLine :
+                    // _this.id === 'planDepartment'||
+                    // _this.id === 'planSupplier' ||
+                    // _this.id === 'budgetDepartment' ||
+                    // _this.id === 'budgetSupplier'?
+                    //     {
+                    //         symbol:"none",
+                    //         name:"目标基准线",
+                    //         label:{
+                    //             show:true,
+                    //             color: "#fd625e",
+                    //             formatter: function(params) {
+                    //                 return `目标基准线：${ _this.calculateToShow(params.value)}`;
+                    //             },
+                    //         },
+                    //         data : [
+                    //             {
+                    //                 name: '目标基准线',
+                    //                 xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]:"暂无基准线",
+                    //                 itemStyle: {
+                    //                     color: '#b12725'
+                    //                 }
+                    //             }
+                    //         ]
+                    //     }:{},
                     data: targetData
                 }, {
                     name: "实际",

@@ -37,7 +37,7 @@
             style="width:100%;">
             <tbody>
               <tr class="el-table__row">
-                <td width="10%"><div class="cell" /></td>
+                <td width="12%"><div class="cell" /></td>
                 <td><div class="cell">{{ seasonMonth[0] }}</div></td>
                 <td><div class="cell">{{ seasonMonth[1] }}</div></td>
                 <td><div class="cell">{{ seasonMonth[2] }}</div></td>
@@ -92,6 +92,7 @@
         <el-col
           v-if="budgetFirstDataArr.length"
           :span="6"
+          class="mgt30"
           :key="`budgetFirst${index}`">
           <ProTargetAchievement
             :id="`budgetFirst${index}`"
@@ -107,6 +108,7 @@
         <el-col
           v-if="budgetReturnDataArr.length"
           :span="6"
+          class="mgt30"
           :key="`budgetReturn${index}`">
           <ProTargetAchievement
             :id="`budgetReturn${index}`"
@@ -172,7 +174,7 @@ export default {
             yAxisFirst:["首单预算","首单款数"],
             yAxisReturn:["返单预算","返单款数"],
             yAxisDepartment:["五部","四部","三部","二部","一部","总"],
-            yAxisSupplier:["供应商E","供应商D","供应商C","供应商B","供应商A","总"],
+            yAxisSupplier:["战略供应商工厂D","战略供应商工厂C","战略供应商工厂B","战略供应商工厂A","总"],
             loading: false,
             seasonMonth:[],
             progress:'',
@@ -197,7 +199,7 @@ export default {
                 this.formatPie("now",this.progress + "款数","预算使用",this.budgetData,this.$store);//当前下单进度
                 this.formatPie("first","首单款数","首单预算",this.budgetData,this.$store);//首单预算使用
                 this.formatPie("return","返单款数","返单预算",this.budgetData,this.$store);//返单预算进度
-                this.budgetData["capacity"] = this.formatCapacityTableData(res.data["capacity"]);
+                this.budgetData["capacity"] = this.formatCapacityTableData(res.data["capacity"]).slice(0,5);
 
                 switch (form.season) {
                     case "春季":
@@ -261,19 +263,16 @@ export default {
             let cnName = "";
             switch (name) {
                 case "s1":
-                    cnName = "工厂A";
+                    cnName = "战略供应商工厂A";
                     break;
                 case "s2":
-                    cnName = "工厂B";
+                    cnName = "战略供应商工厂B";
                     break;
                 case "s3":
-                    cnName = "工厂C";
+                    cnName = "战略供应商工厂C";
                     break;
                 case "s4":
-                    cnName = "工厂D";
-                    break;
-                case "s5":
-                    cnName = "工厂E";
+                    cnName = "战略供应商工厂D";
                     break;
                 case "total":
                     cnName = "全部";
@@ -296,7 +295,7 @@ export default {
 </style>
 <style lang="scss" scoped>
     .container .container_wrap .right > div[data-v-fae5bece]:first-child{
-        min-height:2000px;
+        min-height:1950px;
         overflow:hidden;
     }
 </style>
