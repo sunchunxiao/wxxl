@@ -11,7 +11,7 @@
     <el-row
       class="mgb10 wrap"
       v-loading="loading">
-      <div>当前下单进度</div>
+      <div>当前{{progress}}进度</div>
       <template v-for="(planNow, index) in planNowDataArr">
         <el-col
           v-if="planNowDataArr.length"
@@ -29,7 +29,7 @@
       <div
         class="title"
         style="left:20px;">
-        首单下单进度
+        首单{{progress}}进度
       </div>
       <template v-for="(planFirst, index) in planFirstDataArr">
         <el-col
@@ -44,7 +44,7 @@
       <div
         class="title"
         style="left:50%;">
-        返单下单进度
+        返单{{progress}}进度
       </div>
       <template v-for="(planReturn, index) in planReturnDataArr">
         <el-col
@@ -60,7 +60,7 @@
     <el-row
       class="mgb10 wrap"
       v-loading="loading">
-      <div>各业务部门下单进度</div>
+      <div>各业务部门{{progress}}进度</div>
       <el-col
         :span="24">
         <PlanBudgetBar
@@ -72,7 +72,7 @@
     <el-row
       class="mgb10 wrap"
       v-loading="loading">
-      <div>各工厂下单进度</div>
+      <div>各工厂{{progress}}进度</div>
       <el-col
         :span="24">
         <PlanBudgetBar
@@ -175,6 +175,7 @@ export default {
             yAxisSupplier:["供应商E","供应商D","供应商C","供应商B","供应商A","总"],
             loading: false,
             seasonMonth:[],
+            progress:'',
         };
     },
     computed: {
@@ -193,7 +194,7 @@ export default {
                 this.planData["return_order_progress"] = res.data["return_order_progress"];
                 this.planData["department_order_progress"] = res.data["department_order_progress"];
                 this.planData["supplier_order_progress"] = res.data["supplier_order_progress"];
-                this.formatPie("now","下单款数","下单件数",this.planData,this.$store);//当前下单进度
+                this.formatPie("now",this.progress + "款数",this.progress + "件数",this.planData,this.$store);//当前下单进度
                 this.formatPie("first","首单款数","首单件数",this.planData,this.$store);//首单下单进度
                 this.formatPie("return","返单款数","返单件数",this.planData,this.$store);//返单下单进度
                 this.planData["capacity"] = this.formatCapacityTableData(res.data["capacity"]);
@@ -283,6 +284,7 @@ export default {
 
         //下拉筛选
         handleChange(form) {
+            this.progress = form.progress;
             this.getPlanData(form);
         },
     }
