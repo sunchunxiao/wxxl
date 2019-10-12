@@ -158,7 +158,7 @@ export default {
         return {
             seasons: ['春季', '夏季', '秋季', '冬季'],//货品季节类型
             properties: ['全部', '类目一', '类目二', '类目三'],//货品属性类型
-            progresses:['样品','下单', '到货'],//货品进度类型
+            progresses:['下单', '到货'],//货品进度类型
             //货品计划数据
             planData:{
                 now_order_progress:{},//当前下单进度
