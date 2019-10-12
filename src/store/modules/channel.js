@@ -10,7 +10,8 @@ const channel = {
         channelLastParams: {},
         channelLastcidObjArr: {},
         channelAchievement: '',
-        channelAchievementOpt:''
+        channelAchievementOpt:'',
+        channelReachRadarObj:{},
     },
     mutations: {
         SAVE_CHANNEL_TREE: (state, tree) => {
@@ -49,7 +50,9 @@ const channel = {
         SAVE_ACHIEVEOPT_PARAMS: (state, params) => {
             state.channelAchievementOpt = params;
         },
-
+        SAVE_CHANNELREACHRADAR_OBJ: (state, obj) => {
+            state.channelReachRadarObj = obj;
+        },
     },
     actions: {
         SaveChannelTree({ commit }, tree) {
@@ -88,7 +91,10 @@ const channel = {
         SaveChannelAchievementOpt({ commit }, params) {
             commit('SAVE_ACHIEVEOPT_PARAMS', params);
         },
-
+        //渠道效率综合评估
+        SaveChannelReachRadar({ commit }, obj) {
+            commit('SAVE_CHANNELREACHRADAR_OBJ', obj);
+        },
     }
 };
 

@@ -11,6 +11,7 @@ const supply = {
     supplyDateArr: state => state.supply.supplyDateArr,
     supplyLastParams: state => state.supply.supplyLastParams,
     supplylastcidObjArr: state => state.supply.supplylastcidObjArr,
+    supplyReachRadarObj: state => state.supply.supplyReachRadarObj,
 };
 
 export default supply;

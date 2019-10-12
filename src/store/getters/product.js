@@ -13,6 +13,7 @@ const product = {
     lastcidObjArr: state => state.product.lastcidObjArr,
     productAchievement: state => state.product.productAchievement,
     productAchievementOpt: state => state.product.productAchievementOpt,
+    productReachRadarObj: state => state.product.productReachRadarObj,
 };
 
 export default product;

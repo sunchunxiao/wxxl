@@ -7,16 +7,8 @@
         <el-row
           v-loading="loading"
           class="min-height-400">
-          <Card v-if="fundrankArr.length || fundprogressArr.length">
+          <Card v-if="fundprogressArr.length">
             <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
-            <!-- <div
-              class="margin-bottom-20"
-              style="height:250px;"> -->
-            <!-- <slider
-              :key="sliderKey"
-              v-if="fundprogressArr.length"
-              height="250px"
-              :min-move-num="50"> -->
             <el-col :span="16">
               <template v-for="(item, index) in fundprogressArr">
                 <el-col
@@ -29,22 +21,14 @@
                 </el-col>
               </template>
             </el-col>
-            <!-- </slider> -->
-            <!-- </div> -->
-            <!-- <el-row class="margin-bottom-20 overview_title">综合评估</el-row> -->
             <el-col
               :span="8">
               综合评估
-              <Radar
-                v-if="fundrankArr.length"
-                :id="'select'"
-                :data="fundrankArr[fundrankArr.length-1]" />
+              <radar
+                v-if="fundReachRadarObj"
+                :id="'fundReachRadar'"
+                :data="fundReachRadarObj" />
             </el-col>
-            <el-row
-              v-if="!loading && !fundrankArr.length"
-              class="overview_select">
-              暂无数据
-            </el-row>
           </Card>
         </el-row>
       </div>
@@ -55,13 +39,8 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
-
-import Slider from 'components/Slider';
-// 目标达成情况总览
-import ProTargetAchievement from 'components/ProTargetAchievement';
-import Radar from 'components/radar';
-
-//vuex
+import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
+import radar from '../../Home/radar';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -73,8 +52,7 @@ export default {
     },
     components: {
         Card,
-        Slider,
-        Radar,
+        radar,
         ProTargetAchievement,
     },
     data () {
@@ -87,7 +65,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['fundTree', 'fundprogressArr', 'fundrankArr', 'fundlastParams']),
+        ...mapGetters(['fundTree', 'fundprogressArr', 'fundlastParams', 'fundReachRadarObj']),
         hasTree () {
             return !_.isEmpty(this.fundTree);
         }
@@ -109,7 +87,6 @@ export default {
                 return;
             }
             this.getProgress();
-            this.getRank();
             this.$store.dispatch("SaveFundLastParams", this.newParams);
         },
         //目标达成
@@ -128,31 +105,12 @@ export default {
             API.GetFundProgress(params).then(res => {
                 this.sliderKey = new Date().getTime();
                 res.data.map(i=>{i.divide=1;});
+                let fundReachRadarObj = {};
+                fundReachRadarObj.name = res.data.map(el => el.subject_name);
+                fundReachRadarObj.progress = res.data.map(el => el.progress);
+                fundReachRadarObj.subject = res.data.map(el => el.subject);
+                this.$store.dispatch('SaveFundReachRadar', fundReachRadarObj);
                 this.$store.dispatch('SaveFundProgressData', res.data);
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
-        //雷达图
-        getRank() {
-            if (this.getPt() === '日') {
-                this.pt = '周';
-            }else{
-                this.pt = this.getPt();
-            }
-            const params = {
-                cid: this.cid,
-                pt: this.pt,
-                ...this.getPeriodByPt(),
-                version: this.version
-            };
-            this.newParams.rank = params;
-            if (JSON.stringify(this.fundlastParams.rank) == JSON.stringify(params)) {
-                return;
-            }
-            this.loading = true;
-            API.GetFundRank(params).then(res => {
-                this.$store.dispatch('SaveFundRankArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });

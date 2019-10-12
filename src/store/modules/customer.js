@@ -10,7 +10,8 @@ const customer = {
         cusLastParams: {},
         cusLastcidObjArr: {},
         cusAchievement: '',
-        cusAchievementOpt: ''
+        cusAchievementOpt: '',
+        cusReachRadarObj:{},
     },
     mutations: {
         SAVE_CUESTOMER_TREE: (state, tree) => {
@@ -49,7 +50,9 @@ const customer = {
         SAVE_CUSACHOPT_PARAMS: (state, params) => {
             state.cusAchievementOpt = params;
         },
-
+        SAVE_CUSREACHRADAR_OBJ: (state, obj) => {
+            state.cusReachRadarObj = obj;
+        },
     },
     actions: {
         SaveCusTree({ commit }, tree) {
@@ -88,7 +91,10 @@ const customer = {
         SaveCusAchievementOpt({ commit }, params) {
             commit('SAVE_CUSACHOPT_PARAMS', params);
         },
-
+        //客户效率综合评估
+        SaveCusReachRadar({ commit }, obj) {
+            commit('SAVE_CUSREACHRADAR_OBJ', obj);
+        },
     }
 };
 

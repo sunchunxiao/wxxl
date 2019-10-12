@@ -22,6 +22,7 @@ const organization = {
     orgLastcidObjArrBack: state => state.organization.orgLastcidObjArrBack,
     orgAchievement: state => state.organization.orgAchievement,
     orgAchievementOpt: state => state.organization.orgAchievementOpt,
+    orgReachRadarObj: state => state.organization.orgReachRadarObj,
 };
 
 export default organization;

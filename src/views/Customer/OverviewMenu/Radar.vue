@@ -8,16 +8,8 @@
         <el-row
           v-loading="loading"
           class="min-height-400">
-          <Card v-if="cusrankArr.length || cusprogressArr.length">
+          <Card v-if="cusprogressArr.length">
             <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
-            <!-- <div
-              class="margin-bottom-20"
-              style="height:250px;"> -->
-            <!-- <slider
-              v-if="cusprogressArr.length"
-              class="margin-bottom-20"
-              height="250px"
-              :min-move-num="50"> -->
             <el-col :span="16">
               <template v-for="(item, index) in cusprogressArr">
                 <el-col
@@ -29,22 +21,14 @@
                 </el-col>
               </template>
             </el-col>
-            <!-- </slider> -->
-            <!-- </div> -->
-            <!-- <el-row class="margin-bottom-20 overview_title">综合评估</el-row> -->
             <el-col
               :span="8">
               综合评估
-              <Radar
-                v-if="cusrankArr.length"
-                :id="'select'"
-                :data="cusrankArr[cusrankArr.length-1]" />
+              <radar
+                v-if="cusReachRadarObj"
+                :id="'cusReachRadar'"
+                :data="cusReachRadarObj" />
             </el-col>
-            <el-row
-              v-if="!loading && !cusrankArr.length"
-              class="overview_select">
-              暂无数据
-            </el-row>
           </Card>
         </el-row>
       </div>
@@ -60,13 +44,8 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
-
-import Slider from 'components/Slider';
-// 目标达成情况总览
-import ProTargetAchievement from 'components/ProTargetAchievement';
-import Radar from 'components/radar';
-
-//vuex
+import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
+import radar from '../../Home/radar';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -78,25 +57,23 @@ export default {
     },
     components: {
         Card,
-        Slider,
-        Radar,
+        radar,
         ProTargetAchievement,
     },
     data () {
         return {
             form: {
                 pt: '', // 周期类型
-                date: [], // date
-                search: '', // 暂时没有接口 先这样
+                date: [],
+                search: '',
             },
             pt: '',
             loading: false,
-            // val: {},
             newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['customerTree', 'cusprogressArr', 'cusrankArr', 'cusLastParams']),
+        ...mapGetters(['customerTree', 'cusprogressArr', 'cusrankArr', 'cusLastParams', 'cusReachRadarObj']),
         hasTree () {
             return !_.isEmpty(this.customerTree);
         }
@@ -118,7 +95,6 @@ export default {
                 return;
             }
             this.getProgress();
-            this.getRank();
             this.$store.dispatch("SaveCustLastParams", this.newParams);
         },
         //目标达成
@@ -134,30 +110,12 @@ export default {
             }
             this.loading = true;
             API.GetCusProgress(params).then(res => {
+                let cusReachRadarObj = {};
+                cusReachRadarObj.name = res.data.map(el => el.subject_name);
+                cusReachRadarObj.progress = res.data.map(el => el.progress);
+                cusReachRadarObj.subject = res.data.map(el => el.subject);
+                this.$store.dispatch('SaveCusReachRadar', cusReachRadarObj);
                 this.$store.dispatch('SaveCusProgressData', res.data);
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
-        //雷达图
-        getRank() {
-            if (this.getPt() === '日') {
-                this.pt = '周';
-            }else{
-                this.pt = this.getPt();
-            }
-            const params = {
-                cid: this.cid,
-                pt: this.pt,
-                ...this.getPeriodByPt(),
-            };
-            this.newParams.rank = params;
-            if (JSON.stringify(this.cusLastParams.rank) == JSON.stringify(params)) {
-                return;
-            }
-            this.loading = true;
-            API.GetCusRank(params).then(res => {
-                this.$store.dispatch('SaveCusRankArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -189,9 +147,6 @@ export default {
                     pt: '日',
                     sDate: '2018-01-01',
                     eDate: '2018-01-31',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
                 };
             }
         },

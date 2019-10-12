@@ -8,15 +8,8 @@
         <el-row
           v-loading="loading"
           class="min-height-400">
-          <Card v-if="channelRankArr.length || channelProgressArr.length">
+          <Card v-if="channelProgressArr.length">
             <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
-            <!-- <div
-              class="margin-bottom-20"
-              style="height:250px;"> -->
-            <!-- <slider
-              v-if="channelProgressArr.length"
-              height="250px"
-              :min-move-num="50"> -->
             <el-col :span="16">
               <template v-for="(item, index) in channelProgressArr">
                 <el-col
@@ -28,22 +21,14 @@
                 </el-col>
               </template>
             </el-col>
-            <!-- </slider> -->
-            <!-- </div> -->
-            <!-- <el-row class="margin-bottom-20 overview_title">综合评估</el-row> -->
             <el-col
               :span="8">
               综合评估
-              <Radar
-                v-if="channelRankArr.length"
-                :id="'select'"
-                :data="channelRankArr[channelRankArr.length-1]" />
+              <radar
+                v-if="channelReachRadarObj"
+                :id="'channelReachRadar'"
+                :data="channelReachRadarObj" />
             </el-col>
-            <el-row
-              v-if="!loading && !channelRankArr.length"
-              class="overview_select">
-              暂无数据
-            </el-row>
           </Card>
         </el-row>
       </el-col>
@@ -59,13 +44,8 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
-
-import Slider from 'components/Slider';
-// 目标达成情况总览
-import ProTargetAchievement from 'components/ProTargetAchievement';
-import Radar from 'components/radar';
-
-//vuex
+import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
+import radar from '../../Home/radar';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -77,8 +57,7 @@ export default {
     },
     components: {
         Card,
-        Slider,
-        Radar,
+        radar,
         ProTargetAchievement,
     },
     data () {
@@ -86,12 +65,11 @@ export default {
             version: 0,
             pt: '',
             loading: false,
-            // val: {},
             newParams: {}
         };
     },
     computed: {
-        ...mapGetters(['channelTree', 'channelProgressArr', 'channelRankArr', 'channelLastParams']),
+        ...mapGetters(['channelTree', 'channelProgressArr', 'channelLastParams', 'channelReachRadarObj']),
         hasTree () {
             return !_.isEmpty(this.channelTree);
         }
@@ -113,7 +91,6 @@ export default {
                 return;
             }
             this.getProgress();
-            this.getRank();
             this.$store.dispatch("SaveChannelLastParams", this.newParams);
         },
         //目标达成
@@ -125,26 +102,12 @@ export default {
                 ...this.getPeriodByPt(),
             };
             API.GetChannelProgress(params).then(res => {
+                let channelReachRadarObj = {};
+                channelReachRadarObj.name = res.data.map(el => el.subject_name);
+                channelReachRadarObj.progress = res.data.map(el => el.progress);
+                channelReachRadarObj.subject = res.data.map(el => el.subject);
+                this.$store.dispatch('SaveChannelReachRadar', channelReachRadarObj);
                 this.$store.dispatch('SaveChannelProgress', res.data);
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
-        //雷达图
-        getRank() {
-            if (this.getPt() === '日') {
-                this.pt = '周';
-            }else{
-                this.pt = this.getPt();
-            }
-            this.loading = true;
-            const params = {
-                chId: this.cid,
-                pt: this.pt,
-                ...this.getPeriodByPt(),
-            };
-            API.GetChannelRank(params).then(res => {
-                this.$store.dispatch('SaveChannelRankArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -176,9 +139,6 @@ export default {
                     pt: '日',
                     sDate: '2018-01-01',
                     eDate: '2018-01-31',
-                    // 先写死个时间
-                    // sDate: moment().startOf('week').format('YYYY-MM-DD'),
-                    // eDate: moment().format('YYYY-MM-DD'),
                 };
             }
         },
