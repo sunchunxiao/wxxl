@@ -53,7 +53,7 @@
     </div>
     <div class="tips">
       <el-form-item
-        label="实时更新(数据截止到 2019.9.20 18:00)"
+        label="实时更新(数据截止到 2019.10.14 18:00)"
         label-width="350px" />
     </div>
   </el-form>
@@ -76,7 +76,7 @@ export default {
         properties:Array,
         progresses:Array,
     },
-    created () {
+    mounted () {
         this.form.season = this.seasons[0];
         this.form.property = this.properties[0];
         this.form.progress = this.progresses[0];

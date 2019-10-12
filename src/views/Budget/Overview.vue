@@ -11,7 +11,7 @@
     <el-row
       class="mgb10 wrap"
       v-loading="loading">
-      <div>当前下单进度</div>
+      <div>当前{{ progress }}进度</div>
       <template v-for="(budgetNow, index) in budgetNowDataArr">
         <el-col
           v-if="budgetNowDataArr.length"
@@ -37,7 +37,7 @@
             style="width:100%;">
             <tbody>
               <tr class="el-table__row">
-                <td width="10%"><div class="cell" /></td>
+                <td width="12%"><div class="cell" /></td>
                 <td><div class="cell">{{ seasonMonth[0] }}</div></td>
                 <td><div class="cell">{{ seasonMonth[1] }}</div></td>
                 <td><div class="cell">{{ seasonMonth[2] }}</div></td>
@@ -92,6 +92,7 @@
         <el-col
           v-if="budgetFirstDataArr.length"
           :span="6"
+          class="mgt30"
           :key="`budgetFirst${index}`">
           <ProTargetAchievement
             :id="`budgetFirst${index}`"
@@ -107,6 +108,7 @@
         <el-col
           v-if="budgetReturnDataArr.length"
           :span="6"
+          class="mgt30"
           :key="`budgetReturn${index}`">
           <ProTargetAchievement
             :id="`budgetReturn${index}`"
@@ -117,9 +119,15 @@
     <el-row
       class="mgb10 wrap"
       v-loading="loading">
-      <div>各业务部门下单进度</div>
+      <div>各业务部门{{ progress }}进度</div>
       <el-col
         :span="24">
+        <div class="info">
+          <span class="colorSpan greenSpan" /><span class="avg">： 实际</span>
+          <span class="colorSpan graySpan" /><span class="avg">： 目标</span>
+          <span class="colorSpan yellowSpan" /><span class="avg">：介于1/2基准线和基准线之间</span>
+          <span class="colorSpan redSpan" /><span class="avg">：达不到1/2基准线</span>
+        </div>
         <PlanBudgetBar
           :id="`budgetDepartment`"
           :y-axis="yAxisDepartment"
@@ -129,9 +137,15 @@
     <el-row
       class="wrap"
       v-loading="loading">
-      <div>各工厂下单进度</div>
+      <div>各工厂{{ progress }}进度</div>
       <el-col
         :span="24">
+        <div class="info">
+          <span class="colorSpan greenSpan" /><span class="avg">： 实际</span>
+          <span class="colorSpan graySpan" /><span class="avg">： 目标</span>
+          <span class="colorSpan yellowSpan" /><span class="avg">：介于1/2基准线和基准线之间</span>
+          <span class="colorSpan redSpan" /><span class="avg">：达不到1/2基准线</span>
+        </div>
         <PlanBudgetBar
           :id="`budgetSupplier`"
           :y-axis = "yAxisSupplier"
@@ -172,9 +186,10 @@ export default {
             yAxisFirst:["首单预算","首单款数"],
             yAxisReturn:["返单预算","返单款数"],
             yAxisDepartment:["五部","四部","三部","二部","一部","总"],
-            yAxisSupplier:["供应商E","供应商D","供应商C","供应商B","供应商A","总"],
+            yAxisSupplier:["战略供应商工厂D","战略供应商工厂C","战略供应商工厂B","战略供应商工厂A","总"],
             loading: false,
             seasonMonth:[],
+            progress:'',
         };
     },
     computed: {
@@ -193,10 +208,10 @@ export default {
                 this.budgetData["return_order_progress"] = res.data["return_order_progress"];
                 this.budgetData["department_order_progress"] = res.data["department_order_progress"];
                 this.budgetData["supplier_order_progress"] = res.data["supplier_order_progress"];
-                this.formatPie("now","下单款数","预算使用",this.budgetData,this.$store);//当前下单进度
+                this.formatPie("now",this.progress + "款数","预算使用",this.budgetData,this.$store);//当前下单进度
                 this.formatPie("first","首单款数","首单预算",this.budgetData,this.$store);//首单预算使用
                 this.formatPie("return","返单款数","返单预算",this.budgetData,this.$store);//返单预算进度
-                this.budgetData["capacity"] = this.formatCapacityTableData(res.data["capacity"]);
+                this.budgetData["capacity"] = this.formatCapacityTableData(res.data["capacity"]).slice(0,5);
 
                 switch (form.season) {
                     case "春季":
@@ -260,19 +275,16 @@ export default {
             let cnName = "";
             switch (name) {
                 case "s1":
-                    cnName = "工厂A";
+                    cnName = "战略供应商工厂A";
                     break;
                 case "s2":
-                    cnName = "工厂B";
+                    cnName = "战略供应商工厂B";
                     break;
                 case "s3":
-                    cnName = "工厂C";
+                    cnName = "战略供应商工厂C";
                     break;
                 case "s4":
-                    cnName = "工厂D";
-                    break;
-                case "s5":
-                    cnName = "工厂E";
+                    cnName = "战略供应商工厂D";
                     break;
                 case "total":
                     cnName = "全部";
@@ -283,6 +295,7 @@ export default {
 
         //下拉筛选
         handleChange(form) {
+            this.progress = form.progress;
             this.getBudgetData(form);
         },
     }
@@ -294,7 +307,7 @@ export default {
 </style>
 <style lang="scss" scoped>
     .container .container_wrap .right > div[data-v-fae5bece]:first-child{
-        min-height:2000px;
+        min-height:2020px;
         overflow:hidden;
     }
 </style>
