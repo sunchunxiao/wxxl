@@ -181,7 +181,7 @@ import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverage
 //tree 百分比计算
 import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 import { mapGetters } from 'vuex';
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
+const SUBJECT = 'ROI'; //ROI投入产出比
 const TREE_PROPS = {
     children: 'children',
     label: 'name'

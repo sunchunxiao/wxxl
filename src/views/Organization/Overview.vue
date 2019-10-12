@@ -146,7 +146,7 @@ const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
+const SUBJECT = 'ROI'; // ROI投入产出比
 export default {
     components: {
         "reach": viewRadar,

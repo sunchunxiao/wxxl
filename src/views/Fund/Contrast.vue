@@ -186,7 +186,7 @@ const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
+const SUBJECT = 'ROI'; // S: 销售额 P: 利润额
 
 export default {
     components: {

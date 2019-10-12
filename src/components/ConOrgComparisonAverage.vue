@@ -9,7 +9,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
-const SUBJECT = ['ROI', 'ITO', 'RY'];
+const MAIN_SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','DAR','PSR','CP','CS','DR','IN','RMIN','CIN','OIN','SIN','RGIN','PGIN'];
 import { formatTimeLabel } from 'utils/common';
 
 export default {
@@ -47,8 +47,13 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
-            if (_.includes(SUBJECT, subject)) { // ROI投入产出比需要,ITO库存周转率不需要单位
-                return val;
+            if (_.includes(MAIN_SUBJECT, subject)) { // ROI投入产出比需要,ITO库存周转率不需要单位
+                // return val;
+                if (val && val >= 10000) {
+                    return (val / 10000) + 'w';
+                } else {
+                    return val;
+                }
             } else {
                 let tenThousand = parseInt(val / 10000);
                 if (tenThousand >= 1 || tenThousand <= -1) {
@@ -63,7 +68,7 @@ export default {
             const { series,timeLabels, subject } = data;
             const seriesClone = _.cloneDeep(series);
             for (let i = 0;i < seriesClone.length; i++) {
-                if (_.includes(SUBJECT,subject)) {
+                if (_.includes(MAIN_SUBJECT,subject)) {
                     _.forEach(seriesClone[i], (v,k) => {
                         seriesClone[i][k] = v;
                     });
@@ -84,20 +89,6 @@ export default {
                 },
                 tooltip: {
                     show: false,
-                    // trigger: 'axis',
-                    // enterable: false,
-                    // hideDelay: 0,
-                    // formatter: function(params) {
-                    //     let str = params[0].name + "<br/>";
-                    //     for (let i of params) {
-                    //         str += i.marker + i.seriesName + " : " + formatNumber(i.value) + _this.unit + "<br/>";
-                    //     }
-                    //     if (_this.tooltipScroll) {
-                    //         return `<div style='max-height:${_this.$el.offsetHeight - 55}px;overflow:auto;'>${str}</div>`;
-                    //     }
-                    //     return str;
-                    // },
-                    // position: [0, 0]
                 },
                 xAxis: {
                     type: 'category',

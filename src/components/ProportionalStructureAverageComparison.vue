@@ -12,7 +12,7 @@
 import echarts from 'plugins/echarts';
 import { formatNumber, labelNewline, structureRadius } from 'utils/common';
 // const SUBJECT = ['ROI','POR','ITO','RY'];
-const MAIN_SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','DAR','PSR','CP','CS','DR'];
+const MAIN_SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','DAR','PSR','CP','CS','DR','IN','RMIN','CIN','OIN','SIN','RGIN','PGIN'];
 const REVERSE_TARGET = ['C', 'SA','DR']; // C成本 SA库存额 DR残品率是反向指标
 export default {
     props: {

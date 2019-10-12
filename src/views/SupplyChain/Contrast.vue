@@ -157,7 +157,7 @@ const TREE_PROPS = {
     label: 'name'
 };
 
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
+const SUBJECT = 'CP'; // CP供应产能
 
 export default {
     components: {

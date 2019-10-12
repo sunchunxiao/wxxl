@@ -46,7 +46,7 @@ export default {
     },
     methods: {
         renderChart(data) {
-            const { timeLabels } = data;
+            const { timeLabels, real } = data;
             const ring = _.map(data.ring, (v)=> {
                 return (v * 100).toFixed(2);
             });
@@ -59,9 +59,12 @@ export default {
                     trigger: 'axis',
                     formatter: function(params) {
                         let str = params[0].axisValue + "</br>";
+                        let marker;
                         for (let i of params) {
                             str += i.marker + " " + i.seriesName + " : " + String(i.value).replace(".00","") + '%' + "</br>";
+                            marker = i.marker;
                         }
+                        str += marker+' '+`当期${data.subject_name}`+' : '+real[params[0].dataIndex];
                         return str;
                     },
                 },

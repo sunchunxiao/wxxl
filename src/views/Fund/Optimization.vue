@@ -117,12 +117,12 @@
                         label="环比增长率">
                         <template slot-scope="scope">
                           <img
-                            v-if="largerThanZero(scope.row.ring_rate)"
+                            v-if="largerThanZero(scope.row)"
                             src="../../assets/opt1.png"
                             alt="">
                           <img
-                            v-if="lessThanZero(scope.row.ring_rate)"
-                            src="../../assets/opt2.png"
+                            v-if="lessThanZero(scope.row)"
+                            src="../../assets/opt2_down.png"
                             alt="">
                           <span style="margin-left: 10px">{{ scope.row.ring_rate + '%' }}</span>
                         </template>
@@ -151,13 +151,13 @@ import SearchBar from 'components/SearchBar';
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
-import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty,subjuctReverse } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
     label: 'name'
 };
-const SUBJECT = 'P'; // S: 销售额 P: 利润额
+const SUBJECT = 'CTR'; // S: 销售额 P: 利润额
 
 export default {
     components: {
@@ -181,6 +181,7 @@ export default {
             preOrder: preOrder,
             addProperty: addProperty,
             calculatePercent: calculatePercent,
+            subjuctReverse: subjuctReverse,
             defaultProps: TREE_PROPS,
             index0: 0,
             val: {},
@@ -250,7 +251,6 @@ export default {
     mounted() {
         //获取初始时间
         this.changeDate = this.searchBarValue;
-        this.getAchievement();
         if (!this.hasTree) {
             this.getTree();
         } else {
@@ -260,18 +260,6 @@ export default {
         }
     },
     methods: {
-        //目标未达成数
-        getAchievement() {
-            const params = {
-                subject: 'CTR',
-                cid: 'ORG1',
-                ...this.getPeriodByPt(),
-                version: this.form.version,
-            };
-            API.GetFundAchievement(params).then(res => {
-                this.$store.dispatch('SaveFundAchievementOpt', res.data);
-            });
-        },
         getColSpan(item,index) {
             if (item.strategies && item.strategies.length) {
                 return 24;
@@ -412,11 +400,20 @@ export default {
                 };
             }
         },
-        largerThanZero(val) {
-            return val && _.isNumber(parseFloat(val)) && parseFloat(val) >= 0;
+        largerThanZero (val) {
+            if (this.subjuctReverse(val.subject)) {
+                return val.ring_rate && _.isNumber(parseFloat(val.ring_rate * 100)) && parseFloat(val.ring_rate) < 0;
+            } else {
+                return val.ring_rate && _.isNumber(parseFloat(val.ring_rate * 100)) && parseFloat(val.ring_rate) > 0;
+            }
         },
-        lessThanZero(val) {
-            return val && _.isNumber(parseFloat(val)) && parseFloat(val) < 0;
+        lessThanZero (val) {
+            if (this.subjuctReverse(val.subject)) {
+                return val.ring_rate && _.isNumber(parseFloat(val.ring_rate * 100)) && parseFloat(val.ring_rate) > 0;
+
+            } else {
+                return val.ring_rate && _.isNumber(parseFloat(val.ring_rate * 100)) && parseFloat(val.ring_rate) < 0;
+            }
         },
         arraySpanMethod2(strategies) {
             if (!strategies || strategies.length === 0) {
@@ -453,7 +450,6 @@ export default {
             // 默认公司的背景色
             this.nodeArr = [];
             this.val = val;
-            this.getAchievement();
             if (!val.cid){
                 this.changeDate = this.searchBarValue;
                 if (this.cid !== this.fundTree.cid) {

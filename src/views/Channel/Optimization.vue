@@ -101,7 +101,7 @@
                     :span-method="arraySpanMethod(item.strategies)">
                     <el-table-column :label="`周期: ${item.start_date} 至 ${item.end_date}`">
                       <el-table-column
-                        prop="subject"
+                        prop="subject_name"
                         label="指标" />
                       <el-table-column
                         prop="package"
@@ -117,12 +117,12 @@
                         label="环比增长率">
                         <template slot-scope="scope">
                           <img
-                            v-if="largerThanZero(scope.row.ring_rate)"
+                            v-if="largerThanZero(scope.row)"
                             src="../../assets/opt1.png"
                             alt="">
                           <img
-                            v-if="lessThanZero(scope.row.ring_rate)"
-                            src="../../assets/opt2.png"
+                            v-if="lessThanZero(scope.row)"
+                            src="../../assets/opt2_down.png"
                             alt="">
                           <span style="margin-left: 10px">{{ `${parseInt(scope.row.ring_rate*100)}` + '%' }}</span>
                         </template>
@@ -151,7 +151,7 @@ import SearchBar from 'components/SearchBar';
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
-import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty,subjuctReverse } from 'utils/common';
 import { mapGetters } from 'vuex';
 const TREE_PROPS = {
     children: 'children',
@@ -181,6 +181,7 @@ export default {
             preOrder: preOrder,
             addProperty: addProperty,
             calculatePercent: calculatePercent,
+            subjuctReverse:subjuctReverse,
             defaultProps: TREE_PROPS,
             index0: 0,
             val: {},
@@ -207,34 +208,12 @@ export default {
         activeCid() {
             return this.cid;
         },
-        noStandard(){
-            if (this.channelAchievementOpt != null) {
-                return (this.channelAchievementOpt * 100).toFixed(0) +'%'  ;
-            } else {
-                return '暂无';
-            }
-        }
-        // noStandard() {
-        //     let numArr = [];
-        //     if (this.cid) {
-        //         //找节点
-        //         let obj = this.preOrder([this.treeClone], this.cid);
-        //         if (obj.children) {
-        //             for (let i of obj.children) {
-        //                 if (i.real_total && i.target_total) {
-        //                     const bool = this.calculatePercent(i.real_total,i.target_total).largerThanOne;
-        //                     if (!bool) {
-        //                         numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
-        //                     }
-        //                 } else if(!this.treeProgressLoading) {
-        //                     numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
-        //                 } else {
-        //                     return;
-        //                 }
-        //             }
-        //         }
+        // noStandard(){
+        //     if (this.channelAchievementOpt != null) {
+        //         return (this.channelAchievementOpt * 100).toFixed(0) +'%'  ;
+        //     } else {
+        //         return '暂无';
         //     }
-        //     return numArr.length;
         // }
     },
     watch: {
@@ -413,10 +392,19 @@ export default {
             }
         },
         largerThanZero (val) {
-            return val && _.isNumber(parseFloat(val)) && parseFloat(val) > 0;
+            if (this.subjuctReverse(val.subject)) {
+                return val.ring_rate && _.isNumber(parseFloat(val.ring_rate * 100)) && parseFloat(val.ring_rate) < 0;
+            } else {
+                return val.ring_rate && _.isNumber(parseFloat(val.ring_rate * 100)) && parseFloat(val.ring_rate) > 0;
+            }
         },
         lessThanZero (val) {
-            return val && _.isNumber(parseFloat(val)) && parseFloat(val) < 0;
+            if (this.subjuctReverse(val.subject)) {
+                return val.ring_rate && _.isNumber(parseFloat(val.ring_rate * 100)) && parseFloat(val.ring_rate) > 0;
+
+            } else {
+                return val.ring_rate && _.isNumber(parseFloat(val.ring_rate * 100)) && parseFloat(val.ring_rate) < 0;
+            }
         },
         arraySpanMethod (strategies) {
             if (!strategies || strategies.length === 0) {

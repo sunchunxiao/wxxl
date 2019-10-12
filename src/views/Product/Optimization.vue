@@ -104,7 +104,7 @@
                       :label="`周期: ${item.start_date} 至 ${item.end_date}`"
                       class="date">
                       <el-table-column
-                        prop="subject"
+                        prop="subject_name"
                         label="指标" />
                       <el-table-column
                         prop="package"
@@ -120,12 +120,12 @@
                         label="环比增长率">
                         <template slot-scope="scope">
                           <img
-                            v-if="largerThanZero(scope.row.ring_rate)"
+                            v-if="largerThanZero(scope.row)"
                             src="../../assets/opt1.png"
                             alt="">
                           <img
-                            v-if="lessThanZero(scope.row.ring_rate)"
-                            src="../../assets/opt2.png"
+                            v-if="lessThanZero(scope.row)"
+                            src="../../assets/opt2_down.png"
                             alt="">
                           <span style="margin-left: 10px">{{ `${parseInt(scope.row.ring_rate*100)}` + '%' }}</span>
                         </template>
@@ -159,7 +159,7 @@ import Card from '../../components/Card';
 import ConOrgComparisonAverage from '../../components/ConOrgComparisonAverage';
 import ConOrgComparisonAverageBig from '../../components/ConOrgComparisonAverageBig';
 //tree 百分比计算
-import { calculatePercent, error, preOrder, find, addProperty } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty,subjuctReverse } from 'utils/common';
 
 import { mapGetters } from 'vuex';
 const SUBJECT = 'P'; // S: 销售额 P: 利润额
@@ -209,7 +209,8 @@ export default {
             findFatherId: '',
             isCollapse: false,
             message: '',
-            treeProgressLoading: true
+            treeProgressLoading: true,
+            subjuctReverse:subjuctReverse
         };
     },
     computed: {
@@ -403,10 +404,19 @@ export default {
             }
         },
         largerThanZero (val) {
-            return val && _.isNumber(parseFloat(val * 100)) && parseFloat(val) > 0;
+            if (this.subjuctReverse(val.subject)) {
+                return val.ring_rate && _.isNumber(parseFloat(val.ring_rate * 100)) && parseFloat(val.ring_rate) <= 0;
+            } else {
+                return val.ring_rate && _.isNumber(parseFloat(val.ring_rate * 100)) && parseFloat(val.ring_rate) > 0;
+            }
         },
         lessThanZero (val) {
-            return val && _.isNumber(parseFloat(val * 100)) && parseFloat(val) < 0;
+            if (this.subjuctReverse(val.subject)) {
+                return val.ring_rate && _.isNumber(parseFloat(val.ring_rate * 100)) && parseFloat(val.ring_rate) > 0;
+
+            } else {
+                return val.ring_rate && _.isNumber(parseFloat(val.ring_rate * 100)) && parseFloat(val.ring_rate) <= 0;
+            }
         },
         arraySpanMethod (strategies) {
             if (!strategies || strategies.length === 0) {

@@ -9,7 +9,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
-const SUBJECT = ['ROI','ITO','RY'];
+const MAIN_SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','DAR','PSR','CP','CS','DR','IN','RMIN','CIN','OIN','SIN','RGIN','PGIN'];
 import { formatNumber, formatTimeLabel } from 'utils/common';
 export default {
     props: {
@@ -47,8 +47,12 @@ export default {
     methods: {
         calculateToShow(val) {
             const { subject } = this.data;
-            if (_.includes(SUBJECT, subject)) { // ROI投入产出比需要,ITO库存周转率不需要单位
-                return val;
+            if (_.includes(MAIN_SUBJECT, subject)) { // ROI投入产出比需要,ITO库存周转率不需要单位
+                if (val && val >= 10000) {
+                    return (val / 10000) + 'w';
+                } else {
+                    return val;
+                }
             } else {
                 let tenThousand = parseInt(val / 10000);
                 if (tenThousand / 10000 >= 1) {
@@ -65,7 +69,7 @@ export default {
             const seriesClone = _.cloneDeep(series);
             let _this = this;
             for(let i = 0;i < seriesClone.length; i++) {
-                if (_.includes(SUBJECT,subject)) {
+                if (_.includes(MAIN_SUBJECT, subject)) {
                     _.forEach(seriesClone[i], (v,k) => {
                         seriesClone[i][k] = v;
                     });

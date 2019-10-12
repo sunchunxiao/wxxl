@@ -94,12 +94,18 @@ export default {
                         {
                             value:i.score,
                             label: {
-                                normal:{
+                                normal: {
                                     // color: 'rgba(255,255,188,0.9)',
                                     fontWeight:'bold',
                                     fontSize:15
                                 },
                             },
+                            itemStyle: {
+                                borderWidth: 1,
+                                borderColor: 'rgba(197,197,197,0.6)',
+                                shadowBlur: 5,
+                                shadowColor: 'rgba(120, 0, 0, 0.9)',
+                            }
                         }
                     );
                 } else {

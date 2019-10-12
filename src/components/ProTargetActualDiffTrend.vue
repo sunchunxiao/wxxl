@@ -14,7 +14,7 @@
 import echarts from 'plugins/echarts';
 import { formatNumber, formatTimeLabel } from 'utils/common';
 //ROI投入产出比 SKU数量 店铺数量SHP,消费者数量PER,冗余值RY 库存周转率 GPM毛利率 QPR品质合格率 CTR资金周转率 FAO固定资产占用率 LA库龄 PS盈利空间 PA盈利能力 PO支付能力1 PT支付能力2 DAR交期达成率 PSR产供比 CP产能 CS产能安全值 DR残品率
-const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','CS','DR','IN','PSR','DAR'];
+const SUBJECT = ['ITO', 'ROI', 'SKU', 'PER', 'SHP', 'RY', 'POR', 'NIR', 'CTR', 'GR', 'GPM', 'CGR', 'QPR', 'PS','FAO', 'LA','PA','PO','PT','DN','CS','DR','IN','PSR','DR','DAR','IN','RMIN','CIN','OIN','SIN','RGIN','PGIN'];
 const REVERSE_TARGET = ['C', 'SA','DR']; // C成本 SA库存额 DR残品率是反向指标
 export default {
     props: {
@@ -95,16 +95,33 @@ export default {
             for (let i = 0;i < hasTarget.length;i++) {
                 // value值转换为元  SUBJECT显示原值
                 if (_.includes(SUBJECT,subject)) {
-                    arr.push({
-                        value: targetClone[i],
-                        hasTarget: hasTarget[i]
-                    });
+                    if (data.denominatorZero && data.denominatorZero.length ) {
+                        arr.push({
+                            value: targetClone[i],
+                            hasTarget: hasTarget[i],
+                            denominatorZero: data.denominatorZero[i]
+                        });
+                    } else {
+                        arr.push({
+                            value: targetClone[i],
+                            hasTarget: hasTarget[i],
+                        });
+                    }
                 } else {
                     realClone[i] = parseInt(realClone[i] / 100);
-                    arr.push({
-                        value: parseInt(targetClone[i] / 100),
-                        hasTarget: hasTarget[i]
-                    });
+                    if (data.denominatorZero && data.denominatorZero.length ) {
+                        arr.push({
+                            value: parseInt(targetClone[i] / 100),
+                            hasTarget: hasTarget[i],
+                            denominatorZero:data.denominatorZero[i]
+                        });
+                    } else {
+                        arr.push({
+                            value: parseInt(targetClone[i] / 100),
+                            hasTarget: hasTarget[i],
+                        });
+                    }
+
                 }
 
                 realItem = realClone[i];
@@ -195,10 +212,10 @@ export default {
                         type: 'line',
                     },
                     formatter: function (params) {
-                        // console.log(params);
                         let result = params[0].axisValue + "<br />";
                         let value1, value2;
                         const hasTarget = params[0].data.hasTarget;
+                        const denominatorZero = params[0].data.denominatorZero ? params[0].data.denominatorZero:null;
                         params.forEach(function (item) {
                             let value = Array.isArray(item.value) ? item.value[item.value.length - 1] : item.value;
                             if (item.seriesIndex == 5 || item.seriesIndex == 3) {
@@ -215,9 +232,19 @@ export default {
                             }
                             value = _this.formatNumber(value);
                             value = value.toString().replace(".00","") + _this.unit;
-                            if (hasTarget == 0) {
+                            //hasTarget 0为未设定 1为设定
+                            //denominatorZero 1为未设定 0为设定
+                            if (hasTarget == 0 ) {
                                 if (item.seriesIndex != 2 && item.seriesIndex != 3) {
                                     if (item.seriesIndex == 0) {//目标
+                                        result += item.marker + " " + item.seriesName + " : " + '未设定' + "</br>";
+                                    } else {
+                                        result += item.marker + " " + item.seriesName + " : " + value + "</br>";
+                                    }
+                                }
+                            } else if (denominatorZero && denominatorZero ==1) {
+                                if (item.seriesIndex != 2 && item.seriesIndex != 3) {
+                                    if (item.seriesIndex == 1) {//实际
                                         result += item.marker + " " + item.seriesName + " : " + '未设定' + "</br>";
                                     } else {
                                         result += item.marker + " " + item.seriesName + " : " + value + "</br>";

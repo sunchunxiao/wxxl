@@ -118,7 +118,6 @@ export function find(cid, data, arr) {//查找hasData = false 的父节点
         }
     }
 }
-
 export function labelNewline(num, value, str) {
     if (!str) {
         str = "\n";
@@ -174,5 +173,16 @@ export function structureRadius(value) {
         return [0, 20, 20, 0];
     } else {
         return [20, 0, 0, 20];
+    }
+}
+
+const REVERSE_TARGET = ['C', 'SA','DR']; // C成本 SA库存额 DR残品率是反向指标
+
+//正反向指标判断
+export function subjuctReverse(subject) {
+    if (_.includes(REVERSE_TARGET,subject)) {
+        return true;
+    } else {
+        return false;
     }
 }
