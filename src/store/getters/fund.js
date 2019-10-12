@@ -14,6 +14,7 @@ const fund = {
     fundLastcidObjArrBack: state => state.fund.fundLastcidObjArrBack,
     fundAchievement: state => state.fund.fundAchievement,
     fundAchievementOpt: state => state.fund.fundAchievementOpt,
+    fundReachRadarObj: state => state.fund.fundReachRadarObj,
 };
 
 export default fund;

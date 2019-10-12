@@ -7,17 +7,8 @@
         <el-row
           v-loading="loading"
           class="min-height-400">
-          <Card v-if="orgrankArr.length || orgprogressArr.length">
+          <Card v-if="orgprogressArr.length">
             <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
-            <!-- <div
-              class="margin-bottom-20"
-              style="height:250px;"> -->
-            <!-- <slider
-              height="250px"
-              :key="sliderKey"
-              v-if="orgprogressArr.length"
-              class="margin-bottom-20"
-              :min-move-num="50"> -->
             <el-col :span="16">
               <template v-for="(item, index) in orgprogressArr">
                 <el-col
@@ -30,22 +21,14 @@
                 </el-col>
               </template>
             </el-col>
-            <!-- </slider> -->
-            <!-- </div> -->
-            <!-- <el-row class="margin-bottom-20 overview_title">综合评估</el-row> -->
             <el-col
               :span="8">
               综合评估
-              <Radar
-                v-if="orgrankArr.length"
-                :id="'select'"
-                :data="orgrankArr[orgrankArr.length-1]" />
+              <radar
+                v-if="orgReachRadarObj"
+                :id="'orgReachRadar'"
+                :data="orgReachRadarObj" />
             </el-col>
-            <el-row
-              v-if="!loading && !orgrankArr.length"
-              class="overview_select">
-              暂无数据
-            </el-row>
           </Card>
         </el-row>
       </el-row>
@@ -56,13 +39,8 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
-
-import Slider from 'components/Slider';
-// 目标达成情况总览
-import ProTargetAchievement from 'components/ProTargetAchievement';
-import Radar from 'components/radar';
-
-//vuex
+import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
+import radar from '../../Home/radar';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -74,8 +52,7 @@ export default {
     },
     components: {
         Card,
-        Slider,
-        Radar,
+        radar,
         ProTargetAchievement,
     },
     data () {
@@ -83,13 +60,12 @@ export default {
             version: 0,
             pt: '',
             loading: false,
-            // val: {},
             newParams: {},
             sliderKey: "",
         };
     },
     computed: {
-        ...mapGetters(['organizationTree', 'orgprogressArr', 'orgrankArr', 'orglastParams']),
+        ...mapGetters(['organizationTree', 'orgprogressArr', 'orglastParams', 'orgReachRadarObj']),
         hasTree () {
             return !_.isEmpty(this.organizationTree);
         }
@@ -111,7 +87,6 @@ export default {
                 return;
             }
             this.getProgress();
-            this.getRank();
             this.$store.dispatch("SaveOrgLastParams", this.newParams);
         },
         //目标达成
@@ -129,31 +104,12 @@ export default {
             this.loading = true;
             API.GetOrgProgress(params).then(res => {
                 this.sliderKey = new Date().getTime();
+                let orgReachRadarObj = {};
+                orgReachRadarObj.name = res.data.map(el => el.subject_name);
+                orgReachRadarObj.progress = res.data.map(el => el.progress);
+                orgReachRadarObj.subject = res.data.map(el => el.subject);
+                this.$store.dispatch('SaveOrgReachRadar', orgReachRadarObj);
                 this.$store.dispatch('SaveOrgProgressData', res.data);
-            }).finally(() => {
-                this.loading = false;
-            });
-        },
-        //雷达图
-        getRank() {
-            if (this.getPt() === '日') {
-                this.pt = '周';
-            } else {
-                this.pt = this.getPt();
-            }
-            const params = {
-                cid: this.cid,
-                pt: this.pt,
-                ...this.getPeriodByPt(),
-                version: this.version
-            };
-            this.newParams.rank = params;
-            if (JSON.stringify(this.orglastParams.rank) == JSON.stringify(params)) {
-                return;
-            }
-            this.loading = true;
-            API.GetOrgRank(params).then(res => {
-                this.$store.dispatch('SaveOrgRankArr', res.data);
             }).finally(() => {
                 this.loading = false;
             });

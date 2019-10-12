@@ -11,7 +11,8 @@ const supply = {
         strategyArr: [],
         supplyDateArr: {},
         supplyLastParams: {},
-        supplylastcidObjArr: {}
+        supplylastcidObjArr: {},
+        supplyReachRadarObj:{},
     },
     mutations: {
         SAVE_SUPPLY_TREE: (state, supplyTree) => {
@@ -53,6 +54,9 @@ const supply = {
         SAVE_SUPPLYLAST_CIDOBJ: (state, lastcidObjArr) => {
             state.supplylastcidObjArr = lastcidObjArr;
         },
+        SAVE_SUPPLYREACHRADAR_OBJ: (state, obj) => {
+            state.supplyReachRadarObj = obj;
+        },
     },
     actions: {
         SaveSupplyTree({ commit }, supplyTree) {
@@ -93,6 +97,10 @@ const supply = {
         },
         SaveSupplycidObjArr({ commit }, lastcidObjArr) {
             commit('SAVE_SUPPLYLAST_CIDOBJ', lastcidObjArr);
+        },
+        //供应效率综合评估
+        SaveSupplyReachRadar({ commit }, obj) {
+            commit('SAVE_SUPPLYREACHRADAR_OBJ', obj);
         },
     }
 };

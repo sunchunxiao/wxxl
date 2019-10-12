@@ -23,7 +23,8 @@ const organization = {
         orgLastcidObjArr: {},
         orgLastcidObjArrBack: {},
         orgAchievement: '',
-        orgAchievementOpt: ''
+        orgAchievementOpt: '',
+        orgReachRadarObj:{},
     },
     mutations: {
         SAVE_ORGANIZATION_TREE: (state, orgtree) => {
@@ -101,7 +102,9 @@ const organization = {
         SAVE_ACHOPT_PARAMS: (state, params) => {
             state.orgAchievementOpt = params;
         },
-
+        SAVE_ORGREACHRADAR_OBJ: (state, obj) => {
+            state.orgReachRadarObj = obj;
+        },
     },
     actions: {
         SaveOrgTree({ commit }, orgtree) {
@@ -178,6 +181,10 @@ const organization = {
         },
         SaveOrgAchievementOpt({ commit }, params) {
             commit('SAVE_ACHOPT_PARAMS', params);
+        },
+        //组织效率综合评估
+        SaveOrgReachRadar({ commit }, obj) {
+            commit('SAVE_ORGREACHRADAR_OBJ', obj);
         },
     }
 };
