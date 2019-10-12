@@ -122,6 +122,12 @@
       <div>各业务部门{{ progress }}进度</div>
       <el-col
         :span="24">
+        <div class="info">
+            <span class="colorSpan greenSpan" /><span class="avg">： 实际</span>
+            <span class="colorSpan graySpan" /><span class="avg">： 目标</span>
+            <span class="colorSpan yellowSpan" /><span class="avg">：介于1/2基准线和基准线之间</span>
+            <span class="colorSpan redSpan" /><span class="avg">：达不到1/2基准线</span>
+        </div>
         <PlanBudgetBar
           :id="`budgetDepartment`"
           :y-axis="yAxisDepartment"
@@ -134,6 +140,12 @@
       <div>各工厂{{ progress }}进度</div>
       <el-col
         :span="24">
+        <div class="info">
+            <span class="colorSpan greenSpan" /><span class="avg">： 实际</span>
+            <span class="colorSpan graySpan" /><span class="avg">： 目标</span>
+            <span class="colorSpan yellowSpan" /><span class="avg">：介于1/2基准线和基准线之间</span>
+            <span class="colorSpan redSpan" /><span class="avg">：达不到1/2基准线</span>
+        </div>
         <PlanBudgetBar
           :id="`budgetSupplier`"
           :y-axis = "yAxisSupplier"
@@ -295,7 +307,7 @@ export default {
 </style>
 <style lang="scss" scoped>
     .container .container_wrap .right > div[data-v-fae5bece]:first-child{
-        min-height:1950px;
+        min-height:2020px;
         overflow:hidden;
     }
 </style>

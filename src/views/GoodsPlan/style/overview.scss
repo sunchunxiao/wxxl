@@ -21,6 +21,11 @@
             z-index: 10000;
         }
     }
+    .info{
+        display:flex;
+        align-items:center;
+        margin-top:20px;
+    }
     .capacity {
         position: relative;
         .table_container {
