@@ -44,7 +44,7 @@ export default {
             let yData = [];
             if(this.id == 'selectTreeManage'){
                 yData = [];
-            }else{
+            } else {
                 yData = ['实际', '目标'];
             }
             let transSubjects = [],radarValues = [],radarValuesTarget = [];
@@ -99,7 +99,7 @@ export default {
                         }
                     },
                     show:true,
-                    // shape: 'circle',
+                    shape: 'circle',
                     indicator: arr,
                     radius: 110,
                     center: ['47%','50%'],
@@ -118,46 +118,6 @@ export default {
                     },
 
                 },
-                // polar: {},
-                // angleAxis: {
-                //     show:false,
-                //     // min: 0,
-                //     max: 100,
-                //     interval: 5,
-                //     clockwise: false,
-                //     axisTick: {
-                //         show: false
-                //     },
-                //     axisLabel: {
-                //         show: false
-                //     },
-                //     axisLine: {
-                //         show: false
-                //     },
-                //     splitLine: {
-                //         show: false
-                //     }
-                // },
-                // radiusAxis: {
-                //     min: 0,
-                //     max: 100,
-                //     interval: 10,
-                //     splitArea: {
-                //         show: false
-                //     },
-                //     splitLine: {
-                //         show: false
-                //     },
-                //     axisTick: {
-                //         show: false
-                //     },
-                //     // axisLabel: {
-                //     //     show: false
-                //     // },
-                //     axisLine: {
-                //         show: false
-                //     },
-                // },
                 series: [
                     {
                         name: '实际',
