@@ -68,7 +68,7 @@ export default {
                 for(let j in REVERSE_TARGET){
                     if(originList[i].subject===REVERSE_TARGET[j]){
                         //根据屏幕尺寸确定是否需要折行
-                        let name = originList[i].name + '(2-目标达成率)'
+                        let name = originList[i].name + '(2-目标达成率)';
                         originList[i].name = this.clientWidth>1440?name:labelNewline(4,name);
                         originList[i].progress = 2-originList[i].progress;
                         originList[i].color = '#5F5D5D';
