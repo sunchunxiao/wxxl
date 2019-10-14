@@ -11,14 +11,14 @@
           <Card>
             <el-row class="margin-bottom-20 overview_title">智能评选和智能策略</el-row>
             <el-row v-if="orgrankArr.length">
-              <el-col :span="14">
+              <el-col :span="13">
                 <IntelligentSelection
                   id="rank"
                   @changeTime="changeTime"
                   @showStragety="showStragety"
                   :data="orgrankArr" />
               </el-col>
-              <el-col :span="10">
+              <el-col :span="11">
                 <div class="stragety">
                   <div class="stragety-title">智能策略</div>
                   <div class="stragety-box">

@@ -10,7 +10,7 @@
           class="min-height-400">
           <Card v-if="progressArr.length">
             <el-row class=" overview_title">目标达成情况总览</el-row>
-            <el-col :span="14">
+            <el-col :span="13">
               <template v-for="(item, index) in progressArr">
                 <el-col
                   :key="index"
@@ -22,7 +22,7 @@
               </template>
             </el-col>
             <el-col
-              :span="10">
+              :span="11">
               综合评估
               <radar
                 v-if="productReachRadarObj"

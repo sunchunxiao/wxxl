@@ -8,6 +8,7 @@
 
 <script>
 import echarts from 'plugins/echarts';
+import { labelNewline } from 'utils/common';
 const REVERSE_TARGET = ['C', 'SA','DR']; // C成本 SA库存额 DR残品率是反向指标
 
 let originList = [];//原始数组
@@ -15,6 +16,7 @@ let list = [];//正向指标数组
 let reverseList = [];//反向指标数组
 let nameList = [];//指标名称数组
 let progressList = [];//达成率数组
+let progressTooltipList = [];//达成率tooltip数组
 
 export default {
     props: {
@@ -24,7 +26,8 @@ export default {
     data() {
         return {
             color: '#000',
-            debounce:null
+            debounce:null,
+            clientWidth:document.body.clientWidth
         };
     },
     mounted() {
@@ -51,6 +54,7 @@ export default {
             reverseList.length = 0;
             nameList.length = 0;
             progressList.length = 0;
+            progressTooltipList.length = 0;
             for(let i = 0; i < this.data.name.length; i++){
                 let obj = {};
                 obj.name = this.data.name[i];
@@ -63,7 +67,8 @@ export default {
             for(let i in originList){
                 for(let j in REVERSE_TARGET){
                     if(originList[i].subject===REVERSE_TARGET[j]){
-                        originList[i].name = originList[i].name + '\n' + '(2-目标达成率)';
+                        //根据屏幕尺寸确定是否需要折行
+                        originList[i].name = this.clientWidth>1440?(originList[i].name + '(2-目标达成率)'):labelNewline(4,originList[i].name + '(2-目标达成率)');
                         originList[i].progress = 2-originList[i].progress;
                         originList[i].color = '#5F5D5D';
                         reverseList.push(originList[i]);
@@ -74,12 +79,14 @@ export default {
                 return array.indexOf(value) === array.lastIndexOf(value);
             });
             for(let i in list){
-                list[i].name = list[i].name;
+                //根据屏幕尺寸确定是否需要折行
+                list[i].name = this.clientWidth>1440?list[i].name:labelNewline(4,list[i].name);
                 list[i].color = '#5F5D5D';
             }
             for(let i = 0; i < originList.length; i++){
                 nameList.push(originList[i].name);
-                progressList.push(originList[i].progress);
+                progressList.push(originList[i].progress>2?2:originList[i].progress);
+                progressTooltipList.push(originList[i].progress);
             }
         },
         //圆环标注线
@@ -102,7 +109,7 @@ export default {
                         show: bool,
                         formatter: mark,
                         position: 'inside',
-                        color:'#5F5D5D',
+                        color:'#cec7c7',
                         fontSize:12,
                     },
                 },
@@ -121,17 +128,22 @@ export default {
                                 result += params.name[i] + " : " + '暂无' +"</br>";
                             }else if(params.name[i].indexOf('(') !== -1){
                                 result += params.name[i].split('(')[0] +
-                                '</br>' + '(' +
+                                '(' +
                                 params.name[i].split('(')[1] +
                                 " : " +
-                                (params.value[i]*100).toFixed(0)+'%' +
+                                (progressTooltipList[i]*100).toFixed(0)+'%' +
                                 '</br>';
                             }else{
-                                result += params.name[i] + " : " + (params.value[i]*100).toFixed(0)+'%' +"</br>";
+                                result += (params.name[i]+ "(目标达成率)" + " : " + (progressTooltipList[i]*100).toFixed(0)+'%' +"</br>");
                             }
                         }
-                        return result;
+                        return result.split("\n").join("");
                     },
+                    confine:true,
+                    // position: function (point, params, dom) {
+                    //     dom.style.transform = "translate(-50%, 0%)";
+                    //     return ["50%", "50%"];
+                    // }
                 },
                 scale: true,
                 radar: {
@@ -229,7 +241,7 @@ export default {
     .radar {
         min-width: 350px;
         width: 100%;
-        height: 310px;
+        height: 370px;
         margin: 0 auto;
     }
     .detail {

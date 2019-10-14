@@ -9,7 +9,7 @@
           class="min-height-400">
           <Card v-if="fundprogressArr.length">
             <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
-            <el-col :span="16">
+            <el-col :span="13">
               <template v-for="(item, index) in fundprogressArr">
                 <el-col
                   :key="index"
@@ -22,7 +22,7 @@
               </template>
             </el-col>
             <el-col
-              :span="8">
+              :span="11">
               综合评估
               <radar
                 v-if="fundReachRadarObj"
