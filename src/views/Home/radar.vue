@@ -81,7 +81,7 @@ export default {
             });
             for(let i in list){
                 //根据屏幕尺寸确定是否需要折行
-                let name = list[i].name + '(目标达成率)';
+                let name = list[i].name;
                 list[i].name = this.clientWidth>1440?name:labelNewline(4,name);
                 list[i].color = '#5F5D5D';
             }
@@ -127,8 +127,12 @@ export default {
                         let result = '';
                         for (let i=0; i<params.name.length; i++) {
                             if (params.value[i] == null) {
-                                result += params.name[i] + " : " + '暂无' +"</br>";
-                            }else if(params.name[i].indexOf('(') !== -1){
+                                if(params.name[i].indexOf('(') !== -1){
+                                    result += params.name[i] + " : " + '暂无' +"</br>";
+                                }else{
+                                    result += params.name[i] + '(目标达成率)' + " : " + '暂无' +"</br>";
+                                }
+                            }else if(params.name[i].indexOf('(') !== -1) {
                                 result += params.name[i].split('(')[0] +
                                 '(' +
                                 params.name[i].split('(')[1] +
@@ -136,7 +140,7 @@ export default {
                                 (progressTooltipList[i]*100).toFixed(0)+'%' +
                                 '</br>';
                             }else{
-                                result += params.name[i] + " : " + (progressTooltipList[i]*100).toFixed(0)+'%' +"</br>";
+                                result += params.name[i]+ '(目标达成率)' + " : " + (progressTooltipList[i]*100).toFixed(0)+'%' +"</br>";
                             }
                         }
                         return result.split("\n").join("");

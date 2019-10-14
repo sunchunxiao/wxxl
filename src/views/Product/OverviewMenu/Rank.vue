@@ -10,6 +10,7 @@
           class="min-height-400">
           <Card>
             <el-row class="margin-bottom-20 overview_title">智能评选和智能策略</el-row>
+            <span>(*号为有策略)</span>
             <el-row v-if="rankArr.length">
               <el-col :span="14">
                 <IntelligentSelection
