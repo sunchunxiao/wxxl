@@ -68,7 +68,8 @@ export default {
                 for(let j in REVERSE_TARGET){
                     if(originList[i].subject===REVERSE_TARGET[j]){
                         //根据屏幕尺寸确定是否需要折行
-                        originList[i].name = this.clientWidth>1440?(originList[i].name + '(2-目标达成率)'):labelNewline(4,originList[i].name + '(2-目标达成率)');
+                        let name = originList[i].name + '(2-目标达成率)'
+                        originList[i].name = this.clientWidth>1440?name:labelNewline(4,name);
                         originList[i].progress = 2-originList[i].progress;
                         originList[i].color = '#5F5D5D';
                         reverseList.push(originList[i]);
@@ -80,7 +81,8 @@ export default {
             });
             for(let i in list){
                 //根据屏幕尺寸确定是否需要折行
-                list[i].name = this.clientWidth>1440?list[i].name:labelNewline(4,list[i].name);
+                let name = list[i].name + '(目标达成率)';
+                list[i].name = this.clientWidth>1440?name:labelNewline(4,name);
                 list[i].color = '#5F5D5D';
             }
             for(let i = 0; i < originList.length; i++){
@@ -134,7 +136,7 @@ export default {
                                 (progressTooltipList[i]*100).toFixed(0)+'%' +
                                 '</br>';
                             }else{
-                                result += (params.name[i]+ "(目标达成率)" + " : " + (progressTooltipList[i]*100).toFixed(0)+'%' +"</br>");
+                                result += params.name[i] + " : " + (progressTooltipList[i]*100).toFixed(0)+'%' +"</br>";
                             }
                         }
                         return result.split("\n").join("");
