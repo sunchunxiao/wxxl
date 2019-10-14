@@ -191,7 +191,7 @@ const MENUDATA = [
             {
                 title: "供应效率",
                 path: "/supplyChain",
-                icon: "7.png",
+                icon: "25.png",
                 children: [
                     {
                         title: "全景分析",
@@ -263,12 +263,12 @@ const MENUDATA = [
     {
         title: "三大应用场景",
         path: "/applyScene",
-        icon: "6.png",
+        icon: "5.png",
         children:[
             {
                 title: "绩效管理",
                 path: "/manage",
-                icon: "4.png",
+                icon: "26.png",
                 children: [
                     {
                         title: "公司内部绩效管理",
@@ -283,7 +283,7 @@ const MENUDATA = [
             {
                 title: "计划",
                 path: "/plan",
-                icon: "5.png",
+                icon: "28.png",
                 children: [
                     {
                         title: "货品计划",
@@ -294,7 +294,7 @@ const MENUDATA = [
             {
                 title: "预算",
                 path: "/budget",
-                icon: "7.png",
+                icon: "27.png",
                 children: [
                     {
                         title: "货品预算",
@@ -369,6 +369,8 @@ $scale: 1.5;
         background-color: $bg-color-active;
     }
     .menu_icon {
+        width: 20px;
+        height: 20px;
         margin: 0 12px 0 -5px;
     }
     .el-menu-item, .el-submenu__title {

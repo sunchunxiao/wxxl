@@ -25,7 +25,7 @@
                   <div class="stragety-box">
                     <div class="margin-bottom-10">{{ stragetyTitle }}</div>
                     <el-checkbox-group
-                      v-if="stragety"
+                      v-if="stragety.length"
                       v-model="stragetyCheckList">
                       <el-checkbox
                         v-for="(item,index) in stragety"
@@ -45,14 +45,14 @@
                 </div>
               </el-col>
             </el-row>
+            <el-row
+              v-else
+              class="overview_select">
+              暂无数据
+            </el-row>
           </Card>
         </el-row>
       </div>
-    </el-row>
-    <el-row
-      v-else
-      class="overview_select">
-      暂无数据
     </el-row>
   </div>
 </template>

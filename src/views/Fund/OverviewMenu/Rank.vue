@@ -25,7 +25,7 @@
                   <div class="stragety-box">
                     <div class="margin-bottom-10">{{ stragetyTitle }}</div>
                     <el-checkbox-group
-                      v-if="stragety"
+                      v-if="stragety.length"
                       v-model="stragetyCheckList">
                       <el-checkbox
                         v-for="(item,index) in stragety"

@@ -125,52 +125,6 @@ const MENUDATA = [
                 ]
             },
             {
-                title: "组",
-                path: "/organization",
-                icon: "5.png",
-                children: [
-                    {
-                        title: "全",
-                        path: "/overview"
-                    },
-                    {
-                        title: "组",
-                        path: "/contrast"
-                    },
-                    {
-                        title: "策",
-                        path: "/optimization"
-                    },
-                    {
-                        title: "略",
-                        path: "/track"
-                    }
-                ]
-            },
-            {
-                title: "资",
-                path: "/fund",
-                icon: "7.png",
-                children: [
-                    {
-                        title: "全",
-                        path: "/overview"
-                    },
-                    {
-                        title: "资",
-                        path: "/contrast"
-                    },
-                    {
-                        title: "策",
-                        path: "/optimization"
-                    },
-                    {
-                        title: "策",
-                        path: "/track"
-                    }
-                ]
-            },
-            {
                 title: "渠",
                 path: "/channel",
                 icon: "8.png",
@@ -219,7 +173,7 @@ const MENUDATA = [
             {
                 title: "供",
                 path: "/supplyChain",
-                icon: "4.png",
+                icon: "25.png",
                 children: [
                     {
                         title: "全",
@@ -239,13 +193,58 @@ const MENUDATA = [
                     }
                 ]
             },
+            {
+                title: "组",
+                path: "/organization",
+                icon: "5.png",
+                children: [
+                    {
+                        title: "全",
+                        path: "/overview"
+                    },
+                    {
+                        title: "组",
+                        path: "/contrast"
+                    },
+                    {
+                        title: "策",
+                        path: "/optimization"
+                    },
+                    {
+                        title: "略",
+                        path: "/track"
+                    }
+                ]
+            },
+            {
+                title: "资",
+                path: "/fund",
+                icon: "7.png",
+                children: [
+                    {
+                        title: "全",
+                        path: "/overview"
+                    },
+                    {
+                        title: "资",
+                        path: "/contrast"
+                    },
+                    {
+                        title: "策",
+                        path: "/optimization"
+                    },
+                    {
+                        title: "策",
+                        path: "/track"
+                    }
+                ]
+            },
         ]
     },
     {
         title: "场景",
         path: "/applyScene",
-        // icon: "4.png",
-        children:[
+        children: [
             {
                 title: "绩",
                 path: "/manage",
@@ -351,6 +350,8 @@ $scale: 1.8;
         background-color: $bg-color-active;
     }
     .menu_icon {
+        width: 20px;
+        height: 20px;
         margin: 0 10px 0 -5px;
     }
     .el-menu-item, .el-submenu__title {

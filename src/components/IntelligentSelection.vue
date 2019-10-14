@@ -110,7 +110,17 @@ export default {
             let options = [];
             let timeLineData = [];
             for (let i = 0; i < data.length; i++) {
+                // let transSubjects = [];
+
                 let item = data[i];
+                // for(let j of item.transSubjects){
+                //     transSubjects.push({
+                //         value: j,
+                //         textStyle:{
+                //             fontWeight:'bold'
+                //         }
+                //     });
+                // }
 
                 let seriesData = item.data.map(function(v) {
                     return [v[1], v[0], v[2]];
