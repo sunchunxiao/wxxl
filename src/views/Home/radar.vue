@@ -126,14 +126,14 @@ export default {
                         for (let i=0; i<params.name.length; i++) {
                             if (params.value[i] == null) {
                                 result += params.name[i] + " : " + '暂无' +"</br>";
-                            }else if(params.name[i].indexOf('(') !== -1){
+                            } else if(params.name[i].indexOf('(') !== -1) {
                                 result += params.name[i].split('(')[0] +
                                 '(' +
                                 params.name[i].split('(')[1] +
                                 " : " +
                                 (progressTooltipList[i]*100).toFixed(0)+'%' +
                                 '</br>';
-                            }else{
+                            } else {
                                 result += (params.name[i]+ "(目标达成率)" + " : " + (progressTooltipList[i]*100).toFixed(0)+'%' +"</br>");
                             }
                         }
