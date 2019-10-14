@@ -199,6 +199,32 @@ const product = function () {
     return setData(arr);
 };
 
+//渠道
+const channel = function () {
+    let arr = [
+        ["P","渠道营业利润额","元"],
+        ["S","销售额","元"],
+        ["C","渠道费用额","元"],
+        ["ROI","渠道投入产出比",""],
+        ["RY","渠道冗余值","元"],
+        ["SD","日销","元"],
+    ];
+    return setData(arr);
+};
+
+//客户
+const customer = function () {
+    let arr = [
+        ["P","客户利润额","元"],
+        ["S","销售额","元"],
+        ["C","客户费用额","元"],
+        ["ROI","客户投入产出比",""],
+        ["RY","客户冗余值","人"],
+        ["SD","日销","元"],
+    ];
+    return setData(arr);
+};
+
 //供应链
 const supply = function () {
     let arr = [
@@ -207,34 +233,8 @@ const supply = function () {
         ["CP","供应产能", ""],
         ["PSR","供应产供比",""],
         // ["CS","供应安全值",""],
+        ["DR","残品率",""],
         ["DAR","交期达成率",""],
-        ["DR","残品率",""]
-    ];
-    return setData(arr);
-};
-
-//渠道
-const channel = function () {
-    let arr = [
-        ["S","销售额","元"],
-        ["P","渠道营业利润额","元"],
-        ["C","渠道费用额","元"],
-        ["ROI","渠道投入产出比",""],
-        ["SD","日销","元"],
-        ["RY","渠道冗余值","元"]
-    ];
-    return setData(arr);
-};
-
-//客户
-const customer = function () {
-    let arr = [
-        ["S","销售额","元"],
-        ["P","客户利润额","元"],
-        ["C","客户费用额","元"],
-        ["SD","日销","元"],
-        ["ROI","客户投入产出比",""],
-        ["RY","客户冗余值","人"]
     ];
     return setData(arr);
 };
@@ -242,11 +242,11 @@ const customer = function () {
 //组织前端
 const organization = function () {
     let arr = [
-        ["S","销售额","元"],
         ["P","净利润额","元"],
+        ["S","销售额","元"],
         ["C","人力成本额","元"],
-        ["SD","日销","元"],
         ["ROI","组织投入产出比",""],
+        ["SD","日销","元"],
         ["POR","人员冗余值","人"]
     ];
     return setData(arr);
@@ -265,13 +265,13 @@ const orgBack = function () {
 //资金前端
 const fund = function () {
     let arr = [
-        ["S","销售额","元"],
-        ["P","净利润额","元"],
         ["C","总成本费用额","元"],
+        ["S","销售额","元"],
         ["RM","回款额","元"],
-        ["ROI","投资回报率",""],
+        ["P","净利润额","元"],
         ["NIR","净利率","%"],
         ["NCF","净现金流","元"],
+        ["ROI","投资回报率",""],
         ["CTR","资金周转率",""],
         ["RY","资金冗余值","元"]
     ];

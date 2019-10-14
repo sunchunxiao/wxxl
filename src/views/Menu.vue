@@ -189,6 +189,29 @@ const MENUDATA = [
                 ]
             },
             {
+                title: "供应效率",
+                path: "/supplyChain",
+                icon: "7.png",
+                children: [
+                    {
+                        title: "全景分析",
+                        path: "/overview"
+                    },
+                    {
+                        title: "对比分析",
+                        path: "/contrast"
+                    },
+                    {
+                        title: "策略优化",
+                        path: "/optimization"
+                    },
+                    {
+                        title: "策略跟踪",
+                        path: "/track"
+                    }
+                ]
+            },
+            {
                 title: "组织效率",
                 path: "/organization",
                 icon: "5.png",
@@ -234,29 +257,7 @@ const MENUDATA = [
                     }
                 ]
             },
-            {
-                title: "供应效率",
-                path: "/supplyChain",
-                icon: "7.png",
-                children: [
-                    {
-                        title: "全景分析",
-                        path: "/overview"
-                    },
-                    {
-                        title: "对比分析",
-                        path: "/contrast"
-                    },
-                    {
-                        title: "策略优化",
-                        path: "/optimization"
-                    },
-                    {
-                        title: "策略跟踪",
-                        path: "/track"
-                    }
-                ]
-            },
+
         ]
     },
     {
