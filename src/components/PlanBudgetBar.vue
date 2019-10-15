@@ -99,6 +99,9 @@ export default {
         itemStyleFormat(params){
             let seriesName = params.seriesName;
             switch (params.name) {
+                case "目标基准线":
+                    params.value = this.data["actual_avg"];
+                    break;
                 case "总":
                     if(seriesName === "目标"){
                         params.value = this.data["target_total"];
@@ -185,7 +188,7 @@ export default {
                     _this.data["actual_p3"]/_this.data["target_p3"],
                     _this.data["actual_p2"]/_this.data["target_p2"],
                     _this.data["actual_p1"]/_this.data["target_p1"],
-                    _this.data["actual_total"]/_this.data["target_total"]
+                    _this.data["actual_total"]/_this.data["target_total"],
                 );
             }else if(_this.id === 'planSupplier' || _this.id === 'budgetSupplier'){
                 targetData.push(1,1,1,1,1);
@@ -284,6 +287,29 @@ export default {
                             }
                         }
                     },
+                    // markLine :{
+                    //     symbol:"none",
+                    //     name:"目标基准线",
+                    //     label:{
+                    //         show:true,
+                    //         color: "#fd625e",
+                    //         formatter: function(params) {
+                    //             console.log(params);
+                    //             let _params = params;
+                    //             _this.itemStyleFormat(_params);
+                    //             return `目标基准线：${ _this.calculateToShow(_params.value)}`;
+                    //         },
+                    //     },
+                    //     data : [
+                    //         {
+                    //             name: '目标基准线',
+                    //             xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]/_this.data["actual_total"]:"暂无基准线",
+                    //             itemStyle: {
+                    //                 color: '#b12725'
+                    //             }
+                    //         }
+                    //     ]
+                    // },
                     data: targetData
                 }, {
                     name: "实际",
@@ -301,9 +327,7 @@ export default {
                                 let actualBgColor = "";
                                 if (_params.value >= _this.data["actual_avg"]) {
                                     actualBgColor = '#01b8aa';
-                                } else if(_params.value < _this.data["actual_avg"] && _params.value >= (_this.data["actual_avg"] /2)) {
-                                    actualBgColor = '#F2C811';
-                                } else if(_params.value < (_this.data["actual_avg"] / 2)){
+                                } else if(_params.value < _this.data["actual_avg"]){
                                     actualBgColor = '#FD625E';
                                 }
                                 return actualBgColor;
