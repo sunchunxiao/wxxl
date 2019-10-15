@@ -96,7 +96,6 @@ const MENUDATA = [
             {
                 title: "内部评估",
                 path: "/insideExternal",
-                // icon: "4.png",
                 children:[
                     {
                         title: "盈利空间",

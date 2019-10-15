@@ -85,9 +85,17 @@ export default {
                 list[i].name = this.clientWidth>1440?name:labelNewline(4,name);
                 list[i].color = '#5F5D5D';
             }
-            for(let i = 0; i < originList.length; i++){
+            for(let i = 0; i < originList.length; i++) {
                 nameList.push(originList[i].name);
-                progressList.push(originList[i].progress>2?2:originList[i].progress);
+                //百分比大于0或者小于0的情况
+                if (originList[i].progress>2) {
+                    progressList.push(2);
+                } else if(originList[i].progress<0) {
+                    progressList.push(0);
+                } else {
+                    progressList.push(originList[i].progress);
+                }
+                // progressList.push(originList[i].progress>2?2:originList[i].progress);
                 progressTooltipList.push(originList[i].progress);
             }
         },
