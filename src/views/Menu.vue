@@ -117,7 +117,7 @@ const MENUDATA = [
     {
         title: "六项基础引擎",
         path: "/sixBasicsEngine",
-        icon: "5.png",
+        icon: "31.png",
         children:[
             {
                 title: "产品效率",
@@ -263,7 +263,7 @@ const MENUDATA = [
     {
         title: "三大应用场景",
         path: "/applyScene",
-        icon: "5.png",
+        icon: "31.png",
         children:[
             {
                 title: "绩效管理",
