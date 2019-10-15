@@ -49,75 +49,185 @@ export default {
                 return val;
             }
         },
+        //tooltip数据格式化
+        tooltipFormat(params){
+            switch (params[0].axisValue) {
+                case "总":
+                    params[0].val = this.data["target_total"];
+                    params[1].val = this.data["actual_total"];
+                    break;
+                case "一部":
+                    params[0].val = this.data["target_p1"];
+                    params[1].val = this.data["actual_p1"];
+                    break;
+                case "二部":
+                    params[0].val = this.data["target_p2"];
+                    params[1].val = this.data["actual_p2"];
+                    break;
+                case "三部":
+                    params[0].val = this.data["target_p3"];
+                    params[1].val = this.data["actual_p3"];
+                    break;
+                case "四部":
+                    params[0].val = this.data["target_p4"];
+                    params[1].val = this.data["actual_p4"];
+                    break;
+                case "五部":
+                    params[0].val = this.data["target_p5"];
+                    params[1].val = this.data["actual_p5"];
+                    break;
+                case "战略供应商工厂A":
+                    params[0].val = this.data["target_s1"];
+                    params[1].val = this.data["actual_s1"];
+                    break;
+                case "战略供应商工厂B":
+                    params[0].val = this.data["target_s2"];
+                    params[1].val = this.data["actual_s2"];
+                    break;
+                case "战略供应商工厂C":
+                    params[0].val = this.data["target_s3"];
+                    params[1].val = this.data["actual_s3"];
+                    break;
+                case "战略供应商工厂D":
+                    params[0].val = this.data["target_s4"];
+                    params[1].val = this.data["actual_s4"];
+                    break;
+            }
+            return params;
+        },
+        //itemStyle数据格式化
+        itemStyleFormat(params){
+            let seriesName = params.seriesName;
+            switch (params.name) {
+                case "目标基准线":
+                    params.value = this.data["actual_avg"];
+                    break;
+                case "总":
+                    if(seriesName === "目标"){
+                        params.value = this.data["target_total"];
+                    }else if(seriesName === "实际"){
+                        params.value = this.data["actual_total"];
+                    }
+                    break;
+                case "一部":
+                    if(seriesName === "目标"){
+                        params.value = this.data["target_p1"];
+                    }else if(seriesName === "实际"){
+                        params.value = this.data["actual_p1"];
+                    }
+                    break;
+                case "二部":
+                    if(seriesName === "目标"){
+                        params.value = this.data["target_p2"];
+                    }else if(seriesName === "实际"){
+                        params.value = this.data["actual_p2"];
+                    }
+                    break;
+                case "三部":
+                    if(seriesName === "目标"){
+                        params.value = this.data["target_p3"];
+                    }else if(seriesName === "实际"){
+                        params.value = this.data["actual_p3"];
+                    }
+                    break;
+                case "四部":
+                    if(seriesName === "目标"){
+                        params.value = this.data["target_p4"];
+                    }else if(seriesName === "实际"){
+                        params.value = this.data["actual_p4"];
+                    }
+                    break;
+                case "五部":
+                    if(seriesName === "目标"){
+                        params.value = this.data["target_p5"];
+                    }else if(seriesName === "实际"){
+                        params.value = this.data["actual_p5"];
+                    }
+                    break;
+                case "战略供应商工厂A":
+                    if(seriesName === "目标"){
+                        params.value = this.data["target_s1"];
+                    }else if(seriesName === "实际"){
+                        params.value = this.data["actual_s1"];
+                    }
+                    break;
+                case "战略供应商工厂B":
+                    if(seriesName === "目标"){
+                        params.value = this.data["target_s2"];
+                    }else if(seriesName === "实际"){
+                        params.value = this.data["actual_s2"];
+                    }
+                    break;
+                case "战略供应商工厂C":
+                    if(seriesName === "目标"){
+                        params.value = this.data["target_s3"];
+                    }else if(seriesName === "实际"){
+                        params.value = this.data["actual_s3"];
+                    }
+                    break;
+                case "战略供应商工厂D":
+                    if(seriesName === "目标"){
+                        params.value = this.data["target_s4"];
+                    }else if(seriesName === "实际"){
+                        params.value = this.data["actual_s4"];
+                    }
+                    break;
+            }
+            return params;
+        },
+
         mycharts() {
-            var _this = this;
-            var targetData = [];
-            var actualData = [];
+            let _this = this;
+            let targetData = [];
+            let actualData = [];
             if(_this.id === 'planDepartment' || _this.id === 'budgetDepartment'){
-                targetData.push(
-                    _this.data["target_p5"],
-                    _this.data["target_p4"],
-                    _this.data["target_p3"],
-                    _this.data["target_p2"],
-                    _this.data["target_p1"],
-                    _this.data["target_total"]
-                );
+                targetData.push(1,1,1,1,1,1);
                 actualData.push(
-                    _this.data["actual_p5"],
-                    _this.data["actual_p4"],
-                    _this.data["actual_p3"],
-                    _this.data["actual_p2"],
-                    _this.data["actual_p1"],
-                    _this.data["actual_total"]
+                    _this.data["actual_p5"]/_this.data["target_p5"],
+                    _this.data["actual_p4"]/_this.data["target_p4"],
+                    _this.data["actual_p3"]/_this.data["target_p3"],
+                    _this.data["actual_p2"]/_this.data["target_p2"],
+                    _this.data["actual_p1"]/_this.data["target_p1"],
+                    _this.data["actual_total"]/_this.data["target_total"],
                 );
             }else if(_this.id === 'planSupplier' || _this.id === 'budgetSupplier'){
-                targetData.push(
-                    // _this.data["target_s5"],
-                    _this.data["target_s4"],
-                    _this.data["target_s3"],
-                    _this.data["target_s2"],
-                    _this.data["target_s1"],
-                    _this.data["target_total"]
-                );
+                targetData.push(1,1,1,1,1);
                 actualData.push(
-                    // _this.data["actual_s5"],
-                    _this.data["actual_s4"],
-                    _this.data["actual_s3"],
-                    _this.data["actual_s2"],
-                    _this.data["actual_s1"],
-                    _this.data["actual_total"],
+                    _this.data["actual_s4"]/_this.data["target_s4"],
+                    _this.data["actual_s3"]/_this.data["target_s3"],
+                    _this.data["actual_s2"]/_this.data["target_s2"],
+                    _this.data["actual_s1"]/_this.data["target_s1"],
+                    _this.data["actual_total"]/_this.data["target_total"],
                 );
             }
             let option = {
                 backgroundColor: '#fff',
                 grid: {
                     left: '3%',
-                    right: '4%',
+                    right: '9%',
                     bottom: '3%',
                     containLabel: true
                 },
-                // legend: {
-                //     data: ['目标', '实际'],
-                //     align: 'left',
-                //     right: 0,
-                //     textStyle: {
-                //         color: "#434e79",
-                //         fontSize: 14,
-                //         fontWeight: 400
-                //     },
-                //     itemWidth: 14,
-                //     itemHeight: 14,
-                //     itemGap: 35
-                // },
                 tooltip: {
                     trigger: "axis",
                     padding: [8, 10],
                     backgroundColor: 'rgba(0,0,0,0.5)',
                     axisPointer: {
+                        show:false,
                         type: "shadow",
                         textStyle: {
                             color: "#fff"
                         }
+                    },
+                    formatter:function(params){
+                        let _params = params;
+                        _this.tooltipFormat(_params);
+                        let result = '';
+                        result += _params[0].name + "</br>";
+                        for(let i = 0; i<_params.length;i++){
+                            result += _params[i].marker + _params[i].seriesName + ": " + _params[i].val + "</br>";
+                        }
+                        return result;
                     }
                 },
                 yAxis: {
@@ -170,36 +280,36 @@ export default {
                                 position: "right",
                                 distance: 10,
                                 formatter: function(params) {
-                                    return `${ _this.calculateToShow(params.value)}`;
+                                    let _params = params;
+                                    _this.itemStyleFormat(_params);
+                                    return `${ _this.calculateToShow(_params.value)}`;
                                 },
                             }
                         }
                     },
-                    // markLine :
-                    // _this.id === 'planDepartment'||
-                    // _this.id === 'planSupplier' ||
-                    // _this.id === 'budgetDepartment' ||
-                    // _this.id === 'budgetSupplier'?
-                    //     {
-                    //         symbol:"none",
-                    //         name:"目标基准线",
-                    //         label:{
-                    //             show:true,
-                    //             color: "#fd625e",
-                    //             formatter: function(params) {
-                    //                 return `目标基准线：${ _this.calculateToShow(params.value)}`;
-                    //             },
+                    // markLine :{
+                    //     symbol:"none",
+                    //     name:"目标基准线",
+                    //     label:{
+                    //         show:true,
+                    //         color: "#fd625e",
+                    //         formatter: function(params) {
+                    //             console.log(params);
+                    //             let _params = params;
+                    //             _this.itemStyleFormat(_params);
+                    //             return `目标基准线：${ _this.calculateToShow(_params.value)}`;
                     //         },
-                    //         data : [
-                    //             {
-                    //                 name: '目标基准线',
-                    //                 xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]:"暂无基准线",
-                    //                 itemStyle: {
-                    //                     color: '#b12725'
-                    //                 }
+                    //     },
+                    //     data : [
+                    //         {
+                    //             name: '目标基准线',
+                    //             xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]/_this.data["actual_total"]:"暂无基准线",
+                    //             itemStyle: {
+                    //                 color: '#b12725'
                     //             }
-                    //         ]
-                    //     }:{},
+                    //         }
+                    //     ]
+                    // },
                     data: targetData
                 }, {
                     name: "实际",
@@ -212,17 +322,16 @@ export default {
                     itemStyle: {
                         normal: {
                             color:function(params){
+                                let _params = params;
+                                _this.itemStyleFormat(_params);
                                 let actualBgColor = "";
-                                if (params.value >= _this.data["actual_avg"]) {
+                                if (_params.value >= _this.data["actual_avg"]) {
                                     actualBgColor = '#01b8aa';
-                                } else if(params.value < _this.data["actual_avg"] && params.value >= (_this.data["actual_avg"] /2)) {
-                                    actualBgColor = '#F2C811';
-                                } else if(params.value < (_this.data["actual_avg"] / 2)){
+                                } else if(_params.value < _this.data["actual_avg"]){
                                     actualBgColor = '#FD625E';
                                 }
                                 return actualBgColor;
                             },
-                            // barBorderRadius:[0, 20, 20, 0],
                             label: {
                                 show: true,
                                 position: ['0%','0%'],
@@ -232,7 +341,9 @@ export default {
                                 padding: [10, 15, 20, 15],
                                 borderRadius: 100,
                                 formatter: function(params) {
-                                    return `${ _this.calculateToShow(params.value)}`;
+                                    let _params = params;
+                                    _this.itemStyleFormat(_params);
+                                    return `${ _this.calculateToShow(_params.value)}`;
                                 },
                             }
                         }
