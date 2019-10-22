@@ -16,6 +16,7 @@ const fund = {
         fundAchievement: '',
         fundAchievementOpt: '',
         fundReachRadarObj:{},
+        fundCostObj:[],
     },
     mutations: {
         SAVE_FUND_TREE: (state, tree) => {
@@ -71,6 +72,9 @@ const fund = {
         },
         SAVE_FUNDREACHRADAR_OBJ: (state, obj) => {
             state.fundReachRadarObj = obj;
+        },
+        SAVE_FUNDCOST_OBJ: (state, obj) => {
+            state.fundCostObj = obj;
         },
     },
     actions: {
@@ -128,6 +132,10 @@ const fund = {
         //资金效率综合评估
         SaveFundReachRadar({ commit }, obj) {
             commit('SAVE_FUNDREACHRADAR_OBJ', obj);
+        },
+        //资金效率综合评估
+        SaveFundCost({ commit }, obj) {
+            commit('SAVE_FUNDCOST_OBJ', obj);
         },
     }
 };

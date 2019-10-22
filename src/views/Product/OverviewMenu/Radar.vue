@@ -9,7 +9,7 @@
           v-loading="loading"
           class="min-height-400">
           <Card v-if="progressArr.length">
-            <el-row class=" overview_title">目标达成情况总览</el-row>
+            <el-row class="overview_title">目标达成情况总览</el-row>
             <el-col :span="13">
               <template v-for="(item, index) in progressArr">
                 <el-col
@@ -17,6 +17,7 @@
                   style="width:188px">
                   <ProTargetAchievement
                     :id="`${index}`"
+                    @click.native="clickIndex(item,index)"
                     :data="item" />
                 </el-col>
               </template>
@@ -90,6 +91,23 @@ export default {
         }
     },
     methods: {
+        clickIndex(item){
+            const params = {
+                subject: item.subject,
+                pt: this.getPt(),
+                ...this.getPeriodByPt(),
+                cid: this.cid
+            };
+            //接口
+            API.GetProductPoor(params).then(res => {
+                let obj = {};
+                obj.cid = String(res.data.worst),
+                obj.arr = res.data.poor;
+                if (obj.cid != 'null') {
+                    this.$emit('hightArr', obj);
+                }
+            });
+        },
         allRequest() {
             if (!this.cid) {
                 return;
@@ -150,9 +168,9 @@ export default {
                 };
             }
         },
-        clickIndex(i, idx) {
-            this[`index${i}`] = idx;
-        },
+        // clickIndex(i, idx) {
+        //     this[`index${i}`] = idx;
+        // },
     }
 };
 </script>

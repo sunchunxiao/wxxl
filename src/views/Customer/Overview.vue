@@ -78,7 +78,7 @@
                   </span>
                 </el-tooltip>
                 <div
-                  :class="{progress: true, 'is-active': activeCid === data.cid, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+                  :class="{progress: true, 'is-active': activeCid == data.cid, 'is-active-bad': arr.includes(data.cid),'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
                   :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
               </span>
             </el-tree>
@@ -97,6 +97,7 @@
           </div>
           <component
             @changeCid='handleChangeCid'
+            @hightArr='hightArr'
             :cid="cid"
             :val="val"
             :is="currentTabComponent" />
@@ -122,7 +123,7 @@ import Structure from './OverviewMenu/Structure.vue';
 import Rank from './OverviewMenu/Rank.vue';
 
 //tree 百分比计算
-import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
+import { calculatePercent, error, preOrder, find,findP, addProperty, echartAndSliderResize } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
 const OVER_TABS = [{
@@ -169,6 +170,7 @@ export default {
             //js
             error: error,
             find: find,
+            findP:findP,
             preOrder: preOrder,
             addProperty: addProperty,
             calculatePercent: calculatePercent,
@@ -190,7 +192,9 @@ export default {
             currView: '',
             style: 0,
             isCollapse: false,
-            treeProgressLoading: true
+            treeProgressLoading: true,
+            arr: [],
+            obj:{},
         };
     },
     computed: {
@@ -228,6 +232,12 @@ export default {
         }
     },
     methods: {
+        hightArr(obj) {
+            this.cid = obj.cid;
+            this.arr = obj.arr.map(String);
+            this.findParent([this.treeClone], this.cid);
+            this.nodeArr.push(this.cid);
+        },
         handleChangeCid(cid) {
             this.cid = cid;
             this.nodeArr = [];
@@ -313,6 +323,7 @@ export default {
             this.treeProgressLoading = true;
             API.GetCusTreePrograss(params).then(res => {
                 let obj = this.preOrder([this.treeClone], id);
+                // this.obj = obj;
                 if (obj) {
                     if (obj.cid === id) {
                         obj.hasData = true;//插入数据的hasData为true
@@ -331,7 +342,6 @@ export default {
                 }
             });
         },
-
         getPt() {
             const {
                 date
@@ -418,6 +428,7 @@ export default {
             this.cid = data.cid;
         },
         handleNodeClick(data) {
+            this.arr = [];
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {

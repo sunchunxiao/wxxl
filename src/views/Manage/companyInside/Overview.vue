@@ -19,7 +19,7 @@
         ref="child"
         @search="handleSearch"
         url="/org/search"
-        placeholder="组织编号/组织名称"
+        placeholder="内部绩效编号/内部绩效名称"
         v-model="searchBarValue"
         :pt-options="['月', '季', '年']" />
     </el-row>
@@ -45,7 +45,8 @@
               </span>
               <div
                 :class="{comprogress: true, 'is-active': activeCid == treeClone.cid,'border-radius-0': calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne}"
-                :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}`}" />
+
+                :style="{width: calculatePercent(treeClone.real_total, treeClone.target_total).largerThanOne ? '105%' : `${calculatePercent(treeClone.real_total, treeClone.target_total).percent + 5}%`}" />
             </div>
             <el-tree
               ref="tree"
@@ -75,7 +76,7 @@
                 </el-tooltip>
                 <div
                   :class="{progress: true, 'is-active': activeCid === data.cid, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
-                  :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105' : `${calculatePercent(data.real_total, data.target_total).percent + 5}`}" />
+                  :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
               </span>
             </el-tree>
           </div>
@@ -118,7 +119,7 @@ import Sort from './OverviewMenu/Sort.vue';
 import Rank from './OverviewMenu/Rank.vue';
 
 //tree 百分比计算
-import { calculatePercent,calculateSort, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
+import { calculatePercent, error, preOrder, find, addProperty, echartAndSliderResize } from 'utils/common';
 //vuex
 import { mapGetters } from 'vuex';
 const OVER_TABS = [{
@@ -162,7 +163,7 @@ export default {
             preOrder: preOrder,
             addProperty: addProperty,
             calculatePercent: calculatePercent,
-            calculateSort: calculateSort,
+
             defaultProps: TREE_PROPS,
             loading: false,
             // stragety
@@ -204,12 +205,12 @@ export default {
                 if (obj.children) {
                     for (let i of obj.children) {
                         if (i.real_total && i.target_total) {
-                            const bool = this.calculateSort(i.real_total,i.target_total).largerThanOne;
+                            const bool = this.calculatePercent(i.real_total,i.target_total).largerThanOne;
                             if (!bool) {
-                                numArr.push(this.calculateSort(i.real_total,i.target_total).largerThanOne);
+                                numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
                             }
                         } else if (!this.treeProgressLoading) {
-                            numArr.push(this.calculateSort(i.real_total,i.target_total).largerThanOne);
+                            numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
                         } else {
                             return;
                         }

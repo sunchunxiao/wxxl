@@ -51,4 +51,8 @@ export default {
     GetCusFilter(params) {
         return FetchGet('/cus/strategy/filter', params);
     },
+    //钻取
+    GetCusPoor(params) {
+        return FetchGet('/cus/progress/poor', params);
+    },
 };

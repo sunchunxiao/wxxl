@@ -1,7 +1,8 @@
 const plan = {
-    planNowDataArr: state => state.plan.planNowDataArr,
-    planFirstDataArr: state => state.plan.planFirstDataArr,
-    planReturnDataArr: state => state.plan.planReturnDataArr,
+    planprogress: state => state.plan.planprogress,
+    planDepartment: state => state.plan.planDepartment,
+    planFactory: state => state.plan.planFactory,
+    planCapacity: state => state.plan.planCapacity,
 };
 
 export default plan;

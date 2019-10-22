@@ -48,4 +48,8 @@ export default {
     GetProductFilter(params) {
         return FetchGet('/product/strategy/filter', params);
     },
+    //钻取
+    GetProductPoor(params) {
+        return FetchGet('/product/progress/poor', params);
+    },
 };

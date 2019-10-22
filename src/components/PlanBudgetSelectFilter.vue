@@ -12,7 +12,7 @@
           v-model="form.season"
           @change="handleChange"
           style="width:100px;">
-          <template v-for="s in seasons">
+          <template v-for="s in formData.seasons">
             <el-option
               :label="s"
               :value="s"
@@ -27,7 +27,7 @@
           v-model="form.property"
           @change="handleChange"
           style="width:100px;">
-          <template v-for="p in properties">
+          <template v-for="p in formData.properties">
             <el-option
               :label="p"
               :value="p"
@@ -42,7 +42,7 @@
           v-model="form.progress"
           @change="handleChange"
           style="width:100px;">
-          <template v-for="p in progresses">
+          <template v-for="p in formData.progresses">
             <el-option
               :label="p"
               :value="p"
@@ -72,18 +72,27 @@ export default {
         };
     },
     props: {
-        seasons:Array,
-        properties:Array,
-        progresses:Array,
+        formData:Object,
+        // seasons:Array,
+        // properties:Array,
+        // progresses:Array,
     },
     mounted () {
-        this.form.season = this.seasons[0];
-        this.form.property = this.properties[0];
-        this.form.progress = this.progresses[0];
-        this.handleChange(this.form);
+        // console.log(222,this.form.season);
     },
     computed: {},
-    watch: {},
+    watch: {
+        formData:{
+            handler: function() {
+                this.form.season = this.formData.seasons[0];
+                this.form.property = this.formData.properties[0];
+                this.form.progress = this.formData.progresses[0];
+                this.handleChange(this.form);
+                // this.handleChange(val);
+            },
+            deep: true
+        },
+    },
     methods: {
         handleChange () {
             this.$emit('change',this.form);
@@ -96,14 +105,14 @@ export default {
     .filter {
         display: flex;
     }
-    .tips{
+    .tips {
         position:absolute;
         right:0;
     }
-    .el-form-item__label{
+    .el-form-item__label {
         color: #cecaca;
     }
-    .el-form-item--mini.el-form-item, .el-form-item--small.el-form-item{
+    .el-form-item--mini.el-form-item, .el-form-item--small.el-form-item {
         margin-bottom: 0;
     }
 </style>

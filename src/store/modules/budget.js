@@ -1,32 +1,38 @@
 const budget = {
     state: {
-        budgetNowDataArr:[],
-        budgetFirstDataArr:[],
-        budgetReturnDataArr:[],
+        budgetprogress: {},
+        budgetDepartment: {},
+        budgetFactory: {},
+        budgetCapacity:{},
     },
     mutations: {
-        SAVE_BUDGETNOW_TREE: (state, arr) => {
-            state.budgetNowDataArr = arr;
+        SAVE_BUDGETPROGRESS_OBJ: (state, obj) => {
+            state.budgetprogress = obj;
         },
-        SAVE_BUDGETFIRST_TREE: (state, arr) => {
-            state.budgetFirstDataArr = arr;
+        SAVE_BUDGETDEPART_OBJ: (state, obj) => {
+            state.budgetDepartment = obj;
         },
-        SAVE_BUDGETRETURN_TREE: (state, arr) => {
-            state.budgetReturnDataArr = arr;
+        SAVE_BUDGETFACTORY_OBJ: (state, obj) => {
+            state.budgetFactory = obj;
+        },
+        SAVE_BUDGETCAPACITY_OBJ: (state, obj) => {
+            state.budgetCapacity = obj;
         },
 
     },
     actions: {
-        SaveBudgetNowData({ commit }, arr) {
-            commit('SAVE_BUDGETNOW_TREE', arr);
+        SaveBudgetProgressData({ commit }, obj) {
+            commit('SAVE_BUDGETPROGRESS_OBJ', obj);
         },
-        SaveBudgetFirstData({ commit }, arr) {
-            commit('SAVE_BUDGETFIRST_TREE', arr);
+        SaveBudgetDepartmentData({ commit }, obj) {
+            commit('SAVE_BUDGETDEPART_OBJ', obj);
         },
-        SaveBudgetReturnData({ commit }, arr) {
-            commit('SAVE_BUDGETRETURN_TREE', arr);
+        SaveBudgetFactoryData({ commit }, obj) {
+            commit('SAVE_BUDGETFACTORY_OBJ', obj);
         },
-
+        SaveBudgetCapacityData({ commit }, obj) {
+            commit('SAVE_BUDGETCAPACITY_OBJ', obj);
+        },
     }
 };
 

@@ -78,7 +78,8 @@
                   </span>
                 </el-tooltip>
                 <div
-                  :class="{progress: true, 'is-active': activeCid === data.cid, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+                  :class="{progress: true, 'is-active': activeCid === data.cid,
+                           'is-active-bad': arr.includes(data.cid),'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
                   :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
               </span>
             </el-tree>
@@ -97,6 +98,7 @@
           </div>
           <component
             @changeCid='handleChangeCid'
+            @hightArr='hightArr'
             :cid="cid"
             :val="val"
             :is="currentTabComponent" />
@@ -190,7 +192,9 @@ export default {
             currView: '',
             style: 0,
             isCollapse: false,
-            treeProgressLoading: true
+            treeProgressLoading: true,
+            arr: [],
+            obj:{},
         };
     },
     computed: {
@@ -248,6 +252,12 @@ export default {
         }
     },
     methods: {
+        hightArr(obj) {
+            this.cid = obj.cid;
+            this.arr = obj.arr.map(String);
+            this.findParent([this.treeClone], this.cid);
+            this.nodeArr.push(this.cid);
+        },
         handleChangeCid(cid) {
             this.cid = cid;
             this.nodeArr = [];
@@ -422,6 +432,7 @@ export default {
             this.cid = data.cid;
         },
         handleNodeClick(data) {
+            this.arr = [];
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.$refs.child.clearKw();
                 if (this.cid === data.cid) {

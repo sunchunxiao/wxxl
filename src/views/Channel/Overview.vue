@@ -78,7 +78,8 @@
                   </span>
                 </el-tooltip>
                 <div
-                  :class="{progress: true, 'is-active': activeCid === data.nid, 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
+                  :class="{progress: true, 'is-active': activeCid === data.nid,
+                           'is-active-bad': arr.includes(data.nid), 'border-radius-0': calculatePercent(data.real_total, data.target_total).largerThanOne}"
                   :style="{width: calculatePercent(data.real_total, data.target_total).largerThanOne ? '105%' : `${calculatePercent(data.real_total, data.target_total).percent + 5}%`}" />
               </span>
             </el-tree>
@@ -97,6 +98,7 @@
           </div>
           <component
             @changeCid='handleChangeCid'
+            @hightArr='hightArr'
             :cid="cid"
             :val="val"
             :is="currentTabComponent" />
@@ -190,7 +192,9 @@ export default {
             currView: '',
             style: 0,
             isCollapse: false,
-            treeProgressLoading: true
+            treeProgressLoading: true,
+            arr: [],
+            obj:{},
         };
     },
     computed: {
@@ -204,28 +208,6 @@ export default {
         activeCid() {
             return this.cid;
         },
-        // noStandard() {
-        //     let numArr = [];
-        //     if (this.cid) {
-        //         //找节点
-        //         let obj = this.preOrder([this.treeClone], this.cid);
-        //         if (obj.children) {
-        //             for (let i of obj.children) {
-        //                 if (i.real_total && i.target_total) {
-        //                     const bool = this.calculatePercent(i.real_total,i.target_total).largerThanOne;
-        //                     if (!bool) {
-        //                         numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
-        //                     }
-        //                 } else if(!this.treeProgressLoading) {
-        //                     numArr.push(this.calculatePercent(i.real_total,i.target_total).largerThanOne);
-        //                 } else {
-        //                     return;
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     return numArr.length;
-        // }
     },
     watch: {
         cid() {
@@ -249,6 +231,12 @@ export default {
         }
     },
     methods: {
+        hightArr(obj) {
+            this.cid = obj.cid;
+            this.arr = obj.arr.map(String);
+            this.findParent([this.treeClone], this.cid);
+            this.nodeArr.push(this.cid);
+        },
         //目标未达成数
         getAchievement() {
             const params = {
@@ -436,6 +424,7 @@ export default {
             this.cid = data.nid;
         },
         handleNodeClick(data) {
+            this.arr = [];
             if (this.searchBarValue.sDate && this.searchBarValue.eDate) {
                 this.val = this.searchBarValue;
                 this.$refs.child.clearKw();

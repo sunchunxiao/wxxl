@@ -16,6 +16,7 @@
                   style="width:198px">
                   <ProTargetAchievement
                     v-if="orgprogressArr.length"
+                    @click.native="clickIndex(item,index)"
                     :id="`${index}`"
                     :data="item" />
                 </el-col>
@@ -82,6 +83,24 @@ export default {
         }
     },
     methods: {
+        clickIndex(item){
+            const params = {
+                subject: item.subject,
+                pt: this.getPt(),
+                ...this.getPeriodByPt(),
+                cid: this.cid,
+                version:this.version
+            };
+            //接口
+            API.GetOrgPoor(params).then(res => {
+                let obj = {};
+                obj.cid = String(res.data.worst),
+                obj.arr = res.data.poor;
+                if (obj.cid != 'null') {
+                    this.$emit('hightArr', obj);
+                }
+            });
+        },
         allRequest() {
             if (!this.cid) {
                 return;
@@ -147,9 +166,9 @@ export default {
                 };
             }
         },
-        clickIndex(i, idx) {
-            this[`index${i}`] = idx;
-        },
+        // clickIndex(i, idx) {
+        //     this[`index${i}`] = idx;
+        // },
     }
 };
 </script>

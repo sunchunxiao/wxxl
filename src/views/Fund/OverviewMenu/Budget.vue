@@ -7,28 +7,13 @@
         <el-row
           v-loading="loading"
           class="min-height-400">
-          <Card v-if="fundprogressArr.length">
-            <el-row class="margin-bottom-20 overview_title">目标达成情况总览</el-row>
-            <el-col :span="13">
-              <template v-for="(item, index) in fundprogressArr">
-                <el-col
-                  :key="index"
-                  style="width:198px">
-                  <ProTargetAchievement
-                    v-if="fundprogressArr.length"
-                    @click.native="clickIndex(item,index)"
-                    :id="`${index}`"
-                    :data="item" />
-                </el-col>
-              </template>
-            </el-col>
+          <Card v-if="fundCostObj">
             <el-col
-              :span="11">
-              综合评估
-              <radar
-                v-if="fundReachRadarObj"
+              :span="24">
+              <Budget
+                v-if="fundCostObj"
                 :id="'fundReachRadar'"
-                :data="fundReachRadarObj" />
+                :data="fundCostObj" />
             </el-col>
           </Card>
         </el-row>
@@ -40,12 +25,11 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
-import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
-import radar from '../../Home/radar';
+import Budget from '../FundBudget';
 import { mapGetters } from 'vuex';
 
 export default {
-    name: "RadarWrap",
+    name: "BudgetWrap",
     props: {
         cid: String,
         date: Object,
@@ -53,8 +37,7 @@ export default {
     },
     components: {
         Card,
-        radar,
-        ProTargetAchievement,
+        Budget,
     },
     data () {
         return {
@@ -66,7 +49,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['fundTree', 'fundprogressArr', 'fundlastParams', 'fundReachRadarObj']),
+        ...mapGetters(['fundCostObj','fundTree', 'fundlastParams', 'fundReachRadarObj']),
         hasTree () {
             return !_.isEmpty(this.fundTree);
         }
@@ -83,53 +66,28 @@ export default {
         }
     },
     methods: {
-        clickIndex(item){
-            const params = {
-                subject: item.subject,
-                pt: this.getPt(),
-                ...this.getPeriodByPt(),
-                cid: this.cid,
-                version: this.version
-            };
-            //接口
-            API.GetFundPoor(params).then(res => {
-                let obj = {};
-                obj.cid = String(res.data.worst),
-                obj.arr = res.data.poor;
-                if (obj.cid != 'null') {
-                    this.$emit('hightArr', obj);
-                }
-            });
-        },
         allRequest() {
             if (!this.cid) {
                 return;
             }
-            this.getProgress();
+            this.getCost();
             this.$store.dispatch("SaveFundLastParams", this.newParams);
         },
         //目标达成
-        getProgress() {
+        getCost() {
             const params = {
                 cid: this.cid,
                 pt: this.getPt(),
                 ...this.getPeriodByPt(),
                 version: this.version
             };
-            this.newParams.progress = params;
-            if (JSON.stringify(this.fundlastParams.progress) == JSON.stringify(params)) {
+            this.newParams.budget = params;
+            if (JSON.stringify(this.fundlastParams.budget) == JSON.stringify(params)) {
                 return;
             }
             this.loading = true;
-            API.GetFundProgress(params).then(res => {
-                this.sliderKey = new Date().getTime();
-                res.data.map(i=>{i.divide=1;});
-                let fundReachRadarObj = {};
-                fundReachRadarObj.name = res.data.map(el => el.subject_name);
-                fundReachRadarObj.progress = res.data.map(el => el.progress);
-                fundReachRadarObj.subject = res.data.map(el => el.subject);
-                this.$store.dispatch('SaveFundReachRadar', fundReachRadarObj);
-                this.$store.dispatch('SaveFundProgressData', res.data);
+            API.GetFundCost(params).then(res => {
+                this.$store.dispatch('SaveFundCost', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -167,9 +125,9 @@ export default {
                 };
             }
         },
-        // clickIndex(i, idx) {
-        //     this[`index${i}`] = idx;
-        // },
+        clickIndex(i, idx) {
+            this[`index${i}`] = idx;
+        },
     }
 };
 </script>

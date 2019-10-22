@@ -17,27 +17,27 @@ export default {
             timerId: 0,
         };
     },
+    props: {
+        id: String,
+        data: Object,
+    },
     computed: {
         height:function(){
             return "400px";
         }
     },
     mounted() {
-        this.mycharts();
+        this.mycharts(this.data);
     },
     watch: {
         data: {
-            handler() {
-                this.mycharts();
+            handler: function(val) {
+                this.mycharts(val);
             },
             deep: true
         },
     },
-    props: {
-        id: String,
-        yAxis:Array,
-        data: Object,
-    },
+
     methods: {
         handleResize() {
             echarts.init(this.$refs.chart).resize();
@@ -49,157 +49,47 @@ export default {
                 return val;
             }
         },
-        //tooltip数据格式化
-        tooltipFormat(params){
-            switch (params[0].axisValue) {
-                case "总":
-                    params[0].val = this.data["target_total"];
-                    params[1].val = this.data["actual_total"];
-                    break;
-                case "一部":
-                    params[0].val = this.data["target_p1"];
-                    params[1].val = this.data["actual_p1"];
-                    break;
-                case "二部":
-                    params[0].val = this.data["target_p2"];
-                    params[1].val = this.data["actual_p2"];
-                    break;
-                case "三部":
-                    params[0].val = this.data["target_p3"];
-                    params[1].val = this.data["actual_p3"];
-                    break;
-                case "四部":
-                    params[0].val = this.data["target_p4"];
-                    params[1].val = this.data["actual_p4"];
-                    break;
-                case "五部":
-                    params[0].val = this.data["target_p5"];
-                    params[1].val = this.data["actual_p5"];
-                    break;
-                case "战略供应商工厂A":
-                    params[0].val = this.data["target_s1"];
-                    params[1].val = this.data["actual_s1"];
-                    break;
-                case "战略供应商工厂B":
-                    params[0].val = this.data["target_s2"];
-                    params[1].val = this.data["actual_s2"];
-                    break;
-                case "战略供应商工厂C":
-                    params[0].val = this.data["target_s3"];
-                    params[1].val = this.data["actual_s3"];
-                    break;
-                case "战略供应商工厂D":
-                    params[0].val = this.data["target_s4"];
-                    params[1].val = this.data["actual_s4"];
-                    break;
-            }
-            return params;
-        },
-        //itemStyle数据格式化
-        itemStyleFormat(params){
-            let seriesName = params.seriesName;
-            switch (params.name) {
-                case "目标基准线":
-                    params.value = this.data["actual_avg"];
-                    break;
-                case "总":
-                    if(seriesName === "目标"){
-                        params.value = this.data["target_total"];
-                    }else if(seriesName === "实际"){
-                        params.value = this.data["actual_total"];
-                    }
-                    break;
-                case "一部":
-                    if(seriesName === "目标"){
-                        params.value = this.data["target_p1"];
-                    }else if(seriesName === "实际"){
-                        params.value = this.data["actual_p1"];
-                    }
-                    break;
-                case "二部":
-                    if(seriesName === "目标"){
-                        params.value = this.data["target_p2"];
-                    }else if(seriesName === "实际"){
-                        params.value = this.data["actual_p2"];
-                    }
-                    break;
-                case "三部":
-                    if(seriesName === "目标"){
-                        params.value = this.data["target_p3"];
-                    }else if(seriesName === "实际"){
-                        params.value = this.data["actual_p3"];
-                    }
-                    break;
-                case "四部":
-                    if(seriesName === "目标"){
-                        params.value = this.data["target_p4"];
-                    }else if(seriesName === "实际"){
-                        params.value = this.data["actual_p4"];
-                    }
-                    break;
-                case "五部":
-                    if(seriesName === "目标"){
-                        params.value = this.data["target_p5"];
-                    }else if(seriesName === "实际"){
-                        params.value = this.data["actual_p5"];
-                    }
-                    break;
-                case "战略供应商工厂A":
-                    if(seriesName === "目标"){
-                        params.value = this.data["target_s1"];
-                    }else if(seriesName === "实际"){
-                        params.value = this.data["actual_s1"];
-                    }
-                    break;
-                case "战略供应商工厂B":
-                    if(seriesName === "目标"){
-                        params.value = this.data["target_s2"];
-                    }else if(seriesName === "实际"){
-                        params.value = this.data["actual_s2"];
-                    }
-                    break;
-                case "战略供应商工厂C":
-                    if(seriesName === "目标"){
-                        params.value = this.data["target_s3"];
-                    }else if(seriesName === "实际"){
-                        params.value = this.data["actual_s3"];
-                    }
-                    break;
-                case "战略供应商工厂D":
-                    if(seriesName === "目标"){
-                        params.value = this.data["target_s4"];
-                    }else if(seriesName === "实际"){
-                        params.value = this.data["actual_s4"];
-                    }
-                    break;
-            }
-            return params;
-        },
 
-        mycharts() {
+        mycharts(data) {
+            const { rate } = data;
             let _this = this;
-            let targetData = [];
-            let actualData = [];
-            if(_this.id === 'planDepartment' || _this.id === 'budgetDepartment'){
-                targetData.push(1,1,1,1,1,1);
-                actualData.push(
-                    _this.data["actual_p5"]/_this.data["target_p5"],
-                    _this.data["actual_p4"]/_this.data["target_p4"],
-                    _this.data["actual_p3"]/_this.data["target_p3"],
-                    _this.data["actual_p2"]/_this.data["target_p2"],
-                    _this.data["actual_p1"]/_this.data["target_p1"],
-                    _this.data["actual_total"]/_this.data["target_total"],
-                );
-            }else if(_this.id === 'planSupplier' || _this.id === 'budgetSupplier'){
-                targetData.push(1,1,1,1,1);
-                actualData.push(
-                    _this.data["actual_s4"]/_this.data["target_s4"],
-                    _this.data["actual_s3"]/_this.data["target_s3"],
-                    _this.data["actual_s2"]/_this.data["target_s2"],
-                    _this.data["actual_s1"]/_this.data["target_s1"],
-                    _this.data["actual_total"]/_this.data["target_total"],
-                );
+            let targetData = [],target = [];
+            let actualData = [],real = [];
+            let yAxis = [];
+            // if (_this.id === 'planDepartment' || _this.id === 'budgetDepartment') {
+            for (let i of data.planData) {
+                targetData.push(1);
+                target.push(i.target);
+                if((i.real/i.target).toFixed(2)>=1){
+                    actualData.push(0.99);
+                }else{
+                    actualData.push((i.real/i.target).toFixed(2));
+                }
+                real.push(i.real);
+                yAxis.push({
+                    value: i.subject_name,
+                });
             }
+            // targetData.push(1,1,1,1,1,1);
+            // actualData.push(
+            //     _this.data["actual_p5"]/_this.data["target_p5"],
+            //     _this.data["actual_p4"]/_this.data["target_p4"],
+            //     _this.data["actual_p3"]/_this.data["target_p3"],
+            //     _this.data["actual_p2"]/_this.data["target_p2"],
+            //     _this.data["actual_p1"]/_this.data["target_p1"],
+            //     _this.data["actual_total"]/_this.data["target_total"],
+            // );
+            // }
+            // else if (_this.id === 'planSupplier' || _this.id === 'budgetSupplier') {
+            //     targetData.push(1,1,1,1,1);
+            //     actualData.push(
+            //         _this.data["actual_s4"]/_this.data["target_s4"],
+            //         _this.data["actual_s3"]/_this.data["target_s3"],
+            //         _this.data["actual_s2"]/_this.data["target_s2"],
+            //         _this.data["actual_s1"]/_this.data["target_s1"],
+            //         _this.data["actual_total"]/_this.data["target_total"],
+            //     );
+            // }
             let option = {
                 backgroundColor: '#fff',
                 grid: {
@@ -219,13 +109,15 @@ export default {
                             color: "#fff"
                         }
                     },
-                    formatter:function(params){
-                        let _params = params;
-                        _this.tooltipFormat(_params);
+                    formatter:function(params) {
                         let result = '';
-                        result += _params[0].name + "</br>";
-                        for(let i = 0; i<_params.length;i++){
-                            result += _params[i].marker + _params[i].seriesName + ": " + _params[i].val + "</br>";
+                        result += params[0].name + "</br>";
+                        for (let i = 0; i<params.length;i++) {
+                            if (i==0) {
+                                result += params[i].marker + params[i].seriesName + ": " + target[params[i].dataIndex] + "</br>";
+                            } else {
+                                result += params[i].marker + params[i].seriesName + ": " + real[params[i].dataIndex] + "</br>";
+                            }
                         }
                         return result;
                     }
@@ -236,7 +128,8 @@ export default {
                     axisTick: {
                         show: false
                     },
-                    data: this.yAxis,
+                    inverse: false,
+                    data: yAxis,
                     axisLabel: {
                         show: true,
                         fontSize: 14,
@@ -280,36 +173,28 @@ export default {
                                 position: "right",
                                 distance: 10,
                                 formatter: function(params) {
-                                    let _params = params;
-                                    _this.itemStyleFormat(_params);
-                                    return `${ _this.calculateToShow(_params.value)}`;
+                                    return `${target[params.dataIndex]}`;
                                 },
                             }
                         }
                     },
-                    // markLine :{
-                    //     symbol:"none",
-                    //     name:"目标基准线",
-                    //     label:{
-                    //         show:true,
-                    //         color: "#fd625e",
-                    //         formatter: function(params) {
-                    //             console.log(params);
-                    //             let _params = params;
-                    //             _this.itemStyleFormat(_params);
-                    //             return `目标基准线：${ _this.calculateToShow(_params.value)}`;
-                    //         },
-                    //     },
-                    //     data : [
-                    //         {
-                    //             name: '目标基准线',
-                    //             xAxis: _this.data["actual_avg"]?_this.data["actual_avg"]/_this.data["actual_total"]:"暂无基准线",
-                    //             itemStyle: {
-                    //                 color: '#b12725'
-                    //             }
-                    //         }
-                    //     ]
-                    // },
+                    markLine :{
+                        symbol:"none",
+                        name:"目标基准线",
+                        label:{
+                            show:true,
+                            color: "#fd625e",
+                            formatter: function(params) {
+                                return `目标基准线：${ params.value}`;
+                            },
+                        },
+                        data: [{
+                            xAxis: rate,
+                            itemStyle: {
+                                color: '#b12725'
+                            }
+                        }]
+                    },
                     data: targetData
                 }, {
                     name: "实际",
@@ -322,12 +207,10 @@ export default {
                     itemStyle: {
                         normal: {
                             color:function(params){
-                                let _params = params;
-                                _this.itemStyleFormat(_params);
                                 let actualBgColor = "";
-                                if (_params.value >= _this.data["actual_avg"]) {
+                                if (params.data >= data.rate) {
                                     actualBgColor = '#01b8aa';
-                                } else if(_params.value < _this.data["actual_avg"]){
+                                } else if(params.data < data.rate){
                                     actualBgColor = '#FD625E';
                                 }
                                 return actualBgColor;
@@ -341,9 +224,7 @@ export default {
                                 padding: [10, 15, 20, 15],
                                 borderRadius: 100,
                                 formatter: function(params) {
-                                    let _params = params;
-                                    _this.itemStyleFormat(_params);
-                                    return `${ _this.calculateToShow(_params.value)}`;
+                                    return `${real[params.dataIndex]}`;
                                 },
                             }
                         }

@@ -43,4 +43,8 @@ export default {
     GetSupplyFilter(params) {
         return FetchGet('/supply/strategy/filter', params);
     },
+    //钻取
+    GetSupplyPoor(params) {
+        return FetchGet('/supply/progress/poor', params);
+    },
 };

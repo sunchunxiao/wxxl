@@ -70,6 +70,7 @@ export function addProperty(data) {//树结构添加属性hasData = false
     for (let i of data) {
         data.map(o => {
             o.hasData = false;
+            o.hasBad = false;
         });
         if (i.children && i.children.length) {
             if (this.addProperty(i.children)) {

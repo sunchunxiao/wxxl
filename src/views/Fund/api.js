@@ -51,4 +51,11 @@ export default {
     GetFundFilter(params) {
         return FetchGet('/fund/strategy/filter', params);
     },
+    GetFundCost(params) {
+        return FetchGet('/fund/cost/detail', params);
+    },
+    //钻取
+    GetFundPoor(params) {
+        return FetchGet('/fund/progress/poor', params);
+    },
 };

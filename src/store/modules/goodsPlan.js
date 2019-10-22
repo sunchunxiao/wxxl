@@ -1,32 +1,37 @@
 const plan = {
     state: {
-        planNowDataArr:[],
-        planFirstDataArr:[],
-        planReturnDataArr:[],
+        planprogress: {},
+        planDepartment: {},
+        planFactory: {},
+        planCapacity:{},
     },
     mutations: {
-        SAVE_PLANNOW_TREE: (state, arr) => {
-            state.planNowDataArr = arr;
+        SAVE_PLANPROGRESS_OBJ: (state, obj) => {
+            state.planprogress = obj;
         },
-        SAVE_PLANFIRST_TREE: (state, arr) => {
-            state.planFirstDataArr = arr;
+        SAVE_PLANDEPART_OBJ: (state, obj) => {
+            state.planDepartment = obj;
         },
-        SAVE_PLANRETURN_TREE: (state, arr) => {
-            state.planReturnDataArr = arr;
+        SAVE_PLANFACTORY_OBJ: (state, obj) => {
+            state.planFactory = obj;
         },
-
+        SAVE_PLANCAPACITY_OBJ: (state, obj) => {
+            state.planCapacity = obj;
+        },
     },
     actions: {
-        SavePlanNowData({ commit }, arr) {
-            commit('SAVE_PLANNOW_TREE', arr);
+        SavePlanProgressData({ commit }, obj) {
+            commit('SAVE_PLANPROGRESS_OBJ', obj);
         },
-        SavePlanFirstData({ commit }, arr) {
-            commit('SAVE_PLANFIRST_TREE', arr);
+        SavePlanDepartmentData({ commit }, obj) {
+            commit('SAVE_PLANDEPART_OBJ', obj);
         },
-        SavePlanReturnData({ commit }, arr) {
-            commit('SAVE_PLANRETURN_TREE', arr);
+        SavePlanFactoryData({ commit }, obj) {
+            commit('SAVE_PLANFACTORY_OBJ', obj);
         },
-
+        SavePlanCapacityData({ commit }, obj) {
+            commit('SAVE_PLANCAPACITY_OBJ', obj);
+        },
     }
 };
 

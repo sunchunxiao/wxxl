@@ -15,6 +15,7 @@ const fund = {
     fundAchievement: state => state.fund.fundAchievement,
     fundAchievementOpt: state => state.fund.fundAchievementOpt,
     fundReachRadarObj: state => state.fund.fundReachRadarObj,
+    fundCostObj: state => state.fund.fundCostObj,
 };
 
 export default fund;

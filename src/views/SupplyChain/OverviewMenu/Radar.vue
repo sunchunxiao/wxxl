@@ -17,6 +17,7 @@
                   style="width:198px">
                   <ProTargetAchievement
                     :id="`${index}`"
+                    @click.native="clickIndex(item,index)"
                     :data="item" />
                 </el-col>
               </template>
@@ -44,7 +45,7 @@
 <script>
 import API from '../api';
 import Card from 'components/Card';
-import ProTargetAchievement from 'components/ProTargetAchievement';// 目标达成情况总览
+import ProTargetAchievement from 'components/ProTargetAchievementCS';// 目标达成情况总览
 import radar from '../../Home/radar';
 import { mapGetters } from 'vuex';
 
@@ -90,6 +91,23 @@ export default {
         }
     },
     methods: {
+        clickIndex(item){
+            const params = {
+                subject: item.subject,
+                pt: this.getPt(),
+                ...this.getPeriodByPt(),
+                cid: this.cid
+            };
+            //接口
+            API.GetSupplyPoor(params).then(res => {
+                let obj = {};
+                obj.cid = String(res.data.worst),
+                obj.arr = res.data.poor;
+                if (obj.cid != 'null') {
+                    this.$emit('hightArr', obj);
+                }
+            });
+        },
         allRequest() {
             if (!this.cid) {
                 return;
@@ -153,9 +171,9 @@ export default {
                 };
             }
         },
-        clickIndex(i, idx) {
-            this[`index${i}`] = idx;
-        },
+        // clickIndex(i, idx) {
+        //     this[`index${i}`] = idx;
+        // },
     }
 };
 </script>

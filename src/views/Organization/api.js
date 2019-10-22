@@ -52,4 +52,8 @@ export default {
     GetOrgFilter(params) {
         return FetchGet('/org/strategy/filter', params);
     },
+    //钻取
+    GetOrgPoor(params) {
+        return FetchGet('/org/progress/poor', params);
+    },
 };

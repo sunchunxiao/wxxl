@@ -48,4 +48,9 @@ export default {
     GetChannelFilter(params) {
         return FetchGet('/channel/strategy/filter', params);
     },
+    //钻取
+    GetChannelPoor(params) {
+        return FetchGet('/channel/progress/poor', params);
+    },
+    //http://wxxl.huangcan.dev.gy:1080/eff/v1?cid=106&pt=%E6%9C%88&sDate=2018-08-01&eDate=2018-11-30&version=0&subject=S
 };
