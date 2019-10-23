@@ -27,7 +27,7 @@
                     prop="b2"
                     label="关键工作计划科目" />
                   <el-table-column
-                    label="一月">
+                    :label="time">
                     <el-table-column
                       v-if="h3_sub.includes('sub1')"
                       label="第一周">
@@ -154,7 +154,8 @@ export default {
             loading: false,
             //views
             currView: '',
-            h3_sub:[]
+            h3_sub:[],
+            time:''
         };
     },
     computed: {
@@ -220,6 +221,7 @@ export default {
             this.loading = true;
             API.GetPlanInner().then(res => {
                 this.optionPlan = res.data.body;
+                this.time = res.data.head.h3;
                 this.h3_sub = Object.keys(res.data.head.h3_sub);
             }).finally(() => {
                 this.loading = false;
@@ -251,15 +253,15 @@ export default {
             border-bottom: 1px solid #333!important;
         }
 
-        &:hover {
-                td {
-                    // border-color: #000!important;
-                    // border: none!important;
-                }
-                td:first-child{
-                    // border: none!important;
-                }
-            }
+        // &:hover {
+        //         td {
+        //             // border-color: #000!important;
+        //             // border: none!important;
+        //         }
+        //         // td:first-child{
+        //             // border: none!important;
+        //         // }
+        //     }
 
     }
     .track .table_container .el-table tbody > tr:first-child td{
