@@ -21,7 +21,7 @@
                 <el-table-column
                   prop="b1"
                   min-width="120"
-                  label="中心数据">
+                  label="中心/部门">
                   <template
                     slot-scope="scope">
                     <div
