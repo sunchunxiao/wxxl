@@ -245,6 +245,9 @@ export default {
         z-index: 1;
         background: white;
     }
+    .el-table--border{
+        border-right: 1px solid #333;
+    }
     .el-table th, .el-table .el-table__row{
         border-top: 1px solid #333;
         // border-left: 1px solid #333;
