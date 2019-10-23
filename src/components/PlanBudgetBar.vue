@@ -70,26 +70,9 @@ export default {
                     value: i.subject_name,
                 });
             }
-            // targetData.push(1,1,1,1,1,1);
-            // actualData.push(
-            //     _this.data["actual_p5"]/_this.data["target_p5"],
-            //     _this.data["actual_p4"]/_this.data["target_p4"],
-            //     _this.data["actual_p3"]/_this.data["target_p3"],
-            //     _this.data["actual_p2"]/_this.data["target_p2"],
-            //     _this.data["actual_p1"]/_this.data["target_p1"],
-            //     _this.data["actual_total"]/_this.data["target_total"],
-            // );
-            // }
-            // else if (_this.id === 'planSupplier' || _this.id === 'budgetSupplier') {
-            //     targetData.push(1,1,1,1,1);
-            //     actualData.push(
-            //         _this.data["actual_s4"]/_this.data["target_s4"],
-            //         _this.data["actual_s3"]/_this.data["target_s3"],
-            //         _this.data["actual_s2"]/_this.data["target_s2"],
-            //         _this.data["actual_s1"]/_this.data["target_s1"],
-            //         _this.data["actual_total"]/_this.data["target_total"],
-            //     );
-            // }
+            // real.reverse();
+            // target.reverse();
+            // yAxis.reverse();
             let option = {
                 backgroundColor: '#fff',
                 grid: {

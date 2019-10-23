@@ -16,9 +16,9 @@
       class="mgb10 wrap"
       v-loading="loading">
       <div>当前{{ progress }}进度</div>
-      <template v-for="(planNow, index) in planprogress.now_order_progress">
+      <template v-for="(planNow, index) in planProgressData.now_order_progress">
         <el-col
-          v-if="planprogress.now_order_progress.length"
+          v-if="planProgressData.now_order_progress.length"
           :span="12"
           :key="index">
           <ProTargetAchievement
@@ -35,9 +35,9 @@
         style="left:20px;">
         首单{{ progress }}进度
       </div>
-      <template v-for="(planFirst, index) in planprogress.first_order_progress">
+      <template v-for="(planFirst, index) in planProgressData.first_order_progress">
         <el-col
-          v-if="planprogress.first_order_progress.length"
+          v-if="planProgressData.first_order_progress.length"
           :span="6"
           class="mgt30"
           :key="`planFirst${index}`">
@@ -51,9 +51,9 @@
         style="left:50%;">
         返单{{ progress }}进度
       </div>
-      <template v-for="(planReturn, index) in planprogress.return_order_progress">
+      <template v-for="(planReturn, index) in planProgressData.return_order_progress">
         <el-col
-          v-if="planprogress.return_order_progress.length"
+          v-if="planProgressData.return_order_progress.length"
           :span="6"
           class="mgt30"
           :key="`planReturn${index}`">
@@ -177,25 +177,18 @@ export default {
                 properties: [],//货品属性类型
                 progresses: [],//货品进度类型
             },
-            //货品计划数据
-            planData:{
-                now_order_progress:{},//当前下单进度
-                first_order_progress:{},//首单下单进度
-                return_order_progress:{},//返单下单进度
-                department_order_progress:{},//各业务部门下单进度
-                supplier_order_progress:{},//各工厂下单进度
-                capacity:[]//本季度产能使用
-            },
             loading: false,
             seasonMonth:[],
             progress:'',
-            keys:[]
+            keys:[],
+            //货品进度
+            planProgressData:{}
         };
     },
     computed: {
-        ...mapGetters(['planprogress','planDepartment','planFactory','planCapacity']),
+        ...mapGetters(['planDepartment','planFactory','planCapacity']),
     },
-    created() {
+    mounted() {
         this.fliter();
     },
     watch: {},
@@ -216,7 +209,8 @@ export default {
                 progress:form.progress,
             };
             API.GetPlanOrders(params).then(res => {
-                this.$store.dispatch('SavePlanProgressData', res.data);
+                this.planProgressData = res.data;
+                // this.$store.dispatch('SavePlanProgressData', res.data);
             }).finally(() => {
                 this.loading = false;
             });

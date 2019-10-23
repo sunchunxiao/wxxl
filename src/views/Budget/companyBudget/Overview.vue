@@ -169,7 +169,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['orgradarArr','orggossipArr','fundprogressArr','fundReachRadarObj']),
+        ...mapGetters(['fundReachRadarObj']),
 
     },
     watch: {

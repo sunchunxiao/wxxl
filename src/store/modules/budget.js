@@ -1,14 +1,10 @@
 const budget = {
     state: {
-        budgetprogress: {},
         budgetDepartment: {},
         budgetFactory: {},
         budgetCapacity:{},
     },
     mutations: {
-        SAVE_BUDGETPROGRESS_OBJ: (state, obj) => {
-            state.budgetprogress = obj;
-        },
         SAVE_BUDGETDEPART_OBJ: (state, obj) => {
             state.budgetDepartment = obj;
         },
@@ -21,9 +17,6 @@ const budget = {
 
     },
     actions: {
-        SaveBudgetProgressData({ commit }, obj) {
-            commit('SAVE_BUDGETPROGRESS_OBJ', obj);
-        },
         SaveBudgetDepartmentData({ commit }, obj) {
             commit('SAVE_BUDGETDEPART_OBJ', obj);
         },

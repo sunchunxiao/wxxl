@@ -16,9 +16,9 @@
       class="mgb10 wrap"
       v-loading="loading">
       <div>当前{{ progress }}进度</div>
-      <template v-for="(budgetNow, index) in budgetprogress.now_order_progress">
+      <template v-for="(budgetNow, index) in budgetProgressData.now_order_progress">
         <el-col
-          v-if="budgetprogress.now_order_progress.length"
+          v-if="budgetProgressData.now_order_progress.length"
           :span="12"
           :key="index">
           <ProTargetAchievement
@@ -92,9 +92,9 @@
         style="left:20px;">
         首单预算使用
       </div>
-      <template v-for="(budgetFirst, index) in budgetprogress.first_order_progress">
+      <template v-for="(budgetFirst, index) in budgetProgressData.first_order_progress">
         <el-col
-          v-if="budgetprogress.first_order_progress.length"
+          v-if="budgetProgressData.first_order_progress.length"
           :span="6"
           class="mgt30"
           :key="`budgetFirst${index}`">
@@ -108,9 +108,9 @@
         style="left:50%;">
         返单预算进度
       </div>
-      <template v-for="(budgetReturn, index) in budgetprogress.return_order_progress">
+      <template v-for="(budgetReturn, index) in budgetProgressData.return_order_progress">
         <el-col
-          v-if="budgetprogress.return_order_progress.length"
+          v-if="budgetProgressData.return_order_progress.length"
           :span="6"
           class="mgt30"
           :key="`budgetReturn${index}`">
@@ -177,23 +177,15 @@ export default {
                 properties: [],//货品属性类型
                 progresses: [],//货品进度类型
             },
-            //货品预算数据
-            budgetData:{
-                now_order_progress:{},//当前下单进度
-                first_order_progress:{},//首单下单进度
-                return_order_progress:{},//返单下单进度
-                department_order_progress:{},//各业务部门下单进度
-                supplier_order_progress:{},//各工厂下单进度
-                capacity:[]//本季度产能使用
-            },
             loading: false,
             seasonMonth:[],
             progress:'',
-            keys:[]
+            keys:[],
+            budgetProgressData:{}
         };
     },
     computed: {
-        ...mapGetters([ 'budgetprogress','budgetDepartment','budgetFactory','budgetCapacity']),
+        ...mapGetters(['budgetDepartment','budgetFactory','budgetCapacity']),
     },
     created() {
         this.fliter();
@@ -219,7 +211,7 @@ export default {
                 progress:form.progress,
             };
             API.GetBudgetOrders(params).then(res => {
-                this.$store.dispatch('SaveBudgetProgressData', res.data);
+                this.budgetProgressData = res.data;
             }).finally(() => {
                 this.loading = false;
             });

@@ -1,14 +1,10 @@
 const plan = {
     state: {
-        planprogress: {},
         planDepartment: {},
         planFactory: {},
         planCapacity:{},
     },
     mutations: {
-        SAVE_PLANPROGRESS_OBJ: (state, obj) => {
-            state.planprogress = obj;
-        },
         SAVE_PLANDEPART_OBJ: (state, obj) => {
             state.planDepartment = obj;
         },
@@ -20,9 +16,6 @@ const plan = {
         },
     },
     actions: {
-        SavePlanProgressData({ commit }, obj) {
-            commit('SAVE_PLANPROGRESS_OBJ', obj);
-        },
         SavePlanDepartmentData({ commit }, obj) {
             commit('SAVE_PLANDEPART_OBJ', obj);
         },
