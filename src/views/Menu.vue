@@ -277,6 +277,7 @@ const MENUDATA = [
                         title: "外部合作绩效管理",
                         path: "/companyOutsideManage/overview"
                     }
+
                 ]
             },
             {
@@ -287,7 +288,11 @@ const MENUDATA = [
                     {
                         title: "货品计划",
                         path: "/overview"
-                    }
+                    },
+                    {
+                        title: "公司内部计划管理",
+                        path: "/companyPlan/overview"
+                    },
                 ]
             },
             {
@@ -298,6 +303,10 @@ const MENUDATA = [
                     {
                         title: "货品预算",
                         path: "/overview"
+                    },
+                    {
+                        title: "公司内部预算管理",
+                        path: "/companyBudget/overview"
                     }
                 ]
             },

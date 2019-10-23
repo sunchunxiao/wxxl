@@ -166,7 +166,7 @@ export default {
                             color: '#5F5D5D',
                             fontSize: 14,
                             borderRadius: 3,
-                            padding: [3, -1],
+                            padding: [3, -10],
                         }
                     },
                     show:true,
@@ -203,7 +203,7 @@ export default {
                                     normal: {
                                         show: true,
                                         formatter:function(params) {
-                                            return params.value?(params.value*100).toFixed(0)+"%":'';
+                                            return  params.value?(params.value*100).toFixed(0)+"%":'';
                                         },
                                         color:'#5F5D5D',
                                     },

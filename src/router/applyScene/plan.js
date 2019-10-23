@@ -7,4 +7,12 @@ export default [
         },
         component: () => import('views/GoodsPlan/Overview.vue')
     },
+    {
+        path: '/applyScene/plan/companyPlan/overview',
+        name: 'companyPlan',
+        meta: {
+            path: ['三大应用场景','绩效管理', '公司内部计划管理']
+        },
+        component: () => import('views/GoodsPlan/companyPlan/Overview.vue')
+    },
 ];

@@ -8,12 +8,11 @@
 
 <script>
 import echarts from 'plugins/echarts';
-// const RANK = ['未知', '差', '中', '良', '优'];
 
 export default {
     props: {
         id: String,
-        data: Array,
+        data: Object,
     },
     data() {
         return {
@@ -42,28 +41,15 @@ export default {
         },
         renderChart(data) {
             let yData = [];
-            if(this.id == 'selectTreeManage'){
-                yData = [];
-            } else {
-                yData = ['实际', '目标'];
-            }
-            let transSubjects = [],radarValues = [],radarValuesTarget = [];
-            if (this.id =='outRadar') {
-                transSubjects = data[0].names;
-                radarValues = data[0].scores;
-                radarValuesTarget = data[0].target;
-            } else {
-                transSubjects = data.map(el => el.name);
-                radarValues = data.map(el => el.score);
-            }
-            let _this = this;
-            // const { transSubjects,radarValues } = data;
+            let transSubjects = [],radarValues = [];
+            transSubjects = data.name;
+            radarValues = data.progress;
             let arr = [];
             for (let i of transSubjects) {
                 arr.push({
                     name: i,
                     min:0,
-                    max: 150
+                    max: 1
                 });
             }
             const options = {
@@ -73,23 +59,15 @@ export default {
                     top: 60,
                     data: yData,
                     right:'20%',
-                    // textStyle: {
-                    //     color:'rgb(255,255,255)',
-                    //     fontSize:16
-                    // }
                 },
                 tooltip: {
                     formatter: function(params) {
                         let result =[];
-                        result = params.seriesName +"</br>";
                         for (let i=0; i<params.name.length; i++) {
-                            result += params.name[i] + " : " + _this.getRank(params.value[i]) +"</br>";
+                            result += params.name[i]+'(使用率)' + " : " + (params.value[i]*100).toFixed(0)+'%' +"</br>";
                         }
                         return result;
                     },
-                    position: function (point) {
-                        return ["45%", point[1] + 20];
-                    }
                 },
                 scale: true,
                 radar: {
@@ -123,7 +101,6 @@ export default {
                 },
                 series: [
                     {
-                        name: '实际',
                         type: 'radar',
                         color:'red',
                         data : [
@@ -132,17 +109,16 @@ export default {
                                 name: transSubjects,
                                 label: {
                                     normal: {
-                                        show: false,
+                                        show: true,
                                         formatter:function(params) {
-                                            return params.value;
+                                            return (params.value*100).toFixed(0)+'%';
                                         },
                                         color:'#000',
                                     },
                                 },
                                 areaStyle: {
                                     normal: {
-                                        show: true,
-                                        color: 'rgba(0, 0, 0, 0)'
+                                        color: 'rgba(1, 184, 170, 0.8)'
                                     }
                                 }
                             },
@@ -152,44 +128,6 @@ export default {
                             //拐点线颜色
                                 lineStyle: {
                                     color:'#FD625E',
-                                    width: 2
-                                }
-                            },
-                            emphasis: {
-                                lineStyle: {
-                                    width: 3
-                                }
-                            }
-                        },
-                    },{
-                        name: '目标',
-                        type: 'radar',
-                        color:'green',
-                        data : [
-                            {
-                                value : radarValuesTarget,
-                                name: transSubjects,
-                                label: {
-                                    normal: {
-                                        show: false,
-                                        // formatter:function(params) {
-                                        //     return params.value;
-                                        // },
-                                        color:'#000',
-                                    },
-                                },
-                                areaStyle: {
-                                    normal: {
-                                        color: 'rgba(0, 0, 0, 0)'
-                                    }
-                                }
-                            },
-                        ],
-                        itemStyle : {
-                            normal : {
-                            //拐点线颜色
-                                lineStyle: {
-                                    color:'rgb(150,206,93)',
                                     width: 2
                                 }
                             },

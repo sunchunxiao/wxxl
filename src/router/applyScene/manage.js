@@ -23,4 +23,5 @@ export default [
         },
         component: () => import('views/Manage/companyOutside/Overview.vue')
     },
+
 ];

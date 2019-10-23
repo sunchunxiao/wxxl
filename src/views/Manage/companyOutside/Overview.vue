@@ -6,7 +6,7 @@
         ref="child"
         @search="handleSearch"
         url="/product/search"
-        placeholder="产品编号/产品名称"
+        placeholder="供应商编码/供应商名称"
         v-model="searchBarValue"
         :pt-options="[ '月', '季']" />
     </el-row>
