@@ -132,9 +132,9 @@
           <span class="colorSpan redSpan" /><span class="avg">： 实际(达不到基准线)</span>
         </div>
         <PlanBudgetBar
-          v-if="budgetDepartment.planData && budgetDepartment.planData.length"
+          v-if="budgetDepartmentData.planData && budgetDepartmentData.planData.length"
           :id="`budgetDepartment`"
-          :data="budgetDepartment" />
+          :data="budgetDepartmentData" />
       </el-col>
     </el-row>
     <el-row
@@ -149,9 +149,9 @@
           <span class="colorSpan redSpan" /><span class="avg">： 实际(达不到基准线)</span>
         </div>
         <PlanBudgetBar
-          v-if="budgetFactory.planData && budgetFactory.planData.length "
-          :id="`budgetSupplier`"
-          :data="budgetFactory" />
+          v-if="budgetFactoryData.planData && budgetFactoryData.planData.length "
+          :id="`budgetFactoryData`"
+          :data="budgetFactoryData" />
       </el-col>
     </el-row>
   </div>
@@ -181,11 +181,13 @@ export default {
             seasonMonth:[],
             progress:'',
             keys:[],
-            budgetProgressData:{}
+            budgetProgressData:{},
+            budgetDepartmentData:{},
+            budgetFactoryData:{}
         };
     },
     computed: {
-        ...mapGetters(['budgetDepartment','budgetFactory','budgetCapacity']),
+        ...mapGetters(['budgetCapacity']),
     },
     created() {
         this.fliter();
@@ -225,7 +227,8 @@ export default {
                 progress:form.progress,
             };
             API.GetBudgetDepartment(params).then(res => {
-                this.$store.dispatch('SaveBudgetDepartmentData', res.data);
+                this.budgetDepartmentData = res.data;
+                // this.$store.dispatch('SaveBudgetDepartmentData', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -239,7 +242,8 @@ export default {
                 progress:form.progress,
             };
             API.GetBudgetFactory(params).then(res => {
-                this.$store.dispatch('SaveBudgetFactoryData', res.data);
+                this.budgetFactoryData = res.data;
+                // this.$store.dispatch('SaveBudgetFactoryData', res.data);
             }).finally(() => {
                 this.loading = false;
             });
@@ -269,21 +273,18 @@ export default {
             for (let i = 0; i < data.factory.length; i++) {
                 let row = {};
                 row.supplier = data.factory[i];
-                row.month1 = production_rate[9][i];
-                row.month2 = production_rate[10][i];
-                row.month3 = production_rate[11][i];
-                // row.month3 = data[keys[i]][2];
+                row.month1 = production_rate[keys[0]][i];
+                row.month2 = production_rate[keys[1]][i];
+                row.month3 = production_rate[keys[2]][i];
                 capacity.push(row);
             }
             //全部置顶
             // capacity.unshift(capacity.splice(capacity.length-1 , 1)[0]);
             return capacity;
         },
-
         //下拉筛选
         handleChange(form) {
             this.progress = form.progress;
-            // this.getBudgetData(form);
             this.getBudgetOrders(form);
             this.getBudgetDepartment(form);
             this.getBudgetFactory(form);
